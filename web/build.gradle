@@ -1,0 +1,75 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '4.1.1'
+    id 'io.spring.dependency-management' version '1.1.7'
+}
+
+repositories {
+    mavenCentral()
+}
+
+def angularDir = file("$projectDir/src/main/cli-web")
+def npmCommand = file("C:/Program Files/nodejs/npm.cmd")
+
+tasks.register('npmInstall', Exec) {
+    workingDir angularDir
+    commandLine npmCommand.absolutePath, 'install'
+
+    doFirst {
+        println "=================================================="
+        println ">>> npm install STARTED"
+        println ">>> Directory: ${angularDir.absolutePath}"
+        println "=================================================="
+    }
+
+    doLast {
+        println ">>> npm install COMPLETED"
+    }
+}
+
+tasks.register('angularBuild', Exec) {
+    dependsOn npmInstall
+    workingDir angularDir
+    commandLine npmCommand.absolutePath, 'run', 'build'
+
+    doFirst {
+        println "=================================================="
+        println ">>> ANGULAR BUILD STARTED"
+        println ">>> Directory: ${angularDir.absolutePath}"
+        println ">>> Command: npm run build"
+        println "=================================================="
+    }
+
+    doLast {
+        println "=================================================="
+        println ">>> ANGULAR BUILD COMPLETED"
+        println ">>> Output: ${project.file('src/main/resources/static').absolutePath}"
+        println "=================================================="
+    }
+}
+
+tasks.named('classes') {
+    dependsOn angularBuild
+}
+
+tasks.named('build') {
+    dependsOn angularBuild
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-webflux-test'
+    testCompileOnly 'org.projectlombok:lombok'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testAnnotationProcessor 'org.projectlombok:lombok'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
