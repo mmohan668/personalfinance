@@ -1,0 +1,85 @@
+<h2>PrimeNG Grid</h2>
+
+<p-table
+  #dt
+  [value]="products"
+  [tableStyle]="{
+    'min-width': '70rem',
+  }"
+  [sortField]="sortField"
+  [sortOrder]="sortOrder"
+  (onSort)="onSort($event)"
+>
+  <!-- ================================================= -->
+  <!-- HEADER                                            -->
+  <!-- ================================================= -->
+
+  <ng-template #header>
+    <!-- COLUMN HEADERS -->
+    <tr>
+      @for (col of columns; track $index) {
+        <th
+          [pSortableColumn]="col.sortable !== false ? col.field : undefined"
+          [style.width]="col.width"
+        >
+          <div class="sort-header">
+            <span>{{ col.header }}</span>
+            @if (col.sortable !== false && getSortIcon(col.field)) {
+              <span class="sort-icon">
+                {{ getSortIcon(col.field) }}
+              </span>
+            }
+          </div>
+        </th>
+      }
+    </tr>
+
+    <!-- ================================================= -->
+    <!-- FILTER ROW                                        -->
+    <!-- ================================================= -->
+
+    <tr class="filter-row">
+      @for (col of columns; track $index) {
+        @if (col.filterable) {
+          <th>
+            <app-column-filter
+              [type]="col.filterType"
+              [placeholder]="col.header"
+              [value]="filters[col.field]?.value || ''"
+              [operators]="getOperators(col)"
+              [selectedOperator]="filters[col.field]?.operator || getDefaultOperator(col)"
+              (valueChange)="applyFilter(col.field, $event)"
+              (operatorChange)="changeOperator(col.field, $event)"
+            />
+          </th>
+        } @else {
+          <th></th>
+        }
+      }
+    </tr>
+  </ng-template>
+
+  <!-- ================================================= -->
+  <!-- BODY                                              -->
+  <!-- ================================================= -->
+
+  <ng-template #body let-product>
+    <tr>
+      @for (column of columns; track column.field) {
+        <td>
+          {{ product[column.field] }}
+        </td>
+      }
+    </tr>
+  </ng-template>
+
+  <!-- ================================================= -->
+  <!-- EMPTY                                             -->
+  <!-- ================================================= -->
+
+  <ng-template #emptymessage>
+    <tr>
+      <td colspan="5">No products found.</td>
+    </tr>
+  </ng-template>
+</p-table>

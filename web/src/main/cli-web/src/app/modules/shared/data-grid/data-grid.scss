@@ -1,0 +1,146 @@
+/* =========================================================
+   DATA GRID HOST
+   ========================================================= */
+
+:host {
+  display: block;
+  position: relative;
+}
+
+/* =========================================================
+   GLOBAL SEARCH TOOLBAR
+   ========================================================= */
+
+.table-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 0.75rem 0;
+}
+
+/* =========================================================
+   SORT HEADER
+   ========================================================= */
+
+.sort-header {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.sort-icon {
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+/* =========================================================
+   PRIME NG TABLE
+   ========================================================= */
+
+:host ::ng-deep .p-datatable {
+  position: relative;
+  overflow: visible !important;
+}
+
+:host ::ng-deep .p-datatable-wrapper {
+  overflow: visible !important;
+}
+
+:host ::ng-deep .p-datatable-table-container {
+  overflow: visible !important;
+}
+
+/* =========================================================
+   TABLE HEADER
+   ========================================================= */
+
+:host ::ng-deep .p-datatable-thead {
+  position: relative;
+  z-index: 100;
+}
+
+:host ::ng-deep .p-datatable-thead > tr {
+  position: relative;
+}
+
+/* =========================================================
+   NORMAL COLUMN HEADER
+   ========================================================= */
+
+:host ::ng-deep .p-datatable-thead > tr:first-child > th {
+  position: relative;
+}
+
+/* =========================================================
+   FILTER ROW
+   ========================================================= */
+
+/*
+ * IMPORTANT:
+ *
+ * The complete filter row must be above the table body.
+ * Setting z-index only on app-column-filter is not enough
+ * because the <tbody> is painted in another table layer.
+ */
+
+.filter-row {
+  position: relative;
+  z-index: 10000;
+}
+
+.filter-row > th {
+  position: relative;
+  z-index: 10000;
+  overflow: visible !important;
+}
+
+/* =========================================================
+   INDIVIDUAL FILTER COMPONENT
+   ========================================================= */
+
+.filter-row app-column-filter {
+  display: block;
+  position: relative;
+  z-index: 100000;
+}
+
+/* =========================================================
+   TABLE BODY
+   ========================================================= */
+
+/*
+ * Keep body below the filter row.
+ */
+
+:host ::ng-deep .p-datatable-tbody {
+  position: relative;
+  z-index: 1;
+}
+
+:host ::ng-deep .p-datatable-tbody > tr {
+  position: relative;
+  z-index: 1;
+}
+
+:host ::ng-deep .p-datatable-tbody > tr > td {
+  position: relative;
+  z-index: 1;
+}
+
+/* =========================================================
+   CUSTOM OPERATOR DROPDOWN
+   ========================================================= */
+
+/*
+ * This selector may or may not penetrate the child
+ * component because app-column-filter has its own
+ * Angular view encapsulation.
+ *
+ * The actual z-index should also be present in
+ * column-filter.scss.
+ */
+
+.filter-row app-column-filter .operator-menu {
+  position: absolute;
+  z-index: 999999;
+}
