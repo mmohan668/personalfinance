@@ -2,6 +2,7 @@ package com.pf.warehouse.controller;
 
 import com.pf.common.dto.gp.GridColumnDTO;
 import com.pf.common.dto.ProductDTO;
+import com.pf.common.dto.gp.GridResult;
 import com.pf.common.dto.gp.SearchCriteria;
 import com.pf.common.service.gp.GridService;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +22,7 @@ public class GridController {
     }
 
     @PostMapping("/getData")
-    private List<ProductDTO> getData(@RequestBody SearchCriteria searchCriteria) {
+    private GridResult getData(@RequestBody SearchCriteria searchCriteria) {
         return gridService.getProducts(searchCriteria);
     }
 }

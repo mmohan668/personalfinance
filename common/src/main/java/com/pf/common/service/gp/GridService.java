@@ -20,20 +20,36 @@ public class GridService {
             new ProductDTO(3L, "Keyboard", "Accessories", BigDecimal.valueOf(2500), 50),
             new ProductDTO(4L, "Monitor", "Electronics", BigDecimal.valueOf(18000), 15),
             new ProductDTO(5L, "Mouse", "Accessories", BigDecimal.valueOf(1200), 100),
-            new ProductDTO(5L, "Mobile", "Electronics", BigDecimal.valueOf(25000), 15)
+            new ProductDTO(6L, "Mobile", "Electronics", BigDecimal.valueOf(25000), 15),
+            new ProductDTO(7L, "Mobile", "Electronics", BigDecimal.valueOf(25000), 15),
+            new ProductDTO(8L, "Mobile", "Electronics", BigDecimal.valueOf(25000), 15),
+            new ProductDTO(9L, "Mobile", "Electronics", BigDecimal.valueOf(25000), 15),
+            new ProductDTO(10L, "Mobile", "Electronics", BigDecimal.valueOf(25000), 15),
+            new ProductDTO(11L, "Mobile", "Electronics", BigDecimal.valueOf(25000), 15),
+            new ProductDTO(12L, "Mobile", "Electronics", BigDecimal.valueOf(25000), 15),
+            new ProductDTO(13L, "Mobile", "Electronics", BigDecimal.valueOf(25000), 15),
+            new ProductDTO(14L, "Mobile", "Electronics", BigDecimal.valueOf(25000), 15),
+            new ProductDTO(15L, "Mobile", "Electronics", BigDecimal.valueOf(25000), 15),
+            new ProductDTO(16L, "Mobile", "Electronics", BigDecimal.valueOf(25000), 15),
+            new ProductDTO(17L, "Mobile", "Electronics", BigDecimal.valueOf(25000), 15),
+            new ProductDTO(18L, "Mobile", "Electronics", BigDecimal.valueOf(25000), 15),
+            new ProductDTO(19L, "Mobile", "Electronics", BigDecimal.valueOf(25000), 15),
+            new ProductDTO(20L, "Mobile", "Electronics", BigDecimal.valueOf(25000), 15)
+
     );
 
-    public List<ProductDTO> getProducts(SearchCriteria searchCriteria) {
+    public GridResult getProducts(SearchCriteria searchCriteria) {
+        GridResult gridResult = new GridResult();
         Stream<ProductDTO> stream = products.stream();
-
+        gridResult.setTotalRecords(products.size());
         stream = applyFilters(stream, searchCriteria.getFilterList());
-
         stream = applySorting(
                 stream,
                 searchCriteria.getSort()
         );
-
-        return stream.toList();
+        stream = stream.skip(searchCriteria.getSkip()).limit(searchCriteria.getTake());
+        gridResult.setRecordDetails(stream.toList());
+        return gridResult;
 
     }
 

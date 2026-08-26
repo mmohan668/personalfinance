@@ -23,6 +23,11 @@ export interface GridSort {
   order: 'asc' | 'desc';
 }
 
+export interface GridResult {
+  recordDetails: any[];
+  totalRecords: number;
+}
+
 export interface FilterOperator {
   label: string;
   value: string;
@@ -33,4 +38,7 @@ export interface FilterOperator {
 export interface SearchCriteria {
   sort: GridSort;
   filterList: GridFilter[];
+  skip: number;
+  take: number;
+  loadAllData: boolean | false;
 }
