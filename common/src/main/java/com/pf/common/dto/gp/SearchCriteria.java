@@ -13,5 +13,7 @@ public class SearchCriteria implements Serializable {
     private static final long serialVersionUID = 1L;
     private GridSort sort;
     private List<GridFilter> filterList;
-
+    private int skip;
+    private int take;
+    private boolean loadAllData;
 }

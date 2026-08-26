@@ -11,6 +11,9 @@
   align-items: center;
   width: 100%;
   z-index: 1000;
+  align-items: center;
+  gap: 0.25rem; /* reduce spacing between button and input */
+  padding: 0.25rem 0; /* less vertical padding */
 }
 
 .operator-menu {

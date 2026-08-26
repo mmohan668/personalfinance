@@ -8,14 +8,23 @@
 }
 
 /* =========================================================
-   GLOBAL SEARCH TOOLBAR
+   TOOLBAR
    ========================================================= */
 
 .table-toolbar {
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  padding: 0.75rem 0;
+  gap: 0.5rem;
+  padding: 0.5rem;
+}
+
+.table-toolbar mat-icon {
+  color: #4caf50 !important;
+}
+
+.toolbar-border {
+  border: 1px solid #4caf50 !important;
 }
 
 /* =========================================================
@@ -63,25 +72,15 @@
   position: relative;
 }
 
-/* =========================================================
-   NORMAL COLUMN HEADER
-   ========================================================= */
-
 :host ::ng-deep .p-datatable-thead > tr:first-child > th {
   position: relative;
+  background-color: #4caf50 !important;
+  color: #fff !important;
 }
 
 /* =========================================================
    FILTER ROW
    ========================================================= */
-
-/*
- * IMPORTANT:
- *
- * The complete filter row must be above the table body.
- * Setting z-index only on app-column-filter is not enough
- * because the <tbody> is painted in another table layer.
- */
 
 .filter-row {
   position: relative;
@@ -92,11 +91,8 @@
   position: relative;
   z-index: 10000;
   overflow: visible !important;
+  padding: 1px 8px !important;
 }
-
-/* =========================================================
-   INDIVIDUAL FILTER COMPONENT
-   ========================================================= */
 
 .filter-row app-column-filter {
   display: block;
@@ -107,10 +103,6 @@
 /* =========================================================
    TABLE BODY
    ========================================================= */
-
-/*
- * Keep body below the filter row.
- */
 
 :host ::ng-deep .p-datatable-tbody {
   position: relative;
@@ -128,25 +120,338 @@
 }
 
 /* =========================================================
-   CUSTOM OPERATOR DROPDOWN
+   EMPTY MESSAGE
+   ========================================================= */
+
+.empty-message {
+  text-align: center;
+  vertical-align: middle;
+  padding: 2rem;
+}
+
+/* =========================================================
+   SELECTION COLUMN
+   ========================================================= */
+
+.selection-column {
+  width: 80px !important;
+  min-width: 80px !important;
+  max-width: 80px !important;
+
+  padding: 0 !important;
+
+  text-align: center;
+  vertical-align: middle;
+}
+
+/* Header selection cell */
+
+.selection-header {
+  background-color: #4caf50 !important;
+  border-right: 1px solid #d9dfe7 !important;
+}
+
+/* Body selection cell */
+
+.selection-cell {
+  background-color: #fff;
+  border-right: 1px solid #d9dfe7;
+}
+
+/* =========================================================
+   MATERIAL CHECKBOX CONTAINER
+   ========================================================= */
+
+.selection-column ::ng-deep .mat-mdc-checkbox {
+  display: inline-block;
+  margin: 0;
+  padding: 0;
+}
+
+/*
+ * Remove the label/form-field spacing.
+ */
+
+.selection-column ::ng-deep .mat-internal-form-field {
+  padding: 0 !important;
+}
+
+/* =========================================================
+   CHECKBOX SQUARE
+   ========================================================= */
+
+.selection-column ::ng-deep .mdc-checkbox__background {
+  width: 22px !important;
+  height: 22px !important;
+
+  border-radius: 3px !important;
+}
+
+/* =========================================================
+   UNCHECKED
    ========================================================= */
 
 /*
- * This selector may or may not penetrate the child
- * component because app-column-filter has its own
- * Angular view encapsulation.
- *
- * The actual z-index should also be present in
- * column-filter.scss.
+ * Native input is neither checked nor indeterminate.
  */
+
+.selection-column
+  ::ng-deep
+  .mdc-checkbox__native-control:not(:checked):not(:indeterminate)
+  ~ .mdc-checkbox__background {
+  background-color: #f5f7fa !important;
+
+  border: 2px solid #4b4f56 !important;
+}
+
+/* =========================================================
+   CHECKED
+   ========================================================= */
+
+/*
+ * Checked state.
+ */
+
+.selection-column ::ng-deep .mdc-checkbox__native-control:checked ~ .mdc-checkbox__background {
+  background-color: #4caf50 !important;
+
+  border-color: #4caf50 !important;
+}
+
+/*
+ * Checked checkmark.
+ */
+
+.selection-column
+  ::ng-deep
+  .mdc-checkbox__native-control:checked
+  ~ .mdc-checkbox__background
+  .mdc-checkbox__checkmark {
+  opacity: 1 !important;
+}
+
+/* =========================================================
+   INDETERMINATE
+   ========================================================= */
+
+/*
+ * THIS is the critical selector.
+ *
+ * Angular Material sets the native checkbox input to:
+ *
+ *     :indeterminate
+ *
+ * It does NOT rely on:
+ *
+ *     .mat-mdc-checkbox-indeterminate
+ */
+
+.selection-column
+  ::ng-deep
+  .mdc-checkbox__native-control:indeterminate
+  ~ .mdc-checkbox__background {
+  background-color: #f5f7fa !important;
+
+  border: 2px solid #4b4f56 !important;
+}
+
+/*
+ * Show the MDC mixed mark.
+ */
+
+.selection-column
+  ::ng-deep
+  .mdc-checkbox__native-control:indeterminate
+  ~ .mdc-checkbox__background
+  .mdc-checkbox__mixedmark {
+  width: 12px !important;
+  height: 0 !important;
+
+  border-top: 3px solid #4b4f56 !important;
+
+  border-left: 0 !important;
+  border-right: 0 !important;
+  border-bottom: 0 !important;
+
+  transform: scaleX(1) rotate(0deg) !important;
+
+  opacity: 1 !important;
+}
+
+/*
+ * Hide checkmark while indeterminate.
+ */
+
+.selection-column
+  ::ng-deep
+  .mdc-checkbox__native-control:indeterminate
+  ~ .mdc-checkbox__background
+  .mdc-checkbox__checkmark {
+  opacity: 0 !important;
+}
+
+/* =========================================================
+   CHECKBOX HOVER
+   ========================================================= */
+
+.selection-column
+  ::ng-deep
+  .mdc-checkbox:hover
+  .mdc-checkbox__native-control:not(:checked):not(:indeterminate)
+  ~ .mdc-checkbox__background {
+  background-color: #eef1f4 !important;
+
+  border-color: #3f4349 !important;
+}
+
+/* =========================================================
+   HEADER CHECKBOX
+   ========================================================= */
+
+.selection-header
+  ::ng-deep
+  .mdc-checkbox__native-control:not(:checked):not(:indeterminate)
+  ~ .mdc-checkbox__background {
+  background-color: #f5f7fa !important;
+}
+
+.selection-header
+  ::ng-deep
+  .mdc-checkbox__native-control:indeterminate
+  ~ .mdc-checkbox__background {
+  background-color: #f5f7fa !important;
+
+  border-color: #4b4f56 !important;
+}
+
+.selection-header
+  ::ng-deep
+  .mdc-checkbox__native-control:indeterminate
+  ~ .mdc-checkbox__background
+  .mdc-checkbox__mixedmark {
+  border-top-color: #4b4f56 !important;
+}
+
+/* =========================================================
+   FILTER DROPDOWN Z-INDEX
+   ========================================================= */
 
 .filter-row app-column-filter .operator-menu {
   position: absolute;
   z-index: 999999;
 }
 
-.empty-message {
-  text-align: center;
-  vertical-align: middle;
-  padding: 2rem;
+/* Column chooser checkboxes */
+::ng-deep .mat-mdc-menu-panel .mat-mdc-checkbox {
+  --mdc-checkbox-selected-checkmark-color: #fff;
+  --mdc-checkbox-selected-icon-color: #4caf50;
+  --mdc-checkbox-selected-hover-icon-color: #4caf50;
+  --mdc-checkbox-selected-focus-icon-color: #4caf50;
+  --mdc-checkbox-selected-pressed-icon-color: #4caf50;
+}
+
+/* Checked checkbox */
+::ng-deep .mat-mdc-menu-panel .mat-mdc-checkbox.mat-mdc-checkbox-checked .mdc-checkbox__background {
+  background-color: #4caf50 !important;
+  border-color: #4caf50 !important;
+}
+
+/* Unchecked checkbox */
+::ng-deep
+  .mat-mdc-menu-panel
+  .mat-mdc-checkbox:not(.mat-mdc-checkbox-checked)
+  .mdc-checkbox__background {
+  background-color: transparent !important;
+  border-color: #4caf50 !important;
+}
+
+.clear-search {
+  margin-right: 5px !important;
+}
+
+.column-search {
+  padding: 2px 8px !important;
+  margin: 0 !important;
+  height: auto;
+}
+
+.column-search mat-form-field {
+  width: 100%;
+  background: #fff;
+  margin: 0 !important;
+}
+::ng-deep .column-menu .mat-mdc-menu-item {
+  min-height: 30px !important;
+  height: 30px !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+::ng-deep .column-menu .mat-mdc-checkbox {
+  margin: 0 !important;
+}
+
+::ng-deep .column-menu {
+  max-height: 300px !important;
+  overflow-y: auto !important;
+}
+
+/* Column chooser - indeterminate checkbox */
+::ng-deep
+  .column-menu
+  .mat-mdc-checkbox
+  .mdc-checkbox__native-control:indeterminate
+  ~ .mdc-checkbox__background {
+  background-color: #f5f7fa !important;
+  border: 2px solid #4caf50 !important;
+}
+
+/* Indeterminate horizontal mark */
+::ng-deep
+  .column-menu
+  .mat-mdc-checkbox
+  .mdc-checkbox__native-control:indeterminate
+  ~ .mdc-checkbox__background
+  .mdc-checkbox__mixedmark {
+  width: 12px !important;
+  height: 3px !important;
+
+  background-color: #4caf50 !important;
+
+  border: 0 !important;
+  border-radius: 1px !important;
+
+  transform: none !important;
+  opacity: 1 !important;
+}
+
+/* =========================================================
+   HEADER ROW - INDETERMINATE CHECKBOX
+   ========================================================= */
+
+.selection-header
+  ::ng-deep
+  .mat-mdc-checkbox
+  .mdc-checkbox__native-control:indeterminate
+  ~ .mdc-checkbox__background {
+  background-color: #f5f7fa !important;
+  border: 2px solid #4b4f56 !important;
+}
+
+/* Visible horizontal minus */
+.selection-header
+  ::ng-deep
+  .mat-mdc-checkbox
+  .mdc-checkbox__native-control:indeterminate
+  ~ .mdc-checkbox__background
+  .mdc-checkbox__mixedmark {
+  width: 12px !important;
+  height: 3px !important;
+
+  background-color: #4caf50 !important;
+
+  border: 0 !important;
+  border-radius: 2px !important;
+
+  transform: none !important;
+  opacity: 1 !important;
 }
