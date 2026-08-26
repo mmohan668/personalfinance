@@ -13,8 +13,14 @@ export interface GridColumn {
 }
 
 export interface GridFilter {
+  field: string;
   operator: string;
   value: any;
+}
+
+export interface GridSort {
+  field: string;
+  order: 'asc' | 'desc';
 }
 
 export interface FilterOperator {
@@ -24,6 +30,7 @@ export interface FilterOperator {
   icon: string;
 }
 
-export interface GridRow {
-  [key: string]: unknown;
+export interface SearchCriteria {
+  sort: GridSort;
+  filterList: GridFilter[];
 }

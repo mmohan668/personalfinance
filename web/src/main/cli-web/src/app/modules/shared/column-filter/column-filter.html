@@ -1,50 +1,52 @@
-<div class="column-filter">
-  <!-- Operator button -->
-  <button type="button" class="operator-button" [class.active]="menuOpen" (click)="toggleMenu()">
-    <span class="operator-symbol">
-      {{ operatorSymbol }}
-    </span>
-  </button>
+@if (column) {
+  <div class="column-filter">
+    <!-- Operator button -->
+    <button type="button" class="operator-button" [class.active]="menuOpen" (click)="toggleMenu()">
+      <span class="operator-symbol">
+        {{ operatorSymbol }}
+      </span>
+    </button>
 
-  <!-- Filter input -->
-  <input
-    pInputText
-    [type]="type"
-    [placeholder]="placeholder"
-    [value]="value"
-    (input)="onValueChange($any($event.target).value)"
-  />
+    <!-- Filter input -->
+    <input
+      pInputText
+      [type]="column.type"
+      [placeholder]="column.header"
+      [value]="filter.value"
+      (input)="onValueChange($any($event.target).value)"
+    />
 
-  <!-- Operator menu -->
-  @if (menuOpen) {
-    <div class="operator-menu">
-      <!-- Operators -->
-      @for (operator of operators; track operator.value) {
-        <button
-          type="button"
-          class="operator-option"
-          [class.selected]="operator.value === selectedOperator"
-          (click)="selectOperator(operator)"
-        >
-          <span class="operator-option-symbol">
-            {{ operator.icon }}
-          </span>
+    <!-- Operator menu -->
+    @if (menuOpen) {
+      <div class="operator-menu">
+        <!-- Operators -->
+        @for (operator of operators; track operator.value) {
+          <button
+            type="button"
+            class="operator-option"
+            [class.selected]="operator.value === selectedOperator"
+            (click)="selectOperator(operator)"
+          >
+            <span class="operator-option-symbol">
+              {{ operator.icon }}
+            </span>
 
-          <span>
-            {{ operator.label }}
-          </span>
+            <span>
+              {{ operator.label }}
+            </span>
+          </button>
+        }
+
+        <!-- Separator -->
+        <div class="operator-separator"></div>
+
+        <!-- Reset -->
+        <button type="button" class="operator-option reset-option" (click)="onReset()">
+          <span class="operator-option-symbol"> ↻ </span>
+
+          <span> Reset </span>
         </button>
-      }
-
-      <!-- Separator -->
-      <div class="operator-separator"></div>
-
-      <!-- Reset -->
-      <button type="button" class="operator-option reset-option" (click)="onReset()">
-        <span class="operator-option-symbol"> ↻ </span>
-
-        <span> Reset </span>
-      </button>
-    </div>
-  }
-</div>
+      </div>
+    }
+  </div>
+}
