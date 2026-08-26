@@ -3,5 +3,3 @@ spring:
     name: warehouse
 server:
   port: 1003
-  servlet:
-    context-path: pf-warehouse
