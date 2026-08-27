@@ -18,6 +18,7 @@ import { GridColumn, GridFilter, GridResult, SearchCriteria } from '../types/typ
 import { GridService } from '../service/grid-service';
 import { SORT_ICONS, SORT_ORDERS } from '../enums';
 import { MatInputModule } from '@angular/material/input';
+import * as FileSaver from 'file-saver';
 
 @Component({
   selector: 'app-data-grid',
@@ -322,5 +323,37 @@ export class DataGrid implements OnInit {
       return tempColumns;
     }
     return this.columns;
+  }
+
+  exportExcel(selectionType: string) {
+    import('xlsx').then((xlsx) => {
+      const headers = this.visibleColumnsSubject.value.map((col) => col.header);
+      let rows: any[] = [];
+      if (selectionType === 'SELECTED') {
+        if (this.selectedRows.length === 0) {
+          console.log('No rows selected');
+          return;
+        }
+        rows = this.selectedRows.map((row) =>
+          this.visibleColumnsSubject.value.map((col) => row[col.field]),
+        );
+      } else {
+        rows = this.dataSourceSubject.value.map((row) =>
+          this.visibleColumnsSubject.value.map((col) => row[col.field]),
+        );
+      }
+      const worksheet = xlsx.utils.aoa_to_sheet([headers, ...rows]);
+      const workbook = { Sheets: { data: worksheet }, SheetNames: ['data'] };
+      const excelBuffer: any = xlsx.write(workbook, { bookType: 'xlsx', type: 'array' });
+      this.saveAsExcelFile(excelBuffer, 'products');
+    });
+  }
+
+  saveAsExcelFile(buffer: any, fileName: string): void {
+    const EXCEL_TYPE =
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
+    const EXCEL_EXTENSION = '.xlsx';
+    const data: Blob = new Blob([buffer], { type: EXCEL_TYPE });
+    FileSaver.saveAs(data, fileName + '_export_' + new Date().getTime() + EXCEL_EXTENSION);
   }
 }
