@@ -380,12 +380,14 @@
   background: #fff;
   margin: 0 !important;
 }
+
 ::ng-deep .column-menu .mat-mdc-menu-item {
   min-height: 30px !important;
   height: 30px !important;
   padding-top: 0 !important;
   padding-bottom: 0 !important;
 }
+
 ::ng-deep .column-menu .mat-mdc-checkbox {
   margin: 0 !important;
 }
@@ -454,4 +456,18 @@
 
   transform: none !important;
   opacity: 1 !important;
+}
+
+::ng-deep .export-menu .mat-mdc-menu-item {
+  min-height: 30px !important;
+  height: 30px !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+::ng-deep .settings-menu .mat-mdc-menu-item {
+  min-height: 30px !important;
+  height: 30px !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
 }

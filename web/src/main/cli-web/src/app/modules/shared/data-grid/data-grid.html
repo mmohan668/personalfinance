@@ -16,13 +16,31 @@
     <mat-icon>delete</mat-icon>
   </button>
 
-  <button mat-icon-button class="toolbar-border">
+  <button mat-icon-button class="toolbar-border" [matMenuTriggerFor]="settingsMenu">
     <mat-icon>settings</mat-icon>
   </button>
 
-  <button mat-icon-button class="toolbar-border">
+  <!--========================================================
+  SETTINGS MENU
+  =========================================================-->
+
+  <mat-menu #settingsMenu="matMenu" class="settings-menu">
+    <button mat-menu-item (click)="exportExcel('ALL')">Save Grid Settings</button>
+    <button mat-menu-item (click)="exportExcel('SELECTED')">Reset Grid Setting</button>
+  </mat-menu>
+
+  <button mat-icon-button class="toolbar-border" [matMenuTriggerFor]="exportMenu">
     <mat-icon>ios_share</mat-icon>
   </button>
+
+  <!-- ========================================================
+   EXPORT MENU
+  ==========================================================-->
+
+  <mat-menu #exportMenu="matMenu" class="export-menu">
+    <button mat-menu-item (click)="exportExcel('ALL')">Export All Data</button>
+    <button mat-menu-item (click)="exportExcel('SELECTED')">Export Selected Rows Data</button>
+  </mat-menu>
 
   <!-- Column chooser -->
   <button mat-icon-button class="toolbar-border" [matMenuTriggerFor]="columnMenu">
@@ -72,11 +90,14 @@
 
     <!-- Columns -->
     @for (col of getColumns(searchInput.value); track col.field) {
-      <button mat-menu-item>
+      <button
+        mat-menu-item
+        (click)="$event.stopPropagation(); toggleColumn(col, !(col.visible !== false))"
+      >
         <mat-checkbox
           [checked]="col.visible !== false"
-          (click)="$event.stopPropagation()"
           (change)="toggleColumn(col, $event.checked)"
+          (click)="$event.stopPropagation()"
         >
           {{ col.header }}
         </mat-checkbox>
