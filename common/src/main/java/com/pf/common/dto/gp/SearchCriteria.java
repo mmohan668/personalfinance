@@ -11,7 +11,7 @@ import java.util.Map;
 public class SearchCriteria implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
-    private GridSort sort;
+    private List<GridSort> sortList;
     private List<GridFilter> filterList;
     private int skip;
     private int take;

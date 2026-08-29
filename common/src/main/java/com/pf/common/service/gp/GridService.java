@@ -45,7 +45,7 @@ public class GridService {
         stream = applyFilters(stream, searchCriteria.getFilterList());
         stream = applySorting(
                 stream,
-                searchCriteria.getSort()
+                searchCriteria.getSortList()
         );
         stream = stream.skip(searchCriteria.getSkip()).limit(searchCriteria.getTake());
         gridResult.setRecordDetails(stream.toList());
@@ -60,11 +60,13 @@ public class GridService {
         GridColumnDTO category = new GridColumnDTO("category", "Category", "text", true, null, true, "text", "contains", null, null, true);
         GridColumnDTO price = new GridColumnDTO("price", "Price (₹)", "number", true, null, true, "number", "equals", null, "right", true);
         GridColumnDTO quantity = new GridColumnDTO("quantity", "Quantity", "number", true, null, true, "number", "equals", null, "right", true);
+        GridColumnDTO date = new GridColumnDTO("date", "Date", "date", true, null, true, "date", "equals", null, "right", true);
         list.add(id);
         list.add(name);
         list.add(category);
         list.add(price);
         list.add(quantity);
+        list.add(date);
         return list;
     }
 
@@ -181,32 +183,67 @@ public class GridService {
 
     private Stream<ProductDTO> applySorting(
             Stream<ProductDTO> stream,
-            GridSort sort
+            List<GridSort> sorts
     ) {
-        if (sort == null || sort.getField() == null || sort.getField().isBlank()) {
+        if (sorts == null || sorts.isEmpty()) {
             return stream;
         }
 
-        Comparator<ProductDTO> comparator = switch (sort.getField()) {
-            case "id" -> Comparator.comparing(ProductDTO::getId);
-            case "name" -> Comparator.comparing(
-                    ProductDTO::getName,
-                    String.CASE_INSENSITIVE_ORDER
-            );
-            case "category" -> Comparator.comparing(
-                    ProductDTO::getCategory,
-                    String.CASE_INSENSITIVE_ORDER
-            );
-            case "price" -> Comparator.comparing(ProductDTO::getPrice);
-            case "quantity" -> Comparator.comparing(ProductDTO::getQuantity);
-            default -> null;
-        };
+        Comparator<ProductDTO> comparator = null;
+
+        for (GridSort sort : sorts) {
+
+            if (sort == null
+                    || sort.getField() == null
+                    || sort.getField().isBlank()) {
+                continue;
+            }
+
+            Comparator<ProductDTO> fieldComparator = switch (sort.getField()) {
+
+                case "id" -> Comparator.comparing(ProductDTO::getId);
+
+                case "name" -> Comparator.comparing(
+                        ProductDTO::getName,
+                        String.CASE_INSENSITIVE_ORDER
+                );
+
+                case "category" -> Comparator.comparing(
+                        ProductDTO::getCategory,
+                        String.CASE_INSENSITIVE_ORDER
+                );
+
+                case "price" -> Comparator.comparing(ProductDTO::getPrice);
+
+                case "quantity" -> Comparator.comparing(ProductDTO::getQuantity);
+
+                default -> null;
+            };
+
+            // Ignore unsupported fields
+            if (fieldComparator == null) {
+                continue;
+            }
+
+            // Apply ASC / DESC to this individual field
+            if ("desc".equalsIgnoreCase(sort.getOrder())) {
+                fieldComparator = fieldComparator.reversed();
+            }
+
+            // First sort = primary sort
+            // Second sort = secondary sort
+            // Third sort = tertiary sort, etc.
+            if (comparator == null) {
+                comparator = fieldComparator;
+            } else {
+                comparator = comparator.thenComparing(fieldComparator);
+            }
+        }
+
         if (comparator == null) {
             return stream;
         }
-        if ("desc".equalsIgnoreCase(sort.getOrder())) {
-            comparator = comparator.reversed();
-        }
+
         return stream.sorted(comparator);
     }
 

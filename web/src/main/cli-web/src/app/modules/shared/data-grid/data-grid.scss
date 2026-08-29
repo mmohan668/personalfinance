@@ -42,6 +42,34 @@
   font-size: 0.9rem;
 }
 
+/*
+ * Sort priority number.
+ *
+ * Example:
+ *
+ * Category ↑ 1
+ * Price    ↓ 2
+ */
+
+.sort-priority {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 18px;
+  height: 18px;
+
+  padding: 0 3px;
+
+  border-radius: 50%;
+
+  font-size: 0.7rem;
+  font-weight: 700;
+
+  background-color: #ffffff;
+  color: #4caf50;
+}
+
 /* =========================================================
    PRIME NG TABLE
    ========================================================= */
@@ -74,7 +102,9 @@
 
 :host ::ng-deep .p-datatable-thead > tr:first-child > th {
   position: relative;
+
   background-color: #4caf50 !important;
+
   color: #fff !important;
 }
 
@@ -90,13 +120,17 @@
 .filter-row > th {
   position: relative;
   z-index: 10000;
+
   overflow: visible !important;
+
   padding: 1px 8px !important;
 }
 
 .filter-row app-column-filter {
   display: block;
+
   position: relative;
+
   z-index: 100000;
 }
 
@@ -126,6 +160,7 @@
 .empty-message {
   text-align: center;
   vertical-align: middle;
+
   padding: 2rem;
 }
 
@@ -144,17 +179,23 @@
   vertical-align: middle;
 }
 
-/* Header selection cell */
+/* =========================================================
+   HEADER SELECTION CELL
+   ========================================================= */
 
 .selection-header {
   background-color: #4caf50 !important;
+
   border-right: 1px solid #d9dfe7 !important;
 }
 
-/* Body selection cell */
+/* =========================================================
+   BODY SELECTION CELL
+   ========================================================= */
 
 .selection-cell {
   background-color: #fff;
+
   border-right: 1px solid #d9dfe7;
 }
 
@@ -164,6 +205,7 @@
 
 .selection-column ::ng-deep .mat-mdc-checkbox {
   display: inline-block;
+
   margin: 0;
   padding: 0;
 }
@@ -235,8 +277,6 @@
    ========================================================= */
 
 /*
- * THIS is the critical selector.
- *
  * Angular Material sets the native checkbox input to:
  *
  *     :indeterminate
@@ -338,52 +378,86 @@
 
 .filter-row app-column-filter .operator-menu {
   position: absolute;
+
   z-index: 999999;
 }
 
-/* Column chooser checkboxes */
+/* =========================================================
+   COLUMN CHOOSER CHECKBOXES
+   ========================================================= */
+
 ::ng-deep .mat-mdc-menu-panel .mat-mdc-checkbox {
   --mdc-checkbox-selected-checkmark-color: #fff;
+
   --mdc-checkbox-selected-icon-color: #4caf50;
+
   --mdc-checkbox-selected-hover-icon-color: #4caf50;
+
   --mdc-checkbox-selected-focus-icon-color: #4caf50;
+
   --mdc-checkbox-selected-pressed-icon-color: #4caf50;
 }
 
-/* Checked checkbox */
+/* =========================================================
+   CHECKED CHECKBOX
+   ========================================================= */
+
 ::ng-deep .mat-mdc-menu-panel .mat-mdc-checkbox.mat-mdc-checkbox-checked .mdc-checkbox__background {
   background-color: #4caf50 !important;
+
   border-color: #4caf50 !important;
 }
 
-/* Unchecked checkbox */
+/* =========================================================
+   UNCHECKED CHECKBOX
+   ========================================================= */
+
 ::ng-deep
   .mat-mdc-menu-panel
   .mat-mdc-checkbox:not(.mat-mdc-checkbox-checked)
   .mdc-checkbox__background {
   background-color: transparent !important;
+
   border-color: #4caf50 !important;
 }
+
+/* =========================================================
+   CLEAR SEARCH
+   ========================================================= */
 
 .clear-search {
   margin-right: 5px !important;
 }
 
+/* =========================================================
+   COLUMN SEARCH
+   ========================================================= */
+
 .column-search {
   padding: 2px 8px !important;
+
   margin: 0 !important;
+
   height: auto;
 }
 
 .column-search mat-form-field {
   width: 100%;
+
   background: #fff;
+
   margin: 0 !important;
 }
 
+/* =========================================================
+   COLUMN MENU ITEMS
+   ========================================================= */
+
 ::ng-deep .column-menu .mat-mdc-menu-item {
   min-height: 30px !important;
+
   height: 30px !important;
+
   padding-top: 0 !important;
   padding-bottom: 0 !important;
 }
@@ -394,20 +468,28 @@
 
 ::ng-deep .column-menu {
   max-height: 300px !important;
+
   overflow-y: auto !important;
 }
 
-/* Column chooser - indeterminate checkbox */
+/* =========================================================
+   COLUMN CHOOSER - INDETERMINATE CHECKBOX
+   ========================================================= */
+
 ::ng-deep
   .column-menu
   .mat-mdc-checkbox
   .mdc-checkbox__native-control:indeterminate
   ~ .mdc-checkbox__background {
   background-color: #f5f7fa !important;
+
   border: 2px solid #4caf50 !important;
 }
 
-/* Indeterminate horizontal mark */
+/* =========================================================
+   COLUMN CHOOSER - INDETERMINATE MARK
+   ========================================================= */
+
 ::ng-deep
   .column-menu
   .mat-mdc-checkbox
@@ -415,14 +497,17 @@
   ~ .mdc-checkbox__background
   .mdc-checkbox__mixedmark {
   width: 12px !important;
+
   height: 3px !important;
 
   background-color: #4caf50 !important;
 
   border: 0 !important;
+
   border-radius: 1px !important;
 
   transform: none !important;
+
   opacity: 1 !important;
 }
 
@@ -436,10 +521,14 @@
   .mdc-checkbox__native-control:indeterminate
   ~ .mdc-checkbox__background {
   background-color: #f5f7fa !important;
+
   border: 2px solid #4b4f56 !important;
 }
 
-/* Visible horizontal minus */
+/* =========================================================
+   HEADER ROW - VISIBLE HORIZONTAL MINUS
+   ========================================================= */
+
 .selection-header
   ::ng-deep
   .mat-mdc-checkbox
@@ -447,27 +536,44 @@
   ~ .mdc-checkbox__background
   .mdc-checkbox__mixedmark {
   width: 12px !important;
+
   height: 3px !important;
 
   background-color: #4caf50 !important;
 
   border: 0 !important;
+
   border-radius: 2px !important;
 
   transform: none !important;
+
   opacity: 1 !important;
 }
 
+/* =========================================================
+   EXPORT MENU
+   ========================================================= */
+
 ::ng-deep .export-menu .mat-mdc-menu-item {
   min-height: 30px !important;
+
   height: 30px !important;
+
   padding-top: 0 !important;
+
   padding-bottom: 0 !important;
 }
 
+/* =========================================================
+   SETTINGS MENU
+   ========================================================= */
+
 ::ng-deep .settings-menu .mat-mdc-menu-item {
   min-height: 30px !important;
+
   height: 30px !important;
+
   padding-top: 0 !important;
+
   padding-bottom: 0 !important;
 }

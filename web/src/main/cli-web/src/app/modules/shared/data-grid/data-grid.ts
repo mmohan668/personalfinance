@@ -1,5 +1,5 @@
 import { AsyncPipe } from '@angular/common';
-import { Component, computed, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -7,17 +7,19 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatSelectModule } from '@angular/material/select';
+import { MatInputModule } from '@angular/material/input';
 
-import { SelectItem, SortEvent } from 'primeng/api';
+import { SelectItem, SortEvent, SortMeta } from 'primeng/api';
 import { Table, TableModule } from 'primeng/table';
 
 import { BehaviorSubject } from 'rxjs';
 
 import { ColumnFilterComponent } from './../column-filter/column-filter';
-import { GridColumn, GridFilter, GridResult, SearchCriteria } from '../types/types';
+import { GridColumn, GridFilter, GridResult, GridSort, SearchCriteria } from '../types/types';
+
 import { GridService } from '../service/grid-service';
 import { SORT_ICONS, SORT_ORDERS } from '../enums';
-import { MatInputModule } from '@angular/material/input';
+
 import * as FileSaver from 'file-saver';
 
 @Component({
@@ -45,17 +47,29 @@ export class DataGrid implements OnInit {
   @ViewChild('dt')
   dt!: Table;
 
+  /* =========================================================
+     DATA
+     ========================================================= */
+
   dataSourceSubject = new BehaviorSubject<any[]>([]);
 
   dataSource$ = this.dataSourceSubject.asObservable();
 
+  totalRecords = 0;
+
+  skip = 0;
+
+  take = 5;
+
+  /* =========================================================
+     FILTER
+     ========================================================= */
+
   filters: GridFilter[] = [];
 
-  sortField = '';
-
-  sortOrder: 1 | -1 = 1;
-
-  totalRecords: number = 0;
+  /* =========================================================
+     COLUMNS
+     ========================================================= */
 
   columns: GridColumn[] = [];
 
@@ -65,11 +79,35 @@ export class DataGrid implements OnInit {
 
   columnOptions: SelectItem[] = [];
 
+  columnSearch = '';
+
+  /* =========================================================
+     ROW SELECTION
+     ========================================================= */
+
   selectedRows: any[] = [];
 
-  skip: number = 0;
+  /* =========================================================
+     SORT
+     =========================================================
+     
+     IMPORTANT:
+     PrimeNG uses:
+     
+       order = 1  -> ascending
+       order = -1 -> descending
 
-  take: number = 5;
+     Keep PrimeNG's SortMeta[] internally.
+
+     Only convert to GridSort[] when sending
+     the request to the backend.
+     ========================================================= */
+
+  sortMeta: SortMeta[] = [];
+
+  sortField = '';
+
+  sortOrder: 1 | -1 = 1;
 
   constructor(private gridService: GridService) {}
 
@@ -91,8 +129,17 @@ export class DataGrid implements OnInit {
         value: col,
       }));
 
+      /*
+       * Build the initial/default sort state.
+       *
+       * This is important because the table is using
+       * sortMode="multiple".
+       */
       this.initializeDefaultSort(this.columns);
 
+      /*
+       * Load the initial data using the default sort.
+       */
       this.loadGridData();
     });
   }
@@ -104,20 +151,52 @@ export class DataGrid implements OnInit {
   loadGridData(): void {
     console.log('GET DATA');
 
+    /*
+     * PrimeNG SortMeta[]
+     *
+     * Example:
+     *
+     * [
+     *   { field: 'name', order: 1 },
+     *   { field: 'price', order: -1 }
+     * ]
+     *
+     * becomes:
+     *
+     * [
+     *   { field: 'name', order: 'asc' },
+     *   { field: 'price', order: 'desc' }
+     * ]
+     */
+    const sorts: GridSort[] = this.sortMeta
+      .filter(
+        (sort): sort is SortMeta =>
+          !!sort && typeof sort.field === 'string' && (sort.order === 1 || sort.order === -1),
+      )
+      .map((sort) => ({
+        field: sort.field,
+        order: sort.order === 1 ? 'asc' : 'desc',
+      }));
+
+    console.log('SORT META:', this.sortMeta);
+
+    console.log('SORT LIST:', sorts);
+
     const request: SearchCriteria = {
-      sort: {
-        field: this.sortField,
-        order: this.sortOrder === 1 ? SORT_ORDERS.ASCENDING : SORT_ORDERS.DESCENDING,
-      },
+      sortList: sorts,
       filterList: this.filters,
       skip: this.skip,
       take: this.take,
       loadAllData: false,
     };
 
+    console.log('REQUEST:', request);
+
     this.gridService.loadGridData(request).subscribe((data: GridResult) => {
       this.dataSourceSubject.next(data.recordDetails);
+
       this.totalRecords = data.totalRecords;
+
       /*
        * Remove selections that no longer exist
        * in the current data set.
@@ -138,12 +217,40 @@ export class DataGrid implements OnInit {
     );
 
     if (!defaultSortColumn) {
+      /*
+       * No default sort.
+       */
+      this.sortMeta = [];
+      this.sortField = '';
+      this.sortOrder = 1;
+
+      console.log('DEFAULT SORT: []');
+
       return;
     }
 
-    this.sortField = defaultSortColumn.field;
+    const order: 1 | -1 = defaultSortColumn.defaultSortOrder === SORT_ORDERS.DESCENDING ? -1 : 1;
 
-    this.sortOrder = defaultSortColumn.defaultSortOrder === SORT_ORDERS.DESCENDING ? -1 : 1;
+    /*
+     * Keep the default sort in PrimeNG's multi-sort state.
+     *
+     * This is the important difference from the previous code.
+     */
+    this.sortMeta = [
+      {
+        field: defaultSortColumn.field,
+        order,
+      },
+    ];
+
+    /*
+     * These are kept for compatibility with the rest
+     * of the component.
+     */
+    this.sortField = defaultSortColumn.field;
+    this.sortOrder = order;
+
+    console.log('DEFAULT SORT:', this.sortMeta);
   }
 
   /* =========================================================
@@ -151,25 +258,111 @@ export class DataGrid implements OnInit {
      ========================================================= */
 
   onSort(event: SortEvent): void {
-    this.sortField = event.field ?? '';
+    console.log('SORT EVENT:', event);
 
-    this.sortOrder = event.order === -1 ? -1 : 1;
+    /*
+     * IMPORTANT:
+     *
+     * Your installed PrimeNG version emits:
+     *
+     *   event.multisortmeta
+     *
+     * rather than:
+     *
+     *   event.multiSortMeta
+     *
+     * This is why the previous code was always getting [].
+     *
+     * Use both here so this code is safe with either event shape.
+     */
+    const eventData = event as SortEvent & {
+      multisortmeta?: SortMeta[];
+    };
 
+    const multiSortMeta = eventData.multisortmeta ?? eventData.multiSortMeta ?? [];
+
+    /*
+     * MULTIPLE SORT
+     *
+     * Example after Ctrl-clicking Name and Category:
+     *
+     * [
+     *   { field: 'name', order: 1 },
+     *   { field: 'category', order: 1 }
+     * ]
+     */
+    if (multiSortMeta.length > 0) {
+      this.sortMeta = multiSortMeta.map((sort) => ({
+        field: sort.field,
+        order: sort.order === -1 ? -1 : 1,
+      }));
+
+      /*
+       * Keep these values synchronized with the first
+       * active sort item.
+       */
+      this.sortField = this.sortMeta[0]?.field ?? '';
+
+      this.sortOrder = this.sortMeta[0]?.order === -1 ? -1 : 1;
+    } else {
+      /*
+       * If PrimeNG sends an empty multi-sort list,
+       * clear the sort state.
+       */
+      this.sortMeta = [];
+
+      this.sortField = '';
+
+      this.sortOrder = 1;
+    }
+
+    console.log('UPDATED PRIMARY SORT META:', this.sortMeta);
+
+    /*
+     * Sorting should start from the first page.
+     *
+     * Do NOT use:
+     *
+     * this.dt.first = 0;
+     *
+     * in newer PrimeNG versions because first can be
+     * represented as an Angular signal input.
+     *
+     * We only need to reset our backend pagination state.
+     */
+    this.skip = 0;
+
+    /*
+     * Reload using the new sort state.
+     */
     this.loadGridData();
   }
 
+  /* =========================================================
+     SORT ICON
+     ========================================================= */
+
   getSortIcon(field: string): string {
-    if (this.sortField !== field) {
+    const sort = this.sortMeta.find((item) => item.field === field);
+
+    if (!sort) {
       return '';
     }
 
-    return this.sortOrder === 1 ? SORT_ICONS.ASCENDING : SORT_ICONS.DESCENDING;
+    return sort.order === 1 ? SORT_ICONS.ASCENDING : SORT_ICONS.DESCENDING;
   }
 
+  /* =========================================================
+     PAGE
+     ========================================================= */
+
   onPage(event: any): void {
-    const loadData = this.skip !== event.first;
-    this.skip = event.first;
-    this.take = event.rows;
+    const loadData = this.skip !== event.first || this.take !== event.rows;
+
+    this.skip = event.first ?? 0;
+
+    this.take = event.rows ?? 5;
+
     if (loadData) {
       this.loadGridData();
     }
@@ -285,17 +478,23 @@ export class DataGrid implements OnInit {
     this.selectedRows = this.selectedRows.filter((row) => !rowIds.has(row.id));
   }
 
-  columnSearch = '';
+  /* =========================================================
+     COLUMN SEARCH
+     ========================================================= */
 
-  filteredColumns = computed(() => {
-    const search = this.columnSearch.trim().toLowerCase();
-
-    if (!search) {
-      return this.columns;
+  getColumns(searchInput: string): GridColumn[] {
+    if (searchInput !== undefined && searchInput !== null && searchInput !== '') {
+      return this.columns.filter((col) =>
+        col.header.toLowerCase().includes(searchInput.toLowerCase()),
+      );
     }
 
-    return this.columns.filter((col) => col.header.toLowerCase().includes(search));
-  });
+    return this.columns;
+  }
+
+  /* =========================================================
+     COLUMN SELECTION
+     ========================================================= */
 
   allColumnsSelected(): boolean {
     return this.columns.length > 0 && this.columns.every((col) => col.visible !== false);
@@ -311,29 +510,28 @@ export class DataGrid implements OnInit {
     this.columns.forEach((col) => {
       col.visible = checked;
     });
+
     const selectedColumns = this.columns.filter((col) => col.visible === true);
+
     this.visibleColumnsSubject.next(selectedColumns);
   }
 
-  getColumns(searchInput: string) {
-    if (searchInput !== undefined && searchInput !== null && searchInput !== '') {
-      const tempColumns = this.columns.filter((col) =>
-        col.header.toLowerCase().includes(searchInput.toLowerCase()),
-      );
-      return tempColumns;
-    }
-    return this.columns;
-  }
+  /* =========================================================
+     EXPORT
+     ========================================================= */
 
-  exportExcel(selectionType: string) {
+  exportExcel(selectionType: string): void {
     import('xlsx').then((xlsx) => {
       const headers = this.visibleColumnsSubject.value.map((col) => col.header);
+
       let rows: any[] = [];
+
       if (selectionType === 'SELECTED') {
         if (this.selectedRows.length === 0) {
           console.log('No rows selected');
           return;
         }
+
         rows = this.selectedRows.map((row) =>
           this.visibleColumnsSubject.value.map((col) => row[col.field]),
         );
@@ -342,18 +540,39 @@ export class DataGrid implements OnInit {
           this.visibleColumnsSubject.value.map((col) => row[col.field]),
         );
       }
+
       const worksheet = xlsx.utils.aoa_to_sheet([headers, ...rows]);
-      const workbook = { Sheets: { data: worksheet }, SheetNames: ['data'] };
-      const excelBuffer: any = xlsx.write(workbook, { bookType: 'xlsx', type: 'array' });
+
+      const workbook = {
+        Sheets: {
+          data: worksheet,
+        },
+        SheetNames: ['data'],
+      };
+
+      const excelBuffer: any = xlsx.write(workbook, {
+        bookType: 'xlsx',
+        type: 'array',
+      });
+
       this.saveAsExcelFile(excelBuffer, 'products');
     });
   }
 
+  /* =========================================================
+     SAVE EXCEL
+     ========================================================= */
+
   saveAsExcelFile(buffer: any, fileName: string): void {
     const EXCEL_TYPE =
       'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
+
     const EXCEL_EXTENSION = '.xlsx';
-    const data: Blob = new Blob([buffer], { type: EXCEL_TYPE });
+
+    const data: Blob = new Blob([buffer], {
+      type: EXCEL_TYPE,
+    });
+
     FileSaver.saveAs(data, fileName + '_export_' + new Date().getTime() + EXCEL_EXTENSION);
   }
 }
