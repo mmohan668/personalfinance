@@ -116,7 +116,9 @@ export class DataGrid implements OnInit {
   @Input()
   calculateCellValue!: (rowData: any, col: GridColumn) => any;
 
-  defaultCurrency: string = 'INR';
+  currencyCode: string = 'INR';
+
+  @Input() groupBy: string | null = null;
 
   constructor(private gridService: GridService) {}
 
@@ -587,5 +589,9 @@ export class DataGrid implements OnInit {
     const moved = this.columns.splice(event.dragIndex, 1)[0];
     this.columns.splice(event.dropIndex, 0, moved);
     this.visibleColumnsSubject.next(this.columns.filter((col) => col.visible === true));
+  }
+
+  getGroupColumnHeader() {
+    return this.columns.filter((col) => col.field === this.groupBy)[0].header;
   }
 }

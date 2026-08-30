@@ -28,7 +28,7 @@ public class GridService {
         List<GridColumnDTO> list = new ArrayList<>();
         GridColumnDTO id = new GridColumnDTO("id", "ID", "number", false, null, false, "equals", "80px", "right", false, 0, null);
         GridColumnDTO name = new GridColumnDTO("name", "Name", "text", true, "asc", true, "contains", null, null, true, 1, null);
-        GridColumnDTO category = new GridColumnDTO("category", "Category", "text", true, null, true, "contains", null, null, true, 2, null);
+        GridColumnDTO category = new GridColumnDTO("category", "Category", "text", true, null, true, "contains", null, null, false, 2, null);
         GridColumnDTO price = new GridColumnDTO("price", "Price (₹)", "number", true, null, true, "equals", null, "right", true, 3, "currencyCellTemplate");
         GridColumnDTO quantity = new GridColumnDTO("quantity", "Quantity", "number", true, null, true, "equals", null, "right", true, 4, null);
         GridColumnDTO active = new GridColumnDTO("active", "Status", "boolean", true, null, true, "equals", null, "right", true, 5, "cellValueTemplate");
