@@ -8,6 +8,16 @@
 }
 
 /* =========================================================
+   TABLE CONTAINER
+   ========================================================= */
+
+.table-container {
+  width: 100%;
+  min-height: 0;
+  position: relative;
+}
+
+/* =========================================================
    SORT HEADER
    ========================================================= */
 
@@ -22,14 +32,9 @@
   font-size: 0.9rem;
 }
 
-/*
- * Sort priority number.
- *
- * Example:
- *
- * Category ↑ 1
- * Price    ↓ 2
- */
+/* =========================================================
+   SORT PRIORITY
+   ========================================================= */
 
 .sort-priority {
   display: inline-flex;
@@ -56,15 +61,42 @@
 
 :host ::ng-deep .p-datatable {
   position: relative;
-  overflow: visible !important;
+
+  /*
+   * IMPORTANT:
+   * Do NOT set overflow here.
+   *
+   * PrimeNG controls the scroll container.
+   */
 }
 
-:host ::ng-deep .p-datatable-wrapper {
-  overflow: visible !important;
-}
+/* =========================================================
+   PRIME NG TABLE SCROLL CONTAINER
+   ========================================================= */
+
+/*
+ * THIS is the important element in PrimeNG 22.
+ *
+ * PrimeNG automatically applies:
+ *
+ *   max-height: 200px
+ *   overflow: auto
+ *
+ * based on:
+ *
+ *   [scrollable]="true"
+ *   scrollHeight="200px"
+ *
+ * DO NOT override it with overflow: visible.
+ */
 
 :host ::ng-deep .p-datatable-table-container {
-  overflow: visible !important;
+  /*
+   * Let PrimeNG's inline styles control this.
+   *
+   * Do not set overflow: visible here.
+   * Do not set max-height here.
+   */
 }
 
 /* =========================================================
@@ -72,7 +104,8 @@
    ========================================================= */
 
 :host ::ng-deep .p-datatable-thead {
-  position: relative;
+  position: sticky;
+  top: 0;
   z-index: 100;
 }
 
@@ -84,7 +117,6 @@
   position: relative;
 
   background-color: #4caf50 !important;
-
   color: #fff !important;
 }
 
@@ -101,6 +133,9 @@
   position: relative;
   z-index: 10000;
 
+  /*
+   * Keep filter contents visible.
+   */
   overflow: visible !important;
 
   padding: 1px 8px !important;
@@ -190,10 +225,6 @@
   padding: 0;
 }
 
-/*
- * Remove the label/form-field spacing.
- */
-
 .selection-column ::ng-deep .mat-internal-form-field {
   padding: 0 !important;
 }
@@ -213,10 +244,6 @@
    UNCHECKED
    ========================================================= */
 
-/*
- * Native input is neither checked nor indeterminate.
- */
-
 .selection-column
   ::ng-deep
   .mdc-checkbox__native-control:not(:checked):not(:indeterminate)
@@ -230,19 +257,11 @@
    CHECKED
    ========================================================= */
 
-/*
- * Checked state.
- */
-
 .selection-column ::ng-deep .mdc-checkbox__native-control:checked ~ .mdc-checkbox__background {
   background-color: #4caf50 !important;
 
   border-color: #4caf50 !important;
 }
-
-/*
- * Checked checkmark.
- */
 
 .selection-column
   ::ng-deep
@@ -256,16 +275,6 @@
    INDETERMINATE
    ========================================================= */
 
-/*
- * Angular Material sets the native checkbox input to:
- *
- *     :indeterminate
- *
- * It does NOT rely on:
- *
- *     .mat-mdc-checkbox-indeterminate
- */
-
 .selection-column
   ::ng-deep
   .mdc-checkbox__native-control:indeterminate
@@ -274,10 +283,6 @@
 
   border: 2px solid #4b4f56 !important;
 }
-
-/*
- * Show the MDC mixed mark.
- */
 
 .selection-column
   ::ng-deep
@@ -297,10 +302,6 @@
 
   opacity: 1 !important;
 }
-
-/*
- * Hide checkmark while indeterminate.
- */
 
 .selection-column
   ::ng-deep
@@ -410,7 +411,6 @@
   ~ .mdc-checkbox__background
   .mdc-checkbox__mixedmark {
   width: 12px !important;
-
   height: 3px !important;
 
   background-color: #4caf50 !important;
@@ -422,4 +422,30 @@
   transform: none !important;
 
   opacity: 1 !important;
+}
+
+/* =========================================================
+   GRID FOOTER
+   ========================================================= */
+
+.grid-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 0.5rem;
+
+  border: 1px solid #ddd;
+  border-top: none;
+
+  background: #f9f9f9;
+}
+
+::ng-deep .p-table .p-datatable-tbody > tr > td {
+  padding: 0px 0px; // reduce vertical + horizontal padding
+  line-height: 1; // tighter line spacing
+}
+
+::ng-deep .p-table .p-datatable-thead > tr > th {
+  padding: 0px 0px; // reduce header cell height too
 }

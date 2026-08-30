@@ -1,18 +1,17 @@
-package com.pf.common.dto;
+package com.pf.common.entity;
 
-import lombok.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import lombok.Data;
 
-import java.io.Serial;
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.LocalDate;
 
 @Data
-@AllArgsConstructor
-public class ProductDTO implements Serializable {
-    @Serial
-    private static final long serialVersionUID = 1L;
+@Entity(name = "products")
+public class Product {
+    @Id
     private BigInteger id;
     private String name;
     private String category;
@@ -21,8 +20,8 @@ public class ProductDTO implements Serializable {
     private LocalDate createdDate;
     private boolean active;
     private LocalDate lastUpdated;
-    private boolean discounted;
+    private boolean discontinued;
     private String sku;
     private String description;
-    private double rating;
+    private Double rating;
 }
