@@ -449,3 +449,11 @@
 ::ng-deep .p-table .p-datatable-thead > tr > th {
   padding: 0px 0px; // reduce header cell height too
 }
+
+.selected-row > td {
+  background-color: #e3f2fd;
+}
+
+.selected-row:hover > td {
+  background-color: #d6ebfa;
+}

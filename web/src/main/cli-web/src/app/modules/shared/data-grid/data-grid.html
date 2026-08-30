@@ -119,12 +119,13 @@
            BODY
            =================================================== -->
       <ng-template #body let-row>
-        <tr>
+        <tr [class.selected-row]="isRowSelected(row)" (click)="onRowClick(row)">
           <!-- Row selection -->
           <td class="selection-column selection-cell">
             <mat-checkbox
               aria-label="Select row"
               [checked]="isRowSelected(row)"
+              (click)="$event.stopPropagation()"
               (change)="toggleRow(row, $event.checked)"
             >
             </mat-checkbox>
