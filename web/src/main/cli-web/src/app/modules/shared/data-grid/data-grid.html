@@ -119,9 +119,19 @@
 
           <!-- Data columns -->
           @for (column of visibleColumns; track column.field) {
-            <td>
-              {{ row[column.field] }}
-            </td>
+            @if (column.cellTemplate === 'cellValueTemplate') {
+              <td>
+                {{ calculateCellValue(row, column) }}
+              </td>
+            } @else if (column.cellTemplate === 'currencyCellTemplate') {
+              <td>
+                {{ row[column.field] | currency: defaultCurrency }}
+              </td>
+            } @else {
+              <td>
+                {{ row[column.field] }}
+              </td>
+            }
           }
         </tr>
       </ng-template>

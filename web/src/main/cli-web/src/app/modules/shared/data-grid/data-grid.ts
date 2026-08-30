@@ -1,5 +1,5 @@
-import { AsyncPipe } from '@angular/common';
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { AsyncPipe, CurrencyPipe } from '@angular/common';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -41,6 +41,7 @@ import { ToolBar } from '../tool-bar/tool-bar';
     MatIconModule,
     MatInputModule,
     PaginatorModule,
+    CurrencyPipe,
   ],
 
   styleUrl: './data-grid.scss',
@@ -111,6 +112,11 @@ export class DataGrid implements OnInit {
   sortField = '';
 
   sortOrder: 1 | -1 = 1;
+
+  @Input()
+  calculateCellValue!: (rowData: any, col: GridColumn) => any;
+
+  defaultCurrency: string = 'INR';
 
   constructor(private gridService: GridService) {}
 

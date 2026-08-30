@@ -11,8 +11,6 @@ export interface GridColumn {
 
   filterable?: boolean;
 
-  filterType: 'text' | 'number';
-
   defaultFilterOperator?: string;
 
   width?: string;
@@ -20,6 +18,7 @@ export interface GridColumn {
   align?: 'left' | 'center' | 'right';
 
   visible?: boolean;
+  cellTemplate: string;
 }
 
 export interface GridFilter {
