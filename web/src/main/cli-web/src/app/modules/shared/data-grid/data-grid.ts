@@ -11,6 +11,7 @@ import { MatInputModule } from '@angular/material/input';
 
 import { SelectItem, SortEvent, SortMeta } from 'primeng/api';
 import { Table, TableModule } from 'primeng/table';
+import { PaginatorModule } from 'primeng/paginator';
 
 import { BehaviorSubject } from 'rxjs';
 
@@ -39,6 +40,7 @@ import { ToolBar } from '../tool-bar/tool-bar';
     MatMenuModule,
     MatIconModule,
     MatInputModule,
+    PaginatorModule,
   ],
 
   styleUrl: './data-grid.scss',
@@ -60,7 +62,7 @@ export class DataGrid implements OnInit {
 
   skip = 0;
 
-  take = 5;
+  take = 25;
 
   /* =========================================================
      FILTER

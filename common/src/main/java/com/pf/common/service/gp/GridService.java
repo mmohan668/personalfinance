@@ -2,6 +2,10 @@ package com.pf.common.service.gp;
 
 import com.pf.common.dto.gp.*;
 import com.pf.common.dto.ProductDTO;
+import com.pf.common.entity.Product;
+import com.pf.common.mapper.ProductMapper;
+import com.pf.common.repository.ProductRepository;
+import com.pf.common.service.criteria.GenericCriteriaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,43 +18,14 @@ import java.util.stream.Stream;
 @Service
 @RequiredArgsConstructor
 public class GridService {
-    private final List<ProductDTO> products = List.of(
-            new ProductDTO(1L, "Laptop", "Electronics", BigDecimal.valueOf(75000), 10),
-            new ProductDTO(2L, "Mobile Phone", "Electronics", BigDecimal.valueOf(35000), 25),
-            new ProductDTO(3L, "Keyboard", "Accessories", BigDecimal.valueOf(2500), 50),
-            new ProductDTO(4L, "Monitor", "Electronics", BigDecimal.valueOf(18000), 15),
-            new ProductDTO(5L, "Mouse", "Accessories", BigDecimal.valueOf(1200), 100),
-            new ProductDTO(6L, "Mobile", "Electronics", BigDecimal.valueOf(25000), 15),
-            new ProductDTO(7L, "Mobile", "Electronics", BigDecimal.valueOf(25000), 15),
-            new ProductDTO(8L, "Mobile", "Electronics", BigDecimal.valueOf(25000), 15),
-            new ProductDTO(9L, "Mobile", "Electronics", BigDecimal.valueOf(25000), 15),
-            new ProductDTO(10L, "Mobile", "Electronics", BigDecimal.valueOf(25000), 15),
-            new ProductDTO(11L, "Mobile", "Electronics", BigDecimal.valueOf(25000), 15),
-            new ProductDTO(12L, "Mobile", "Electronics", BigDecimal.valueOf(25000), 15),
-            new ProductDTO(13L, "Mobile", "Electronics", BigDecimal.valueOf(25000), 15),
-            new ProductDTO(14L, "Mobile", "Electronics", BigDecimal.valueOf(25000), 15),
-            new ProductDTO(15L, "Mobile", "Electronics", BigDecimal.valueOf(25000), 15),
-            new ProductDTO(16L, "Mobile", "Electronics", BigDecimal.valueOf(25000), 15),
-            new ProductDTO(17L, "Mobile", "Electronics", BigDecimal.valueOf(25000), 15),
-            new ProductDTO(18L, "Mobile", "Electronics", BigDecimal.valueOf(25000), 15),
-            new ProductDTO(19L, "Mobile", "Electronics", BigDecimal.valueOf(25000), 15),
-            new ProductDTO(20L, "Mobile", "Electronics", BigDecimal.valueOf(25000), 15)
-
-    );
+    private final ProductMapper productMapper;
+    private final GenericCriteriaRepository genericCriteriaRepository;
 
     public GridResult getProducts(SearchCriteria searchCriteria) {
-        GridResult gridResult = new GridResult();
-        Stream<ProductDTO> stream = products.stream();
-        gridResult.setTotalRecords(products.size());
-        stream = applyFilters(stream, searchCriteria.getFilterList());
-        stream = applySorting(
-                stream,
-                searchCriteria.getSortList()
-        );
-        stream = stream.skip(searchCriteria.getSkip()).limit(searchCriteria.getTake());
-        gridResult.setRecordDetails(stream.toList());
-        return gridResult;
-
+        Long totalRecords = genericCriteriaRepository.getCountBySearchCriteria(Product.class, searchCriteria);
+        List<Product> products = genericCriteriaRepository.getDataBySearchCriteria(Product.class, searchCriteria);
+        List<ProductDTO> productDTOS = productMapper.toProductDTO(products);
+        return GridResult.builder().totalRecords(totalRecords).recordDetails(productDTOS).build();
     }
 
     public List<GridColumnDTO> getGridColumns() {
@@ -60,13 +35,11 @@ public class GridService {
         GridColumnDTO category = new GridColumnDTO("category", "Category", "text", true, null, true, "text", "contains", null, null, true);
         GridColumnDTO price = new GridColumnDTO("price", "Price (₹)", "number", true, null, true, "number", "equals", null, "right", true);
         GridColumnDTO quantity = new GridColumnDTO("quantity", "Quantity", "number", true, null, true, "number", "equals", null, "right", true);
-        GridColumnDTO date = new GridColumnDTO("date", "Date", "date", true, null, true, "date", "equals", null, "right", true);
         list.add(id);
         list.add(name);
         list.add(category);
         list.add(price);
         list.add(quantity);
-        list.add(date);
         return list;
     }
 
