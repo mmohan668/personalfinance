@@ -30,6 +30,8 @@
     }"
     (onSort)="onSort($event)"
     (onPage)="onPage($event)"
+    [reorderableColumns]="true"
+    (onColReorder)="onColReorder($event)"
   >
     <!-- =======================================================
          HEADER
@@ -57,6 +59,7 @@
           <th
             [pSortableColumn]="col.sortable !== false ? col.field : undefined"
             [style.width]="col.width"
+            pReorderableColumn
           >
             <div class="sort-header">
               <span>
