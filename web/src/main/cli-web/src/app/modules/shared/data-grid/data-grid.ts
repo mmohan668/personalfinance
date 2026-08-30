@@ -123,7 +123,7 @@ export class DataGrid implements OnInit {
         visible: column.visible !== false,
       }));
 
-      this.visibleColumnsSubject.next(this.columns.filter((column) => column.visible !== false));
+      this.visibleColumnsSubject.next(this.columns.filter((column) => column.visible === true));
 
       this.columnOptions = this.columns.map((col) => ({
         label: col.header,
@@ -398,7 +398,7 @@ export class DataGrid implements OnInit {
 
     column.visible = checked;
 
-    this.visibleColumnsSubject.next(this.columns.filter((column) => column.visible !== false));
+    this.visibleColumnsSubject.next(this.columns.filter((column) => column.visible === true));
   };
 
   /* =========================================================
@@ -512,9 +512,7 @@ export class DataGrid implements OnInit {
       col.visible = checked;
     });
 
-    const selectedColumns = this.columns.filter((col) => col.visible === true);
-
-    this.visibleColumnsSubject.next(selectedColumns);
+    this.visibleColumnsSubject.next(this.columns.filter((col) => col.visible === true));
   };
 
   /* =========================================================
@@ -575,5 +573,11 @@ export class DataGrid implements OnInit {
     });
 
     FileSaver.saveAs(data, fileName + '_export_' + new Date().getTime() + EXCEL_EXTENSION);
+  }
+
+  onColReorder(event: any) {
+    const moved = this.columns.splice(event.dragIndex, 1)[0];
+    this.columns.splice(event.dropIndex, 0, moved);
+    this.visibleColumnsSubject.next(this.columns.filter((col) => col.visible === true));
   }
 }
