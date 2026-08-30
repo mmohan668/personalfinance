@@ -23,6 +23,8 @@
       #dt
       [value]="(dataSource$ | async) || []"
       dataKey="id"
+      [rowGroupMode]="groupBy ? 'subheader' : undefined"
+      [groupRowsBy]="groupBy || undefined"
       [lazy]="true"
       sortMode="multiple"
       [reorderableColumns]="true"
@@ -103,6 +105,17 @@
       </ng-template>
 
       <!-- ===================================================
+     GROUP HEADER
+     =================================================== -->
+      <ng-template #groupheader let-rowData>
+        <tr pRowGroupHeader>
+          <td [attr.colspan]="visibleColumns.length + 1" class="group-header">
+            <strong>{{ getGroupColumnHeader() }}: </strong>{{ rowData[groupBy!] }}
+          </td>
+        </tr>
+      </ng-template>
+
+      <!-- ===================================================
            BODY
            =================================================== -->
       <ng-template #body let-row>
@@ -125,7 +138,7 @@
               </td>
             } @else if (column.cellTemplate === 'currencyCellTemplate') {
               <td>
-                {{ row[column.field] | currency: defaultCurrency }}
+                {{ row[column.field] | currency: currencyCode }}
               </td>
             } @else {
               <td>
