@@ -8,26 +8,6 @@
 }
 
 /* =========================================================
-   TOOLBAR
-   ========================================================= */
-
-.table-toolbar {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem;
-}
-
-.table-toolbar mat-icon {
-  color: #4caf50 !important;
-}
-
-.toolbar-border {
-  border: 1px solid #4caf50 !important;
-}
-
-/* =========================================================
    SORT HEADER
    ========================================================= */
 
@@ -383,22 +363,6 @@
 }
 
 /* =========================================================
-   COLUMN CHOOSER CHECKBOXES
-   ========================================================= */
-
-::ng-deep .mat-mdc-menu-panel .mat-mdc-checkbox {
-  --mdc-checkbox-selected-checkmark-color: #fff;
-
-  --mdc-checkbox-selected-icon-color: #4caf50;
-
-  --mdc-checkbox-selected-hover-icon-color: #4caf50;
-
-  --mdc-checkbox-selected-focus-icon-color: #4caf50;
-
-  --mdc-checkbox-selected-pressed-icon-color: #4caf50;
-}
-
-/* =========================================================
    CHECKED CHECKBOX
    ========================================================= */
 
@@ -419,96 +383,6 @@
   background-color: transparent !important;
 
   border-color: #4caf50 !important;
-}
-
-/* =========================================================
-   CLEAR SEARCH
-   ========================================================= */
-
-.clear-search {
-  margin-right: 5px !important;
-}
-
-/* =========================================================
-   COLUMN SEARCH
-   ========================================================= */
-
-.column-search {
-  padding: 2px 8px !important;
-
-  margin: 0 !important;
-
-  height: auto;
-}
-
-.column-search mat-form-field {
-  width: 100%;
-
-  background: #fff;
-
-  margin: 0 !important;
-}
-
-/* =========================================================
-   COLUMN MENU ITEMS
-   ========================================================= */
-
-::ng-deep .column-menu .mat-mdc-menu-item {
-  min-height: 30px !important;
-
-  height: 30px !important;
-
-  padding-top: 0 !important;
-  padding-bottom: 0 !important;
-}
-
-::ng-deep .column-menu .mat-mdc-checkbox {
-  margin: 0 !important;
-}
-
-::ng-deep .column-menu {
-  max-height: 300px !important;
-
-  overflow-y: auto !important;
-}
-
-/* =========================================================
-   COLUMN CHOOSER - INDETERMINATE CHECKBOX
-   ========================================================= */
-
-::ng-deep
-  .column-menu
-  .mat-mdc-checkbox
-  .mdc-checkbox__native-control:indeterminate
-  ~ .mdc-checkbox__background {
-  background-color: #f5f7fa !important;
-
-  border: 2px solid #4caf50 !important;
-}
-
-/* =========================================================
-   COLUMN CHOOSER - INDETERMINATE MARK
-   ========================================================= */
-
-::ng-deep
-  .column-menu
-  .mat-mdc-checkbox
-  .mdc-checkbox__native-control:indeterminate
-  ~ .mdc-checkbox__background
-  .mdc-checkbox__mixedmark {
-  width: 12px !important;
-
-  height: 3px !important;
-
-  background-color: #4caf50 !important;
-
-  border: 0 !important;
-
-  border-radius: 1px !important;
-
-  transform: none !important;
-
-  opacity: 1 !important;
 }
 
 /* =========================================================
@@ -548,32 +422,4 @@
   transform: none !important;
 
   opacity: 1 !important;
-}
-
-/* =========================================================
-   EXPORT MENU
-   ========================================================= */
-
-::ng-deep .export-menu .mat-mdc-menu-item {
-  min-height: 30px !important;
-
-  height: 30px !important;
-
-  padding-top: 0 !important;
-
-  padding-bottom: 0 !important;
-}
-
-/* =========================================================
-   SETTINGS MENU
-   ========================================================= */
-
-::ng-deep .settings-menu .mat-mdc-menu-item {
-  min-height: 30px !important;
-
-  height: 30px !important;
-
-  padding-top: 0 !important;
-
-  padding-bottom: 0 !important;
 }
