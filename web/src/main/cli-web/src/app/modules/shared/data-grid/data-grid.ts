@@ -419,6 +419,10 @@ export class DataGrid implements OnInit {
     return this.selectedRows.some((selected) => selected.id === row.id);
   }
 
+  onRowClick(row: any): void {
+    this.toggleRow(row, !this.isRowSelected(row));
+  }
+
   toggleRow(row: any, checked: boolean): void {
     if (checked) {
       if (!this.isRowSelected(row)) {
