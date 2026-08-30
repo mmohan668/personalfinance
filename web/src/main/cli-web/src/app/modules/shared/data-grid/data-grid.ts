@@ -23,6 +23,7 @@ import { SORT_ICONS, SORT_ORDERS } from '../enums';
 
 import * as FileSaver from 'file-saver';
 import { ToolBar } from '../tool-bar/tool-bar';
+import { CommonService } from '../service/common-service';
 
 @Component({
   selector: 'app-data-grid',
@@ -120,7 +121,10 @@ export class DataGrid implements OnInit {
 
   @Input() groupBy: string | null = null;
 
-  constructor(private gridService: GridService) {}
+  constructor(
+    private gridService: GridService,
+    public commonService: CommonService,
+  ) {}
 
   /* =========================================================
      INIT
@@ -160,8 +164,6 @@ export class DataGrid implements OnInit {
      ========================================================= */
 
   loadGridData(): void {
-    console.log('GET DATA');
-
     /*
      * PrimeNG SortMeta[]
      *
@@ -188,10 +190,6 @@ export class DataGrid implements OnInit {
         field: sort.field,
         order: sort.order === 1 ? 'asc' : 'desc',
       }));
-
-    console.log('SORT META:', this.sortMeta);
-
-    console.log('SORT LIST:', sorts);
 
     const request: SearchCriteria = {
       sortList: sorts,
@@ -384,14 +382,26 @@ export class DataGrid implements OnInit {
      ========================================================= */
 
   changeOperator(gridFilter: GridFilter): void {
-    this.filters.push(gridFilter);
-
+    this.filters = this.filters.filter((filter) => filter.field !== gridFilter.field);
+    if (
+      gridFilter.operator === 'isNull' ||
+      gridFilter.operator === 'isNotNull' ||
+      this.commonService.isNotNull(gridFilter.value)
+    ) {
+      this.filters.push(gridFilter);
+    }
     this.loadGridData();
   }
 
   applyFilter(gridFilter: GridFilter): void {
-    this.filters.push(gridFilter);
-
+    this.filters = this.filters.filter((filter) => filter.field !== gridFilter.field);
+    if (
+      gridFilter.operator === 'isNull' ||
+      gridFilter.operator === 'isNotNull' ||
+      this.commonService.isNotNull(gridFilter.value)
+    ) {
+      this.filters.push(gridFilter);
+    }
     this.loadGridData();
   }
 
