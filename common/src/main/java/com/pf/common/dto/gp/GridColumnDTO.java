@@ -17,9 +17,10 @@ public class GridColumnDTO implements Serializable {
     private boolean sortable;
     private String defaultSortOrder;
     private boolean filterable;
-    private String filterType;
     private String defaultFilterOperator;
     private String width;
     private String align;
     private boolean visible;
+    private int visibleIndex;
+    private String cellTemplate;
 }
