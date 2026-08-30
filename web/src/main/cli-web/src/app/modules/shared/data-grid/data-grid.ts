@@ -21,6 +21,7 @@ import { GridService } from '../service/grid-service';
 import { SORT_ICONS, SORT_ORDERS } from '../enums';
 
 import * as FileSaver from 'file-saver';
+import { ToolBar } from '../tool-bar/tool-bar';
 
 @Component({
   selector: 'app-data-grid',
@@ -30,7 +31,7 @@ import * as FileSaver from 'file-saver';
     TableModule,
     ColumnFilterComponent,
     AsyncPipe,
-
+    ToolBar,
     MatSelectModule,
     MatFormFieldModule,
     MatCheckboxModule,
@@ -388,7 +389,7 @@ export class DataGrid implements OnInit {
      COLUMN VISIBILITY
      ========================================================= */
 
-  toggleColumn(col: GridColumn, checked: boolean): void {
+  toggleColumn = (col: GridColumn, checked: boolean): void => {
     const column = this.columns.find((column) => column.field === col.field);
 
     if (!column) {
@@ -398,7 +399,7 @@ export class DataGrid implements OnInit {
     column.visible = checked;
 
     this.visibleColumnsSubject.next(this.columns.filter((column) => column.visible !== false));
-  }
+  };
 
   /* =========================================================
      ROW SELECTION
@@ -482,7 +483,7 @@ export class DataGrid implements OnInit {
      COLUMN SEARCH
      ========================================================= */
 
-  getColumns(searchInput: string): GridColumn[] {
+  getColumns = (searchInput: string): GridColumn[] => {
     if (searchInput !== undefined && searchInput !== null && searchInput !== '') {
       return this.columns.filter((col) =>
         col.header.toLowerCase().includes(searchInput.toLowerCase()),
@@ -490,23 +491,23 @@ export class DataGrid implements OnInit {
     }
 
     return this.columns;
-  }
+  };
 
   /* =========================================================
      COLUMN SELECTION
      ========================================================= */
 
-  allColumnsSelected(): boolean {
+  allColumnsSelected = (): boolean => {
     return this.columns.length > 0 && this.columns.every((col) => col.visible !== false);
-  }
+  };
 
-  someColumnsSelected(): boolean {
+  someColumnsSelected = (): boolean => {
     const selectedCount = this.columns.filter((col) => col.visible !== false).length;
 
     return selectedCount > 0 && selectedCount < this.columns.length;
-  }
+  };
 
-  toggleAllColumns(checked: boolean): void {
+  toggleAllColumns = (checked: boolean): void => {
     this.columns.forEach((col) => {
       col.visible = checked;
     });
@@ -514,13 +515,13 @@ export class DataGrid implements OnInit {
     const selectedColumns = this.columns.filter((col) => col.visible === true);
 
     this.visibleColumnsSubject.next(selectedColumns);
-  }
+  };
 
   /* =========================================================
      EXPORT
      ========================================================= */
 
-  exportExcel(selectionType: string): void {
+  exportExcel = (selectionType: string): void => {
     import('xlsx').then((xlsx) => {
       const headers = this.visibleColumnsSubject.value.map((col) => col.header);
 
@@ -557,7 +558,7 @@ export class DataGrid implements OnInit {
 
       this.saveAsExcelFile(excelBuffer, 'products');
     });
-  }
+  };
 
   /* =========================================================
      SAVE EXCEL

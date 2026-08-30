@@ -1,126 +1,15 @@
 <!-- =========================================================
      TABLE TOOLBAR
      ========================================================= -->
-
-<div class="table-toolbar">
-  <!-- Add -->
-  <button mat-icon-button class="toolbar-border" type="button">
-    <mat-icon>add</mat-icon>
-  </button>
-
-  <!-- Copy -->
-  <button mat-icon-button class="toolbar-border" type="button">
-    <mat-icon>content_copy</mat-icon>
-  </button>
-
-  <!-- Edit -->
-  <button mat-icon-button class="toolbar-border" type="button">
-    <mat-icon>edit</mat-icon>
-  </button>
-
-  <!-- Delete -->
-  <button mat-icon-button class="toolbar-border" type="button">
-    <mat-icon>delete</mat-icon>
-  </button>
-
-  <!-- =======================================================
-       SETTINGS
-       ======================================================= -->
-
-  <button mat-icon-button class="toolbar-border" type="button" [matMenuTriggerFor]="settingsMenu">
-    <mat-icon>settings</mat-icon>
-  </button>
-
-  <mat-menu #settingsMenu="matMenu" class="settings-menu">
-    <button mat-menu-item type="button" (click)="exportExcel('ALL')">Save Grid Settings</button>
-
-    <button mat-menu-item type="button" (click)="exportExcel('SELECTED')">
-      Reset Grid Setting
-    </button>
-  </mat-menu>
-
-  <!-- =======================================================
-       EXPORT
-       ======================================================= -->
-
-  <button mat-icon-button class="toolbar-border" type="button" [matMenuTriggerFor]="exportMenu">
-    <mat-icon>ios_share</mat-icon>
-  </button>
-
-  <mat-menu #exportMenu="matMenu" class="export-menu">
-    <button mat-menu-item type="button" (click)="exportExcel('ALL')">Export All Data</button>
-
-    <button mat-menu-item type="button" (click)="exportExcel('SELECTED')">
-      Export Selected Rows Data
-    </button>
-  </mat-menu>
-
-  <!-- =======================================================
-       COLUMN CHOOSER
-       ======================================================= -->
-
-  <button mat-icon-button class="toolbar-border" type="button" [matMenuTriggerFor]="columnMenu">
-    <mat-icon>view_column</mat-icon>
-  </button>
-
-  <mat-menu #columnMenu="matMenu" class="column-menu">
-    <!-- Search -->
-    <div class="column-search" (click)="$event.stopPropagation()">
-      <mat-form-field appearance="outline" subscriptSizing="dynamic">
-        <mat-label>Search columns</mat-label>
-
-        <input
-          #searchInput
-          matInput
-          [(ngModel)]="columnSearch"
-          (click)="$event.stopPropagation()"
-          (keydown)="$event.stopPropagation()"
-        />
-
-        @if (columnSearch) {
-          <button
-            mat-icon-button
-            matSuffix
-            class="clear-search"
-            type="button"
-            (click)="columnSearch = ''; $event.stopPropagation()"
-          >
-            <mat-icon>close</mat-icon>
-          </button>
-        }
-      </mat-form-field>
-    </div>
-
-    <!-- Select All -->
-    <div class="select-all" (click)="$event.stopPropagation()">
-      <mat-checkbox
-        [checked]="allColumnsSelected()"
-        [indeterminate]="someColumnsSelected()"
-        (change)="toggleAllColumns($event.checked)"
-      >
-        Select All
-      </mat-checkbox>
-    </div>
-
-    <!-- Columns -->
-    @for (col of getColumns(searchInput.value); track col.field) {
-      <button
-        mat-menu-item
-        type="button"
-        (click)="$event.stopPropagation(); toggleColumn(col, !(col.visible !== false))"
-      >
-        <mat-checkbox
-          [checked]="col.visible !== false"
-          (change)="toggleColumn(col, $event.checked)"
-          (click)="$event.stopPropagation()"
-        >
-          {{ col.header }}
-        </mat-checkbox>
-      </button>
-    }
-  </mat-menu>
-</div>
-
+<app-tool-bar
+  [columnSearch]="this.columnSearch"
+  [exportExcel]="this.exportExcel"
+  [allColumnsSelected]="this.allColumnsSelected"
+  [someColumnsSelected]="this.someColumnsSelected"
+  [toggleAllColumns]="this.toggleAllColumns"
+  [getColumns]="this.getColumns"
+  [toggleColumn]="this.toggleColumn"
+></app-tool-bar>
 <!-- =========================================================
      DATA TABLE
      ========================================================= -->
