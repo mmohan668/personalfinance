@@ -32,12 +32,14 @@ public class GridService {
         GridColumnDTO price = new GridColumnDTO("price", "Price (₹)", "number", true, null, true, "equals", null, "right", true, 3, "currencyCellTemplate");
         GridColumnDTO quantity = new GridColumnDTO("quantity", "Quantity", "number", true, null, true, "equals", null, "right", true, 4, null);
         GridColumnDTO active = new GridColumnDTO("active", "Status", "boolean", true, null, true, "equals", null, "right", true, 5, "cellValueTemplate");
+        GridColumnDTO createdDate = new GridColumnDTO("createdDate", "Created Date", "date", true, null, true, "equals", null, "right", true, 5, null);
         list.add(id);
         list.add(name);
         list.add(category);
         list.add(price);
         list.add(quantity);
         list.add(active);
+        list.add(createdDate);
         return list;
     }
 

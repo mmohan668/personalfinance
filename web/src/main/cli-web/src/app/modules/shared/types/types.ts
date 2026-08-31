@@ -27,6 +27,7 @@ export interface GridFilter {
   operator: string;
 
   value: any;
+  valueTo?: any;
 }
 
 export interface GridSort {

@@ -9,6 +9,7 @@ export enum FILTER_OPERATORS {
   GREATER_THAN_OR_EQUAL = 'gte',
   LESS_THAN = 'lt',
   LESS_THAN_OR_EQUAL = 'lte',
+  BETWEEN = 'between',
   IS_NULL = 'isNull',
   IS_NOT_NULL = 'isNotNull',
 }
@@ -24,6 +25,7 @@ export enum FILTER_LABLES {
   GREATER_THAN_OR_EQUAL = 'Greater than or equal',
   LESS_THAN = 'Less than',
   LESS_THAN_OR_EQUAL = 'Less than or equal',
+  BETWEEN = 'Between',
   IS_NULL = 'Is null',
   IS_NOT_NULL = 'Is not null',
 }
@@ -39,6 +41,7 @@ export enum FILTER_ICONS {
   GREATER_THAN_OR_EQUAL = '≥',
   LESS_THAN = '<',
   LESS_THAN_OR_EQUAL = '≤',
+  BETWEEN = '↔',
   IS_NULL = '∅',
   IS_NOT_NULL = '∉',
 }

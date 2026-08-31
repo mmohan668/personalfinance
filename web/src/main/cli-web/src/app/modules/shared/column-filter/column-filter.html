@@ -1,25 +1,70 @@
 @if (column) {
   <div class="column-filter">
     <!-- Operator button -->
-    <button type="button" class="operator-button" [class.active]="menuOpen" (click)="toggleMenu()">
+    <button
+      #operatorButton
+      type="button"
+      class="operator-button"
+      [class.active]="menuOpen"
+      (click)="toggleMenu()"
+    >
       <span class="operator-symbol">
         {{ operatorSymbol }}
       </span>
     </button>
 
     <!-- Filter input -->
-    <input
-      pInputText
-      [type]="column.type"
-      [placeholder]="column.header"
-      [value]="filter.value"
-      (input)="onValueChange($any($event.target).value)"
-    />
+    @if (selectedOperator === FILTER_OPERATORS.BETWEEN) {
+      <div class="between-filter">
+        <div class="between-inputs">
+          <input
+            pInputText
+            [type]="column.type"
+            [placeholder]="'From ' + column.header"
+            [value]="filter.value"
+            (input)="onBetweenInput('from', $any($event.target).value)"
+          />
+
+          <input
+            pInputText
+            [type]="column.type"
+            [placeholder]="'To ' + column.header"
+            [value]="filter.valueTo ?? ''"
+            (input)="onBetweenInput('to', $any($event.target).value)"
+          />
+        </div>
+        @if (betweenError) {
+          <div class="between-error">
+            {{ betweenError }}
+          </div>
+        }
+      </div>
+    } @else {
+      <input
+        pInputText
+        [type]="column.type"
+        [placeholder]="column.header"
+        [value]="filter.value"
+        (input)="onInput($any($event.target).value)"
+      />
+    }
 
     <!-- Operator menu -->
-    @if (menuOpen) {
+    <ng-template
+      cdkConnectedOverlay
+      [cdkConnectedOverlayOrigin]="operatorButton"
+      [cdkConnectedOverlayOpen]="menuOpen"
+      [cdkConnectedOverlayPositions]="[
+        {
+          originX: 'start',
+          originY: 'bottom',
+          overlayX: 'start',
+          overlayY: 'top',
+          offsetY: 5,
+        },
+      ]"
+    >
       <div class="operator-menu">
-        <!-- Operators -->
         @for (operator of operators; track operator.value) {
           <button
             type="button"
@@ -37,16 +82,13 @@
           </button>
         }
 
-        <!-- Separator -->
         <div class="operator-separator"></div>
 
-        <!-- Reset -->
         <button type="button" class="operator-option reset-option" (click)="onReset()">
-          <span class="operator-option-symbol"> ↻ </span>
-
-          <span> Reset </span>
+          <span class="operator-option-symbol">↻</span>
+          <span>Reset</span>
         </button>
       </div>
-    }
+    </ng-template>
   </div>
 }
