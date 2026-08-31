@@ -12,4 +12,5 @@ public class GridFilter implements Serializable {
     private String field;
     private String operator;
     private String value;
+    private String valueTo;
 }

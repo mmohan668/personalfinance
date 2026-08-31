@@ -5,38 +5,21 @@
   z-index: 1000;
 }
 
+/*
+ * Column filter container
+ */
 .column-filter {
   position: relative;
+
   display: flex;
   align-items: center;
+
   width: 100%;
+
   z-index: 1000;
-  align-items: center;
-  gap: 0.25rem; /* reduce spacing between button and input */
-  padding: 0.25rem 0; /* less vertical padding */
-}
 
-.operator-menu {
-  position: absolute;
-
-  top: calc(100% + 5px);
-  left: 0;
-
-  z-index: 99999;
-
-  min-width: 210px;
-
-  padding: 0.35rem;
-
-  background: var(--p-content-background);
-
-  border: 1px solid var(--p-content-border-color);
-
-  border-radius: 6px;
-
-  box-shadow:
-    0 4px 10px rgb(0 0 0 / 12%),
-    0 8px 20px rgb(0 0 0 / 10%);
+  gap: 0.25rem;
+  padding: 0.25rem 0;
 }
 
 /*
@@ -45,19 +28,24 @@
 .column-filter input {
   width: 100%;
   height: 2.4rem;
+
   padding-left: 2.4rem;
+
+  box-sizing: border-box;
 }
 
 /*
- * Operator button inside the input
+ * Operator button
+ *
+ * Positioned relative to the input row.
+ * Do not use top: 50% because the validation
+ * error increases the height of the filter.
  */
 .operator-button {
   position: absolute;
 
   left: 0.25rem;
-  top: 50%;
-
-  transform: translateY(-50%);
+  top: 0.5rem;
 
   z-index: 2;
 
@@ -92,19 +80,15 @@
 }
 
 /*
- * Operator popup
+ * Operator menu
+ *
+ * The menu is rendered through CDK Overlay,
+ * so position/z-index are handled by the overlay.
  */
 .operator-menu {
-  position: absolute;
-
-  top: calc(100% + 5px);
-  left: 0;
-
-  z-index: 10000;
-
   min-width: 210px;
 
-  padding: 0.35rem;
+  padding: 0.25rem;
 
   background: var(--p-content-background);
 
@@ -115,6 +99,8 @@
   box-shadow:
     0 4px 10px rgb(0 0 0 / 12%),
     0 8px 20px rgb(0 0 0 / 10%);
+
+  box-sizing: border-box;
 }
 
 /*
@@ -126,7 +112,11 @@
 
   width: 100%;
 
-  padding: 0.5rem 0.65rem;
+  /*
+   * Reduced vertical padding to make
+   * the dropdown more compact.
+   */
+  padding: 0.3rem 0.55rem;
 
   border: none;
 
@@ -138,7 +128,20 @@
 
   border-radius: 4px;
 
-  gap: 0.6rem;
+  /*
+   * Reduced spacing between icon and text.
+   */
+  gap: 0.45rem;
+
+  font: inherit;
+  color: inherit;
+
+  /*
+   * Keeps each option compact.
+   */
+  line-height: 1.2;
+
+  box-sizing: border-box;
 }
 
 .operator-option:hover {
@@ -149,27 +152,102 @@
   background: var(--p-content-hover-background);
 }
 
+/*
+ * Operator option icon
+ */
 .operator-option-symbol {
-  width: 1.5rem;
+  width: 1.4rem;
+  min-width: 1.4rem;
 
   text-align: center;
 
   font-weight: 600;
+
+  line-height: 1;
 }
 
+/*
+ * Separator
+ */
 .operator-separator {
   height: 1px;
 
-  margin: 0.35rem 0;
+  margin: 0.2rem 0;
 
   background: var(--p-content-border-color);
 }
 
+/*
+ * Reset option
+ */
 .reset-option {
   color: var(--p-text-muted-color);
 }
 
 .reset-option:hover {
   color: var(--p-text-color);
+
   background: var(--p-content-hover-background);
+}
+
+/*
+ * Between filter
+ *
+ * The input row itself remains exactly the
+ * same height as a normal filter input.
+ */
+.between-filter {
+  display: flex;
+  flex-direction: column;
+
+  width: 100%;
+
+  /*
+   * Keep the input row vertically aligned
+   * with normal filter inputs.
+   */
+  align-self: center;
+}
+
+/*
+ * From / To input row
+ */
+.between-inputs {
+  display: flex;
+  align-items: center;
+
+  gap: 6px;
+
+  width: 100%;
+  height: 2.4rem;
+}
+
+/*
+ * From / To inputs
+ */
+.between-inputs input {
+  width: 50%;
+  min-width: 0;
+
+  height: 2.4rem;
+
+  box-sizing: border-box;
+}
+
+/*
+ * Between validation error
+ */
+.between-error {
+  display: block;
+
+  width: 100%;
+
+  margin-top: 4px;
+
+  color: #f44336;
+
+  font-size: 12px;
+  font-weight: 500;
+
+  line-height: 16px;
 }

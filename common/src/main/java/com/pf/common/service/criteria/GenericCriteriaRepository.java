@@ -132,8 +132,7 @@ public class GenericCriteriaRepository {
                 } else if (String.class.equals(path.getJavaType())) {
                     String value = filter.getValue().toLowerCase(Locale.ROOT);
 
-                    Expression<String> field =
-                            criteriaBuilder.lower(path.as(String.class));
+                    Expression<String> field = criteriaBuilder.lower(path.as(String.class));
 
                     switch (operator) {
                         case "equals" -> predicates.add(
@@ -184,12 +183,10 @@ public class GenericCriteriaRepository {
                     }
 
                 } else if (BigDecimal.class.equals(path.getJavaType())) {
-                    BigDecimal value =
-                            new BigDecimal(filter.getValue());
+                    BigDecimal value = new BigDecimal(filter.getValue());
 
                     @SuppressWarnings("unchecked")
-                    Expression<BigDecimal> field =
-                            (Expression<BigDecimal>) path;
+                    Expression<BigDecimal> field = (Expression<BigDecimal>) path;
 
                     switch (operator) {
                         case "equals" -> predicates.add(
@@ -224,6 +221,23 @@ public class GenericCriteriaRepository {
                                         value
                                 )
                         );
+
+                        case "between" -> {
+                            if (filter.getValueTo() == null || filter.getValueTo().isBlank()) {
+                                throw new NullFilterValueException(
+                                        "Second filter value cannot be null for operator: between"
+                                );
+                            }
+
+                            BigDecimal valueTo = new BigDecimal(filter.getValueTo());
+
+                            predicates.add(
+                                    criteriaBuilder.and(
+                                            criteriaBuilder.greaterThanOrEqualTo(field, value),
+                                            criteriaBuilder.lessThanOrEqualTo(field, valueTo)
+                                    )
+                            );
+                        }
 
                         default -> throw new UnsupportedFilterOperatorException(
                                 "Unsupported filter operator: " + operator
@@ -233,12 +247,10 @@ public class GenericCriteriaRepository {
                 } else if (Integer.class.equals(path.getJavaType())
                         || int.class.equals(path.getJavaType())) {
 
-                    Integer value =
-                            Integer.parseInt(filter.getValue());
+                    Integer value = Integer.parseInt(filter.getValue());
 
                     @SuppressWarnings("unchecked")
-                    Expression<Integer> field =
-                            (Expression<Integer>) path;
+                    Expression<Integer> field = (Expression<Integer>) path;
 
                     switch (operator) {
                         case "equals" -> predicates.add(
@@ -273,6 +285,23 @@ public class GenericCriteriaRepository {
                                         value
                                 )
                         );
+
+                        case "between" -> {
+                            if (filter.getValueTo() == null || filter.getValueTo().isBlank()) {
+                                throw new NullFilterValueException(
+                                        "Second filter value cannot be null for operator: between"
+                                );
+                            }
+
+                            Integer valueTo = Integer.parseInt(filter.getValueTo());
+
+                            predicates.add(
+                                    criteriaBuilder.and(
+                                            criteriaBuilder.greaterThanOrEqualTo(field, value),
+                                            criteriaBuilder.lessThanOrEqualTo(field, valueTo)
+                                    )
+                            );
+                        }
 
                         default -> throw new UnsupportedFilterOperatorException(
                                 "Unsupported filter operator: " + operator
@@ -282,12 +311,10 @@ public class GenericCriteriaRepository {
                 } else if (Long.class.equals(path.getJavaType())
                         || long.class.equals(path.getJavaType())) {
 
-                    Long value =
-                            Long.parseLong(filter.getValue());
+                    Long value = Long.parseLong(filter.getValue());
 
                     @SuppressWarnings("unchecked")
-                    Expression<Long> field =
-                            (Expression<Long>) path;
+                    Expression<Long> field = (Expression<Long>) path;
 
                     switch (operator) {
                         case "equals" -> predicates.add(
@@ -322,6 +349,23 @@ public class GenericCriteriaRepository {
                                         value
                                 )
                         );
+
+                        case "between" -> {
+                            if (filter.getValueTo() == null || filter.getValueTo().isBlank()) {
+                                throw new NullFilterValueException(
+                                        "Second filter value cannot be null for operator: between"
+                                );
+                            }
+
+                            Long valueTo = Long.parseLong(filter.getValueTo());
+
+                            predicates.add(
+                                    criteriaBuilder.and(
+                                            criteriaBuilder.greaterThanOrEqualTo(field, value),
+                                            criteriaBuilder.lessThanOrEqualTo(field, valueTo)
+                                    )
+                            );
+                        }
 
                         default -> throw new UnsupportedFilterOperatorException(
                                 "Unsupported filter operator: " + operator
@@ -331,12 +375,10 @@ public class GenericCriteriaRepository {
                 } else if (Double.class.equals(path.getJavaType())
                         || double.class.equals(path.getJavaType())) {
 
-                    Double value =
-                            Double.parseDouble(filter.getValue());
+                    Double value = Double.parseDouble(filter.getValue());
 
                     @SuppressWarnings("unchecked")
-                    Expression<Double> field =
-                            (Expression<Double>) path;
+                    Expression<Double> field = (Expression<Double>) path;
 
                     switch (operator) {
                         case "equals" -> predicates.add(
@@ -372,6 +414,23 @@ public class GenericCriteriaRepository {
                                 )
                         );
 
+                        case "between" -> {
+                            if (filter.getValueTo() == null || filter.getValueTo().isBlank()) {
+                                throw new NullFilterValueException(
+                                        "Second filter value cannot be null for operator: between"
+                                );
+                            }
+
+                            Double valueTo = Double.parseDouble(filter.getValueTo());
+
+                            predicates.add(
+                                    criteriaBuilder.and(
+                                            criteriaBuilder.greaterThanOrEqualTo(field, value),
+                                            criteriaBuilder.lessThanOrEqualTo(field, valueTo)
+                                    )
+                            );
+                        }
+
                         default -> throw new UnsupportedFilterOperatorException(
                                 "Unsupported filter operator: " + operator
                         );
@@ -380,12 +439,10 @@ public class GenericCriteriaRepository {
                 } else if (Boolean.class.equals(path.getJavaType())
                         || boolean.class.equals(path.getJavaType())) {
 
-                    boolean value =
-                            Boolean.parseBoolean(filter.getValue());
+                    boolean value = Boolean.parseBoolean(filter.getValue());
 
                     @SuppressWarnings("unchecked")
-                    Expression<Boolean> field =
-                            (Expression<Boolean>) path;
+                    Expression<Boolean> field = (Expression<Boolean>) path;
 
                     switch (operator) {
                         case "equals" -> predicates.add(
@@ -405,12 +462,10 @@ public class GenericCriteriaRepository {
                     }
 
                 } else if (LocalDate.class.equals(path.getJavaType())) {
-                    LocalDate value =
-                            LocalDate.parse(filter.getValue());
+                    LocalDate value = LocalDate.parse(filter.getValue());
 
                     @SuppressWarnings("unchecked")
-                    Expression<LocalDate> field =
-                            (Expression<LocalDate>) path;
+                    Expression<LocalDate> field = (Expression<LocalDate>) path;
 
                     switch (operator) {
                         case "equals" -> predicates.add(
@@ -445,6 +500,23 @@ public class GenericCriteriaRepository {
                                         value
                                 )
                         );
+
+                        case "between" -> {
+                            if (filter.getValueTo() == null || filter.getValueTo().isBlank()) {
+                                throw new NullFilterValueException(
+                                        "Second filter value cannot be null for operator: between"
+                                );
+                            }
+
+                            LocalDate valueTo = LocalDate.parse(filter.getValueTo());
+
+                            predicates.add(
+                                    criteriaBuilder.and(
+                                            criteriaBuilder.greaterThanOrEqualTo(field, value),
+                                            criteriaBuilder.lessThanOrEqualTo(field, valueTo)
+                                    )
+                            );
+                        }
 
                         default -> throw new UnsupportedFilterOperatorException(
                                 "Unsupported filter operator: " + operator
@@ -452,12 +524,10 @@ public class GenericCriteriaRepository {
                     }
 
                 } else if (LocalDateTime.class.equals(path.getJavaType())) {
-                    LocalDateTime value =
-                            LocalDateTime.parse(filter.getValue());
+                    LocalDateTime value = LocalDateTime.parse(filter.getValue());
 
                     @SuppressWarnings("unchecked")
-                    Expression<LocalDateTime> field =
-                            (Expression<LocalDateTime>) path;
+                    Expression<LocalDateTime> field = (Expression<LocalDateTime>) path;
 
                     switch (operator) {
                         case "equals" -> predicates.add(
@@ -492,6 +562,23 @@ public class GenericCriteriaRepository {
                                         value
                                 )
                         );
+
+                        case "between" -> {
+                            if (filter.getValueTo() == null || filter.getValueTo().isBlank()) {
+                                throw new NullFilterValueException(
+                                        "Second filter value cannot be null for operator: between"
+                                );
+                            }
+
+                            LocalDateTime valueTo = LocalDateTime.parse(filter.getValueTo());
+
+                            predicates.add(
+                                    criteriaBuilder.and(
+                                            criteriaBuilder.greaterThanOrEqualTo(field, value),
+                                            criteriaBuilder.lessThanOrEqualTo(field, valueTo)
+                                    )
+                            );
+                        }
 
                         default -> throw new UnsupportedFilterOperatorException(
                                 "Unsupported filter operator: " + operator

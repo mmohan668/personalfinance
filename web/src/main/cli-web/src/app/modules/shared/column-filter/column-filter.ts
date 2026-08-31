@@ -4,12 +4,17 @@ import {
   EventEmitter,
   HostListener,
   Input,
+  OnDestroy,
   OnInit,
   Output,
 } from '@angular/core';
 import { InputTextModule } from 'primeng/inputtext';
 import { GridColumn, GridFilter } from '../types/types';
 import { COLUMN_TYPES, FILTER_ICONS, FILTER_LABLES, FILTER_OPERATORS } from '../enums';
+import { debounceTime, distinctUntilChanged, Subject, takeUntil } from 'rxjs';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { OverlayModule } from '@angular/cdk/overlay';
 
 export interface FilterOperator {
   value: string;
@@ -20,11 +25,11 @@ export interface FilterOperator {
 @Component({
   selector: 'app-column-filter',
   standalone: true,
-  imports: [InputTextModule],
+  imports: [InputTextModule, MatFormFieldModule, MatInputModule, OverlayModule],
   templateUrl: './column-filter.html',
   styleUrl: './column-filter.scss',
 })
-export class ColumnFilterComponent implements OnInit {
+export class ColumnFilterComponent implements OnInit, OnDestroy {
   operators: FilterOperator[] = [];
   selectedOperator = '';
   filter!: GridFilter;
@@ -99,6 +104,7 @@ export class ColumnFilterComponent implements OnInit {
       value: FILTER_OPERATORS.LESS_THAN_OR_EQUAL,
       icon: FILTER_ICONS.LESS_THAN_OR_EQUAL,
     },
+    { label: FILTER_LABLES.BETWEEN, value: FILTER_OPERATORS.BETWEEN, icon: FILTER_ICONS.BETWEEN },
     { label: FILTER_LABLES.IS_NULL, value: FILTER_OPERATORS.IS_NULL, icon: FILTER_ICONS.IS_NULL },
     {
       label: FILTER_LABLES.IS_NOT_NULL,
@@ -121,11 +127,33 @@ export class ColumnFilterComponent implements OnInit {
     },
   ];
 
+  private valueChangeSubject = new Subject<GridFilter>();
+  private destroy$ = new Subject<void>();
+  readonly FILTER_OPERATORS = FILTER_OPERATORS;
+  betweenError = '';
+
   constructor(private elementRef: ElementRef) {}
 
   ngOnInit(): void {
     this.initializeFilter();
     this.operators = this.getOperators(this.column);
+
+    this.valueChangeSubject
+      .pipe(debounceTime(500), distinctUntilChanged(), takeUntil(this.destroy$))
+      .subscribe((filter) => {
+        this.onValueChange(filter);
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+    this.valueChangeSubject.complete();
+  }
+
+  onInput(value: string): void {
+    this.filter.value = value;
+    this.valueChangeSubject.next({ ...this.filter });
   }
 
   initializeFilter(): void {
@@ -190,25 +218,76 @@ export class ColumnFilterComponent implements OnInit {
     this.selectedOperator = operator.value;
     this.menuOpen = false;
     this.filter.operator = operator.value;
-    if (operator.value === 'isNull' || operator.value === 'isNotNull') {
+    this.betweenError = '';
+
+    if (operator.value === FILTER_OPERATORS.BETWEEN) {
       this.filter.value = '';
+      this.filter.valueTo = '';
+    } else if (operator.value === 'isNull' || operator.value === 'isNotNull') {
+      this.filter.value = '';
+      this.filter.valueTo = undefined;
+    } else {
+      this.filter.valueTo = undefined;
     }
     this.operatorChange.emit(this.filter);
   }
 
-  onValueChange(value: string): void {
-    this.filter.value = value;
-    this.valueChange.emit(this.filter);
+  onValueChange(gridFilter: GridFilter): void {
+    this.valueChange.emit(gridFilter);
+  }
+
+  onBetweenInput(type: 'from' | 'to', value: string): void {
+    if (type === 'from') {
+      this.filter.value = value;
+    } else {
+      this.filter.valueTo = value;
+    }
+    if (!this.isValidBetween()) {
+      return;
+    }
+    this.valueChangeSubject.next({ ...this.filter });
+  }
+
+  private isValidBetween(): boolean {
+    this.betweenError = '';
+
+    if (!this.filter.value || !this.filter.valueTo) {
+      return false;
+    }
+
+    if (this.column.type === COLUMN_TYPES.NUMBER) {
+      const from = Number(this.filter.value);
+      const to = Number(this.filter.valueTo);
+
+      if (from > to) {
+        this.betweenError = 'To value should be greater than or equal to From value';
+        return false;
+      }
+    }
+
+    if (this.column.type === COLUMN_TYPES.DATE) {
+      const from = new Date(this.filter.value);
+      const to = new Date(this.filter.valueTo);
+
+      if (from > to) {
+        this.betweenError = 'To date should be greater than or equal to From date';
+        return false;
+      }
+    }
+
+    return true;
   }
 
   onReset(): void {
     /*
      * Clear input
      */
+    this.betweenError = '';
     this.filter.value = '';
+    this.filter.valueTo = undefined;
     this.filter.operator = this.getDefaultOperator(this.column);
     this.selectedOperator = this.filter.operator;
-    this.valueChange.emit(this.filter);
+    this.valueChange.emit({ ...this.filter });
     /*
      * Close menu
      */
