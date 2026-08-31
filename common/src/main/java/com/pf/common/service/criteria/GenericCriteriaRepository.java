@@ -3,10 +3,14 @@ package com.pf.common.service.criteria;
 import com.pf.common.dto.gp.GridFilter;
 import com.pf.common.dto.gp.GridSort;
 import com.pf.common.dto.gp.SearchCriteria;
+import com.pf.common.exception.NullFilterValueException;
+import com.pf.common.exception.UnsupportedFilterFieldTypeException;
+import com.pf.common.exception.UnsupportedFilterOperatorException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
@@ -16,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+@Slf4j
 @Repository
 public class GenericCriteriaRepository {
 
@@ -120,7 +125,7 @@ public class GenericCriteriaRepository {
                     predicates.add(criteriaBuilder.isNotNull(path));
 
                 } else if (filter.getValue() == null) {
-                    throw new IllegalArgumentException(
+                    throw new NullFilterValueException(
                             "Filter value cannot be null for operator: " + operator
                     );
 
@@ -173,7 +178,7 @@ public class GenericCriteriaRepository {
                                 )
                         );
 
-                        default -> throw new IllegalArgumentException(
+                        default -> throw new UnsupportedFilterOperatorException(
                                 "Unsupported filter operator: " + operator
                         );
                     }
@@ -220,7 +225,7 @@ public class GenericCriteriaRepository {
                                 )
                         );
 
-                        default -> throw new IllegalArgumentException(
+                        default -> throw new UnsupportedFilterOperatorException(
                                 "Unsupported filter operator: " + operator
                         );
                     }
@@ -269,7 +274,7 @@ public class GenericCriteriaRepository {
                                 )
                         );
 
-                        default -> throw new IllegalArgumentException(
+                        default -> throw new UnsupportedFilterOperatorException(
                                 "Unsupported filter operator: " + operator
                         );
                     }
@@ -318,7 +323,7 @@ public class GenericCriteriaRepository {
                                 )
                         );
 
-                        default -> throw new IllegalArgumentException(
+                        default -> throw new UnsupportedFilterOperatorException(
                                 "Unsupported filter operator: " + operator
                         );
                     }
@@ -367,7 +372,7 @@ public class GenericCriteriaRepository {
                                 )
                         );
 
-                        default -> throw new IllegalArgumentException(
+                        default -> throw new UnsupportedFilterOperatorException(
                                 "Unsupported filter operator: " + operator
                         );
                     }
@@ -394,7 +399,7 @@ public class GenericCriteriaRepository {
                                 )
                         );
 
-                        default -> throw new IllegalArgumentException(
+                        default -> throw new UnsupportedFilterOperatorException(
                                 "Unsupported filter operator: " + operator
                         );
                     }
@@ -441,7 +446,7 @@ public class GenericCriteriaRepository {
                                 )
                         );
 
-                        default -> throw new IllegalArgumentException(
+                        default -> throw new UnsupportedFilterOperatorException(
                                 "Unsupported filter operator: " + operator
                         );
                     }
@@ -488,13 +493,13 @@ public class GenericCriteriaRepository {
                                 )
                         );
 
-                        default -> throw new IllegalArgumentException(
+                        default -> throw new UnsupportedFilterOperatorException(
                                 "Unsupported filter operator: " + operator
                         );
                     }
 
                 } else {
-                    throw new IllegalArgumentException(
+                    throw new UnsupportedFilterFieldTypeException(
                             "Unsupported filter field type: "
                                     + path.getJavaType().getName()
                     );
