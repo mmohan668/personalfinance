@@ -55,9 +55,11 @@ public class GenericCriteriaRepository {
         );
 
         TypedQuery<T> typedQuery = entityManager.createQuery(criteriaQuery);
-
-        typedQuery.setFirstResult(searchCriteria.getSkip());
-        typedQuery.setMaxResults(searchCriteria.getTake());
+        
+        if(!searchCriteria.isLoadAllData()) {
+            typedQuery.setFirstResult(searchCriteria.getSkip());
+            typedQuery.setMaxResults(searchCriteria.getTake());
+        }
 
         return typedQuery.getResultList();
     }

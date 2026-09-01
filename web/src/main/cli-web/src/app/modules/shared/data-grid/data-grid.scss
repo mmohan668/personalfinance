@@ -258,9 +258,29 @@
    ========================================================= */
 
 .selection-column ::ng-deep .mdc-checkbox__native-control:checked ~ .mdc-checkbox__background {
-  background-color: #4caf50 !important;
+  background-color: #f5f7fa !important;
 
   border-color: #4caf50 !important;
+}
+
+.mdc-checkbox__checkmark {
+  color: #4caf50 !important;
+}
+
+.selection-column
+  ::ng-deep
+  .mdc-checkbox__native-control:checked
+  ~ .mdc-checkbox__background
+  .mdc-checkbox__checkmark {
+  color: #4caf50 !important;
+}
+
+.selection-column
+  ::ng-deep
+  .mdc-checkbox__native-control:checked
+  ~ .mdc-checkbox__background
+  .mdc-checkbox__checkmark-path {
+  stroke: #4caf50 !important;
 }
 
 .selection-column
