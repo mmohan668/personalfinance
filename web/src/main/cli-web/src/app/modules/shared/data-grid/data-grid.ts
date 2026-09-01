@@ -44,6 +44,7 @@ import { CommonService } from '../service/common-service';
     PaginatorModule,
     CurrencyPipe,
   ],
+  providers: [CurrencyPipe],
 
   styleUrl: './data-grid.scss',
   templateUrl: './data-grid.html',
@@ -124,6 +125,7 @@ export class DataGrid implements OnInit {
   constructor(
     private gridService: GridService,
     public commonService: CommonService,
+    private currencyPipe: CurrencyPipe,
   ) {}
 
   /* =========================================================
@@ -544,10 +546,14 @@ export class DataGrid implements OnInit {
      ========================================================= */
 
   exportExcel = (selectionType: string): void => {
-    import('xlsx').then((xlsx) => {
-      const headers = this.visibleColumnsSubject.value.map((col) => col.header);
+    import('exceljs').then((ExcelJS) => {
+      const visibleColumns = this.visibleColumnsSubject.value;
 
-      let rows: any[] = [];
+      // =====================================================
+      // SOURCE DATA
+      // =====================================================
+
+      let sourceRows: any[] = [];
 
       if (selectionType === 'SELECTED') {
         if (this.selectedRows.length === 0) {
@@ -555,30 +561,201 @@ export class DataGrid implements OnInit {
           return;
         }
 
-        rows = this.selectedRows.map((row) =>
-          this.visibleColumnsSubject.value.map((col) => row[col.field]),
-        );
+        sourceRows = this.selectedRows;
       } else {
-        rows = this.dataSourceSubject.value.map((row) =>
-          this.visibleColumnsSubject.value.map((col) => row[col.field]),
-        );
+        sourceRows = this.dataSourceSubject.value;
       }
 
-      const worksheet = xlsx.utils.aoa_to_sheet([headers, ...rows]);
+      // =====================================================
+      // CREATE WORKBOOK
+      // =====================================================
 
-      const workbook = {
-        Sheets: {
-          data: worksheet,
-        },
-        SheetNames: ['data'],
-      };
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet('data');
 
-      const excelBuffer: any = xlsx.write(workbook, {
-        bookType: 'xlsx',
-        type: 'array',
+      // Get currency symbol once.
+      // Example:
+      // USD -> $
+      // INR -> ₹
+      // EUR -> €
+      // GBP -> £
+      const currencySymbol = this.getCurrencySymbol();
+
+      // =====================================================
+      // MAIN HEADER
+      // =====================================================
+
+      const headerRow = worksheet.addRow(visibleColumns.map((col) => col.header));
+
+      headerRow.eachCell((cell) => {
+        cell.font = {
+          bold: true,
+          size: 13,
+        };
+
+        cell.alignment = {
+          vertical: 'middle',
+        };
       });
 
-      this.saveAsExcelFile(excelBuffer, 'products');
+      // =====================================================
+      // GROUP / DATA ROWS
+      // =====================================================
+
+      let previousGroup: any = Symbol('initial');
+
+      for (const row of sourceRows) {
+        const currentGroup = this.groupBy ? row[this.groupBy] : undefined;
+
+        // ===================================================
+        // GROUP HEADER
+        // ===================================================
+
+        if (this.groupBy && currentGroup !== previousGroup) {
+          const groupHeaderRow = worksheet.addRow([
+            `${this.getGroupColumnHeader()}: ${currentGroup}`,
+          ]);
+
+          // Merge group header across all visible columns
+          if (visibleColumns.length > 1) {
+            worksheet.mergeCells(
+              groupHeaderRow.number,
+              1,
+              groupHeaderRow.number,
+              visibleColumns.length,
+            );
+          }
+
+          // Group header styling
+          const groupCell = groupHeaderRow.getCell(1);
+
+          groupCell.font = {
+            bold: true,
+            size: 13,
+          };
+
+          groupCell.alignment = {
+            vertical: 'middle',
+          };
+
+          previousGroup = currentGroup;
+        }
+
+        // ===================================================
+        // DATA ROW
+        // ===================================================
+
+        const dataRow = worksheet.addRow(
+          visibleColumns.map((col) => {
+            // -----------------------------------------------
+            // CUSTOM CELL VALUE
+            // -----------------------------------------------
+
+            if (col.cellTemplate === 'cellValueTemplate') {
+              return this.calculateCellValue(row, col);
+            }
+
+            // -----------------------------------------------
+            // CURRENCY
+            // -----------------------------------------------
+
+            if (col.cellTemplate === 'currencyCellTemplate') {
+              // IMPORTANT:
+              // Keep the actual Excel value as NUMBER.
+              //
+              // Do NOT use:
+              // this.currency.transform(...)
+              //
+              // because CurrencyPipe returns a STRING.
+              return this.getNumericCurrencyValue(row, col);
+            }
+
+            // -----------------------------------------------
+            // NORMAL VALUE
+            // -----------------------------------------------
+
+            return row[col.field];
+          }),
+        );
+
+        // ===================================================
+        // APPLY COLUMN FORMATTING
+        // ===================================================
+
+        visibleColumns.forEach((col, index) => {
+          const cell = dataRow.getCell(index + 1);
+
+          // -----------------------------------------------
+          // CURRENCY FORMAT
+          // -----------------------------------------------
+
+          if (col.cellTemplate === 'currencyCellTemplate') {
+            // Keep the value numeric
+            cell.value = this.getNumericCurrencyValue(row, col);
+
+            // Display currency symbol while retaining
+            // numeric Excel value.
+            //
+            // Example:
+            // 50000 -> $50,000.00
+            // 50000 -> ₹50,000.00
+            // 50000 -> €50,000.00
+            //
+            // SUM / AVERAGE continue to work.
+            cell.numFmt = `${currencySymbol}#,##0.00`;
+          }
+        });
+
+        // ===================================================
+        // EXCEL OUTLINE / GROUPING
+        // ===================================================
+
+        if (this.groupBy) {
+          dataRow.outlineLevel = 1;
+        }
+      }
+
+      // =====================================================
+      // COLUMN WIDTH
+      // =====================================================
+
+      visibleColumns.forEach((col, index) => {
+        worksheet.getColumn(index + 1).width = this.getExcelColumnWidth(
+          worksheet,
+          index + 1,
+          col.header,
+        );
+      });
+
+      // =====================================================
+      // FREEZE MAIN HEADER
+      // =====================================================
+
+      worksheet.views = [
+        {
+          state: 'frozen',
+          ySplit: 1,
+        },
+      ];
+
+      // =====================================================
+      // OUTLINE SETTINGS
+      // =====================================================
+
+      if (this.groupBy) {
+        worksheet.properties.outlineProperties = {
+          summaryBelow: true,
+          summaryRight: true,
+        };
+      }
+
+      // =====================================================
+      // WRITE FILE
+      // =====================================================
+
+      workbook.xlsx.writeBuffer().then((buffer) => {
+        this.saveAsExcelFile(buffer, 'products');
+      });
     });
   };
 
@@ -597,6 +774,42 @@ export class DataGrid implements OnInit {
     });
 
     FileSaver.saveAs(data, fileName + '_export_' + new Date().getTime() + EXCEL_EXTENSION);
+  }
+
+  getExcelColumnWidth(worksheet: any, columnIndex: number, header: string): number {
+    let maxLength = header.length;
+
+    worksheet.getColumn(columnIndex).eachCell((cell: any) => {
+      const value = cell.value;
+
+      if (value !== null && value !== undefined) {
+        maxLength = Math.max(maxLength, String(value).length);
+      }
+    });
+    return Math.min(Math.max(maxLength + 2, 12), 40);
+  }
+
+  private getNumericCurrencyValue(row: any, col: GridColumn): number | null {
+    const value = row[col.field];
+
+    if (value === null || value === undefined || value === '') {
+      return null;
+    }
+
+    const numericValue = Number(value);
+
+    return Number.isNaN(numericValue) ? null : numericValue;
+  }
+
+  private getCurrencySymbol(): string {
+    const transformed = this.currencyPipe.transform(0, this.currencyCode, 'symbol', '1.0-0');
+
+    if (!transformed) {
+      return this.currencyCode;
+    }
+
+    // Remove the formatted numeric part.
+    return transformed.replace(/[\d\s.,-]+$/, '').trim();
   }
 
   onColReorder(event: any) {
