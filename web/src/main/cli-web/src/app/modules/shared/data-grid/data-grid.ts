@@ -13,7 +13,7 @@ import { SelectItem, SortEvent, SortMeta } from 'primeng/api';
 import { Table, TableModule } from 'primeng/table';
 import { PaginatorModule } from 'primeng/paginator';
 
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, firstValueFrom } from 'rxjs';
 
 import { ColumnFilterComponent } from './../column-filter/column-filter';
 import { GridColumn, GridFilter, GridResult, GridSort, SearchCriteria } from '../types/types';
@@ -546,7 +546,7 @@ export class DataGrid implements OnInit {
      ========================================================= */
 
   exportExcel = (selectionType: string): void => {
-    import('exceljs').then((ExcelJS) => {
+    import('exceljs').then(async (ExcelJS) => {
       const visibleColumns = this.visibleColumnsSubject.value;
 
       // =====================================================
@@ -563,7 +563,27 @@ export class DataGrid implements OnInit {
 
         sourceRows = this.selectedRows;
       } else {
-        sourceRows = this.dataSourceSubject.value;
+        const sorts: GridSort[] = this.sortMeta
+          .filter(
+            (sort): sort is SortMeta =>
+              !!sort && typeof sort.field === 'string' && (sort.order === 1 || sort.order === -1),
+          )
+          .map((sort) => ({
+            field: sort.field,
+            order: sort.order === 1 ? 'asc' : 'desc',
+          }));
+
+        const request: SearchCriteria = {
+          sortList: sorts,
+          filterList: this.filters,
+          skip: this.skip,
+          take: this.take,
+          loadAllData: true,
+        };
+
+        console.log('REQUEST:', request);
+
+        sourceRows = (await firstValueFrom(this.gridService.loadGridData(request))).recordDetails;
       }
 
       // =====================================================
