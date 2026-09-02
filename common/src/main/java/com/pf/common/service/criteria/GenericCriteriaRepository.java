@@ -50,13 +50,13 @@ public class GenericCriteriaRepository {
         Root<T> root = criteriaQuery.from(entity);
 
         criteriaQuery.select(root);
+
         applyFilters(criteriaBuilder, criteriaQuery, root, searchCriteria);
-        applySorting(criteriaBuilder, criteriaQuery, root, searchCriteria
-        );
+        applySorting(criteriaBuilder, criteriaQuery, root, searchCriteria);
 
         TypedQuery<T> typedQuery = entityManager.createQuery(criteriaQuery);
-        
-        if(!searchCriteria.isLoadAllData()) {
+
+        if (!searchCriteria.isLoadAllData()) {
             typedQuery.setFirstResult(searchCriteria.getSkip());
             typedQuery.setMaxResults(searchCriteria.getTake());
         }
