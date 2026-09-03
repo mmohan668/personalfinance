@@ -477,3 +477,18 @@
 .selected-row:hover > td {
   background-color: #d6ebfa;
 }
+
+.data-grid-scroll {
+  width: 100%;
+  max-width: 100%;
+
+  overflow-x: auto;
+  overflow-y: auto;
+
+  box-sizing: border-box;
+
+  /*
+   * Smooth scrolling on touch devices.
+   */
+  -webkit-overflow-scrolling: touch;
+}

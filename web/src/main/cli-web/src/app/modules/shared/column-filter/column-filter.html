@@ -1,55 +1,154 @@
 @if (column) {
   <div class="column-filter">
-    <!-- Operator button -->
+    <!-- =========================================================
+         OPERATOR BUTTON
+         ========================================================= -->
+
     <button
       #operatorButton
       type="button"
       class="operator-button"
       [class.active]="menuOpen"
       (click)="toggleMenu()"
+      aria-label="Filter operator"
     >
       <span class="operator-symbol">
         {{ operatorSymbol }}
       </span>
     </button>
 
-    <!-- Filter input -->
+    <!-- =========================================================
+         BETWEEN FILTER
+         ========================================================= -->
+
     @if (selectedOperator === FILTER_OPERATORS.BETWEEN) {
       <div class="between-filter">
         <div class="between-inputs">
-          <input
-            pInputText
-            [type]="column.type"
-            [placeholder]="'From ' + column.header"
-            [value]="filter.value"
-            (input)="onBetweenInput('from', $any($event.target).value)"
-          />
+          <!-- ===================================================
+               FROM DATE
+               =================================================== -->
 
-          <input
-            pInputText
-            [type]="column.type"
-            [placeholder]="'To ' + column.header"
-            [value]="filter.valueTo ?? ''"
-            (input)="onBetweenInput('to', $any($event.target).value)"
-          />
+          @if (column.type === 'date') {
+            <div class="filter-control date-filter-control">
+              <p-datepicker
+                [placeholder]="'From ' + column.header"
+                [dateFormat]="primeNgDateFormat"
+                [showIcon]="true"
+                iconDisplay="input"
+                [(ngModel)]="filterDateValue"
+                (ngModelChange)="onBetweenDateChange('from', $event)"
+                appendTo="body"
+              />
+            </div>
+          }
+
+          <!-- ===================================================
+               FROM NON-DATE
+               =================================================== -->
+
+          @else {
+            <div class="filter-control">
+              <input
+                pInputText
+                [type]="column.type"
+                [placeholder]="'From ' + column.header"
+                [value]="filter.value"
+                (input)="onBetweenInput('from', $any($event.target).value)"
+              />
+            </div>
+          }
+
+          <!-- ===================================================
+               TO DATE
+               =================================================== -->
+
+          @if (column.type === 'date') {
+            <div class="filter-control date-filter-control">
+              <p-datepicker
+                [placeholder]="'To ' + column.header"
+                [dateFormat]="primeNgDateFormat"
+                [showIcon]="true"
+                iconDisplay="input"
+                [(ngModel)]="filterDateToValue"
+                (ngModelChange)="onBetweenDateChange('to', $event)"
+                appendTo="body"
+              />
+            </div>
+          }
+
+          <!-- ===================================================
+               TO NON-DATE
+               =================================================== -->
+
+          @else {
+            <div class="filter-control">
+              <input
+                pInputText
+                [type]="column.type"
+                [placeholder]="'To ' + column.header"
+                [value]="filter.valueTo ?? ''"
+                (input)="onBetweenInput('to', $any($event.target).value)"
+              />
+            </div>
+          }
         </div>
+
+        <!-- =====================================================
+             BETWEEN ERROR
+             ===================================================== -->
+
         @if (betweenError) {
           <div class="between-error">
             {{ betweenError }}
           </div>
         }
       </div>
-    } @else {
-      <input
-        pInputText
-        [type]="column.type"
-        [placeholder]="column.header"
-        [value]="filter.value"
-        (input)="onInput($any($event.target).value)"
-      />
     }
 
-    <!-- Operator menu -->
+    <!-- =========================================================
+         NORMAL FILTER
+         ========================================================= -->
+
+    @else {
+      <!-- =======================================================
+           NORMAL DATE FILTER
+           ======================================================= -->
+
+      @if (column.type === 'date') {
+        <div class="filter-control date-filter-control">
+          <p-datepicker
+            [placeholder]="column.header"
+            [dateFormat]="primeNgDateFormat"
+            [showIcon]="true"
+            iconDisplay="input"
+            [(ngModel)]="filterDateValue"
+            (ngModelChange)="onDateChange($event)"
+            appendTo="body"
+          />
+        </div>
+      }
+
+      <!-- =======================================================
+           NORMAL NON-DATE FILTER
+           ======================================================= -->
+
+      @else {
+        <div class="filter-control">
+          <input
+            pInputText
+            [type]="column.type"
+            [placeholder]="column.header"
+            [value]="filter.value"
+            (input)="onInput($any($event.target).value)"
+          />
+        </div>
+      }
+    }
+
+    <!-- =========================================================
+         OPERATOR MENU
+         ========================================================= -->
+
     <ng-template
       cdkConnectedOverlay
       [cdkConnectedOverlayOrigin]="operatorButton"
@@ -85,8 +184,9 @@
         <div class="operator-separator"></div>
 
         <button type="button" class="operator-option reset-option" (click)="onReset()">
-          <span class="operator-option-symbol">↻</span>
-          <span>Reset</span>
+          <span class="operator-option-symbol"> ↻ </span>
+
+          <span> Reset </span>
         </button>
       </div>
     </ng-template>
