@@ -91,6 +91,7 @@
             @if (col.filterable) {
               <th>
                 <app-column-filter
+                  [dateFormat]="getDateFormate()"
                   [column]="col"
                   (valueChange)="applyFilter($event)"
                   (operatorChange)="changeOperator($event)"
@@ -140,6 +141,10 @@
             } @else if (column.cellTemplate === 'currencyCellTemplate') {
               <td>
                 {{ row[column.field] | currency: currencyCode }}
+              </td>
+            } @else if (column.type === 'date') {
+              <td>
+                {{ row[column.field] | date: getDateFormate() }}
               </td>
             } @else {
               <td>

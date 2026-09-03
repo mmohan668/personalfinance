@@ -1,4 +1,4 @@
-import { AsyncPipe, CurrencyPipe } from '@angular/common';
+import { AsyncPipe, CurrencyPipe, DatePipe } from '@angular/common';
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
@@ -43,8 +43,9 @@ import { CommonService } from '../service/common-service';
     MatInputModule,
     PaginatorModule,
     CurrencyPipe,
+    DatePipe,
   ],
-  providers: [CurrencyPipe],
+  providers: [CurrencyPipe, DatePipe],
 
   styleUrl: './data-grid.scss',
   templateUrl: './data-grid.html',
@@ -840,5 +841,9 @@ export class DataGrid implements OnInit {
 
   getGroupColumnHeader() {
     return this.columns.filter((col) => col.field === this.groupBy)[0].header;
+  }
+
+  getDateFormate(): string {
+    return 'dd/MM/yyyy';
   }
 }
