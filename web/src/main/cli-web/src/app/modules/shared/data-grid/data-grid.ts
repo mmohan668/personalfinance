@@ -123,6 +123,12 @@ export class DataGrid implements OnInit {
 
   @Input() groupBy: string | null = null;
 
+  dateFormat: string = 'dd/MM/yyyy';
+
+  /* =========================================================
+     CONSTRUCTOR
+     ========================================================= */
+
   constructor(
     private gridService: GridService,
     public commonService: CommonService,
@@ -690,7 +696,19 @@ export class DataGrid implements OnInit {
               // because CurrencyPipe returns a STRING.
               return this.getNumericCurrencyValue(row, col);
             }
+            // -----------------------------------------------
+            // DATE VALUE
+            // -----------------------------------------------
 
+            if (col.type === 'date') {
+              const value = row[col.field];
+
+              if (!value) {
+                return null;
+              }
+
+              return new Date(value);
+            }
             // -----------------------------------------------
             // NORMAL VALUE
             // -----------------------------------------------
@@ -724,6 +742,9 @@ export class DataGrid implements OnInit {
             //
             // SUM / AVERAGE continue to work.
             cell.numFmt = `${currencySymbol}#,##0.00`;
+          }
+          if (col.type === 'date') {
+            cell.numFmt = this.getDateFormateForExport();
           }
         });
 
@@ -844,6 +865,10 @@ export class DataGrid implements OnInit {
   }
 
   getDateFormate(): string {
-    return 'dd/MM/yyyy';
+    return this.dateFormat;
+  }
+
+  getDateFormateForExport(): string {
+    return this.dateFormat.replace(/\//g, '"/"');
   }
 }
