@@ -129,7 +129,24 @@
       }
 
       <!-- =======================================================
-           NORMAL NON-DATE FILTER
+           NUMBER FILTER
+           ======================================================= -->
+
+      @else if (column.type === 'number') {
+        <div class="filter-control">
+          <input
+            pInputText
+            type="text"
+            inputMode="decimal"
+            [placeholder]="column.header"
+            [value]="filter.value"
+            (keydown)="onNumberKeyDown($event)"
+            (input)="onInput($any($event.target).value)"
+          />
+        </div>
+      }
+      <!-- =======================================================
+           NORMAL FILTER
            ======================================================= -->
 
       @else {

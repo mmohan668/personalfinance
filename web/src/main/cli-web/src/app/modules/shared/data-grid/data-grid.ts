@@ -11,7 +11,7 @@ import { MatInputModule } from '@angular/material/input';
 
 import { SelectItem, SortEvent, SortMeta } from 'primeng/api';
 import { Table, TableModule } from 'primeng/table';
-import { PaginatorModule } from 'primeng/paginator';
+import { Paginator, PaginatorModule } from 'primeng/paginator';
 
 import { BehaviorSubject, firstValueFrom } from 'rxjs';
 
@@ -51,8 +51,8 @@ import { CommonService } from '../service/common-service';
   templateUrl: './data-grid.html',
 })
 export class DataGrid implements OnInit {
-  @ViewChild('dt')
-  dt!: Table;
+  @ViewChild('dt') dt!: Table;
+  @ViewChild('paginator') paginator!: Paginator;
 
   /* =========================================================
      DATA
@@ -208,20 +208,9 @@ export class DataGrid implements OnInit {
       loadAllData: false,
     };
 
-    console.log('REQUEST:', request);
-
     this.gridService.loadGridData(request).subscribe((data: GridResult) => {
       this.dataSourceSubject.next(data.recordDetails);
-
       this.totalRecords = data.totalRecords;
-
-      /*
-       * Remove selections that no longer exist
-       * in the current data set.
-       */
-      const currentIds = new Set(data.recordDetails.map((row) => row.id));
-
-      this.selectedRows = this.selectedRows.filter((row) => currentIds.has(row.id));
     });
   }
 
@@ -276,8 +265,6 @@ export class DataGrid implements OnInit {
      ========================================================= */
 
   onSort(event: SortEvent): void {
-    console.log('SORT EVENT:', event);
-
     /*
      * IMPORTANT:
      *
@@ -333,23 +320,7 @@ export class DataGrid implements OnInit {
 
       this.sortOrder = 1;
     }
-
-    console.log('UPDATED PRIMARY SORT META:', this.sortMeta);
-
-    /*
-     * Sorting should start from the first page.
-     *
-     * Do NOT use:
-     *
-     * this.dt.first = 0;
-     *
-     * in newer PrimeNG versions because first can be
-     * represented as an Angular signal input.
-     *
-     * We only need to reset our backend pagination state.
-     */
-    this.skip = 0;
-
+    this.resetGrid();
     /*
      * Reload using the new sort state.
      */
@@ -411,6 +382,7 @@ export class DataGrid implements OnInit {
     ) {
       this.filters.push(gridFilter);
     }
+    this.resetGrid();
     this.loadGridData();
   }
 
@@ -552,252 +524,253 @@ export class DataGrid implements OnInit {
      EXPORT
      ========================================================= */
 
-  exportExcel = (selectionType: string): void => {
-    import('exceljs').then(async (ExcelJS) => {
-      const visibleColumns = this.visibleColumnsSubject.value;
+  exportExcel = async (selectionType: string): Promise<void> => {
+    const module = await import('exceljs');
+    const ExcelJS = module.default ?? module;
 
-      // =====================================================
-      // SOURCE DATA
-      // =====================================================
+    const visibleColumns = this.visibleColumnsSubject.value;
 
-      let sourceRows: any[] = [];
+    // =====================================================
+    // SOURCE DATA
+    // =====================================================
 
-      if (selectionType === 'SELECTED') {
-        if (this.selectedRows.length === 0) {
-          console.log('No rows selected');
-          return;
-        }
+    let sourceRows: any[] = [];
 
-        sourceRows = this.selectedRows;
-      } else {
-        const sorts: GridSort[] = this.sortMeta
-          .filter(
-            (sort): sort is SortMeta =>
-              !!sort && typeof sort.field === 'string' && (sort.order === 1 || sort.order === -1),
-          )
-          .map((sort) => ({
-            field: sort.field,
-            order: sort.order === 1 ? 'asc' : 'desc',
-          }));
-
-        const request: SearchCriteria = {
-          sortList: sorts,
-          filterList: this.filters,
-          skip: this.skip,
-          take: this.take,
-          loadAllData: true,
-        };
-
-        console.log('REQUEST:', request);
-
-        sourceRows = (await firstValueFrom(this.gridService.loadGridData(request))).recordDetails;
+    if (selectionType === 'SELECTED') {
+      if (this.selectedRows.length === 0) {
+        console.log('No rows selected');
+        return;
       }
 
-      // =====================================================
-      // CREATE WORKBOOK
-      // =====================================================
+      sourceRows = this.selectedRows;
+    } else {
+      const sorts: GridSort[] = this.sortMeta
+        .filter(
+          (sort): sort is SortMeta =>
+            !!sort && typeof sort.field === 'string' && (sort.order === 1 || sort.order === -1),
+        )
+        .map((sort) => ({
+          field: sort.field,
+          order: sort.order === 1 ? 'asc' : 'desc',
+        }));
 
-      const workbook = new ExcelJS.Workbook();
-      const worksheet = workbook.addWorksheet('data');
+      const request: SearchCriteria = {
+        sortList: sorts,
+        filterList: this.filters,
+        skip: this.skip,
+        take: this.take,
+        loadAllData: true,
+      };
 
-      // Get currency symbol once.
-      // Example:
-      // USD -> $
-      // INR -> ₹
-      // EUR -> €
-      // GBP -> £
-      const currencySymbol = this.getCurrencySymbol();
+      console.log('REQUEST:', request);
 
-      // =====================================================
-      // MAIN HEADER
-      // =====================================================
+      sourceRows = (await firstValueFrom(this.gridService.loadGridData(request))).recordDetails;
+    }
 
-      const headerRow = worksheet.addRow(visibleColumns.map((col) => col.header));
+    // =====================================================
+    // CREATE WORKBOOK
+    // =====================================================
 
-      headerRow.eachCell((cell) => {
-        cell.font = {
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('data');
+
+    // Get currency symbol once.
+    // Example:
+    // USD -> $
+    // INR -> ₹
+    // EUR -> €
+    // GBP -> £
+    const currencySymbol = this.getCurrencySymbol();
+
+    // =====================================================
+    // MAIN HEADER
+    // =====================================================
+
+    const headerRow = worksheet.addRow(visibleColumns.map((col) => col.header));
+
+    headerRow.eachCell((cell) => {
+      cell.font = {
+        bold: true,
+        size: 13,
+      };
+
+      cell.alignment = {
+        vertical: 'middle',
+      };
+    });
+
+    // =====================================================
+    // GROUP / DATA ROWS
+    // =====================================================
+
+    let previousGroup: any = Symbol('initial');
+
+    for (const row of sourceRows) {
+      const currentGroup = this.groupBy ? row[this.groupBy] : undefined;
+
+      // ===================================================
+      // GROUP HEADER
+      // ===================================================
+
+      if (this.groupBy && currentGroup !== previousGroup) {
+        const groupHeaderRow = worksheet.addRow([
+          `${this.getGroupColumnHeader()}: ${currentGroup}`,
+        ]);
+
+        // Merge group header across all visible columns
+        if (visibleColumns.length > 1) {
+          worksheet.mergeCells(
+            groupHeaderRow.number,
+            1,
+            groupHeaderRow.number,
+            visibleColumns.length,
+          );
+        }
+
+        // Group header styling
+        const groupCell = groupHeaderRow.getCell(1);
+
+        groupCell.font = {
           bold: true,
           size: 13,
         };
 
-        cell.alignment = {
+        groupCell.alignment = {
           vertical: 'middle',
         };
-      });
 
-      // =====================================================
-      // GROUP / DATA ROWS
-      // =====================================================
+        previousGroup = currentGroup;
+      }
 
-      let previousGroup: any = Symbol('initial');
+      // ===================================================
+      // DATA ROW
+      // ===================================================
 
-      for (const row of sourceRows) {
-        const currentGroup = this.groupBy ? row[this.groupBy] : undefined;
+      const dataRow = worksheet.addRow(
+        visibleColumns.map((col) => {
+          // -----------------------------------------------
+          // CUSTOM CELL VALUE
+          // -----------------------------------------------
 
-        // ===================================================
-        // GROUP HEADER
-        // ===================================================
-
-        if (this.groupBy && currentGroup !== previousGroup) {
-          const groupHeaderRow = worksheet.addRow([
-            `${this.getGroupColumnHeader()}: ${currentGroup}`,
-          ]);
-
-          // Merge group header across all visible columns
-          if (visibleColumns.length > 1) {
-            worksheet.mergeCells(
-              groupHeaderRow.number,
-              1,
-              groupHeaderRow.number,
-              visibleColumns.length,
-            );
+          if (col.cellTemplate === 'cellValueTemplate') {
+            return this.calculateCellValue(row, col);
           }
 
-          // Group header styling
-          const groupCell = groupHeaderRow.getCell(1);
-
-          groupCell.font = {
-            bold: true,
-            size: 13,
-          };
-
-          groupCell.alignment = {
-            vertical: 'middle',
-          };
-
-          previousGroup = currentGroup;
-        }
-
-        // ===================================================
-        // DATA ROW
-        // ===================================================
-
-        const dataRow = worksheet.addRow(
-          visibleColumns.map((col) => {
-            // -----------------------------------------------
-            // CUSTOM CELL VALUE
-            // -----------------------------------------------
-
-            if (col.cellTemplate === 'cellValueTemplate') {
-              return this.calculateCellValue(row, col);
-            }
-
-            // -----------------------------------------------
-            // CURRENCY
-            // -----------------------------------------------
-
-            if (col.cellTemplate === 'currencyCellTemplate') {
-              // IMPORTANT:
-              // Keep the actual Excel value as NUMBER.
-              //
-              // Do NOT use:
-              // this.currency.transform(...)
-              //
-              // because CurrencyPipe returns a STRING.
-              return this.getNumericCurrencyValue(row, col);
-            }
-            // -----------------------------------------------
-            // DATE VALUE
-            // -----------------------------------------------
-
-            if (col.type === 'date') {
-              const value = row[col.field];
-
-              if (!value) {
-                return null;
-              }
-
-              return new Date(value);
-            }
-            // -----------------------------------------------
-            // NORMAL VALUE
-            // -----------------------------------------------
-
-            return row[col.field];
-          }),
-        );
-
-        // ===================================================
-        // APPLY COLUMN FORMATTING
-        // ===================================================
-
-        visibleColumns.forEach((col, index) => {
-          const cell = dataRow.getCell(index + 1);
-
           // -----------------------------------------------
-          // CURRENCY FORMAT
+          // CURRENCY
           // -----------------------------------------------
 
           if (col.cellTemplate === 'currencyCellTemplate') {
-            // Keep the value numeric
-            cell.value = this.getNumericCurrencyValue(row, col);
-
-            // Display currency symbol while retaining
-            // numeric Excel value.
+            // IMPORTANT:
+            // Keep the actual Excel value as NUMBER.
             //
-            // Example:
-            // 50000 -> $50,000.00
-            // 50000 -> ₹50,000.00
-            // 50000 -> €50,000.00
+            // Do NOT use:
+            // this.currency.transform(...)
             //
-            // SUM / AVERAGE continue to work.
-            cell.numFmt = `${currencySymbol}#,##0.00`;
+            // because CurrencyPipe returns a STRING.
+            return this.getNumericCurrencyValue(row, col);
           }
+          // -----------------------------------------------
+          // DATE VALUE
+          // -----------------------------------------------
+
           if (col.type === 'date') {
-            cell.numFmt = this.getDateFormateForExport();
+            const value = row[col.field];
+
+            if (!value) {
+              return null;
+            }
+
+            return new Date(value);
           }
-        });
+          // -----------------------------------------------
+          // NORMAL VALUE
+          // -----------------------------------------------
 
-        // ===================================================
-        // EXCEL OUTLINE / GROUPING
-        // ===================================================
+          return row[col.field];
+        }),
+      );
 
-        if (this.groupBy) {
-          dataRow.outlineLevel = 1;
-        }
-      }
-
-      // =====================================================
-      // COLUMN WIDTH
-      // =====================================================
+      // ===================================================
+      // APPLY COLUMN FORMATTING
+      // ===================================================
 
       visibleColumns.forEach((col, index) => {
-        worksheet.getColumn(index + 1).width = this.getExcelColumnWidth(
-          worksheet,
-          index + 1,
-          col.header,
-        );
+        const cell = dataRow.getCell(index + 1);
+
+        // -----------------------------------------------
+        // CURRENCY FORMAT
+        // -----------------------------------------------
+
+        if (col.cellTemplate === 'currencyCellTemplate') {
+          // Keep the value numeric
+          cell.value = this.getNumericCurrencyValue(row, col);
+
+          // Display currency symbol while retaining
+          // numeric Excel value.
+          //
+          // Example:
+          // 50000 -> $50,000.00
+          // 50000 -> ₹50,000.00
+          // 50000 -> €50,000.00
+          //
+          // SUM / AVERAGE continue to work.
+          cell.numFmt = `${currencySymbol}#,##0.00`;
+        }
+        if (col.type === 'date') {
+          cell.numFmt = this.getDateFormateForExport();
+        }
       });
 
-      // =====================================================
-      // FREEZE MAIN HEADER
-      // =====================================================
-
-      worksheet.views = [
-        {
-          state: 'frozen',
-          ySplit: 1,
-        },
-      ];
-
-      // =====================================================
-      // OUTLINE SETTINGS
-      // =====================================================
+      // ===================================================
+      // EXCEL OUTLINE / GROUPING
+      // ===================================================
 
       if (this.groupBy) {
-        worksheet.properties.outlineProperties = {
-          summaryBelow: true,
-          summaryRight: true,
-        };
+        dataRow.outlineLevel = 1;
       }
+    }
 
-      // =====================================================
-      // WRITE FILE
-      // =====================================================
+    // =====================================================
+    // COLUMN WIDTH
+    // =====================================================
 
-      workbook.xlsx.writeBuffer().then((buffer) => {
-        this.saveAsExcelFile(buffer, 'products');
-      });
+    visibleColumns.forEach((col, index) => {
+      worksheet.getColumn(index + 1).width = this.getExcelColumnWidth(
+        worksheet,
+        index + 1,
+        col.header,
+      );
+    });
+
+    // =====================================================
+    // FREEZE MAIN HEADER
+    // =====================================================
+
+    worksheet.views = [
+      {
+        state: 'frozen',
+        ySplit: 1,
+      },
+    ];
+
+    // =====================================================
+    // OUTLINE SETTINGS
+    // =====================================================
+
+    if (this.groupBy) {
+      worksheet.properties.outlineProperties = {
+        summaryBelow: true,
+        summaryRight: true,
+      };
+    }
+
+    // =====================================================
+    // WRITE FILE
+    // =====================================================
+
+    workbook.xlsx.writeBuffer().then((buffer) => {
+      this.saveAsExcelFile(buffer, 'products');
     });
   };
 
@@ -870,5 +843,26 @@ export class DataGrid implements OnInit {
 
   getDateFormateForExport(): string {
     return this.dateFormat.replace(/\//g, '"/"');
+  }
+
+  private resetGrid(): void {
+    /*
+     * Reset the selected rows when filters change.
+     */
+    this.selectedRows = [];
+    /*
+     * Reset the page to the first page when filters change.
+     */
+    this.skip = 0;
+    /*
+     * Reset the number of items per page when filters change.
+     */
+    this.take = this.take ?? 25;
+    /*
+     * Reset the first index when filters change.
+     */
+    if (this.paginator) {
+      this.paginator.first.set(0);
+    }
   }
 }

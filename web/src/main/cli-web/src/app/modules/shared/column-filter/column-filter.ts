@@ -767,4 +767,59 @@ export class ColumnFilterComponent implements OnInit, OnDestroy {
 
     this.menuOpen = false;
   }
+
+  onNumberKeyDown(event: KeyboardEvent): void {
+    const input = event.target as HTMLInputElement;
+    const value = input.value;
+    const cursorPosition = input.selectionStart ?? 0;
+
+    const allowedControlKeys = [
+      'Backspace',
+      'Delete',
+      'ArrowLeft',
+      'ArrowRight',
+      'ArrowUp',
+      'ArrowDown',
+      'Tab',
+      'Home',
+      'End',
+    ];
+
+    if (allowedControlKeys.includes(event.key)) {
+      return;
+    }
+
+    // Allow Ctrl/Cmd shortcuts
+    if (event.ctrlKey || event.metaKey) {
+      return;
+    }
+
+    // Allow digits
+    if (/^\d$/.test(event.key)) {
+      return;
+    }
+
+    // "-" is allowed only when cursor is at the beginning
+    if (event.key === '-') {
+      if (cursorPosition === 0 && !value.includes('-')) {
+        return;
+      }
+
+      event.preventDefault();
+      return;
+    }
+
+    // "." is allowed only once
+    if (event.key === '.') {
+      if (!value.includes('.')) {
+        return;
+      }
+
+      event.preventDefault();
+      return;
+    }
+
+    // Block everything else
+    event.preventDefault();
+  }
 }
