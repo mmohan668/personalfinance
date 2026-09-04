@@ -176,6 +176,7 @@
               <span> Total Records: {{ totalRecords }} </span>
 
               <p-paginator
+                #paginator
                 [rows]="take"
                 [totalRecords]="totalRecords"
                 [rowsPerPageOptions]="[25, 50, 100]"
