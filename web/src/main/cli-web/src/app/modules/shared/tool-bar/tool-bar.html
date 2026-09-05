@@ -4,22 +4,22 @@
 
 <div class="table-toolbar">
   <!-- Add -->
-  <button mat-icon-button class="toolbar-border" type="button" title="Add">
+  <button mat-icon-button class="toolbar-border" type="button" title="Add" (click)="addRow()">
     <mat-icon>add</mat-icon>
   </button>
 
   <!-- Copy -->
-  <button mat-icon-button class="toolbar-border" type="button" title="Copy">
+  <button mat-icon-button class="toolbar-border" type="button" title="Copy" (click)="copyRow()">
     <mat-icon>description</mat-icon>
   </button>
 
   <!-- Edit -->
-  <button mat-icon-button class="toolbar-border" type="button" title="Edit">
+  <button mat-icon-button class="toolbar-border" type="button" title="Edit" (click)="editRow()">
     <mat-icon>edit</mat-icon>
   </button>
 
   <!-- Delete -->
-  <button mat-icon-button class="toolbar-border" type="button" title="Delete">
+  <button mat-icon-button class="toolbar-border" type="button" title="Delete" (click)="deleteRow()">
     <mat-icon>delete</mat-icon>
   </button>
 
