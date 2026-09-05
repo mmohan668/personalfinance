@@ -36,4 +36,12 @@ export class ToolBar {
   getColumns!: (searchInput: string) => GridColumn[];
   @Input()
   toggleColumn!: (col: GridColumn, checked: boolean) => void;
+  @Input()
+  addRow!: () => void;
+  @Input()
+  copyRow!: () => void;
+  @Input()
+  editRow!: () => void;
+  @Input()
+  deleteRow!: () => void;
 }

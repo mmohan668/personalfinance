@@ -55,6 +55,22 @@ export class DataGrid implements OnInit {
   @ViewChild('paginator') paginator!: Paginator;
 
   /* =========================================================
+      TOOLBAR ACTIONS
+      ========================================================= */
+
+  @Input()
+  addRow!: () => void;
+
+  @Input()
+  copyRow!: () => void;
+
+  @Input()
+  editRow!: () => void;
+
+  @Input()
+  deleteRow!: () => void;
+
+  /* =========================================================
      DATA
      ========================================================= */
 
