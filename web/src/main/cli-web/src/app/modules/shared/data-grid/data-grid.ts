@@ -224,9 +224,16 @@ export class DataGrid implements OnInit {
       loadAllData: false,
     };
 
-    this.gridService.loadGridData(request).subscribe((data: GridResult) => {
-      this.dataSourceSubject.next(data.recordDetails);
-      this.totalRecords = data.totalRecords;
+    this.gridService.loadGridData(request).subscribe({
+      next: (result) => {
+        this.dataSourceSubject.next(result.recordDetails);
+        this.totalRecords = result.totalRecords;
+      },
+      error: (error) => {
+        console.error('Error loading grid data:', error);
+        this.dataSourceSubject.next([]);
+        this.totalRecords = 0;
+      },
     });
   }
 
