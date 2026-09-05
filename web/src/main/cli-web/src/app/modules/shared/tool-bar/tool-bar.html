@@ -4,22 +4,22 @@
 
 <div class="table-toolbar">
   <!-- Add -->
-  <button mat-icon-button class="toolbar-border" type="button">
+  <button mat-icon-button class="toolbar-border" type="button" title="Add">
     <mat-icon>add</mat-icon>
   </button>
 
   <!-- Copy -->
-  <button mat-icon-button class="toolbar-border" type="button">
-    <mat-icon>content_copy</mat-icon>
+  <button mat-icon-button class="toolbar-border" type="button" title="Copy">
+    <mat-icon>description</mat-icon>
   </button>
 
   <!-- Edit -->
-  <button mat-icon-button class="toolbar-border" type="button">
+  <button mat-icon-button class="toolbar-border" type="button" title="Edit">
     <mat-icon>edit</mat-icon>
   </button>
 
   <!-- Delete -->
-  <button mat-icon-button class="toolbar-border" type="button">
+  <button mat-icon-button class="toolbar-border" type="button" title="Delete">
     <mat-icon>delete</mat-icon>
   </button>
 
@@ -27,15 +27,25 @@
        SETTINGS
        ======================================================= -->
 
-  <button mat-icon-button class="toolbar-border" type="button" [matMenuTriggerFor]="settingsMenu">
-    <mat-icon>settings</mat-icon>
+  <button
+    mat-icon-button
+    class="toolbar-border"
+    type="button"
+    title="Grid Settings"
+    [matMenuTriggerFor]="settingsMenu"
+  >
+    <mat-icon>save</mat-icon>
   </button>
 
   <mat-menu #settingsMenu="matMenu" class="settings-menu">
-    <button mat-menu-item type="button" (click)="exportExcel('ALL')">Save Grid Settings</button>
+    <button mat-menu-item type="button" (click)="exportExcel('ALL')">
+      <mat-icon>save</mat-icon>
+      <span>Save Grid Settings</span>
+    </button>
 
     <button mat-menu-item type="button" (click)="exportExcel('SELECTED')">
-      Reset Grid Setting
+      <mat-icon>restart_alt</mat-icon>
+      <span>Reset Grid Settings</span>
     </button>
   </mat-menu>
 
@@ -43,15 +53,25 @@
        EXPORT
        ======================================================= -->
 
-  <button mat-icon-button class="toolbar-border" type="button" [matMenuTriggerFor]="exportMenu">
+  <button
+    mat-icon-button
+    class="toolbar-border"
+    type="button"
+    title="Export"
+    [matMenuTriggerFor]="exportMenu"
+  >
     <mat-icon>ios_share</mat-icon>
   </button>
 
   <mat-menu #exportMenu="matMenu" class="export-menu">
-    <button mat-menu-item type="button" (click)="exportExcel('ALL')">Export All Data</button>
+    <button mat-menu-item type="button" (click)="exportExcel('ALL')">
+      <img src="assets/icons/exportAll.png" class="menu-icon" alt="" />
+      <span>Export All Data</span>
+    </button>
 
     <button mat-menu-item type="button" (click)="exportExcel('SELECTED')">
-      Export Selected Rows Data
+      <img src="assets/icons/exportSelected.png" class="menu-icon" alt="" />
+      <span>Export Selected Rows Data</span>
     </button>
   </mat-menu>
 
@@ -59,7 +79,13 @@
        COLUMN CHOOSER
        ======================================================= -->
 
-  <button mat-icon-button class="toolbar-border" type="button" [matMenuTriggerFor]="columnMenu">
+  <button
+    mat-icon-button
+    class="toolbar-border"
+    type="button"
+    title="Column Chooser"
+    [matMenuTriggerFor]="columnMenu"
+  >
     <mat-icon>view_column</mat-icon>
   </button>
 
@@ -90,7 +116,7 @@
         }
       </mat-form-field>
     </div>
-    
+
     @if (getColumns(searchInput.value).length > 0) {
       <!-- Select All -->
       <div class="select-all" (click)="$event.stopPropagation()">
