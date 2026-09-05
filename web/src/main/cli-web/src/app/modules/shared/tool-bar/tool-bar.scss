@@ -19,17 +19,60 @@
 }
 
 /* =========================================================
+   ALL MENUS - WHITE BACKGROUND
+   ========================================================= */
+
+::ng-deep .export-menu,
+::ng-deep .settings-menu,
+::ng-deep .column-menu {
+  background-color: #ffffff !important;
+}
+
+/* Material menu panel background */
+
+::ng-deep .export-menu .mat-mdc-menu-panel,
+::ng-deep .settings-menu .mat-mdc-menu-panel,
+::ng-deep .column-menu .mat-mdc-menu-panel {
+  background-color: #ffffff !important;
+}
+
+/* =========================================================
+   MENU ITEMS
+   ========================================================= */
+
+::ng-deep .export-menu .mat-mdc-menu-item,
+::ng-deep .settings-menu .mat-mdc-menu-item,
+::ng-deep .column-menu .mat-mdc-menu-item {
+  background-color: #ffffff !important;
+}
+
+/* Menu item hover */
+
+::ng-deep .export-menu .mat-mdc-menu-item:hover,
+::ng-deep .settings-menu .mat-mdc-menu-item:hover,
+::ng-deep .column-menu .mat-mdc-menu-item:hover {
+  background-color: #f5f7fa !important;
+}
+
+/* =========================================================
    EXPORT MENU
    ========================================================= */
 
 ::ng-deep .export-menu .mat-mdc-menu-item {
   min-height: 30px !important;
-
   height: 30px !important;
-
   padding-top: 0 !important;
-
   padding-bottom: 0 !important;
+}
+
+/* Export icons */
+
+.menu-icon {
+  width: 22px;
+  height: 22px;
+  margin-right: 12px;
+  object-fit: contain;
+  vertical-align: middle;
 }
 
 /* =========================================================
@@ -38,12 +81,29 @@
 
 ::ng-deep .settings-menu .mat-mdc-menu-item {
   min-height: 30px !important;
-
   height: 30px !important;
-
   padding-top: 0 !important;
-
   padding-bottom: 0 !important;
+}
+
+/* =========================================================
+   COLUMN MENU
+   ========================================================= */
+
+::ng-deep .column-menu {
+  max-height: 300px !important;
+  overflow-y: auto !important;
+}
+
+::ng-deep .column-menu .mat-mdc-menu-item {
+  min-height: 30px !important;
+  height: 30px !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+::ng-deep .column-menu .mat-mdc-checkbox {
+  margin: 0 !important;
 }
 
 /* =========================================================
@@ -57,17 +117,11 @@
   ~ .mdc-checkbox__background
   .mdc-checkbox__mixedmark {
   width: 12px !important;
-
   height: 3px !important;
-
   background-color: #4caf50 !important;
-
   border: 0 !important;
-
   border-radius: 1px !important;
-
   transform: none !important;
-
   opacity: 1 !important;
 }
 
@@ -81,31 +135,7 @@
   .mdc-checkbox__native-control:indeterminate
   ~ .mdc-checkbox__background {
   background-color: #f5f7fa !important;
-
   border: 2px solid #4caf50 !important;
-}
-
-/* =========================================================
-   COLUMN MENU ITEMS
-   ========================================================= */
-
-::ng-deep .column-menu .mat-mdc-menu-item {
-  min-height: 30px !important;
-
-  height: 30px !important;
-
-  padding-top: 0 !important;
-  padding-bottom: 0 !important;
-}
-
-::ng-deep .column-menu .mat-mdc-checkbox {
-  margin: 0 !important;
-}
-
-::ng-deep .column-menu {
-  max-height: 300px !important;
-
-  overflow-y: auto !important;
 }
 
 /* =========================================================
@@ -114,34 +144,151 @@
 
 .column-search {
   padding: 2px 8px !important;
-
   margin: 0 !important;
-
   height: auto;
 }
 
 .column-search mat-form-field {
   width: 100%;
-
-  background: #fff;
-
+  background: #ffffff;
   margin: 0 !important;
 }
 
 /* =========================================================
-   COLUMN CHOOSER CHECKBOXES
+   COLUMN SEARCH - FOCUS BORDER
    ========================================================= */
 
-::ng-deep .mat-mdc-menu-panel .mat-mdc-checkbox {
-  --mdc-checkbox-selected-checkmark-color: #fff;
+/* Green outline when Search columns input is focused */
 
-  --mdc-checkbox-selected-icon-color: #4caf50;
+::ng-deep .column-search .mat-mdc-form-field.mat-focused .mdc-notched-outline__leading,
+::ng-deep .column-search .mat-mdc-form-field.mat-focused .mdc-notched-outline__notch,
+::ng-deep .column-search .mat-mdc-form-field.mat-focused .mdc-notched-outline__trailing {
+  border-color: #4caf50 !important;
+}
 
-  --mdc-checkbox-selected-hover-icon-color: #4caf50;
+/* Green floating label when focused */
 
-  --mdc-checkbox-selected-focus-icon-color: #4caf50;
+::ng-deep .column-search .mat-mdc-form-field.mat-focused .mdc-floating-label {
+  color: #4caf50 !important;
+}
 
-  --mdc-checkbox-selected-pressed-icon-color: #4caf50;
+/* Green caret */
+
+::ng-deep .column-search .mat-mdc-input-element:focus {
+  caret-color: #4caf50 !important;
+}
+
+/* =========================================================
+   UNCHECKED CHECKBOX
+   ========================================================= */
+
+::ng-deep
+  .column-menu
+  .mat-mdc-checkbox
+  .mdc-checkbox
+  .mdc-checkbox__native-control:not(:checked):not(:indeterminate)
+  ~ .mdc-checkbox__background {
+  border-color: #666 !important;
+  background-color: transparent !important;
+}
+
+/* =========================================================
+   CHECKED CHECKBOX
+   ========================================================= */
+
+::ng-deep
+  .column-menu
+  .mat-mdc-checkbox
+  .mdc-checkbox
+  .mdc-checkbox__native-control:checked
+  ~ .mdc-checkbox__background {
+  border-color: #4caf50 !important;
+  background-color: transparent !important;
+}
+
+/* =========================================================
+   CHECKED CHECKMARK
+   ========================================================= */
+
+::ng-deep
+  .column-menu
+  .mat-mdc-checkbox
+  .mdc-checkbox
+  .mdc-checkbox__native-control:checked
+  ~ .mdc-checkbox__background
+  .mdc-checkbox__checkmark {
+  color: #4caf50 !important;
+  fill: #4caf50 !important;
+}
+
+/* =========================================================
+   CHECKED CHECKMARK PATH
+   ========================================================= */
+
+::ng-deep
+  .column-menu
+  .mat-mdc-checkbox
+  .mdc-checkbox
+  .mdc-checkbox__native-control:checked
+  ~ .mdc-checkbox__background
+  .mdc-checkbox__checkmark
+  .mdc-checkbox__checkmark-path {
+  stroke: #4caf50 !important;
+  stroke-width: 2.5 !important;
+}
+
+/* =========================================================
+   CHECKED - HOVER
+   ========================================================= */
+
+::ng-deep
+  .column-menu
+  .mat-mdc-checkbox
+  .mdc-checkbox
+  .mdc-checkbox__native-control:checked:hover
+  ~ .mdc-checkbox__background {
+  border-color: #4caf50 !important;
+  background-color: transparent !important;
+}
+
+/* =========================================================
+   CHECKED - FOCUS
+   ========================================================= */
+
+::ng-deep
+  .column-menu
+  .mat-mdc-checkbox
+  .mdc-checkbox
+  .mdc-checkbox__native-control:checked:focus
+  ~ .mdc-checkbox__background {
+  border-color: #4caf50 !important;
+  background-color: transparent !important;
+}
+
+/* =========================================================
+   UNCHECKED - FOCUS
+   ========================================================= */
+
+::ng-deep
+  .column-menu
+  .mat-mdc-checkbox
+  .mdc-checkbox
+  .mdc-checkbox__native-control:not(:checked):not(:indeterminate):focus
+  ~ .mdc-checkbox__background {
+  border-color: #4caf50 !important;
+  background-color: transparent !important;
+}
+
+/* =========================================================
+   CHECKED MDC VARIABLES
+   ========================================================= */
+
+::ng-deep .column-menu .mat-mdc-checkbox {
+  --mdc-checkbox-selected-icon-color: transparent !important;
+  --mdc-checkbox-selected-hover-icon-color: transparent !important;
+  --mdc-checkbox-selected-focus-icon-color: transparent !important;
+  --mdc-checkbox-selected-pressed-icon-color: transparent !important;
+  --mdc-checkbox-selected-checkmark-color: #4caf50 !important;
 }
 
 /* =========================================================
@@ -152,4 +299,8 @@
   margin-right: 5px !important;
   color: #4caf50 !important;
   border: 1px solid #4caf50 !important;
+}
+
+::ng-deep .settings-menu .mat-icon {
+  color: #4caf50 !important;
 }
