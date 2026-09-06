@@ -8,8 +8,8 @@ export class GridService {
   private baseUrl = 'http://localhost:1003/pf-warehouse/grid';
   constructor(private http: HttpClient) {}
 
-  loadGridColumns(): Observable<GridColumn[]> {
-    return this.http.get<GridColumn[]>(`${this.baseUrl}/getColumns`);
+  loadGridColumns(gridName: string): Observable<GridColumn[]> {
+    return this.http.get<GridColumn[]>(`${this.baseUrl}/getColumns?gridName=${gridName}`);
   }
 
   loadGridData(request: SearchCriteria): Observable<GridResult> {

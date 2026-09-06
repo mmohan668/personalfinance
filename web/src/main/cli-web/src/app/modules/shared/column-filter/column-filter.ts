@@ -95,7 +95,8 @@ export class ColumnFilterComponent implements OnInit, OnDestroy {
   @HostBinding('class.between-date-filter')
   get isBetweenDateFilter(): boolean {
     return (
-      this.column?.type === COLUMN_TYPES.DATE && this.selectedOperator === FILTER_OPERATORS.BETWEEN
+      this.column?.dataType === COLUMN_TYPES.DATE &&
+      this.selectedOperator === FILTER_OPERATORS.BETWEEN
     );
   }
   /**
@@ -353,7 +354,7 @@ export class ColumnFilterComponent implements OnInit, OnDestroy {
    * yyyy-MM-dd filter values.
    */
   private syncDatePickerValues(): void {
-    if (this.column.type !== COLUMN_TYPES.DATE) {
+    if (this.column.dataType !== COLUMN_TYPES.DATE) {
       this.filterDateValue = null;
       this.filterDateToValue = null;
       return;
@@ -492,7 +493,7 @@ export class ColumnFilterComponent implements OnInit, OnDestroy {
   onInput(value: string | Date | null): void {
     this.betweenError = '';
 
-    if (this.column.type === COLUMN_TYPES.DATE) {
+    if (this.column.dataType === COLUMN_TYPES.DATE) {
       const date = this.toDate(value);
 
       if (!date) {
@@ -520,7 +521,7 @@ export class ColumnFilterComponent implements OnInit, OnDestroy {
 
     let filterValue: string;
 
-    if (this.column.type === COLUMN_TYPES.DATE) {
+    if (this.column.dataType === COLUMN_TYPES.DATE) {
       const date = this.toDate(value);
 
       if (!date) {
@@ -599,7 +600,7 @@ export class ColumnFilterComponent implements OnInit, OnDestroy {
       return column.defaultFilterOperator;
     }
 
-    switch (column.type) {
+    switch (column.dataType) {
       case COLUMN_TYPES.NUMBER:
       case COLUMN_TYPES.DATE:
       case COLUMN_TYPES.BOOLEAN:
@@ -612,7 +613,7 @@ export class ColumnFilterComponent implements OnInit, OnDestroy {
   }
 
   getOperators(column: GridColumn): FilterOperator[] {
-    switch (column.type) {
+    switch (column.dataType) {
       case COLUMN_TYPES.NUMBER:
       case COLUMN_TYPES.DATE:
         return this.numericOperators;
@@ -708,7 +709,7 @@ export class ColumnFilterComponent implements OnInit, OnDestroy {
       return false;
     }
 
-    if (this.column.type === COLUMN_TYPES.NUMBER) {
+    if (this.column.dataType === COLUMN_TYPES.NUMBER) {
       const from = Number(this.filter.value);
       const to = Number(this.filter.valueTo);
 
@@ -719,7 +720,7 @@ export class ColumnFilterComponent implements OnInit, OnDestroy {
       }
     }
 
-    if (this.column.type === COLUMN_TYPES.DATE) {
+    if (this.column.dataType === COLUMN_TYPES.DATE) {
       const from = this.parseFilterDate(this.filter.value);
 
       const to = this.parseFilterDate(this.filter.valueTo);

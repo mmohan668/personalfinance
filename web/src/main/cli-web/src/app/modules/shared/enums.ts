@@ -62,3 +62,7 @@ export enum COLUMN_TYPES {
   DATE = 'date',
   BOOLEAN = 'boolean',
 }
+
+export enum GRID_NAMES {
+  PRODUCT_GRID = 'PRODUCT_GRID',
+}

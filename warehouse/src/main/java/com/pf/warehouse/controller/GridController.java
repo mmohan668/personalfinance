@@ -1,7 +1,6 @@
 package com.pf.warehouse.controller;
 
-import com.pf.common.dto.gp.GridColumnDTO;
-import com.pf.common.dto.ProductDTO;
+import com.pf.common.dto.gp.GridColumnDto;
 import com.pf.common.dto.gp.GridResult;
 import com.pf.common.dto.gp.SearchCriteria;
 import com.pf.common.service.gp.GridService;
@@ -17,8 +16,8 @@ public class GridController {
     private final GridService gridService;
 
     @GetMapping("/getColumns")
-    private List<GridColumnDTO> getColumns() {
-        return gridService.getGridColumns();
+    private List<GridColumnDto> getColumns(@RequestParam String gridName) {
+        return gridService.getGridColumns(gridName);
     }
 
     @PostMapping("/getData")

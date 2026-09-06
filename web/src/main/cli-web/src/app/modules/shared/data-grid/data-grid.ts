@@ -1,4 +1,4 @@
-import { AsyncPipe, CurrencyPipe, DatePipe } from '@angular/common';
+import { AsyncPipe, CommonModule, CurrencyPipe, DatePipe } from '@angular/common';
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
@@ -44,6 +44,7 @@ import { CommonService } from '../service/common-service';
     PaginatorModule,
     CurrencyPipe,
     DatePipe,
+    CommonModule,
   ],
   providers: [CurrencyPipe, DatePipe],
 
@@ -69,6 +70,9 @@ export class DataGrid implements OnInit {
 
   @Input()
   deleteRow!: () => void;
+
+  @Input({ required: true })
+  gridName!: string;
 
   /* =========================================================
      DATA
@@ -156,7 +160,7 @@ export class DataGrid implements OnInit {
      ========================================================= */
 
   ngOnInit(): void {
-    this.gridService.loadGridColumns().subscribe((columns) => {
+    this.gridService.loadGridColumns(this.gridName).subscribe((columns) => {
       this.columns = columns.map((column) => ({
         ...column,
         visible: column.visible !== false,
@@ -697,7 +701,7 @@ export class DataGrid implements OnInit {
           // DATE VALUE
           // -----------------------------------------------
 
-          if (col.type === 'date') {
+          if (col.dataType === 'date') {
             const value = row[col.field];
 
             if (!value) {
@@ -740,7 +744,7 @@ export class DataGrid implements OnInit {
           // SUM / AVERAGE continue to work.
           cell.numFmt = `${currencySymbol}#,##0.00`;
         }
-        if (col.type === 'date') {
+        if (col.dataType === 'date') {
           cell.numFmt = this.getDateFormateForExport();
         }
       });
