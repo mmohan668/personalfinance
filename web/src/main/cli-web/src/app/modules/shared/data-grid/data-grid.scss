@@ -17,6 +17,12 @@
   position: relative;
 }
 
+:host ::ng-deep .p-datatable-thead > tr > th,
+:host ::ng-deep .p-datatable-tbody > tr > td {
+  min-width: 120px; // adjust per column type
+  white-space: nowrap; // prevent wrapping
+}
+
 /* =========================================================
    SORT HEADER
    ========================================================= */

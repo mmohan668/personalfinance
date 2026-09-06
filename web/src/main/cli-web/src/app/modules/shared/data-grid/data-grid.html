@@ -63,7 +63,7 @@
           @for (col of visibleColumns; track col.field) {
             <th
               [pSortableColumn]="col.sortable !== false ? col.field : undefined"
-              [style.width]="col.width"
+              [style.minWidth.px]="col.width || 120"
               pReorderableColumn
             >
               <div class="sort-header">
@@ -138,23 +138,17 @@
 
           <!-- Data columns -->
           @for (column of visibleColumns; track column.field) {
-            @if (column.cellTemplate === 'cellValueTemplate') {
-              <td>
+            <td [ngStyle]="{ 'text-align': column.align }">
+              @if (column.cellTemplate === 'cellValueTemplate') {
                 {{ calculateCellValue(row, column) }}
-              </td>
-            } @else if (column.cellTemplate === 'currencyCellTemplate') {
-              <td>
+              } @else if (column.cellTemplate === 'currencyCellTemplate') {
                 {{ row[column.field] | currency: currencyCode }}
-              </td>
-            } @else if (column.type === 'date') {
-              <td>
+              } @else if (column.dataType === 'date') {
                 {{ row[column.field] | date: getDateFormate() }}
-              </td>
-            } @else {
-              <td>
+              } @else {
                 {{ row[column.field] }}
-              </td>
-            }
+              }
+            </td>
           }
         </tr>
       </ng-template>
@@ -169,29 +163,22 @@
           </td>
         </tr>
       </ng-template>
-
-      <!-- ===================================================
-           FOOTER
-           =================================================== -->
-      <ng-template #footer>
-        <tr>
-          <td [attr.colspan]="visibleColumns.length + 1">
-            <div class="grid-footer">
-              <span> Total Records: {{ totalRecords }} </span>
-
-              <p-paginator
-                #paginator
-                [rows]="take"
-                [totalRecords]="totalRecords"
-                [rowsPerPageOptions]="[25, 50, 100]"
-                appendTo="body"
-                (onPageChange)="onPage($event)"
-              >
-              </p-paginator>
-            </div>
-          </td>
-        </tr>
-      </ng-template>
     </p-table>
   }
+</div>
+<!-- ===================================================
+           FOOTER
+ =================================================== -->
+<div class="grid-footer">
+  <span>Total Records: {{ totalRecords }}</span>
+
+  <p-paginator
+    #paginator
+    [rows]="take"
+    [totalRecords]="totalRecords"
+    [rowsPerPageOptions]="[25, 50, 100]"
+    appendTo="body"
+    (onPageChange)="onPage($event)"
+  >
+  </p-paginator>
 </div>
