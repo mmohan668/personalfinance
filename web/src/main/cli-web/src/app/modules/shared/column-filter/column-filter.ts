@@ -10,21 +10,13 @@ import {
   Output,
 } from '@angular/core';
 import { formatDate } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 
 import { debounceTime, distinctUntilChanged, Subject, takeUntil } from 'rxjs';
-
-import { InputTextModule } from 'primeng/inputtext';
-import { DatePickerModule } from 'primeng/datepicker';
-
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-
-import { OverlayModule } from '@angular/cdk/overlay';
 
 import { GridColumn, GridFilter } from '../types/types';
 
 import { COLUMN_TYPES, FILTER_ICONS, FILTER_LABLES, FILTER_OPERATORS } from '../enums';
+import { CommonImportsModule } from '../common-imports/common-imports-module';
 
 export interface FilterOperator {
   value: string;
@@ -35,14 +27,7 @@ export interface FilterOperator {
 @Component({
   selector: 'app-column-filter',
   standalone: true,
-  imports: [
-    InputTextModule,
-    MatFormFieldModule,
-    MatInputModule,
-    OverlayModule,
-    FormsModule,
-    DatePickerModule,
-  ],
+  imports: [CommonImportsModule],
   templateUrl: './column-filter.html',
   styleUrl: './column-filter.scss',
 })
