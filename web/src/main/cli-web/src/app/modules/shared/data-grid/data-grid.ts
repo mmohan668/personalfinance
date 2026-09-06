@@ -220,7 +220,7 @@ export class DataGrid implements OnInit {
 
   initializeDefaultSort(columns: GridColumn[]): void {
     const defaultSortColumn = columns.find(
-      (column) => column.sortable !== false && column.defaultSortOrder !== undefined,
+      (column) => column.sortable !== false && column.defaultSortOrder,
     );
 
     if (!defaultSortColumn) {
@@ -557,8 +557,6 @@ export class DataGrid implements OnInit {
         take: this.take,
         loadAllData: true,
       };
-
-      console.log('REQUEST:', request);
 
       sourceRows = (await firstValueFrom(this.gridService.loadGridData(request))).recordDetails;
     }
