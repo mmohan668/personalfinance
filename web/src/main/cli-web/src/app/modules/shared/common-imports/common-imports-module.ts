@@ -13,6 +13,7 @@ import { PaginatorModule } from 'primeng/paginator';
 import { InputTextModule } from 'primeng/inputtext';
 import { DatePickerModule } from 'primeng/datepicker';
 import { OverlayModule } from '@angular/cdk/overlay';
+import { SelectModule } from 'primeng/select';
 
 @NgModule({
   declarations: [],
@@ -34,6 +35,7 @@ import { OverlayModule } from '@angular/cdk/overlay';
     InputTextModule,
     OverlayModule,
     DatePickerModule,
+    SelectModule,
   ],
   providers: [CurrencyPipe, DatePipe],
   exports: [
@@ -54,6 +56,7 @@ import { OverlayModule } from '@angular/cdk/overlay';
     InputTextModule,
     OverlayModule,
     DatePickerModule,
+    SelectModule,
   ],
 })
 export class CommonImportsModule {}

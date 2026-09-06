@@ -548,3 +548,46 @@
     min-width: 145px;
   }
 }
+
+// ============================================================
+// PRIME NG BOOLEAN SELECT
+// Keep the operator button over the left side, just like the
+// normal text/number/date filters, but reserve space for it.
+// ============================================================
+
+.boolean-filter-control {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  height: 2.4rem;
+  box-sizing: border-box;
+}
+
+.boolean-filter-control ::ng-deep .p-select {
+  width: 100%;
+  min-width: 0;
+  height: 2.4rem;
+  box-sizing: border-box;
+}
+
+.boolean-filter-control ::ng-deep .p-select-label {
+  min-width: 0;
+  padding-left: 2.4rem !important;
+  padding-right: 2.5rem !important;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-sizing: border-box;
+}
+
+.boolean-filter-control ::ng-deep .p-select-dropdown {
+  width: 2.5rem;
+  min-width: 2.5rem;
+}
+
+.boolean-filter-control ::ng-deep .p-select:focus,
+.boolean-filter-control ::ng-deep .p-select.p-focus {
+  border-color: #69aa5c !important;
+  box-shadow: 0 0 0 1px rgba(105, 170, 92, 0.25) !important;
+}

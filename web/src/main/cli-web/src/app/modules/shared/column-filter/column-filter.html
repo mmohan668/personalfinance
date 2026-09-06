@@ -146,6 +146,24 @@
         </div>
       }
       <!-- =======================================================
+     BOOLEAN FILTER
+     ======================================================= -->
+
+      @else if (column.dataType === 'boolean') {
+        <div class="filter-control boolean-filter-control">
+          <p-select
+            [options]="booleanOptions"
+            optionLabel="label"
+            optionValue="value"
+            [placeholder]="column.header"
+            [(ngModel)]="filter.value"
+            (ngModelChange)="onBooleanChange($event)"
+            appendTo="body"
+          />
+        </div>
+      }
+
+      <!-- =======================================================
            NORMAL FILTER
            ======================================================= -->
 
