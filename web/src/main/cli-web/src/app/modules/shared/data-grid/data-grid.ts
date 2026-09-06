@@ -1,53 +1,26 @@
-import { AsyncPipe, CommonModule, CurrencyPipe, DatePipe } from '@angular/common';
+import { CurrencyPipe } from '@angular/common';
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatIconModule } from '@angular/material/icon';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatSelectModule } from '@angular/material/select';
-import { MatInputModule } from '@angular/material/input';
 
 import { SelectItem, SortEvent, SortMeta } from 'primeng/api';
-import { Table, TableModule } from 'primeng/table';
-import { Paginator, PaginatorModule } from 'primeng/paginator';
+import { Table } from 'primeng/table';
+import { Paginator } from 'primeng/paginator';
 
 import { BehaviorSubject, firstValueFrom } from 'rxjs';
 
-import { ColumnFilterComponent } from './../column-filter/column-filter';
-import { GridColumn, GridFilter, GridResult, GridSort, SearchCriteria } from '../types/types';
+import { GridColumn, GridFilter, GridSort, SearchCriteria } from '../types/types';
 
 import { GridService } from '../service/grid-service';
 import { SORT_ICONS, SORT_ORDERS } from '../enums';
 
 import * as FileSaver from 'file-saver';
-import { ToolBar } from '../tool-bar/tool-bar';
 import { CommonService } from '../service/common-service';
+import { CommonImportsModule } from '../common-imports/common-imports-module';
+import { ColumnFilterComponent } from '../column-filter/column-filter';
 
 @Component({
   selector: 'app-data-grid',
   standalone: true,
-
-  imports: [
-    TableModule,
-    ColumnFilterComponent,
-    AsyncPipe,
-    ToolBar,
-    MatSelectModule,
-    MatFormFieldModule,
-    MatCheckboxModule,
-    FormsModule,
-    MatMenuModule,
-    MatIconModule,
-    MatInputModule,
-    PaginatorModule,
-    CurrencyPipe,
-    DatePipe,
-    CommonModule,
-  ],
-  providers: [CurrencyPipe, DatePipe],
-
+  imports: [CommonImportsModule, ColumnFilterComponent],
   styleUrl: './data-grid.scss',
   templateUrl: './data-grid.html',
 })
@@ -258,8 +231,6 @@ export class DataGrid implements OnInit {
       this.sortField = '';
       this.sortOrder = 1;
 
-      console.log('DEFAULT SORT: []');
-
       return;
     }
 
@@ -283,8 +254,6 @@ export class DataGrid implements OnInit {
      */
     this.sortField = defaultSortColumn.field;
     this.sortOrder = order;
-
-    console.log('DEFAULT SORT:', this.sortMeta);
   }
 
   /* =========================================================
