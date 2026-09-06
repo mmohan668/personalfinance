@@ -25,6 +25,7 @@ public class GridService {
     private final GridColumnMapper gridColumnMapper;
 
     public GridResult getProducts(SearchCriteria searchCriteria) {
+        searchCriteria.getSortList().add(GridSort.builder().field("id").order("asc").build());
         long totalRecords = genericCriteriaRepository.getCountBySearchCriteria(Product.class, searchCriteria);
         List<Product> products = genericCriteriaRepository.getDataBySearchCriteria(Product.class, searchCriteria);
         List<ProductDTO> productDTOS = productMapper.toProductDTO(products);

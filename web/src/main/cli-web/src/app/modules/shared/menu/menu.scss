@@ -1,0 +1,342 @@
+.menu {
+  --menu-width: 260px;
+  --menu-collapsed-width: 72px;
+
+  width: var(--menu-width);
+  min-width: var(--menu-width);
+
+  height: 100vh;
+
+  padding: 16px;
+
+  box-sizing: border-box;
+
+  background: #ffffff;
+
+  border-right: 1px solid #e5e7eb;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  transition:
+    width 200ms ease,
+    min-width 200ms ease;
+
+  /*
+   * ==========================================
+   * Collapsed sidebar
+   * ==========================================
+   */
+
+  &--collapsed {
+    width: var(--menu-collapsed-width);
+    min-width: var(--menu-collapsed-width);
+
+    padding: 16px 10px;
+  }
+
+  /*
+   * ==========================================
+   * Navigation
+   * ==========================================
+   */
+
+  &__nav {
+    display: flex;
+    flex-direction: column;
+
+    gap: 4px;
+  }
+
+  /*
+   * ==========================================
+   * Collapse button
+   * ==========================================
+   */
+
+  &__collapse {
+    width: 100%;
+    height: 36px;
+
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+
+    margin-bottom: 8px;
+
+    padding: 0 8px;
+
+    border: 0;
+    border-radius: 6px;
+
+    background: transparent;
+
+    color: #64748b;
+
+    cursor: pointer;
+
+    transition:
+      background-color 150ms ease,
+      color 150ms ease;
+
+    &:hover {
+      background: #f8fafc;
+      color: #334155;
+    }
+
+    &:focus-visible {
+      outline: 2px solid #93c5fd;
+      outline-offset: 2px;
+    }
+
+    .menu--collapsed & {
+      justify-content: center;
+    }
+
+    .material-symbols-outlined {
+      font-size: 20px;
+    }
+  }
+
+  /*
+   * ==========================================
+   * Menu item
+   * ==========================================
+   */
+
+  &__item {
+    width: 100%;
+    min-height: 44px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 10px 16px;
+
+    box-sizing: border-box;
+
+    border: 0;
+    border-radius: 8px;
+
+    background: transparent;
+
+    color: #64748b;
+
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+
+    line-height: 20px;
+
+    text-align: left;
+    text-decoration: none;
+
+    cursor: pointer;
+
+    transition:
+      background-color 150ms ease,
+      color 150ms ease;
+
+    &:hover {
+      background: #f8fafc;
+      color: #334155;
+    }
+
+    &:focus-visible {
+      outline: 2px solid #93c5fd;
+      outline-offset: 2px;
+    }
+
+    &--active {
+      background: #eff6ff;
+      color: #2563eb;
+
+      &:hover {
+        background: #eff6ff;
+        color: #2563eb;
+      }
+    }
+
+    /*
+     * Center icons when collapsed.
+     */
+
+    .menu--collapsed & {
+      justify-content: center;
+
+      padding: 10px;
+    }
+  }
+
+  /*
+   * ==========================================
+   * Icon
+   * ==========================================
+   */
+
+  &__icon {
+    width: 20px;
+    height: 20px;
+
+    flex: 0 0 20px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 20px;
+
+    line-height: 1;
+  }
+
+  /*
+   * ==========================================
+   * Label
+   * ==========================================
+   */
+
+  &__label {
+    flex: 1;
+    min-width: 0;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /*
+   * ==========================================
+   * Parent arrow
+   * ==========================================
+   */
+
+  &__arrow {
+    width: 20px;
+    height: 20px;
+
+    flex: 0 0 20px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 20px;
+
+    transition: transform 200ms ease;
+
+    &--expanded {
+      transform: rotate(90deg);
+    }
+  }
+}
+
+/*
+ * ==========================================
+ * Submenu
+ * ==========================================
+ */
+
+.submenu {
+  display: flex;
+  flex-direction: column;
+
+  gap: 2px;
+
+  margin: 2px 0 6px 24px;
+
+  padding-left: 16px;
+
+  border-left: 1px solid #e2e8f0;
+
+  animation: submenu-open 150ms ease-out;
+}
+
+/*
+ * ==========================================
+ * Submenu item
+ * ==========================================
+ */
+
+.submenu__item {
+  width: 100%;
+  min-height: 40px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  padding: 9px 12px;
+
+  box-sizing: border-box;
+
+  border-radius: 6px;
+
+  background: transparent;
+
+  color: #64748b;
+
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+
+  text-decoration: none;
+
+  cursor: pointer;
+
+  transition:
+    background-color 150ms ease,
+    color 150ms ease;
+
+  &:hover {
+    background: #f8fafc;
+    color: #334155;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #93c5fd;
+    outline-offset: 2px;
+  }
+
+  &--active {
+    background: #eff6ff;
+    color: #2563eb;
+  }
+}
+
+.submenu__icon {
+  width: 18px;
+  height: 18px;
+
+  flex: 0 0 18px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 18px;
+}
+
+.submenu__label {
+  min-width: 0;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@keyframes submenu-open {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
