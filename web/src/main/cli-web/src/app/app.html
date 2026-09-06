@@ -1,5 +1,7 @@
-<app-data-grid
-  [calculateCellValue]="this.calculateCellValue"
-  [gridName]="this.gridName"
-  [booleanOptions]="booleanOptions"
-></app-data-grid>
+<div class="app-layout">
+  <app-menu />
+
+  <main class="app-content">
+    <router-outlet />
+  </main>
+</div>

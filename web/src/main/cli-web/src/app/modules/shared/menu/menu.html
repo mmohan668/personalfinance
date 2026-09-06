@@ -1,0 +1,104 @@
+<aside class="menu" [class.menu--collapsed]="collapsed()">
+  <nav class="menu__nav" aria-label="Main navigation">
+    <!-- ========================================= -->
+    <!-- Collapse button                            -->
+    <!-- ========================================= -->
+
+    <button
+      type="button"
+      class="menu__collapse"
+      [attr.aria-label]="collapsed() ? 'Expand navigation' : 'Collapse navigation'"
+      (click)="toggleSidebar()"
+    >
+      <span class="material-symbols-outlined">
+        {{ collapsed() ? 'chevron_right' : 'chevron_left' }}
+      </span>
+    </button>
+
+    @for (item of menuItems; track item.label) {
+      <!-- ======================================= -->
+      <!-- Simple menu item                        -->
+      <!-- ======================================= -->
+
+      @if (!item.children?.length) {
+        <a
+          class="menu__item"
+          [routerLink]="item.route"
+          routerLinkActive="menu__item--active"
+          [routerLinkActiveOptions]="{ exact: true }"
+          [attr.title]="collapsed() ? item.label : null"
+        >
+          <span class="material-symbols-outlined menu__icon" aria-hidden="true">
+            {{ item.icon }}
+          </span>
+
+          @if (!collapsed()) {
+            <span class="menu__label">
+              {{ item.label }}
+            </span>
+          }
+        </a>
+      }
+
+      <!-- ======================================= -->
+      <!-- Parent menu item                        -->
+      <!-- ======================================= -->
+
+      @if (item.children?.length) {
+        <button
+          type="button"
+          class="menu__item menu__item--parent"
+          [class.menu__item--active]="isActive(item)"
+          [attr.aria-expanded]="collapsed() ? null : isExpanded(item)"
+          [attr.title]="collapsed() ? item.label : null"
+          (click)="toggleMenu(item)"
+        >
+          <span class="material-symbols-outlined menu__icon" aria-hidden="true">
+            {{ item.icon }}
+          </span>
+
+          @if (!collapsed()) {
+            <span class="menu__label">
+              {{ item.label }}
+            </span>
+
+            <span
+              class="material-symbols-outlined menu__arrow"
+              [class.menu__arrow--expanded]="isExpanded(item)"
+              aria-hidden="true"
+            >
+              chevron_right
+            </span>
+          }
+        </button>
+
+        <!-- ===================================== -->
+        <!-- Submenu                                -->
+        <!-- ===================================== -->
+
+        @if (!collapsed() && isExpanded(item)) {
+          <div class="submenu">
+            @for (child of item.children; track child.label) {
+              <a
+                class="submenu__item"
+                [routerLink]="child.route"
+                routerLinkActive="submenu__item--active"
+                [routerLinkActiveOptions]="{
+                  exact: true,
+                }"
+              >
+                <span class="material-symbols-outlined submenu__icon" aria-hidden="true">
+                  {{ child.icon }}
+                </span>
+
+                <span class="submenu__label">
+                  {{ child.label }}
+                </span>
+              </a>
+            }
+          </div>
+        }
+      }
+    }
+  </nav>
+</aside>
