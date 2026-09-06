@@ -47,6 +47,9 @@ export class DataGrid implements OnInit {
   @Input({ required: true })
   gridName!: string;
 
+  @Input()
+  booleanOptions!: { label: string; value: boolean | null }[];
+
   /* =========================================================
      DATA
      ========================================================= */

@@ -75,6 +75,11 @@ export class ColumnFilterComponent implements OnInit, OnDestroy {
 
   betweenError = '';
 
+  @Input()
+  booleanOptions!: { label: string; value: boolean | null }[];
+
+  readonly COLUMN_TYPES = COLUMN_TYPES;
+
   readonly FILTER_OPERATORS = FILTER_OPERATORS;
 
   @HostBinding('class.between-date-filter')
@@ -195,28 +200,7 @@ export class ColumnFilterComponent implements OnInit, OnDestroy {
     },
   ];
 
-  booleanOperators: FilterOperator[] = [
-    {
-      label: FILTER_LABLES.EQUALS,
-      value: FILTER_OPERATORS.EQUALS,
-      icon: FILTER_ICONS.EQUALS,
-    },
-    {
-      label: FILTER_LABLES.NOT_EQUALS,
-      value: FILTER_OPERATORS.NOT_EQUALS,
-      icon: FILTER_ICONS.NOT_EQUALS,
-    },
-    {
-      label: FILTER_LABLES.IS_NULL,
-      value: FILTER_OPERATORS.IS_NULL,
-      icon: FILTER_ICONS.IS_NULL,
-    },
-    {
-      label: FILTER_LABLES.IS_NOT_NULL,
-      value: FILTER_OPERATORS.IS_NOT_NULL,
-      icon: FILTER_ICONS.IS_NOT_NULL,
-    },
-  ];
+  booleanOperators: FilterOperator[] = [];
 
   // ============================================================
   // PRIME NG DATE FORMAT
@@ -807,5 +791,16 @@ export class ColumnFilterComponent implements OnInit, OnDestroy {
 
     // Block everything else
     event.preventDefault();
+  }
+
+  onBooleanChange(value: boolean | null): void {
+    if (value === null) {
+      this.filter.value = '';
+    } else {
+      this.filter.value = value;
+    }
+    this.operatorChange.emit({
+      ...this.filter,
+    });
   }
 }
