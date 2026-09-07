@@ -563,27 +563,36 @@ public class GenericCriteriaRepository {
                             );
                         }
 
-                        case "gt" -> predicates.add(
-                                criteriaBuilder.greaterThan(field, value)
-                        );
+                        case "gt" -> {
+                            LocalDateTime endOfDay = value.toLocalDate().atTime(LocalTime.MAX);
+                            predicates.add(
+                                    criteriaBuilder.greaterThan(field, endOfDay)
+                            );
+                        }
 
-                        case "gte" -> predicates.add(
-                                criteriaBuilder.greaterThanOrEqualTo(
-                                        field,
-                                        value
-                                )
-                        );
+                        case "gte" -> {
+                            LocalDateTime startOfDay = value.toLocalDate().atStartOfDay();
+                            predicates.add(
+                                    criteriaBuilder.greaterThanOrEqualTo(
+                                            field,
+                                            startOfDay
+                                    )
+                            );
+                        }
 
                         case "lt" -> predicates.add(
                                 criteriaBuilder.lessThan(field, value)
                         );
 
-                        case "lte" -> predicates.add(
-                                criteriaBuilder.lessThanOrEqualTo(
-                                        field,
-                                        value
-                                )
-                        );
+                        case "lte" -> {
+                            LocalDateTime endOfDay = value.toLocalDate().atTime(LocalTime.MAX);
+                            predicates.add(
+                                    criteriaBuilder.lessThanOrEqualTo(
+                                            field,
+                                            endOfDay
+                                    )
+                            );
+                        }
 
                         case "between" -> {
                             if (filter.getValueTo() == null || filter.getValueTo().isBlank()) {
