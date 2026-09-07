@@ -1,4 +1,4 @@
-import { CurrencyPipe } from '@angular/common';
+import { CurrencyPipe, DatePipe } from '@angular/common';
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
 
 import { SelectItem, SortEvent, SortMeta } from 'primeng/api';
@@ -46,6 +46,12 @@ export class DataGrid implements OnInit {
 
   @Input({ required: true })
   gridName!: string;
+
+  @Input({ required: true })
+  gridExportFileName!: string;
+
+  @Input({ required: true })
+  dataKey!: string;
 
   @Input()
   additionalFilters!: GridFilter[];
@@ -124,6 +130,8 @@ export class DataGrid implements OnInit {
 
   dateFormat: string = 'dd/MM/yyyy';
 
+  dateTimeFormat: string = 'dd/MM/yyyy HH:mm:ss';
+
   /* =========================================================
      CONSTRUCTOR
      ========================================================= */
@@ -159,7 +167,9 @@ export class DataGrid implements OnInit {
        * sortMode="multiple".
        */
       this.initializeDefaultSort(this.columns);
-
+      if (this.additionalFilters?.length) {
+        this.filters.push(...this.additionalFilters);
+      }
       /*
        * Load the initial data using the default sort.
        */
@@ -198,9 +208,7 @@ export class DataGrid implements OnInit {
         field: sort.field,
         order: sort.order === 1 ? 'asc' : 'desc',
       }));
-    if (this.additionalFilters?.length) {
-      this.filters.push(...this.additionalFilters);
-    }
+
     const request: SearchCriteria = {
       sortList: sorts,
       filterList: this.filters,
@@ -678,15 +686,17 @@ export class DataGrid implements OnInit {
           // DATE VALUE
           // -----------------------------------------------
 
-          if (col.dataType === 'date') {
+          if (col.dataType === 'date' || col.dataType === 'datetime') {
             const value = row[col.field];
 
             if (!value) {
               return null;
             }
 
-            return new Date(value);
+            const formatted = new DatePipe('en-GB').transform(value, this.dateTimeFormat);
+            return formatted ? formatted : null;
           }
+
           // -----------------------------------------------
           // NORMAL VALUE
           // -----------------------------------------------
@@ -723,6 +733,8 @@ export class DataGrid implements OnInit {
         }
         if (col.dataType === 'date') {
           cell.numFmt = this.getDateFormateForExport();
+        } else if (col.dataType === 'datetime') {
+          cell.numFmt = this.getDateTimeFormateForExport();
         }
       });
 
@@ -774,7 +786,7 @@ export class DataGrid implements OnInit {
     // =====================================================
 
     workbook.xlsx.writeBuffer().then((buffer) => {
-      this.saveAsExcelFile(buffer, 'products');
+      this.saveAsExcelFile(buffer, this.gridExportFileName);
     });
   };
 
@@ -845,8 +857,16 @@ export class DataGrid implements OnInit {
     return this.dateFormat;
   }
 
+  getDateTimeFormate(): string {
+    return this.dateTimeFormat;
+  }
+
   getDateFormateForExport(): string {
     return this.dateFormat.replace(/\//g, '"/"');
+  }
+
+  getDateTimeFormateForExport(): string {
+    return this.dateTimeFormat.replace(/\//g, '"/"');
   }
 
   private resetGrid(): void {
