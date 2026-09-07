@@ -85,7 +85,8 @@ export class ColumnFilterComponent implements OnInit, OnDestroy {
   @HostBinding('class.between-date-filter')
   get isBetweenDateFilter(): boolean {
     return (
-      this.column?.dataType === COLUMN_TYPES.DATE &&
+      (this.column?.dataType === COLUMN_TYPES.DATE ||
+        this.column?.dataType === COLUMN_TYPES.DATETIME) &&
       this.selectedOperator === FILTER_OPERATORS.BETWEEN
     );
   }
@@ -585,6 +586,7 @@ export class ColumnFilterComponent implements OnInit, OnDestroy {
     switch (column.dataType) {
       case COLUMN_TYPES.NUMBER:
       case COLUMN_TYPES.DATE:
+      case COLUMN_TYPES.DATETIME:
         return this.numericOperators;
 
       case COLUMN_TYPES.BOOLEAN:

@@ -26,7 +26,7 @@
     <p-table
       #dt
       [value]="(dataSource$ | async) || []"
-      dataKey="id"
+      [dataKey]="dataKey"
       [rowGroupMode]="groupBy ? 'subheader' : undefined"
       [groupRowsBy]="groupBy || undefined"
       [lazy]="true"
@@ -146,6 +146,8 @@
                 {{ row[column.field] | currency: currencyCode }}
               } @else if (column.dataType === 'date') {
                 {{ row[column.field] | date: getDateFormate() }}
+              } @else if (column.dataType === 'datetime') {
+                {{ row[column.field] | date: getDateTimeFormate() }}
               } @else {
                 {{ row[column.field] }}
               }

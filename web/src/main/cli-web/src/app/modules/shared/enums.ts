@@ -60,6 +60,7 @@ export enum COLUMN_TYPES {
   TEXT = 'text',
   NUMBER = 'number',
   DATE = 'date',
+  DATETIME = 'datetime',
   BOOLEAN = 'boolean',
 }
 
@@ -67,6 +68,11 @@ export enum GRID_NAMES {
   CATEGORIES_GRID = 'CATEGORIES_GRID',
 }
 
+export enum GRID_EXPORT_FILE_NAMES {
+  CATEGORIES = 'categories',
+}
+
 export enum DATA_FIELDS {
+  ID = 'id',
   USER_ID = 'user.id',
 }

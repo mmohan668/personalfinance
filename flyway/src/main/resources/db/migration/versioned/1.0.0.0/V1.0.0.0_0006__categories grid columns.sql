@@ -30,7 +30,7 @@ VALUES ((SELECT id FROM grid_name WHERE name = 'CATEGORIES_GRID'), 'createdBy', 
 INSERT INTO grid_column(grid_name_id, field, header, data_type, default_filter_operator, width,
                         visible_index)
 VALUES ((SELECT id FROM grid_name WHERE name = 'CATEGORIES_GRID'), 'createdAt', 'Created Date', 'datetime',
-        'contains', 200, 5);
+        'equals', 200, 5);
 
 INSERT INTO grid_column(grid_name_id, field, header, data_type, default_filter_operator, width,
                         visible_index)
@@ -40,4 +40,4 @@ VALUES ((SELECT id FROM grid_name WHERE name = 'CATEGORIES_GRID'), 'updatedBy', 
 INSERT INTO grid_column(grid_name_id, field, header, data_type, default_filter_operator, width,
                         visible_index)
 VALUES ((SELECT id FROM grid_name WHERE name = 'CATEGORIES_GRID'), 'updatedAt', 'Modified Date', 'datetime',
-        'contains', 200, 7);
+        'equals', 200, 7);

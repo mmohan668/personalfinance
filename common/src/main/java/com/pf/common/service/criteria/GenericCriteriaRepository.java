@@ -16,6 +16,8 @@ import org.springframework.stereotype.Repository;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -526,22 +528,40 @@ public class GenericCriteriaRepository {
                     }
 
                 } else if (LocalDateTime.class.equals(path.getJavaType())) {
-                    LocalDateTime value = LocalDateTime.parse(filter.getValue());
+                    LocalDateTime value;
+                    if (filter.getValue().length() == 10) { // format yyyy-MM-dd
+                        value = LocalDate.parse(filter.getValue(), DateTimeFormatter.ISO_LOCAL_DATE)
+                                .atStartOfDay();
+                    } else {
+                        value = LocalDateTime.parse(filter.getValue(), DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+                    }
 
                     @SuppressWarnings("unchecked")
                     Expression<LocalDateTime> field = (Expression<LocalDateTime>) path;
 
                     switch (operator) {
-                        case "equals" -> predicates.add(
-                                criteriaBuilder.equal(field, value)
-                        );
+                        case "equals" -> {
+                            LocalDateTime startOfDay = value.toLocalDate().atStartOfDay();
+                            LocalDateTime endOfDay = value.toLocalDate().atTime(LocalTime.MAX);
+                            predicates.add(
+                                    criteriaBuilder.and(
+                                            criteriaBuilder.greaterThanOrEqualTo(field, startOfDay),
+                                            criteriaBuilder.lessThanOrEqualTo(field, endOfDay)
+                                    )
+                            );
+                        }
 
-                        case "notEquals" -> predicates.add(
-                                criteriaBuilder.or(
-                                        criteriaBuilder.notEqual(field, value),
-                                        criteriaBuilder.isNull(path)
-                                )
-                        );
+                        case "notEquals" -> {
+                            LocalDateTime startOfDay = value.toLocalDate().atStartOfDay();
+                            LocalDateTime endOfDay = value.toLocalDate().atTime(LocalTime.MAX);
+                            predicates.add(
+                                    criteriaBuilder.or(
+                                            criteriaBuilder.isNull(path),
+                                            criteriaBuilder.lessThan(field, startOfDay),
+                                            criteriaBuilder.greaterThan(field, endOfDay)
+                                    )
+                            );
+                        }
 
                         case "gt" -> predicates.add(
                                 criteriaBuilder.greaterThan(field, value)
@@ -572,7 +592,14 @@ public class GenericCriteriaRepository {
                                 );
                             }
 
-                            LocalDateTime valueTo = LocalDateTime.parse(filter.getValueTo());
+                            LocalDateTime valueTo;
+                            if (filter.getValueTo().length() == 10) { // yyyy-MM-dd
+                                // End of day for inclusive range
+                                valueTo = LocalDate.parse(filter.getValueTo(), DateTimeFormatter.ISO_LOCAL_DATE)
+                                        .atTime(LocalTime.MAX);
+                            } else {
+                                valueTo = LocalDateTime.parse(filter.getValueTo(), DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+                            }
 
                             predicates.add(
                                     criteriaBuilder.and(

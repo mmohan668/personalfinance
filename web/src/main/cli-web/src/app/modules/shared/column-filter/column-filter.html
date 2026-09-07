@@ -28,7 +28,7 @@
                FROM DATE
                =================================================== -->
 
-          @if (column.dataType === 'date') {
+          @if (column.dataType === 'date' || column.dataType === 'datetime') {
             <div class="filter-control date-filter-control">
               <p-datepicker
                 [placeholder]="'From ' + column.header"
@@ -62,7 +62,7 @@
                TO DATE
                =================================================== -->
 
-          @if (column.dataType === 'date') {
+          @if (column.dataType === 'date' || column.dataType === 'datetime') {
             <div class="filter-control date-filter-control">
               <p-datepicker
                 [placeholder]="'To ' + column.header"
@@ -114,7 +114,7 @@
            NORMAL DATE FILTER
            ======================================================= -->
 
-      @if (column.dataType === 'date') {
+      @if (column.dataType === 'date' || column.dataType === 'datetime') {
         <div class="filter-control date-filter-control">
           <p-datepicker
             [placeholder]="column.header"
