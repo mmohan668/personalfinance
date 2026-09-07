@@ -1,1 +1,6 @@
-<p>categories works!</p>
+<app-data-grid
+  [gridName]="gridName"
+  [calculateCellValue]="this.calculateCellValue"
+  [booleanOptions]="commonService.activeInactiveBooleanOptions"
+  [additionalFilters]="additionalFilters"
+></app-data-grid>

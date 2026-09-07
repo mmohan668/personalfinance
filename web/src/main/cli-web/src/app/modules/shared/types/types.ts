@@ -44,4 +44,5 @@ export interface SearchCriteria {
   skip: number;
   take: number;
   loadAllData: boolean | false;
+  gridName: string;
 }

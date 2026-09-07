@@ -799,6 +799,7 @@ export class ColumnFilterComponent implements OnInit, OnDestroy {
     } else {
       this.filter.value = value;
     }
+    this.filter.operator = FILTER_OPERATORS.EQUALS;
     this.operatorChange.emit({
       ...this.filter,
     });

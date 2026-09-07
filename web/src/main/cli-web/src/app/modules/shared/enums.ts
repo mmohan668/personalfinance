@@ -64,5 +64,9 @@ export enum COLUMN_TYPES {
 }
 
 export enum GRID_NAMES {
-  PRODUCT_GRID = 'PRODUCT_GRID',
+  CATEGORIES_GRID = 'CATEGORIES_GRID',
+}
+
+export enum DATA_FIELDS {
+  USER_ID = 'user.id',
 }

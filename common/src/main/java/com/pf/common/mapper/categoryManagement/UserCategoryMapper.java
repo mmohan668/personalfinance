@@ -16,6 +16,7 @@ public interface UserCategoryMapper {
     UserCategoryDto toDto(UserCategory entity);
 
     @Mapping(source = "userId", target = "user.id")
+    @Mapping(target = "subcategories", ignore = true)
     UserCategory toEntity(UserCategoryDto dto);
 
     List<UserCategoryDto> toDtoList(List<UserCategory> entities);
