@@ -5,7 +5,6 @@ import lombok.Data;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
-import java.util.Map;
 
 @Data
 public class SearchCriteria implements Serializable {
@@ -16,4 +15,5 @@ public class SearchCriteria implements Serializable {
     private int skip;
     private int take;
     private boolean loadAllData;
+    private String gridName;
 }

@@ -80,7 +80,7 @@ public class GenericCriteriaRepository {
                     continue;
                 }
 
-                Path<?> path = root.get(sort.getField());
+                Path<?> path = resolvePath(root, sort.getField());
 
                 boolean descending = "desc".equalsIgnoreCase(sort.getOrder());
 
@@ -117,7 +117,7 @@ public class GenericCriteriaRepository {
             List<Predicate> predicates = new ArrayList<>();
 
             for (GridFilter filter : searchCriteria.getFilterList()) {
-                Path<?> path = root.get(filter.getField());
+                Path<?> path = resolvePath(root, filter.getField());
                 String operator = filter.getOperator();
 
                 if ("isNull".equals(operator)) {
@@ -602,4 +602,14 @@ public class GenericCriteriaRepository {
             }
         }
     }
+
+    private Path<?> resolvePath(Root<?> root, String fieldPath) {
+        String[] parts = fieldPath.split("\\.");
+        Path<?> path = root.get(parts[0]);
+        for (int i = 1; i < parts.length; i++) {
+            path = path.get(parts[i]);
+        }
+        return path;
+    }
+
 }

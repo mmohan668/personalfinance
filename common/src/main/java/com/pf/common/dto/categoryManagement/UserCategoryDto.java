@@ -1,10 +1,8 @@
 package com.pf.common.dto.categoryManagement;
 
-import com.pf.common.enums.TransactionType;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Getter
 @Setter
@@ -17,7 +15,7 @@ public class UserCategoryDto {
 
     private Long userId;
 
-    private TransactionType transactionType;
+    private String transactionType;
 
     private String categoryName;
 
@@ -33,5 +31,4 @@ public class UserCategoryDto {
 
     private LocalDateTime updatedAt;
 
-    private List<UserSubcategoryDto> subcategories;
 }

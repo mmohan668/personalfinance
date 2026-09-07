@@ -1,7 +1,6 @@
 package com.pf.common.entity.categoryManagement;
 
 import com.pf.common.entity.userManagement.User;
-import com.pf.common.enums.TransactionType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -34,9 +33,8 @@ public class UserCategory {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "transaction_type", nullable = false, length = 20)
-    private TransactionType transactionType;
+    private String transactionType;
 
     @Column(name = "category_name", nullable = false, length = 100)
     private String categoryName;
@@ -63,7 +61,8 @@ public class UserCategory {
     @OneToMany(
             mappedBy = "userCategory",
             cascade = CascadeType.ALL,
-            orphanRemoval = true
+            orphanRemoval = true,
+            fetch = FetchType.LAZY
     )
     @Builder.Default
     private List<UserSubcategory> subcategories = new ArrayList<>();

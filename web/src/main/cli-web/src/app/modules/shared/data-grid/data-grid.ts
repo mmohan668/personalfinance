@@ -48,6 +48,9 @@ export class DataGrid implements OnInit {
   gridName!: string;
 
   @Input()
+  additionalFilters!: GridFilter[];
+
+  @Input()
   booleanOptions!: { label: string; value: boolean | null }[];
 
   /* =========================================================
@@ -195,13 +198,16 @@ export class DataGrid implements OnInit {
         field: sort.field,
         order: sort.order === 1 ? 'asc' : 'desc',
       }));
-
+    if (this.additionalFilters?.length) {
+      this.filters.push(...this.additionalFilters);
+    }
     const request: SearchCriteria = {
       sortList: sorts,
       filterList: this.filters,
       skip: this.skip,
       take: this.take,
       loadAllData: false,
+      gridName: this.gridName,
     };
 
     this.gridService.loadGridData(request).subscribe({
@@ -559,6 +565,7 @@ export class DataGrid implements OnInit {
         skip: this.skip,
         take: this.take,
         loadAllData: true,
+        gridName: this.gridName,
       };
 
       sourceRows = (await firstValueFrom(this.gridService.loadGridData(request))).recordDetails;
