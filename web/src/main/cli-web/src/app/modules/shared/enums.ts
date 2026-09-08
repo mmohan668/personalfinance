@@ -66,10 +66,12 @@ export enum COLUMN_TYPES {
 
 export enum GRID_NAMES {
   CATEGORIES_GRID = 'CATEGORIES_GRID',
+  SUBCATEGORIES_GRID = 'SUBCATEGORIES_GRID',
 }
 
 export enum GRID_EXPORT_FILE_NAMES {
-  CATEGORIES = 'categories',
+  CATEGORIES_EFN = 'categories',
+  SUBCATEGORIES_EFN = 'subcategories',
 }
 
 export enum DATA_FIELDS {

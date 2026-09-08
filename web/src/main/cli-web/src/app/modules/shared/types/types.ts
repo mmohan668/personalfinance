@@ -4,7 +4,7 @@ export interface GridColumn {
   header: string;
   dataType: string;
   sortable: boolean;
-  defaultSortOrder?: string; // optional since it can be null
+  defaultSortOrder?: string | null; // optional since it can be null
   filterable: boolean;
   defaultFilterOperator?: string; // optional since it can be null
   width?: number; // optional since it can be null
@@ -12,6 +12,7 @@ export interface GridColumn {
   visible?: boolean;
   visibleIndex?: number;
   cellTemplate?: string;
+  sortPriority?: number;
 }
 
 export interface GridFilter {
@@ -45,4 +46,16 @@ export interface SearchCriteria {
   take: number;
   loadAllData: boolean | false;
   gridName: string;
+}
+
+export interface GridPersonalizationDto {
+  userId: number;
+  gridColumnJson: string;
+  gridName: string;
+}
+
+export interface ApiResponse {
+  success: boolean;
+  message: string;
+  data: any;
 }

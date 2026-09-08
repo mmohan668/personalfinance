@@ -639,12 +639,37 @@ public class GenericCriteriaRepository {
         }
     }
 
-    private Path<?> resolvePath(Root<?> root, String fieldPath) {
-        String[] parts = fieldPath.split("\\.");
-        Path<?> path = root.get(parts[0]);
-        for (int i = 1; i < parts.length; i++) {
-            path = path.get(parts[i]);
+    private Path<?> resolvePath(Root<?> root, String field) {
+        String[] parts = field.split("\\.");
+        Path<?> path = root;
+
+        for (int i = 0; i < parts.length; i++) {
+            String part = parts[i];
+
+            if (path instanceof Root) {
+                // Root can join associations or get attributes
+                if (i < parts.length - 1) {
+                    path = ((Root<?>) path).join(part, JoinType.LEFT);
+                } else {
+                    path = path.get(part);
+                }
+            } else if (path instanceof From) {
+                // From (Join) can join further associations or get attributes
+                if (i < parts.length - 1) {
+                    path = ((From<?, ?>) path).join(part, JoinType.LEFT);
+                } else {
+                    path = path.get(part);
+                }
+            } else {
+                // Terminal attribute, just get
+                path = path.get(part);
+            }
+
+            if (path == null) {
+                throw new IllegalArgumentException("Invalid path: " + field);
+            }
         }
+
         return path;
     }
 

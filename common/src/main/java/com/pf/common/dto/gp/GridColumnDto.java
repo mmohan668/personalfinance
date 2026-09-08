@@ -21,4 +21,5 @@ public class GridColumnDto {
     private Boolean visible;
     private Integer visibleIndex;
     private String cellTemplate;
+    private Integer sortPriority;
 }
