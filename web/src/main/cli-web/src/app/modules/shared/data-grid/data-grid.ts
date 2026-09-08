@@ -154,6 +154,10 @@ export class DataGrid implements OnInit {
      ========================================================= */
 
   ngOnInit(): void {
+    this.fetchGridColumns();
+  }
+
+  private fetchGridColumns() {
     this.gridService.loadGridColumns(this.gridName).subscribe((columns) => {
       this.columns = columns.map((column) => ({
         ...column,
@@ -923,5 +927,24 @@ export class DataGrid implements OnInit {
     }
   };
 
-  resetGridSettings = () => {};
+  resetGridSettings = async () => {
+    const gridPersonalizationDto: GridPersonalizationDto = {
+      gridName: this.gridName,
+      gridColumnJson: null,
+      userId: 1,
+    };
+    try {
+      const apiResponse: ApiResponse = await firstValueFrom(
+        this.gridService.resetGridSettings(gridPersonalizationDto),
+      );
+      if (apiResponse.success) {
+        console.log(apiResponse.message);
+        this.fetchGridColumns();
+      } else {
+        console.error(apiResponse.message);
+      }
+    } catch (error) {
+      console.error('Error calling resetGridSettings API:', error);
+    }
+  };
 }

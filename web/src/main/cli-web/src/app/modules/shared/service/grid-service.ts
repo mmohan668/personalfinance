@@ -34,4 +34,11 @@ export class GridService {
       gridPersonalizationDto,
     );
   }
+
+  resetGridSettings(gridPersonalizationDto: GridPersonalizationDto): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(
+      `${this.baseUrl}/grid/resetGridSettings`,
+      gridPersonalizationDto,
+    );
+  }
 }
