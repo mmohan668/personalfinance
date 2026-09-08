@@ -24,4 +24,9 @@ public class GridController {
     private ApiResponse saveGridSettings(@RequestBody GridPersonalizationDto gridPersonalizationDto) {
         return gridService.saveGridSettings(gridPersonalizationDto);
     }
+
+    @PostMapping("/resetGridSettings")
+    private ApiResponse resetGridSettings(@RequestBody GridPersonalizationDto gridPersonalizationDto) {
+        return gridService.resetGridPersonalization(gridPersonalizationDto);
+    }
 }

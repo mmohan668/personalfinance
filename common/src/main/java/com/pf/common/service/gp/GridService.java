@@ -1,8 +1,5 @@
 package com.pf.common.service.gp;
 
-import org.springframework.boot.json.JsonParseException;
-import tools.jackson.core.type.TypeReference;
-import tools.jackson.databind.ObjectMapper;
 import com.pf.common.dto.gp.*;
 import com.pf.common.entity.generic.ApiResponse;
 import com.pf.common.entity.gp.GridPersonalization;
@@ -17,6 +14,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
 
 import java.util.Collections;
 import java.util.List;
@@ -25,6 +24,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class GridService {
+
     private final GridColumnRepository gridColumnRepository;
     private final GridColumnMapper gridColumnMapper;
     private final GridPersonalizationRepository gridPersonalizationRepository;
@@ -34,84 +34,284 @@ public class GridService {
 
     public List<GridColumnDto> fetchGridColumns(String gridName, Long userId) {
         try {
-            List<GridColumnDto> list;
+            log.debug(
+                    "Fetching grid columns for gridName: {}, userId: {}",
+                    gridName,
+                    userId
+            );
+
             Long gridId = gridNameRepository.findIdByName(gridName);
+
             if (gridId == null) {
-                log.warn("GridName not found for: {}", gridName);
+                log.warn(
+                        "Grid configuration not found for gridName: {}, userId: {}",
+                        gridName,
+                        userId
+                );
                 return Collections.emptyList();
             }
 
             GridPersonalization gridPersonalization =
-                    gridPersonalizationRepository.findByGridName_IdAndUserId(gridId, userId).orElse(null);
+                    gridPersonalizationRepository
+                            .findByGridName_NameAndUserId(gridName, userId)
+                            .orElse(null);
 
             if (gridPersonalization != null) {
+                log.debug(
+                        "User-specific grid personalization found for gridName: {}, userId: {}",
+                        gridName,
+                        userId
+                );
+
                 String gridColumnJson = gridPersonalization.getGridColumnJson();
-                list = objectMapper.readValue(gridColumnJson, new TypeReference<>() {
-                });
-                return Collections.unmodifiableList(list);
+
+                List<GridColumnDto> personalizedColumns =
+                        objectMapper.readValue(
+                                gridColumnJson,
+                                new TypeReference<>() {
+                                }
+                        );
+
+                return Collections.unmodifiableList(personalizedColumns);
             }
 
-            log.info("Fetching grid columns for grid name {}", gridName);
-            list = gridColumnMapper.toDTOList(gridColumnRepository.findByGridName_NameOrderByVisibleIndex(gridName));
-            if (list.isEmpty()) {
-                log.debug("No GridColumn entries found for gridName: {}", gridName);
+            log.debug(
+                    "No user-specific grid personalization found for gridName: {}, userId: {}. " +
+                            "Fetching default grid columns.",
+                    gridName,
+                    userId
+            );
+
+            List<GridColumnDto> defaultColumns =
+                    gridColumnMapper.toDTOList(
+                            gridColumnRepository
+                                    .findByGridName_NameOrderByVisibleIndex(gridName)
+                    );
+
+            if (defaultColumns.isEmpty()) {
+                log.debug(
+                        "No default grid columns found for gridName: {}",
+                        gridName
+                );
                 return Collections.emptyList();
             }
-            return Collections.unmodifiableList(list);
-        } catch (DataAccessException dae) {
-            log.error("Database error while fetching GridColumn entries for gridName: {}", gridName, dae);
-            throw dae; // propagate or wrap in custom exception
-        } catch (JsonParseException ex) {
-            log.error("JsonProcessingException while fetching grid columns for gridName: {}", gridName, ex);
-            throw new RuntimeException(ex);
+
+            log.debug(
+                    "Successfully fetched {} default grid columns for gridName: {}",
+                    defaultColumns.size(),
+                    gridName
+            );
+
+            return Collections.unmodifiableList(defaultColumns);
+
+        } catch (DataAccessException e) {
+            log.error(
+                    "Database error while fetching grid columns for gridName: {}, userId: {}",
+                    gridName,
+                    userId,
+                    e
+            );
+            throw e;
+
         } catch (Exception e) {
-            log.error("Unexpected error while fetching GridColumn entries for gridName: {}", gridName, e);
-            throw e; // don’t silently swallow
+            log.error(
+                    "Unexpected error while fetching grid columns for gridName: {}, userId: {}",
+                    gridName,
+                    userId,
+                    e
+            );
+            throw e;
         }
     }
 
     @Transactional
-    public ApiResponse saveGridSettings(GridPersonalizationDto gridPersonalizationDto) {
-        try {
-            log.info("Saving GridPersonalization for gridPersonalizationDto: {}", gridPersonalizationDto);
+    public ApiResponse saveGridSettings(
+            GridPersonalizationDto gridPersonalizationDto
+    ) {
+        String gridName = gridPersonalizationDto.getGridName();
+        Long userId = gridPersonalizationDto.getUserId();
 
-            Long gridId = gridNameRepository.findIdByName(gridPersonalizationDto.getGridName());
+        try {
+            log.info(
+                    "Saving grid personalization for gridName: {}, userId: {}",
+                    gridName,
+                    userId
+            );
+
+            Long gridId = gridNameRepository.findIdByName(gridName);
+
             if (gridId == null) {
-                log.error("GridName not found for: {}", gridPersonalizationDto.getGridName());
+                log.warn(
+                        "Cannot save grid personalization. Grid configuration not found " +
+                                "for gridName: {}, userId: {}",
+                        gridName,
+                        userId
+                );
+
                 return ApiResponse.builder()
                         .success(false)
-                        .message("Grid Setting save failed: GridName not found")
+                        .message("Grid setting save failed: Grid not found")
                         .build();
             }
 
-            GridPersonalization gridPersonalization = gridPersonalizationRepository.findByGridName_IdAndUserId(gridId, gridPersonalizationDto.getUserId()).orElse(null);
+            GridPersonalization gridPersonalization =
+                    gridPersonalizationRepository
+                            .findByGridName_NameAndUserId(gridName, userId)
+                            .orElse(null);
+
             if (gridPersonalization == null) {
+                log.debug(
+                        "No existing grid personalization found for gridName: {}, userId: {}. " +
+                                "Creating new personalization.",
+                        gridName,
+                        userId
+                );
+
                 gridPersonalizationDto.setGridNameId(gridId);
-                gridPersonalization = gridPersonalizationMapper.toEntity(gridPersonalizationDto);
+
+                gridPersonalization =
+                        gridPersonalizationMapper.toEntity(gridPersonalizationDto);
             } else {
-                gridPersonalization.setGridColumnJson(gridPersonalizationDto.getGridColumnJson());
+                log.debug(
+                        "Existing grid personalization found for gridName: {}, userId: {}. " +
+                                "Updating personalization.",
+                        gridName,
+                        userId
+                );
+
+                gridPersonalization.setGridColumnJson(
+                        gridPersonalizationDto.getGridColumnJson()
+                );
             }
 
             gridPersonalizationRepository.save(gridPersonalization);
 
-            log.info("Saved GridPersonalization for gridPersonalizationDto: {}", gridPersonalizationDto);
+            log.info(
+                    "Grid personalization saved successfully for gridName: {}, userId: {}",
+                    gridName,
+                    userId
+            );
+
             return ApiResponse.builder()
                     .success(true)
-                    .message("Grid Setting saved successfully")
+                    .message("Grid setting saved successfully")
                     .build();
+
         } catch (DataIntegrityViolationException e) {
-            log.error("Constraint violation while saving Grid Settings for gridName: {}", gridPersonalizationDto.getGridName(), e);
+            log.error(
+                    "Data integrity violation while saving grid personalization " +
+                            "for gridName: {}, userId: {}",
+                    gridName,
+                    userId,
+                    e
+            );
+
             return ApiResponse.builder()
                     .success(false)
-                    .message("Grid Setting save failed: Duplicate or invalid data")
+                    .message("Grid setting save failed: Invalid or duplicate data")
                     .build();
-        } catch (Exception e) {
-            log.error("Error while saving Grid Settings for gridName: {}", gridPersonalizationDto.getGridName(), e);
+
+        } catch (DataAccessException e) {
+            log.error(
+                    "Database error while saving grid personalization " +
+                            "for gridName: {}, userId: {}",
+                    gridName,
+                    userId,
+                    e
+            );
+
             return ApiResponse.builder()
                     .success(false)
-                    .message("Grid Setting save failed: Exception occurred")
+                    .message("Grid setting save failed: Database error")
+                    .build();
+
+        } catch (Exception e) {
+            log.error(
+                    "Unexpected error while saving grid personalization " +
+                            "for gridName: {}, userId: {}",
+                    gridName,
+                    userId,
+                    e
+            );
+
+            return ApiResponse.builder()
+                    .success(false)
+                    .message("Grid setting save failed")
                     .build();
         }
     }
 
+    @Transactional
+    public ApiResponse resetGridPersonalization(
+            GridPersonalizationDto gridPersonalizationDto
+    ) {
+        String gridName = gridPersonalizationDto.getGridName();
+        Long userId = gridPersonalizationDto.getUserId();
+
+        try {
+            log.info(
+                    "Resetting grid personalization for gridName: {}, userId: {}",
+                    gridName,
+                    userId
+            );
+
+            int deleteCount =
+                    gridPersonalizationRepository
+                            .deleteByGridName_NameAndUserId(gridName, userId);
+
+            if (deleteCount == 0) {
+                log.info(
+                        "No grid personalization found to reset for gridName: {}, userId: {}",
+                        gridName,
+                        userId
+                );
+
+                return ApiResponse.builder()
+                        .success(true)
+                        .message("No personalized grid setting found to reset")
+                        .build();
+            }
+
+            log.info(
+                    "Grid personalization reset successfully for gridName: {}, userId: {}. " +
+                            "Deleted records: {}",
+                    gridName,
+                    userId,
+                    deleteCount
+            );
+
+            return ApiResponse.builder()
+                    .success(true)
+                    .message("Grid setting reset successfully")
+                    .build();
+
+        } catch (DataAccessException e) {
+            log.error(
+                    "Database error while resetting grid personalization " +
+                            "for gridName: {}, userId: {}",
+                    gridName,
+                    userId,
+                    e
+            );
+
+            return ApiResponse.builder()
+                    .success(false)
+                    .message("Grid setting reset failed: Database error")
+                    .build();
+
+        } catch (Exception e) {
+            log.error(
+                    "Unexpected error while resetting grid personalization " +
+                            "for gridName: {}, userId: {}",
+                    gridName,
+                    userId,
+                    e
+            );
+
+            return ApiResponse.builder()
+                    .success(false)
+                    .message("Grid setting reset failed")
+                    .build();
+        }
+    }
 }

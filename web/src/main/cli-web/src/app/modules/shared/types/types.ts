@@ -50,7 +50,7 @@ export interface SearchCriteria {
 
 export interface GridPersonalizationDto {
   userId: number;
-  gridColumnJson: string;
+  gridColumnJson: string | null;
   gridName: string;
 }
 
