@@ -38,12 +38,12 @@
   </button>
 
   <mat-menu #settingsMenu="matMenu" class="settings-menu">
-    <button mat-menu-item type="button" (click)="exportExcel('ALL')">
+    <button mat-menu-item type="button" (click)="saveGridSetting()">
       <mat-icon>save</mat-icon>
       <span>Save Grid Settings</span>
     </button>
 
-    <button mat-menu-item type="button" (click)="exportExcel('SELECTED')">
+    <button mat-menu-item type="button" (click)="resetGridSettings()">
       <mat-icon>restart_alt</mat-icon>
       <span>Reset Grid Settings</span>
     </button>

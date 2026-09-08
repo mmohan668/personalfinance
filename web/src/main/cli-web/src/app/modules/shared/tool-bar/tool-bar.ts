@@ -44,4 +44,8 @@ export class ToolBar {
   editRow!: () => void;
   @Input()
   deleteRow!: () => void;
+  @Input()
+  saveGridSetting!: () => void;
+  @Input()
+  resetGridSettings!: () => void;
 }

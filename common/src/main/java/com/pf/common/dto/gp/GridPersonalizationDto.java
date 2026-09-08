@@ -9,6 +9,7 @@ import lombok.*;
 public class GridPersonalizationDto {
     private Long id;
     private Long gridNameId;
+    private String gridName;
     private Long userId;
     private String gridColumnJson;
 }

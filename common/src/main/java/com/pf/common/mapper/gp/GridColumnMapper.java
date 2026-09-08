@@ -10,6 +10,7 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface GridColumnMapper {
     @Mapping(source = "gridName.id", target = "gridNameId")
+    @Mapping(target = "sortPriority", ignore = true)
     GridColumnDto toDto(GridColumn entity);
 
     @Mapping(source = "gridNameId", target = "gridName.id")

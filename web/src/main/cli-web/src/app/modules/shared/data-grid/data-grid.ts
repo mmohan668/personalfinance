@@ -7,7 +7,14 @@ import { Paginator } from 'primeng/paginator';
 
 import { BehaviorSubject, firstValueFrom } from 'rxjs';
 
-import { GridColumn, GridFilter, GridSort, SearchCriteria } from '../types/types';
+import {
+  ApiResponse,
+  GridColumn,
+  GridFilter,
+  GridPersonalizationDto,
+  GridSort,
+  SearchCriteria,
+} from '../types/types';
 
 import { GridService } from '../service/grid-service';
 import { SORT_ICONS, SORT_ORDERS } from '../enums';
@@ -199,15 +206,7 @@ export class DataGrid implements OnInit {
      *   { field: 'price', order: 'desc' }
      * ]
      */
-    const sorts: GridSort[] = this.sortMeta
-      .filter(
-        (sort): sort is SortMeta =>
-          !!sort && typeof sort.field === 'string' && (sort.order === 1 || sort.order === -1),
-      )
-      .map((sort) => ({
-        field: sort.field,
-        order: sort.order === 1 ? 'asc' : 'desc',
-      }));
+    const sorts: GridSort[] = this.getSorts();
 
     const request: SearchCriteria = {
       sortList: sorts,
@@ -231,19 +230,31 @@ export class DataGrid implements OnInit {
     });
   }
 
+  private getSorts(): GridSort[] {
+    return this.sortMeta
+      .filter(
+        (sort): sort is SortMeta =>
+          !!sort && typeof sort.field === 'string' && (sort.order === 1 || sort.order === -1),
+      )
+      .map((sort) => ({
+        field: sort.field,
+        order: sort.order === 1 ? 'asc' : 'desc',
+      }));
+  }
+
   /* =========================================================
      DEFAULT SORT
      ========================================================= */
 
   initializeDefaultSort(columns: GridColumn[]): void {
-    const defaultSortColumn = columns.find(
-      (column) => column.sortable !== false && column.defaultSortOrder,
-    );
+    const defaultSortColumns = columns
+      .filter((column) => column.sortable !== false && column.defaultSortOrder)
+      .sort(
+        (a, b) =>
+          (a.sortPriority ?? Number.MAX_SAFE_INTEGER) - (b.sortPriority ?? Number.MAX_SAFE_INTEGER),
+      );
 
-    if (!defaultSortColumn) {
-      /*
-       * No default sort.
-       */
+    if (!defaultSortColumns.length) {
       this.sortMeta = [];
       this.sortField = '';
       this.sortOrder = 1;
@@ -251,26 +262,17 @@ export class DataGrid implements OnInit {
       return;
     }
 
-    const order: 1 | -1 = defaultSortColumn.defaultSortOrder === SORT_ORDERS.DESCENDING ? -1 : 1;
+    this.sortMeta = defaultSortColumns.map((column) => ({
+      field: column.field,
+      order: column.defaultSortOrder === SORT_ORDERS.DESCENDING ? -1 : 1,
+    }));
 
     /*
-     * Keep the default sort in PrimeNG's multi-sort state.
-     *
-     * This is the important difference from the previous code.
+     * Keep the first sort column for compatibility
+     * with the single-sort properties.
      */
-    this.sortMeta = [
-      {
-        field: defaultSortColumn.field,
-        order,
-      },
-    ];
-
-    /*
-     * These are kept for compatibility with the rest
-     * of the component.
-     */
-    this.sortField = defaultSortColumn.field;
-    this.sortOrder = order;
+    this.sortField = this.sortMeta[0].field;
+    this.sortOrder = this.sortMeta[0].order as any;
   }
 
   /* =========================================================
@@ -889,4 +891,37 @@ export class DataGrid implements OnInit {
       this.paginator.first.set(0);
     }
   }
+
+  saveGridSetting = async () => {
+    const columnsToSave = this.columns.map((col) => col);
+    const sorts: GridSort[] = this.getSorts();
+    columnsToSave.forEach((col) => {
+      const sortIndex = sorts.findIndex((s) => s.field === col.field);
+      if (sortIndex !== -1) {
+        col.defaultSortOrder = sorts[sortIndex].order;
+        col.sortPriority = sortIndex;
+      } else {
+        col.defaultSortOrder = null;
+      }
+    });
+    const gridPersonalizationDto: GridPersonalizationDto = {
+      gridName: this.gridName,
+      gridColumnJson: JSON.stringify(columnsToSave),
+      userId: 1,
+    };
+    try {
+      const apiResponse: ApiResponse = await firstValueFrom(
+        this.gridService.saveGridSetting(gridPersonalizationDto),
+      );
+      if (apiResponse.success) {
+        console.log(apiResponse.message);
+      } else {
+        console.error(apiResponse.message);
+      }
+    } catch (error) {
+      console.error('Error calling saveGridSetting API:', error);
+    }
+  };
+
+  resetGridSettings = () => {};
 }
