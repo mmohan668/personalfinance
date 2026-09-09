@@ -14,6 +14,7 @@ import {
   GridPersonalizationDto,
   GridSort,
   SearchCriteria,
+  ToolbarConfig,
 } from '../types/types';
 
 import { GridService } from '../service/grid-service';
@@ -50,6 +51,9 @@ export class DataGrid implements OnInit {
 
   @Input()
   deleteRow!: () => void;
+
+  @Input()
+  toolbarConfig!: ToolbarConfig;
 
   @Input({ required: true })
   gridName!: string;
@@ -154,6 +158,9 @@ export class DataGrid implements OnInit {
      ========================================================= */
 
   ngOnInit(): void {
+    if (!this.toolbarConfig) {
+      this.toolbarConfig = this.commonService.toolbarConfig;
+    }
     this.fetchGridColumns();
   }
 
@@ -255,7 +262,7 @@ export class DataGrid implements OnInit {
       .filter((column) => column.sortable !== false && column.defaultSortOrder)
       .sort(
         (a, b) =>
-          (a.sortPriority ?? Number.MAX_SAFE_INTEGER) - (b.sortPriority ?? Number.MAX_SAFE_INTEGER),
+          (a.sortIndex ?? Number.MAX_SAFE_INTEGER) - (b.sortIndex ?? Number.MAX_SAFE_INTEGER),
       );
 
     if (!defaultSortColumns.length) {
@@ -903,7 +910,7 @@ export class DataGrid implements OnInit {
       const sortIndex = sorts.findIndex((s) => s.field === col.field);
       if (sortIndex !== -1) {
         col.defaultSortOrder = sorts[sortIndex].order;
-        col.sortPriority = sortIndex;
+        col.sortIndex = sortIndex;
       } else {
         col.defaultSortOrder = null;
       }

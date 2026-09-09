@@ -8,7 +8,7 @@ import com.pf.common.entity.categoryManagement.SubcategoryView;
 import com.pf.common.entity.categoryManagement.UserCategory;
 import com.pf.common.mapper.categoryManagement.SubcategoryViewMapper;
 import com.pf.common.mapper.categoryManagement.UserCategoryMapper;
-import com.pf.common.service.criteria.GenericCriteriaRepository;
+import com.pf.common.service.criteria.GenericCriteriaService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -20,7 +20,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class CategoryManagementService {
-    private final GenericCriteriaRepository criteriaRepository;
+    private final GenericCriteriaService criteriaService;
     private final UserCategoryMapper userCategoryMapper;
     private final SubcategoryViewMapper subcategoryViewMapper;
 
@@ -29,8 +29,8 @@ public class CategoryManagementService {
             log.debug("fetchCategoriesGridData: {}", searchCriteria);
             searchCriteria.setFetchPaths(List.of("referenceObject"));
             searchCriteria.setFIELD_MAPPINGS(UserCategoryDto.FIELD_MAPPINGS);
-            long totalRecords = criteriaRepository.getCountBySearchCriteria(UserCategory.class, searchCriteria);
-            List<UserCategoryDto> recordDetails = userCategoryMapper.toDtoList(criteriaRepository.getDataBySearchCriteria(UserCategory.class, searchCriteria));
+            long totalRecords = criteriaService.getCountBySearchCriteria(UserCategory.class, searchCriteria);
+            List<UserCategoryDto> recordDetails = userCategoryMapper.toDtoList(criteriaService.getDataBySearchCriteria(UserCategory.class, searchCriteria));
             log.debug("fetchCategoriesGridData: totalRecords: {}", totalRecords);
             return GridResult.builder().totalRecords(totalRecords).recordDetails(recordDetails).build();
         } catch (Exception e) {
@@ -42,8 +42,8 @@ public class CategoryManagementService {
     public GridResult fetchSubcategoriesGridData(SearchCriteria searchCriteria) {
         try {
             log.debug("fetchSubcategoriesGridData: {}", searchCriteria);
-            long totalRecords = criteriaRepository.getCountBySearchCriteria(SubcategoryView.class, searchCriteria);
-            List<SubcategoryViewDto> recordDetails = subcategoryViewMapper.toDtoList(criteriaRepository.getDataBySearchCriteria(SubcategoryView.class, searchCriteria));
+            long totalRecords = criteriaService.getCountBySearchCriteria(SubcategoryView.class, searchCriteria);
+            List<SubcategoryViewDto> recordDetails = subcategoryViewMapper.toDtoList(criteriaService.getDataBySearchCriteria(SubcategoryView.class, searchCriteria));
             log.debug("fetchSubcategoriesGridData: totalRecords: {}", totalRecords);
             return GridResult.builder().totalRecords(totalRecords).recordDetails(recordDetails).build();
         } catch (Exception e) {

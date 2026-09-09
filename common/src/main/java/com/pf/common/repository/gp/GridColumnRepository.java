@@ -1,4 +1,4 @@
-package com.pf.common.repository;
+package com.pf.common.repository.gp;
 
 import com.pf.common.entity.gp.GridColumn;
 import org.springframework.data.jpa.repository.JpaRepository;

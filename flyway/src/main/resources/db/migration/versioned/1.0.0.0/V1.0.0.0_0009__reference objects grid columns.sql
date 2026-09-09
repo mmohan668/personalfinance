@@ -1,25 +1,23 @@
 -- ============================================================
--- Categories Grid Configuration
+-- Subcategories Grid Configuration
 -- ============================================================
 
 BEGIN;
-
 
 -- ============================================================
 -- 1. GRID NAME
 -- ============================================================
 
 INSERT INTO grid_name(name)
-VALUES ('CATEGORIES_GRID')
+VALUES ('REFERENCE_OBJECTS_GRID')
 ON CONFLICT (LOWER(TRIM(name)))
     DO NOTHING;
-
 
 -- ============================================================
 -- 2. GRID COLUMNS
 -- ============================================================
 
--- Category Type
+-- Reference Object Name
 INSERT INTO grid_column
 (grid_name_id,
  field,
@@ -32,9 +30,9 @@ INSERT INTO grid_column
  sort_index)
 VALUES ((SELECT id
          FROM grid_name
-         WHERE LOWER(TRIM(name)) = LOWER(TRIM('CATEGORIES_GRID'))),
-        'categoryType',
-        'Category Type',
+         WHERE LOWER(TRIM(name)) = LOWER(TRIM('REFERENCE_OBJECTS_GRID'))),
+        'refObjName',
+        'Reference Object Name',
         'text',
         'contains',
         200,
@@ -43,79 +41,6 @@ VALUES ((SELECT id
         0)
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
-
-
--- Category Name
-INSERT INTO grid_column
-(grid_name_id,
- field,
- header,
- data_type,
- default_filter_operator,
- width,
- visible_index,
- default_sort_order,
- sort_index)
-VALUES ((SELECT id
-         FROM grid_name
-         WHERE LOWER(TRIM(name)) = LOWER(TRIM('CATEGORIES_GRID'))),
-        'categoryName',
-        'Category Name',
-        'text',
-        'contains',
-        250,
-        1,
-        'asc',
-        1)
-ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
-    DO NOTHING;
-
-
--- Category Description
-INSERT INTO grid_column
-(grid_name_id,
- field,
- header,
- data_type,
- default_filter_operator,
- width,
- visible_index)
-VALUES ((SELECT id
-         FROM grid_name
-         WHERE LOWER(TRIM(name)) = LOWER(TRIM('CATEGORIES_GRID'))),
-        'categoryDescription',
-        'Category Description',
-        'text',
-        'contains',
-        250,
-        2)
-ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
-    DO NOTHING;
-
-
--- Active Status
-INSERT INTO grid_column
-(grid_name_id,
- field,
- header,
- data_type,
- default_filter_operator,
- visible_index,
- cell_template,
- align)
-VALUES ((SELECT id
-         FROM grid_name
-         WHERE LOWER(TRIM(name)) = LOWER(TRIM('CATEGORIES_GRID'))),
-        'active',
-        'Active Status',
-        'boolean',
-        'equals',
-        3,
-        'cellValueTemplate',
-        'CENTER')
-ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
-    DO NOTHING;
-
 
 -- Created By
 INSERT INTO grid_column
@@ -128,16 +53,15 @@ INSERT INTO grid_column
  visible_index)
 VALUES ((SELECT id
          FROM grid_name
-         WHERE LOWER(TRIM(name)) = LOWER(TRIM('CATEGORIES_GRID'))),
+         WHERE LOWER(TRIM(name)) = LOWER(TRIM('REFERENCE_OBJECTS_GRID'))),
         'createdBy',
         'Created By',
         'text',
         'contains',
         200,
-        4)
+        6)
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
-
 
 -- Created Date
 INSERT INTO grid_column
@@ -150,16 +74,15 @@ INSERT INTO grid_column
  visible_index)
 VALUES ((SELECT id
          FROM grid_name
-         WHERE LOWER(TRIM(name)) = LOWER(TRIM('CATEGORIES_GRID'))),
+         WHERE LOWER(TRIM(name)) = LOWER(TRIM('REFERENCE_OBJECTS_GRID'))),
         'createdAt',
         'Created Date',
         'datetime',
         'equals',
         200,
-        5)
+        7)
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
-
 
 -- Modified By
 INSERT INTO grid_column
@@ -172,16 +95,15 @@ INSERT INTO grid_column
  visible_index)
 VALUES ((SELECT id
          FROM grid_name
-         WHERE LOWER(TRIM(name)) = LOWER(TRIM('CATEGORIES_GRID'))),
+         WHERE LOWER(TRIM(name)) = LOWER(TRIM('REFERENCE_OBJECTS_GRID'))),
         'updatedBy',
         'Modified By',
         'text',
         'contains',
         200,
-        6)
+        8)
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
-
 
 -- Modified Date
 INSERT INTO grid_column
@@ -194,13 +116,13 @@ INSERT INTO grid_column
  visible_index)
 VALUES ((SELECT id
          FROM grid_name
-         WHERE LOWER(TRIM(name)) = LOWER(TRIM('CATEGORIES_GRID'))),
+         WHERE LOWER(TRIM(name)) = LOWER(TRIM('REFERENCE_OBJECTS_GRID'))),
         'updatedAt',
         'Modified Date',
         'datetime',
         'equals',
         200,
-        7)
+        9)
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 

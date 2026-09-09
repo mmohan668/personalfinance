@@ -53,5 +53,8 @@ public class GridColumn {
 
     @Column(name = "CELL_TEMPLATE", length = 100)
     private String cellTemplate;
+
+    @Column(name = "SORT_INDEX")
+    private Integer sortIndex;
 }
 

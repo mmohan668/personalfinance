@@ -25,7 +25,7 @@ import java.util.Map;
 
 @Slf4j
 @Repository
-public class GenericCriteriaRepository {
+public class GenericCriteriaService {
 
     @PersistenceContext
     private EntityManager entityManager;
