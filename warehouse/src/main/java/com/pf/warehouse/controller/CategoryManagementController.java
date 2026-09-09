@@ -19,4 +19,9 @@ public class CategoryManagementController {
     public GridResult fetchCategoriesGridData(@RequestBody SearchCriteria searchCriteria) {
         return categoryManagementService.fetchCategoriesGridData(searchCriteria);
     }
+
+    @PostMapping("/fetchSubcategoriesGridData")
+    public GridResult fetchSubcategoriesGridData(@RequestBody SearchCriteria searchCriteria) {
+        return categoryManagementService.fetchSubcategoriesGridData(searchCriteria);
+    }
 }

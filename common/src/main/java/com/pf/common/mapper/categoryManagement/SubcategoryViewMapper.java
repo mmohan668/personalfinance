@@ -10,5 +10,5 @@ import java.util.List;
 public interface SubcategoryViewMapper {
     SubcategoryViewDto toDto(SubcategoryView subcategoryView);
 
-    List<SubcategoryViewDto> toDto(List<SubcategoryView> subcategoryViews);
+    List<SubcategoryViewDto> toDtoList(List<SubcategoryView> subcategoryViews);
 }

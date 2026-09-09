@@ -1,1 +1,7 @@
-<p>subcategories works!</p>
+<app-data-grid
+  [gridName]="gridName"
+  [gridExportFileName]="gridExportFileName"
+  [dataKey]="dataKey"
+  [calculateCellValue]="this.calculateCellValue"
+  [booleanOptions]="commonService.activeInactiveBooleanOptions"
+></app-data-grid>
