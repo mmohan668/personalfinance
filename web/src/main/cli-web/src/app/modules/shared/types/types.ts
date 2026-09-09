@@ -12,7 +12,7 @@ export interface GridColumn {
   visible?: boolean;
   visibleIndex?: number;
   cellTemplate?: string;
-  sortPriority?: number;
+  sortIndex?: number;
 }
 
 export interface GridFilter {
@@ -58,4 +58,11 @@ export interface ApiResponse {
   success: boolean;
   message: string;
   data: any;
+}
+
+export interface ToolbarConfig {
+  addRow: boolean | false;
+  copyRow: boolean | false;
+  deleteRow: boolean | false;
+  editRow: boolean | false;
 }

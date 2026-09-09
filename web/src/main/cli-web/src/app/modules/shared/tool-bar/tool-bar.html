@@ -3,25 +3,38 @@
      ========================================================= -->
 
 <div class="table-toolbar">
-  <!-- Add -->
-  <button mat-icon-button class="toolbar-border" type="button" title="Add" (click)="addRow()">
-    <mat-icon>add</mat-icon>
-  </button>
+  @if (toolbarConfig.addRow) {
+    <!-- Add -->
+    <button mat-icon-button class="toolbar-border" type="button" title="Add" (click)="addRow()">
+      <mat-icon>add</mat-icon>
+    </button>
+  }
+  @if (toolbarConfig.copyRow) {
+    <!-- Copy -->
+    <button mat-icon-button class="toolbar-border" type="button" title="Copy" (click)="copyRow()">
+      <mat-icon>file_copy</mat-icon>
+    </button>
+  }
 
-  <!-- Copy -->
-  <button mat-icon-button class="toolbar-border" type="button" title="Copy" (click)="copyRow()">
-    <mat-icon>file_copy</mat-icon>
-  </button>
+  @if (toolbarConfig.editRow) {
+    <!-- Edit -->
+    <button mat-icon-button class="toolbar-border" type="button" title="Edit" (click)="editRow()">
+      <mat-icon>edit</mat-icon>
+    </button>
+  }
 
-  <!-- Edit -->
-  <button mat-icon-button class="toolbar-border" type="button" title="Edit" (click)="editRow()">
-    <mat-icon>edit</mat-icon>
-  </button>
-
-  <!-- Delete -->
-  <button mat-icon-button class="toolbar-border" type="button" title="Delete" (click)="deleteRow()">
-    <mat-icon>delete</mat-icon>
-  </button>
+  @if (toolbarConfig.deleteRow) {
+    <!-- Delete -->
+    <button
+      mat-icon-button
+      class="toolbar-border"
+      type="button"
+      title="Delete"
+      (click)="deleteRow()"
+    >
+      <mat-icon>delete</mat-icon>
+    </button>
+  }
 
   <!-- =======================================================
        SETTINGS

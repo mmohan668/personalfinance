@@ -3,7 +3,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
-import { GridColumn } from '../types/types';
+import { GridColumn, ToolbarConfig } from '../types/types';
 import { FormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 
@@ -48,4 +48,6 @@ export class ToolBar {
   saveGridSetting!: () => void;
   @Input()
   resetGridSettings!: () => void;
+  @Input()
+  toolbarConfig!: ToolbarConfig;
 }

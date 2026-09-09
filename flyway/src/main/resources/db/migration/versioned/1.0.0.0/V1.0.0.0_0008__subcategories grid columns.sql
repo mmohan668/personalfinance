@@ -27,7 +27,9 @@ INSERT INTO grid_column
  data_type,
  default_filter_operator,
  width,
- visible_index)
+ visible_index,
+ default_sort_order,
+ sort_index)
 VALUES ((SELECT id
          FROM grid_name
          WHERE LOWER(TRIM(name)) = LOWER(TRIM('SUBCATEGORIES_GRID'))),
@@ -36,6 +38,8 @@ VALUES ((SELECT id
         'text',
         'contains',
         200,
+        0,
+        'asc',
         0)
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
@@ -97,7 +101,9 @@ INSERT INTO grid_column
  data_type,
  default_filter_operator,
  width,
- visible_index)
+ visible_index,
+ default_sort_order,
+ sort_index)
 VALUES ((SELECT id
          FROM grid_name
          WHERE LOWER(TRIM(name)) = LOWER(TRIM('SUBCATEGORIES_GRID'))),
@@ -106,7 +112,9 @@ VALUES ((SELECT id
         'text',
         'contains',
         250,
-        3)
+        3,
+        'asc',
+        2)
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 
