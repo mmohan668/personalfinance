@@ -6,15 +6,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(
-        name = "user_subcategories",
-        uniqueConstraints = {
-                @UniqueConstraint(
-                        name = "uq_user_category_subcategory",
-                        columnNames = {"user_category_id", "subcategory_name"}
-                )
-        }
-)
+@Table(name = "user_subcategories")
 @Getter
 @Setter
 @NoArgsConstructor

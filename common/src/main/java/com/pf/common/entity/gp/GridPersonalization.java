@@ -7,8 +7,7 @@ import org.hibernate.type.SqlTypes;
 
 
 @Entity
-@Table(name = "GRID_PERSONALIZATION",
-        uniqueConstraints = @UniqueConstraint(name = "UQ_GRID_USER", columnNames = {"GRID_NAME_ID", "USER_ID"}))
+@Table(name = "GRID_PERSONALIZATION")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

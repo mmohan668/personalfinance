@@ -21,6 +21,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 @Slf4j
 @Repository
@@ -36,6 +37,7 @@ public class GenericCriteriaRepository {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<T> root = criteriaQuery.from(entity);
+
         applyFilters(criteriaBuilder, criteriaQuery, root, searchCriteria);
         // select count(*)
         criteriaQuery.select(criteriaBuilder.count(root));
@@ -51,6 +53,8 @@ public class GenericCriteriaRepository {
         CriteriaQuery<T> criteriaQuery = criteriaBuilder.createQuery(entity);
         Root<T> root = criteriaQuery.from(entity);
 
+        applyFetches(root, searchCriteria);
+
         criteriaQuery.select(root);
 
         applyFilters(criteriaBuilder, criteriaQuery, root, searchCriteria);
@@ -64,6 +68,20 @@ public class GenericCriteriaRepository {
         }
 
         return typedQuery.getResultList();
+    }
+
+    private <T> void applyFetches(
+            Root<T> root,
+            SearchCriteria searchCriteria
+    ) {
+        if (searchCriteria.getFetchPaths() == null
+                || searchCriteria.getFetchPaths().isEmpty()) {
+            return;
+        }
+
+        for (String fetchPath : searchCriteria.getFetchPaths()) {
+            root.fetch(fetchPath, JoinType.LEFT);
+        }
     }
 
     private void applySorting(
@@ -82,7 +100,7 @@ public class GenericCriteriaRepository {
                     continue;
                 }
 
-                Path<?> path = resolvePath(root, sort.getField());
+                Path<?> path = resolvePath(root, sort.getField(), searchCriteria.getFIELD_MAPPINGS());
 
                 boolean descending = "desc".equalsIgnoreCase(sort.getOrder());
 
@@ -119,7 +137,7 @@ public class GenericCriteriaRepository {
             List<Predicate> predicates = new ArrayList<>();
 
             for (GridFilter filter : searchCriteria.getFilterList()) {
-                Path<?> path = resolvePath(root, filter.getField());
+                Path<?> path = resolvePath(root, filter.getField(), searchCriteria.getFIELD_MAPPINGS());
                 String operator = filter.getOperator();
 
                 if ("isNull".equals(operator)) {
@@ -639,34 +657,24 @@ public class GenericCriteriaRepository {
         }
     }
 
-    private Path<?> resolvePath(Root<?> root, String field) {
-        String[] parts = field.split("\\.");
+    private Path<?> resolvePath(
+            Root<?> root,
+            String field,
+            Map<String, String> fieldMap
+    ) {
+        String mappedField = fieldMap != null ? fieldMap.getOrDefault(field, field) : field;
+
+        String[] parts = mappedField.split("\\.");
+
         Path<?> path = root;
 
         for (int i = 0; i < parts.length; i++) {
             String part = parts[i];
 
-            if (path instanceof Root) {
-                // Root can join associations or get attributes
-                if (i < parts.length - 1) {
-                    path = ((Root<?>) path).join(part, JoinType.LEFT);
-                } else {
-                    path = path.get(part);
-                }
-            } else if (path instanceof From) {
-                // From (Join) can join further associations or get attributes
-                if (i < parts.length - 1) {
-                    path = ((From<?, ?>) path).join(part, JoinType.LEFT);
-                } else {
-                    path = path.get(part);
-                }
+            if (i < parts.length - 1) {
+                path = ((From<?, ?>) path).join(part, JoinType.LEFT);
             } else {
-                // Terminal attribute, just get
                 path = path.get(part);
-            }
-
-            if (path == null) {
-                throw new IllegalArgumentException("Invalid path: " + field);
             }
         }
 

@@ -13,7 +13,8 @@ import java.util.List;
 public interface UserCategoryMapper {
 
     @Mapping(source = "user.id", target = "userId")
-    UserCategoryDto toDto(UserCategory entity);
+    @Mapping(source = "referenceObject.refObjName", target = "categoryType")
+        UserCategoryDto toDto(UserCategory entity);
 
     @Mapping(source = "userId", target = "user.id")
     @Mapping(target = "subcategories", ignore = true)

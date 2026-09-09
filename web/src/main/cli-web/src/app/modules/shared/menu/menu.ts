@@ -86,6 +86,11 @@ export class Menu {
           route: '/system-config',
         },
         {
+          label: 'Reference Objects',
+          icon: 'data_object',
+          route: '/reference-objects',
+        },
+        {
           label: 'Reference Values',
           icon: 'list_alt',
           route: '/reference-values',

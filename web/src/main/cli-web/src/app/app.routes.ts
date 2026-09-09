@@ -48,6 +48,11 @@ export const routes: Routes = [
       import('./modules/system-config/system-config').then((m) => m.SystemConfig),
   },
   {
+    path: 'reference-objects',
+    loadComponent: () =>
+      import('./modules/reference-objects/reference-objects').then((m) => m.ReferenceObjects),
+  },
+  {
     path: 'reference-values',
     loadComponent: () =>
       import('./modules/reference-values/reference-values').then((m) => m.ReferenceValues),
