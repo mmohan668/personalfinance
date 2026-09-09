@@ -4,7 +4,9 @@ import lombok.Data;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Data
 public class SearchCriteria implements Serializable {
@@ -16,4 +18,7 @@ public class SearchCriteria implements Serializable {
     private int take;
     private boolean loadAllData;
     private String gridName;
+    private List<String> fetchPaths = new ArrayList<>();
+    private Map<String, String> FIELD_MAPPINGS;
+
 }

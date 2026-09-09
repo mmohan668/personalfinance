@@ -1,5 +1,6 @@
 package com.pf.common.entity.categoryManagement;
 
+import com.pf.common.entity.settings.ReferenceObject;
 import com.pf.common.entity.userManagement.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -9,15 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(
-        name = "user_categories",
-        uniqueConstraints = {
-                @UniqueConstraint(
-                        name = "uq_user_transaction_category",
-                        columnNames = {"user_id", "transaction_type", "category_name"}
-                )
-        }
-)
+@Table(name = "user_categories")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -33,8 +26,9 @@ public class UserCategory {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column(name = "transaction_type", nullable = false, length = 20)
-    private String transactionType;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "category_type", nullable = false)
+    private ReferenceObject referenceObject;
 
     @Column(name = "category_name", nullable = false, length = 100)
     private String categoryName;

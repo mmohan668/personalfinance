@@ -27,6 +27,8 @@ public class CategoryManagementService {
     public GridResult fetchCategoriesGridData(SearchCriteria searchCriteria) {
         try {
             log.debug("fetchCategoriesGridData: {}", searchCriteria);
+            searchCriteria.setFetchPaths(List.of("referenceObject"));
+            searchCriteria.setFIELD_MAPPINGS(UserCategoryDto.FIELD_MAPPINGS);
             long totalRecords = criteriaRepository.getCountBySearchCriteria(UserCategory.class, searchCriteria);
             List<UserCategoryDto> recordDetails = userCategoryMapper.toDtoList(criteriaRepository.getDataBySearchCriteria(UserCategory.class, searchCriteria));
             log.debug("fetchCategoriesGridData: totalRecords: {}", totalRecords);

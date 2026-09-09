@@ -18,7 +18,7 @@ public class SubcategoryView {
     private Long id; // usc.id is unique, safe to use as PK
 
     private Long userCategoryId;
-    private String transactionType;
+    private String categoryType;
     private String categoryName;
     private String categoryDescription;
     private Long adminUserId;

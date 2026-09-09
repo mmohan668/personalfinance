@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 public class SubcategoryViewDto {
     private Long id;
     private Long userCategoryId;
-    private String transactionType;
+    private String categoryType;
     private String categoryName;
     private String categoryDescription;
     private Long adminUserId;
