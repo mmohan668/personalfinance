@@ -15,8 +15,9 @@ export class AdEditReferenceObjectDialog {
   private readonly dialogRef = inject(MatDialogRef<AdEditReferenceObjectDialog>);
   readonly data = inject<any>(MAT_DIALOG_DATA);
   form: FormGroup = new FormGroup({});
+  public _cs = inject(CommonService);
 
-  constructor(public _cs: CommonService) {
+  constructor() {
     this.form.addControl(
       'referenceObjectName',
       new FormControl(this.data.mode === 'edit' ? this.data.referenceObjectName : '', [

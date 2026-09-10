@@ -37,6 +37,9 @@ export class DataGrid implements OnInit {
   @ViewChild('dt') dt!: Table;
   @ViewChild('paginator') paginator!: Paginator;
   public config = inject(AppConfigService);
+  public _cs = inject(CommonService);
+  private _gs = inject(GridService);
+  private _cp = inject(CurrencyPipe);
   /* =========================================================
       TOOLBAR ACTIONS
       ========================================================= */
@@ -148,11 +151,7 @@ export class DataGrid implements OnInit {
      CONSTRUCTOR
      ========================================================= */
 
-  constructor(
-    private gridService: GridService,
-    public commonService: CommonService,
-    private currencyPipe: CurrencyPipe,
-  ) {}
+  constructor() {}
 
   /* =========================================================
      INIT
@@ -160,13 +159,13 @@ export class DataGrid implements OnInit {
 
   ngOnInit(): void {
     if (!this.toolbarConfig) {
-      this.toolbarConfig = this.commonService.toolbarConfig;
+      this.toolbarConfig = this._cs.toolbarConfig;
     }
     this.fetchGridColumns();
   }
 
   private fetchGridColumns() {
-    this.gridService.loadGridColumns(this.gridName).subscribe((columns) => {
+    this._gs.loadGridColumns(this.gridName).subscribe((columns) => {
       this.columns = columns.map((column) => ({
         ...column,
         visible: column.visible !== false,
@@ -229,7 +228,7 @@ export class DataGrid implements OnInit {
       gridName: this.gridName,
     };
 
-    this.gridService.loadGridData(request).subscribe({
+    this._gs.loadGridData(request).subscribe({
       next: (result) => {
         this.dataSourceSubject.next(result.recordDetails);
         this.totalRecords = result.totalRecords;
@@ -393,7 +392,7 @@ export class DataGrid implements OnInit {
     if (
       gridFilter.operator === 'isNull' ||
       gridFilter.operator === 'isNotNull' ||
-      this.commonService.isNotNull(gridFilter.value)
+      this._cs.isNotNull(gridFilter.value)
     ) {
       this.filters.push(gridFilter);
     }
@@ -405,7 +404,7 @@ export class DataGrid implements OnInit {
     if (
       gridFilter.operator === 'isNull' ||
       gridFilter.operator === 'isNotNull' ||
-      this.commonService.isNotNull(gridFilter.value)
+      this._cs.isNotNull(gridFilter.value)
     ) {
       this.filters.push(gridFilter);
     }
@@ -590,7 +589,7 @@ export class DataGrid implements OnInit {
         gridName: this.gridName,
       };
 
-      sourceRows = (await firstValueFrom(this.gridService.loadGridData(request))).recordDetails;
+      sourceRows = (await firstValueFrom(this._gs.loadGridData(request))).recordDetails;
     }
 
     // =====================================================
@@ -847,7 +846,7 @@ export class DataGrid implements OnInit {
   }
 
   private getCurrencySymbol(): string {
-    const transformed = this.currencyPipe.transform(0, this.currencyCode, 'symbol', '1.0-0');
+    const transformed = this._cp.transform(0, this.currencyCode, 'symbol', '1.0-0');
 
     if (!transformed) {
       return this.currencyCode;
@@ -923,7 +922,7 @@ export class DataGrid implements OnInit {
     };
     try {
       const apiResponse: ApiResponse = await firstValueFrom(
-        this.gridService.saveGridSetting(gridPersonalizationDto),
+        this._gs.saveGridSetting(gridPersonalizationDto),
       );
       if (apiResponse.success) {
         console.log(apiResponse.message);
@@ -943,7 +942,7 @@ export class DataGrid implements OnInit {
     };
     try {
       const apiResponse: ApiResponse = await firstValueFrom(
-        this.gridService.resetGridSettings(gridPersonalizationDto),
+        this._gs.resetGridSettings(gridPersonalizationDto),
       );
       if (apiResponse.success) {
         console.log(apiResponse.message);

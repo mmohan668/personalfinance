@@ -18,9 +18,10 @@ export class ReferenceObjects {
   protected readonly gridExportFileName = GRID_EXPORT_FILE_NAMES.REFERENCE_OBJECTS_EFN;
   toolbarConfig!: ToolbarConfig;
   private dialog = inject(MatDialog);
+  private _cs = inject(CommonService);
 
-  constructor(public commonService: CommonService) {
-    this.toolbarConfig = commonService.toolbarConfig;
+  constructor() {
+    this.toolbarConfig = this._cs.toolbarConfig;
     this.toolbarConfig.addRow = true;
   }
 
