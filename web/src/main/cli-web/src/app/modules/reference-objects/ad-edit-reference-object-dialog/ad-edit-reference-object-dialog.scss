@@ -1,0 +1,472 @@
+/* =========================================================
+   Dialog Container
+   ========================================================= */
+
+.dialog-container {
+  display: flex;
+  flex-direction: column;
+
+  width: 100%;
+  max-width: none;
+
+  padding: 0;
+  margin: 0;
+
+  border-radius: 6px;
+  overflow: hidden;
+
+  box-sizing: border-box;
+}
+
+/* =========================================================
+   Title Bar
+   ========================================================= */
+
+.dialog-title-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  width: 100%;
+  min-height: 56px;
+
+  padding: 0 0 0 16px;
+  margin: 0;
+
+  background-color: #4caf50 !important;
+  color: #ffffff !important;
+
+  cursor: move;
+
+  box-sizing: border-box;
+}
+
+.dialog-title {
+  color: #ffffff !important;
+
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+/* =========================================================
+   Close X Button
+   ========================================================= */
+
+.dialog-title-bar button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 56px;
+  height: 56px;
+  min-width: 56px;
+
+  margin: 0;
+  padding: 0;
+
+  background: transparent !important;
+  color: #ffffff !important;
+
+  border: none !important;
+  border-radius: 0 !important;
+
+  box-shadow: none !important;
+
+  cursor: pointer;
+
+  box-sizing: border-box;
+}
+
+.dialog-title-bar button:hover {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.dialog-title-bar button:active {
+  background-color: rgba(255, 255, 255, 0.18) !important;
+}
+
+.dialog-title-bar button .material-icons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 32px;
+  height: 32px;
+
+  color: #ffffff !important;
+
+  font-size: 32px;
+  line-height: 32px;
+}
+
+/* =========================================================
+   Dialog Content
+   ========================================================= */
+
+.dialog-content {
+  width: 100%;
+
+  padding: 24px 16px 8px;
+  margin: 0;
+
+  box-sizing: border-box;
+}
+
+.reference-object-field {
+  display: block;
+  width: 100%;
+}
+
+/* =========================================================
+   Dialog Actions
+   ========================================================= */
+
+.dialog-actions {
+  display: flex;
+  align-items: center;
+
+  width: 100%;
+  min-height: 72px;
+
+  padding: 16px;
+  margin: 0;
+
+  border-top: 1px solid #ddd;
+
+  box-sizing: border-box;
+}
+
+.action-spacer {
+  flex: 1 1 auto;
+}
+
+/* =========================================================
+   ALL ACTION BUTTONS - BASE
+   ========================================================= */
+
+.dialog-actions button {
+  min-width: 90px;
+  height: 42px;
+
+  margin: 0 0 0 8px;
+  padding: 0 20px;
+
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 42px;
+
+  border-radius: 4px !important;
+
+  cursor: pointer;
+
+  box-sizing: border-box;
+
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+/* =========================================================
+   STROKED BUTTON
+   Clear + Close
+   ========================================================= */
+
+.dialog-actions button[mat-stroked-button] {
+  background-color: #ffffff !important;
+
+  color: #4caf50 !important;
+
+  border: 2px solid #4caf50 !important;
+
+  box-shadow: none !important;
+}
+
+.dialog-actions button[mat-stroked-button] .mdc-button__label {
+  color: #4caf50 !important;
+}
+
+.dialog-actions button[mat-stroked-button] .mat-mdc-button-persistent-ripple,
+.dialog-actions button[mat-stroked-button] .mdc-button__ripple {
+  background-color: transparent !important;
+}
+
+/* ---------------------------------------------------------
+   Stroked Hover
+   --------------------------------------------------------- */
+
+.dialog-actions button[mat-stroked-button]:hover {
+  background-color: #e8f5e9 !important;
+
+  color: #388e3c !important;
+
+  border-color: #388e3c !important;
+
+  box-shadow: none !important;
+}
+
+.dialog-actions button[mat-stroked-button]:hover .mdc-button__label {
+  color: #388e3c !important;
+}
+
+/* ---------------------------------------------------------
+   Stroked Active
+   --------------------------------------------------------- */
+
+.dialog-actions button[mat-stroked-button]:active {
+  background-color: #c8e6c9 !important;
+
+  color: #2e7d32 !important;
+
+  border-color: #2e7d32 !important;
+}
+
+.dialog-actions button[mat-stroked-button]:active .mdc-button__label {
+  color: #2e7d32 !important;
+}
+
+/* =========================================================
+   RAISED BUTTON
+   Save
+   ========================================================= */
+
+.dialog-actions button[mat-raised-button] {
+  background-color: #4caf50 !important;
+
+  color: #ffffff !important;
+
+  border: 2px solid #4caf50 !important;
+
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+}
+
+.dialog-actions button[mat-raised-button] .mdc-button__label {
+  color: #ffffff !important;
+}
+
+.dialog-actions button[mat-raised-button] .mdc-button__ripple {
+  background-color: transparent !important;
+}
+
+/* ---------------------------------------------------------
+   Raised Hover
+   --------------------------------------------------------- */
+
+.dialog-actions button[mat-raised-button]:hover {
+  background-color: #43a047 !important;
+
+  color: #ffffff !important;
+
+  border-color: #43a047 !important;
+
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.25) !important;
+}
+
+.dialog-actions button[mat-raised-button]:hover .mdc-button__label {
+  color: #ffffff !important;
+}
+
+/* ---------------------------------------------------------
+   Raised Active
+   --------------------------------------------------------- */
+
+.dialog-actions button[mat-raised-button]:active {
+  background-color: #388e3c !important;
+
+  color: #ffffff !important;
+
+  border-color: #388e3c !important;
+
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2) !important;
+}
+
+.dialog-actions button[mat-raised-button]:active .mdc-button__label {
+  color: #ffffff !important;
+}
+
+/* =========================================================
+   DISABLED STROKED BUTTON
+   Clear / Close
+   ========================================================= */
+
+.dialog-actions button[mat-stroked-button]:disabled {
+  background-color: #ffffff !important;
+
+  color: #9e9e9e !important;
+
+  border: 2px solid #bdbdbd !important;
+
+  box-shadow: none !important;
+
+  opacity: 1 !important;
+
+  cursor: default;
+}
+
+.dialog-actions button[mat-stroked-button]:disabled .mdc-button__label {
+  color: #9e9e9e !important;
+}
+
+/* =========================================================
+   DISABLED RAISED BUTTON
+   Save
+   ========================================================= */
+
+.dialog-actions button[mat-raised-button]:disabled {
+  background-color: #a5d6a7 !important;
+
+  color: #ffffff !important;
+
+  border: 2px solid #a5d6a7 !important;
+
+  box-shadow: none !important;
+
+  opacity: 1 !important;
+
+  cursor: default;
+}
+
+.dialog-actions button[mat-raised-button]:disabled .mdc-button__label {
+  color: #ffffff !important;
+}
+
+/*
+ * Prevent hover styles from changing the disabled Save button
+ */
+
+.dialog-actions button[mat-raised-button]:disabled:hover {
+  background-color: #a5d6a7 !important;
+
+  color: #ffffff !important;
+
+  border-color: #a5d6a7 !important;
+
+  box-shadow: none !important;
+}
+
+.dialog-actions button[mat-raised-button]:disabled:hover .mdc-button__label {
+  color: #ffffff !important;
+}
+
+/* =========================================================
+   Angular Material Dialog Container
+   ========================================================= */
+
+::ng-deep .mat-mdc-dialog-container {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+::ng-deep .mat-mdc-dialog-surface {
+  padding: 0 !important;
+  margin: 0 !important;
+
+  border-radius: 6px !important;
+
+  overflow: hidden !important;
+}
+
+/* =========================================================
+   Angular Material Dialog Content
+   ========================================================= */
+
+::ng-deep .mat-mdc-dialog-content {
+  padding-left: 16px !important;
+  padding-right: 16px !important;
+}
+
+/* =========================================================
+   Angular Material Dialog Actions
+   ========================================================= */
+
+::ng-deep .mat-mdc-dialog-actions {
+  padding-left: 16px !important;
+  padding-right: 16px !important;
+}
+
+/* =========================================================
+   MDC STROKED BUTTON VARIABLES
+   ========================================================= */
+
+::ng-deep .dialog-actions button[mat-stroked-button] {
+  --mdc-outlined-button-container-color: #ffffff;
+  --mdc-outlined-button-label-text-color: #4caf50;
+  --mdc-outlined-button-outline-color: #4caf50;
+
+  --mat-mdc-button-persistent-ripple-color: #4caf50;
+  --mat-mdc-button-ripple-color: rgba(76, 175, 80, 0.12);
+
+  background-color: #ffffff !important;
+  color: #4caf50 !important;
+  border-color: #4caf50 !important;
+}
+
+/* =========================================================
+   MDC RAISED BUTTON VARIABLES
+   ========================================================= */
+
+::ng-deep .dialog-actions button[mat-raised-button] {
+  --mdc-protected-button-container-color: #4caf50;
+  --mdc-protected-button-label-text-color: #ffffff;
+
+  --mat-mdc-button-persistent-ripple-color: #ffffff;
+  --mat-mdc-button-ripple-color: rgba(255, 255, 255, 0.15);
+
+  background-color: #4caf50 !important;
+  color: #ffffff !important;
+  border-color: #4caf50 !important;
+}
+
+/* =========================================================
+   DISABLED RAISED BUTTON - FORCE MDC VARIABLES
+   ========================================================= */
+
+::ng-deep .dialog-actions button[mat-raised-button]:disabled {
+  --mdc-protected-button-container-color: #a5d6a7;
+  --mdc-protected-button-label-text-color: #ffffff;
+
+  --mat-mdc-button-persistent-ripple-color: transparent;
+  --mat-mdc-button-ripple-color: transparent;
+
+  background-color: #a5d6a7 !important;
+  color: #ffffff !important;
+  border-color: #a5d6a7 !important;
+
+  box-shadow: none !important;
+  opacity: 1 !important;
+}
+
+/* =========================================================
+   DISABLED RAISED BUTTON - MDC INTERNAL ELEMENTS
+   ========================================================= */
+
+::ng-deep .dialog-actions button[mat-raised-button]:disabled .mdc-button__label {
+  color: #ffffff !important;
+}
+
+::ng-deep .dialog-actions button[mat-raised-button]:disabled .mdc-button__ripple {
+  background-color: transparent !important;
+}
+
+::ng-deep .dialog-actions button[mat-raised-button]:disabled .mat-mdc-button-persistent-ripple {
+  background-color: transparent !important;
+}
+
+/* =========================================================
+   General Button Cursor
+   ========================================================= */
+
+.dialog-container button {
+  cursor: pointer;
+}
+
+.dialog-container button:disabled {
+  cursor: default;
+}
+
+::ng-deep .reference-object-field .mat-mdc-text-field-wrapper {
+  background-color: #ffffff !important;
+}

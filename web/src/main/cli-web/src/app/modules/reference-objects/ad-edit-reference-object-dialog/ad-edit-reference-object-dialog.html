@@ -1,0 +1,51 @@
+<div class="dialog-container" cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+  <!-- Title Bar -->
+  <div class="dialog-title-bar" cdkDragHandle>
+    <span class="dialog-title">
+      @if (data.mode === 'add') {
+        Add Reference Object
+      } @else {
+        Edit Reference Object
+      }
+    </span>
+
+    <button mat-icon-button type="button" aria-label="Close" (click)="close()">
+      <span class="material-icons">close</span>
+    </button>
+  </div>
+
+  <!-- Content -->
+  <div class="dialog-content">
+    <form [formGroup]="form">
+      <mat-form-field appearance="fill" class="reference-object-field">
+        <mat-label>Reference Object Name</mat-label>
+
+        <input
+          matInput
+          type="text"
+          name="referenceObjectName"
+          formControlName="referenceObjectName"
+          placeholder="Enter reference object name"
+        />
+        @if (_cs.isInvalid(form.get('referenceObjectName'))) {
+          <mat-error>
+            {{ _cs.getValidationMessage(form.get('referenceObjectName'), 'Reference Object Name') }}
+          </mat-error>
+        }
+      </mat-form-field>
+    </form>
+  </div>
+
+  <!-- Actions -->
+  <mat-dialog-actions class="dialog-actions">
+    <button mat-stroked-button type="button" (click)="clear()">Clear</button>
+
+    <span class="action-spacer"></span>
+
+    <button mat-stroked-button type="button" (click)="close()">Close</button>
+
+    <button mat-raised-button type="button" [disabled]="this.form.invalid" (click)="save()">
+      Save
+    </button>
+  </mat-dialog-actions>
+</div>
