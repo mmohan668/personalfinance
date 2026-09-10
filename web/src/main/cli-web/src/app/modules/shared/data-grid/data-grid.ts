@@ -1,5 +1,5 @@
 import { CurrencyPipe, DatePipe } from '@angular/common';
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, inject, Input, OnInit, ViewChild } from '@angular/core';
 
 import { SelectItem, SortEvent, SortMeta } from 'primeng/api';
 import { Table } from 'primeng/table';
@@ -24,6 +24,7 @@ import * as FileSaver from 'file-saver';
 import { CommonService } from '../service/common-service';
 import { CommonImportsModule } from '../common-imports/common-imports-module';
 import { ColumnFilterComponent } from '../column-filter/column-filter';
+import { AppConfigService } from '../service/app-config-service';
 
 @Component({
   selector: 'app-data-grid',
@@ -35,7 +36,7 @@ import { ColumnFilterComponent } from '../column-filter/column-filter';
 export class DataGrid implements OnInit {
   @ViewChild('dt') dt!: Table;
   @ViewChild('paginator') paginator!: Paginator;
-
+  public config = inject(AppConfigService);
   /* =========================================================
       TOOLBAR ACTIONS
       ========================================================= */
@@ -82,7 +83,7 @@ export class DataGrid implements OnInit {
 
   skip = 0;
 
-  take = 25;
+  take = this.config.configValue.defaultPageSize;
 
   /* =========================================================
      FILTER
