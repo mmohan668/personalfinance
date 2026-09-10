@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { DataGrid } from '../shared/data-grid/data-grid';
 import { DATA_FIELDS, FILTER_OPERATORS, GRID_EXPORT_FILE_NAMES, GRID_NAMES } from '../shared/enums';
 import { GridColumn, GridFilter } from '../shared/types/types';
@@ -18,8 +18,9 @@ export class Categories {
   protected readonly additionalFilters: GridFilter[] = [
     { field: DATA_FIELDS.USER_ID, operator: FILTER_OPERATORS.EQUALS, value: 1 },
   ];
+  public _cs = inject(CommonService);
 
-  constructor(public commonService: CommonService) {}
+  constructor() {}
 
   calculateCellValue = (rowData: any, col: GridColumn) => {
     if (col.field === 'active') {
