@@ -14,7 +14,9 @@ import { AppConfigService } from './app-config-service';
 @Injectable({ providedIn: 'root' })
 export class GridService {
   private config = inject(AppConfigService);
-  constructor(private http: HttpClient) {}
+  private http = inject(HttpClient);
+
+  constructor() {}
 
   loadGridColumns(gridName: string): Observable<GridColumn[]> {
     return this.http.get<GridColumn[]>(

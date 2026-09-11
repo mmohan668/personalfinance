@@ -66,3 +66,8 @@ export interface ToolbarConfig {
   deleteRow: boolean | false;
   editRow: boolean | false;
 }
+
+export interface ReferenceObject {
+  id: number | null;
+  refObjName: number;
+}
