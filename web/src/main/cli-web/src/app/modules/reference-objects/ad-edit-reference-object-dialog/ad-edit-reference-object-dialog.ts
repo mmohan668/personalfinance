@@ -3,6 +3,9 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { CommonImportsModule } from '../../shared/common-imports/common-imports-module';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { CommonService } from '../../shared/service/common-service';
+import { ApiResponse, ReferenceObject } from '../../shared/types/types';
+import { firstValueFrom } from 'rxjs';
+import { SettingsService } from '../../shared/service/settings-service';
 
 @Component({
   selector: 'app-ad-edit-reference-object-dialog',
@@ -16,6 +19,7 @@ export class AdEditReferenceObjectDialog {
   readonly data = inject<any>(MAT_DIALOG_DATA);
   form: FormGroup = new FormGroup({});
   public _cs = inject(CommonService);
+  private _ss = inject(SettingsService);
 
   constructor() {
     this.form.addControl(
@@ -29,10 +33,18 @@ export class AdEditReferenceObjectDialog {
   }
 
   save(): void {
-    this.dialogRef.close({
-      action: 'save',
-      referenceObjectName: this.form.value.referenceObjectName,
-    });
+    const referenceObject: ReferenceObject = {
+      id: this.data.mode === 'edit' ? 1 : null,
+      refObjName: this.form.value.referenceObjectName,
+    };
+    firstValueFrom(this._ss.saveReferenceObject(referenceObject))
+      .then((response: ApiResponse) => {
+        console.log(response.success + ' : ' + response.message);
+        this.dialogRef.close();
+      })
+      .catch((error) => {
+        console.log('Error while saveReferenceObject', error);
+      });
   }
 
   clear(): void {
