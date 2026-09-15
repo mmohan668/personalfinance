@@ -64,7 +64,9 @@ export class AdEditReferenceValueDialog {
     firstValueFrom(this._ss.saveReferenceValue(referenceValue))
       .then((response: ApiResponse) => {
         console.log(response.success + ' : ' + response.message);
-        this.dialogRef.close();
+        if (response.success) {
+          this.dialogRef.close();
+        }
       })
       .catch((error) => {
         console.log('Error while saveReferenceValue', error);

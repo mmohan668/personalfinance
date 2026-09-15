@@ -96,11 +96,11 @@ public class SettingsService {
                         ) > 0
                 ) {
 
-                    log.error("addReferenceValue: reference object name and code already exists");
+                    log.error("addReferenceValue: reference object name and value already exists");
 
                     return ApiResponse.builder()
                             .success(false)
-                            .message("Reference object bane and code combination already exists")
+                            .message("Reference object name and value combination already exists")
                             .build();
                 }
                 referenceValue.setCreatedBy("testuser");
@@ -111,11 +111,11 @@ public class SettingsService {
                                 referenceValue.getReferenceCode(),
                                 referenceValue.getId()) > 0
                 ) {
-                    log.error("updateReferenceObject: reference object already exists");
+                    log.error("updateReferenceObject: reference value already exists");
 
                     return ApiResponse.builder()
                             .success(false)
-                            .message("Reference object name already exists")
+                            .message("Reference value already exists")
                             .build();
                 }
                 referenceValue.setUpdatedBy("testuser");
@@ -123,7 +123,7 @@ public class SettingsService {
             referenceValueRepository.save(referenceValue);
             return ApiResponse.builder()
                     .success(true)
-                    .message("Reference Object Name saved successfully.")
+                    .message("Reference value saved successfully.")
                     .build();
         } catch (Exception e) {
             log.error(
@@ -137,19 +137,19 @@ public class SettingsService {
         }
     }
 
-    public ApiResponse deleteReferenceObject(List<Long> ids) {
+    public ApiResponse deleteReferenceValue(List<Long> ids) {
         try {
-            log.debug("deleteReferenceObject: {}", ids);
-            referenceObjectRepository.deleteAllById(ids);
+            log.debug("deleteReferenceValue: {}", ids);
+            referenceValueRepository.deleteAllById(ids);
             return ApiResponse.builder()
                     .success(true)
-                    .message("Reference object deleted successfully.")
+                    .message("Reference value(s) deleted successfully.")
                     .build();
         } catch (Exception e) {
-            log.error("Error occurred while deleting reference object: {}", ids, e);
+            log.error("Error occurred while deleting reference value(s): {}", ids, e);
             return ApiResponse.builder()
                     .success(false)
-                    .message("Reference object delete failed. Please contact system administrator.")
+                    .message("Reference value(s) delete failed. Please contact system administrator.")
                     .build();
         }
     }

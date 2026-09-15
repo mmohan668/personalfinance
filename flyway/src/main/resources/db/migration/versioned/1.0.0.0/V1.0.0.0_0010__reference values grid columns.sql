@@ -96,7 +96,8 @@ INSERT INTO grid_column
  data_type,
  default_filter_operator,
  width,
- visible_index)
+ visible_index,
+ visible)
 VALUES ((SELECT id
          FROM grid_name
          WHERE LOWER(TRIM(name)) = LOWER(TRIM('REFERENCE_VALUES_GRID'))),
@@ -105,7 +106,8 @@ VALUES ((SELECT id
         'text',
         'contains',
         200,
-        3)
+        3,
+        false)
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 

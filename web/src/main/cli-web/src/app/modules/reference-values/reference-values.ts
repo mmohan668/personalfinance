@@ -27,6 +27,7 @@ export class ReferenceValues {
   constructor() {
     this.toolbarConfig = this._cs.toolbarConfig;
     this.toolbarConfig.addRow = true;
+    this.toolbarConfig.deleteRow = true;
   }
 
   addRow = async () => {
@@ -49,7 +50,21 @@ export class ReferenceValues {
           });
       })
       .catch((error) => {
-        console.log('Error while fetchCategoryTypes', error);
+        console.log('Error while fetchCategoryTypes:', error);
+      });
+  };
+
+  deleteRow = () => {
+    const ids = this.dataGrid.selectedRows
+      .filter((row) => row.createdBy !== 'SYSTEM')
+      .map((row) => row.id);
+    firstValueFrom(this._ss.deleteReferenceValue(ids))
+      .then((response) => {
+        console.log(response.success + ' : ' + response.message);
+        this.dataGrid.refreshGrid();
+      })
+      .catch((error) => {
+        console.log('Error while deleteReferenceValue:', error);
       });
   };
 }
