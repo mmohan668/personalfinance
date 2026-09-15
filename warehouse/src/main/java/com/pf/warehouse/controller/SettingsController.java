@@ -26,6 +26,11 @@ public class SettingsController {
         return settingsService.fetchReferenceObjectGridData(searchCriteria);
     }
 
+    @PostMapping("/fetchReferenceValueGridData")
+    private GridResult fetchReferenceValueGridData(@RequestBody SearchCriteria searchCriteria) {
+        return settingsService.fetchReferenceValueGridData(searchCriteria);
+    }
+
     @PostMapping("/saveReferenceObject")
     private ApiResponse saveReferenceObject(
             @Valid @RequestBody ReferenceObjectDto referenceObjectDto) {

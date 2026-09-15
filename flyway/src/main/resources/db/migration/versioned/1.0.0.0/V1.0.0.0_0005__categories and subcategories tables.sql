@@ -14,7 +14,7 @@ CREATE TABLE categories
 
     CONSTRAINT fk_category_type
         FOREIGN KEY (category_type)
-            REFERENCES reference_object (id)
+            REFERENCES reference_value (id)
 );
 
 CREATE UNIQUE INDEX ux_category
@@ -62,7 +62,7 @@ CREATE TABLE user_categories
             REFERENCES users (id),
     CONSTRAINT fk_user_category_type
         FOREIGN KEY (category_type)
-            REFERENCES reference_object (id)
+            REFERENCES reference_value (id)
 );
 
 CREATE UNIQUE INDEX ux_user_category
