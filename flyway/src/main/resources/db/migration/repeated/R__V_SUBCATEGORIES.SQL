@@ -1,7 +1,7 @@
 CREATE OR REPLACE VIEW v_subcategories_view AS
 SELECT usc.id,
        uc.id           AS user_category_id,
-       ro.ref_obj_name AS category_type,
+       ro.reference_code AS category_type,
        uc.category_name,
        uc.category_description,
        u.admin_user_id,
@@ -17,5 +17,5 @@ FROM user_categories uc
               ON uc.id = usc.user_category_id
          JOIN users u
               ON u.admin_user_id = uc.user_id
-         JOIN reference_object ro
+         JOIN reference_value ro
               ON ro.id = uc.category_type;

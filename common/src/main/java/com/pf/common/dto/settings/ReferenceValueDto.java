@@ -1,4 +1,4 @@
-package com.pf.common.dto.categoryManagement;
+package com.pf.common.dto.settings;
 
 import lombok.*;
 
@@ -10,30 +10,20 @@ import java.util.Map;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UserCategoryDto {
+public class ReferenceValueDto {
 
     public static final Map<String, String> FIELD_MAPPINGS = Map.of(
-            "categoryType", "referenceValue.referenceCode"
+            "refObjName", "referenceObject.refObjName"
     );
 
     private Long id;
-
-    private Long userId;
-
-    private String categoryType;
-
-    private String categoryName;
-
-    private String categoryDescription;
-
-    private Boolean active;
-
+    private Long refObjNameId;
+    private String refObjName;
+    private String referenceCode;
+    private String referenceCodeDescription;
+    private String referenceCode2;
     private String createdBy;
-
     private LocalDateTime createdAt;
-
     private String updatedBy;
-
     private LocalDateTime updatedAt;
-
 }

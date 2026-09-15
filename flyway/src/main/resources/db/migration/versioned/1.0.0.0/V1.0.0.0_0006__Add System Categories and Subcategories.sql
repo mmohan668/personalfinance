@@ -15,7 +15,7 @@ INSERT INTO categories
  category_description,
  is_active,
  created_by)
-SELECT ro.id,
+SELECT rv.id,
        v.category_name,
        v.category_description,
        v.is_active,
@@ -151,8 +151,8 @@ FROM (VALUES
           is_active,
           created_by
              )
-         JOIN reference_object ro
-              ON LOWER(TRIM(ro.ref_obj_name)) = LOWER(TRIM(v.category_type))
+         JOIN reference_value rv
+              ON LOWER(TRIM(rv.reference_code)) = LOWER(TRIM(v.category_type))
 
 ON CONFLICT (category_type, LOWER(TRIM(category_name)))
     DO NOTHING;
@@ -767,10 +767,10 @@ FROM (VALUES
           subcategory_name,
           subcategory_description
              )
-         JOIN reference_object ro
-              ON LOWER(TRIM(ro.ref_obj_name)) = LOWER(TRIM(s.category_type))
+         JOIN reference_value rv
+              ON LOWER(TRIM(rv.reference_code)) = LOWER(TRIM(s.category_type))
          JOIN categories c
-              ON c.category_type = ro.id
+              ON c.category_type = rv.id
                   AND LOWER(TRIM(c.category_name)) = LOWER(TRIM(s.category_name))
 
 ON CONFLICT (category_id, LOWER(TRIM(subcategory_name)))
