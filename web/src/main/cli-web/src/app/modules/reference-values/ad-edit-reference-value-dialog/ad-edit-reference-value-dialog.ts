@@ -6,6 +6,7 @@ import { CommonService } from '../../shared/service/common-service';
 import { ApiResponse, SelectItem } from '../../shared/types/types';
 import { firstValueFrom } from 'rxjs';
 import { SettingsService } from '../../shared/service/settings-service';
+import { NotificationService } from '../../shared/service/notification-service';
 
 @Component({
   selector: 'app-ad-edit-reference-value-dialog',
@@ -21,6 +22,7 @@ export class AdEditReferenceValueDialog {
   public _cs = inject(CommonService);
   private _ss = inject(SettingsService);
   public categoryTypes!: SelectItem[];
+  private _ns = inject(NotificationService);
 
   constructor() {
     this.createForm();
@@ -65,7 +67,10 @@ export class AdEditReferenceValueDialog {
       .then((response: ApiResponse) => {
         console.log(response.success + ' : ' + response.message);
         if (response.success) {
+          this._ns.success(response.message);
           this.dialogRef.close();
+        } else {
+          this._ns.error(response.message);
         }
       })
       .catch((error) => {

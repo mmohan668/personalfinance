@@ -7,6 +7,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { AdEditReferenceValueDialog } from './ad-edit-reference-value-dialog/ad-edit-reference-value-dialog';
 import { SettingsService } from '../shared/service/settings-service';
 import { firstValueFrom } from 'rxjs';
+import { NotificationService } from '../shared/service/notification-service';
 
 @Component({
   imports: [DataGrid],
@@ -23,6 +24,7 @@ export class ReferenceValues {
   private _cs = inject(CommonService);
   private dialog = inject(MatDialog);
   private _ss = inject(SettingsService);
+  private _ns = inject(NotificationService);
 
   constructor() {
     this.toolbarConfig = this._cs.toolbarConfig;
@@ -55,13 +57,25 @@ export class ReferenceValues {
   };
 
   deleteRow = () => {
+    if (this.dataGrid.selectedRows.length === 0) {
+      this._ns.error('Please select at least one record');
+      return;
+    }
+    if (this.dataGrid.selectedRows.every((row) => row.createdBy === 'SYSTEM')) {
+      this._ns.error('Cannot delete System Generated Reference Values');
+      return;
+    }
     const ids = this.dataGrid.selectedRows
       .filter((row) => row.createdBy !== 'SYSTEM')
       .map((row) => row.id);
     firstValueFrom(this._ss.deleteReferenceValue(ids))
       .then((response) => {
-        console.log(response.success + ' : ' + response.message);
-        this.dataGrid.refreshGrid();
+        if (response.success) {
+          this._ns.success(response.message);
+          this.dataGrid.refreshGrid();
+        } else {
+          this._ns.error(response.message);
+        }
       })
       .catch((error) => {
         console.log('Error while deleteReferenceValue:', error);
