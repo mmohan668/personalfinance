@@ -1,0 +1,29 @@
+@if (notificationService.item(); as notification) {
+  <div class="notification-container" role="alert" aria-live="assertive">
+    <div
+      class="notification"
+      [class.success]="notification.type === 'success'"
+      [class.error]="notification.type === 'error'"
+    >
+      <!-- Icon + Message -->
+      <div class="notification-content">
+        <span class="icon" aria-hidden="true">
+          @if (notification.type === 'success') {
+            ✓
+          } @else {
+            !
+          }
+        </span>
+
+        <span class="message">
+          {{ notification.message }}
+        </span>
+      </div>
+
+      <!-- Close button -->
+      <button type="button" class="close-button" aria-label="Close notification" (click)="close()">
+        ×
+      </button>
+    </div>
+  </div>
+}
