@@ -19,9 +19,11 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.Function;
 
 @Slf4j
 @Repository
@@ -35,14 +37,23 @@ public class GenericCriteriaService {
             SearchCriteria searchCriteria
     ) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
+        CriteriaQuery<Long> criteriaQuery =
+                criteriaBuilder.createQuery(Long.class);
+
         Root<T> root = criteriaQuery.from(entity);
 
-        applyFilters(criteriaBuilder, criteriaQuery, root, searchCriteria);
-        // select count(*)
+        applyFilters(
+                criteriaBuilder,
+                criteriaQuery,
+                root,
+                searchCriteria
+        );
+
         criteriaQuery.select(criteriaBuilder.count(root));
 
-        return entityManager.createQuery(criteriaQuery).getSingleResult();
+        return entityManager
+                .createQuery(criteriaQuery)
+                .getSingleResult();
     }
 
     public <T> List<T> getDataBySearchCriteria(
@@ -50,17 +61,31 @@ public class GenericCriteriaService {
             SearchCriteria searchCriteria
     ) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<T> criteriaQuery = criteriaBuilder.createQuery(entity);
+        CriteriaQuery<T> criteriaQuery =
+                criteriaBuilder.createQuery(entity);
+
         Root<T> root = criteriaQuery.from(entity);
 
         applyFetches(root, searchCriteria);
 
         criteriaQuery.select(root);
 
-        applyFilters(criteriaBuilder, criteriaQuery, root, searchCriteria);
-        applySorting(criteriaBuilder, criteriaQuery, root, searchCriteria);
+        applyFilters(
+                criteriaBuilder,
+                criteriaQuery,
+                root,
+                searchCriteria
+        );
 
-        TypedQuery<T> typedQuery = entityManager.createQuery(criteriaQuery);
+        applySorting(
+                criteriaBuilder,
+                criteriaQuery,
+                root,
+                searchCriteria
+        );
+
+        TypedQuery<T> typedQuery =
+                entityManager.createQuery(criteriaQuery);
 
         if (!searchCriteria.isLoadAllData()) {
             typedQuery.setFirstResult(searchCriteria.getSkip());
@@ -80,6 +105,10 @@ public class GenericCriteriaService {
         }
 
         for (String fetchPath : searchCriteria.getFetchPaths()) {
+            if (fetchPath == null || fetchPath.isBlank()) {
+                continue;
+            }
+
             root.fetch(fetchPath, JoinType.LEFT);
         }
     }
@@ -90,38 +119,46 @@ public class GenericCriteriaService {
             Root<?> root,
             SearchCriteria searchCriteria
     ) {
-        if (searchCriteria.getSortList() != null
-                && !searchCriteria.getSortList().isEmpty()) {
+        if (searchCriteria.getSortList() == null
+                || searchCriteria.getSortList().isEmpty()) {
+            return;
+        }
 
-            List<Order> orders = new ArrayList<>();
+        List<Order> orders = new ArrayList<>();
 
-            for (GridSort sort : searchCriteria.getSortList()) {
-                if (sort.getField() == null || sort.getField().isBlank()) {
-                    continue;
-                }
+        for (GridSort sort : searchCriteria.getSortList()) {
+            if (sort == null
+                    || sort.getField() == null
+                    || sort.getField().isBlank()) {
+                continue;
+            }
 
-                Path<?> path = resolvePath(root, sort.getField(), searchCriteria.getFIELD_MAPPINGS());
+            Path<?> path = resolvePath(
+                    root,
+                    sort.getField(),
+                    searchCriteria.getFIELD_MAPPINGS()
+            );
 
-                boolean descending = "desc".equalsIgnoreCase(sort.getOrder());
+            boolean descending =
+                    "desc".equalsIgnoreCase(sort.getOrder());
 
-                Expression<?> sortExpression = path;
+            Expression<?> sortExpression = path;
 
-                if (String.class.equals(path.getJavaType())) {
-                    sortExpression = criteriaBuilder.lower(
-                            path.as(String.class)
-                    );
-                }
-
-                orders.add(
-                        descending
-                                ? criteriaBuilder.desc(sortExpression)
-                                : criteriaBuilder.asc(sortExpression)
+            if (String.class.equals(path.getJavaType())) {
+                sortExpression = criteriaBuilder.lower(
+                        path.as(String.class)
                 );
             }
 
-            if (!orders.isEmpty()) {
-                criteriaQuery.orderBy(orders);
-            }
+            orders.add(
+                    descending
+                            ? criteriaBuilder.desc(sortExpression)
+                            : criteriaBuilder.asc(sortExpression)
+            );
+        }
+
+        if (!orders.isEmpty()) {
+            criteriaQuery.orderBy(orders);
         }
     }
 
@@ -131,530 +168,678 @@ public class GenericCriteriaService {
             Root<?> root,
             SearchCriteria searchCriteria
     ) {
-        if (searchCriteria.getFilterList() != null
-                && !searchCriteria.getFilterList().isEmpty()) {
-
-            List<Predicate> predicates = new ArrayList<>();
-
-            for (GridFilter filter : searchCriteria.getFilterList()) {
-                Path<?> path = resolvePath(root, filter.getField(), searchCriteria.getFIELD_MAPPINGS());
-                String operator = filter.getOperator();
-
-                if ("isNull".equals(operator)) {
-                    predicates.add(criteriaBuilder.isNull(path));
-
-                } else if ("isNotNull".equals(operator)) {
-                    predicates.add(criteriaBuilder.isNotNull(path));
-
-                } else if (filter.getValue() == null) {
-                    throw new NullFilterValueException(
-                            "Filter value cannot be null for operator: " + operator
-                    );
-
-                } else if (String.class.equals(path.getJavaType())) {
-                    String value = filter.getValue().toLowerCase(Locale.ROOT);
-
-                    Expression<String> field = criteriaBuilder.lower(path.as(String.class));
-
-                    switch (operator) {
-                        case "equals" -> predicates.add(
-                                criteriaBuilder.equal(field, value)
-                        );
-
-                        case "notEquals" -> predicates.add(
-                                criteriaBuilder.or(
-                                        criteriaBuilder.notEqual(field, value),
-                                        criteriaBuilder.isNull(path)
-                                )
-                        );
-
-                        case "contains" -> predicates.add(
-                                criteriaBuilder.like(
-                                        field,
-                                        "%" + value + "%"
-                                )
-                        );
-
-                        case "notContains" -> predicates.add(
-                                criteriaBuilder.or(
-                                        criteriaBuilder.notLike(
-                                                field,
-                                                "%" + value + "%"
-                                        ),
-                                        criteriaBuilder.isNull(path)
-                                )
-                        );
-
-                        case "startsWith" -> predicates.add(
-                                criteriaBuilder.like(
-                                        field,
-                                        value + "%"
-                                )
-                        );
-
-                        case "endsWith" -> predicates.add(
-                                criteriaBuilder.like(
-                                        field,
-                                        "%" + value
-                                )
-                        );
-
-                        default -> throw new UnsupportedFilterOperatorException(
-                                "Unsupported filter operator: " + operator
-                        );
-                    }
-
-                } else if (BigDecimal.class.equals(path.getJavaType())) {
-                    BigDecimal value = new BigDecimal(filter.getValue());
-
-                    @SuppressWarnings("unchecked")
-                    Expression<BigDecimal> field = (Expression<BigDecimal>) path;
-
-                    switch (operator) {
-                        case "equals" -> predicates.add(
-                                criteriaBuilder.equal(field, value)
-                        );
-
-                        case "notEquals" -> predicates.add(
-                                criteriaBuilder.or(
-                                        criteriaBuilder.notEqual(field, value),
-                                        criteriaBuilder.isNull(path)
-                                )
-                        );
-
-                        case "gt" -> predicates.add(
-                                criteriaBuilder.greaterThan(field, value)
-                        );
-
-                        case "gte" -> predicates.add(
-                                criteriaBuilder.greaterThanOrEqualTo(
-                                        field,
-                                        value
-                                )
-                        );
-
-                        case "lt" -> predicates.add(
-                                criteriaBuilder.lessThan(field, value)
-                        );
-
-                        case "lte" -> predicates.add(
-                                criteriaBuilder.lessThanOrEqualTo(
-                                        field,
-                                        value
-                                )
-                        );
-
-                        case "between" -> {
-                            if (filter.getValueTo() == null || filter.getValueTo().isBlank()) {
-                                throw new NullFilterValueException(
-                                        "Second filter value cannot be null for operator: between"
-                                );
-                            }
-
-                            BigDecimal valueTo = new BigDecimal(filter.getValueTo());
-
-                            predicates.add(
-                                    criteriaBuilder.and(
-                                            criteriaBuilder.greaterThanOrEqualTo(field, value),
-                                            criteriaBuilder.lessThanOrEqualTo(field, valueTo)
-                                    )
-                            );
-                        }
-
-                        default -> throw new UnsupportedFilterOperatorException(
-                                "Unsupported filter operator: " + operator
-                        );
-                    }
-
-                } else if (Integer.class.equals(path.getJavaType())
-                        || int.class.equals(path.getJavaType())) {
-
-                    Integer value = Integer.parseInt(filter.getValue());
-
-                    @SuppressWarnings("unchecked")
-                    Expression<Integer> field = (Expression<Integer>) path;
-
-                    switch (operator) {
-                        case "equals" -> predicates.add(
-                                criteriaBuilder.equal(field, value)
-                        );
-
-                        case "notEquals" -> predicates.add(
-                                criteriaBuilder.or(
-                                        criteriaBuilder.notEqual(field, value),
-                                        criteriaBuilder.isNull(path)
-                                )
-                        );
-
-                        case "gt" -> predicates.add(
-                                criteriaBuilder.greaterThan(field, value)
-                        );
-
-                        case "gte" -> predicates.add(
-                                criteriaBuilder.greaterThanOrEqualTo(
-                                        field,
-                                        value
-                                )
-                        );
-
-                        case "lt" -> predicates.add(
-                                criteriaBuilder.lessThan(field, value)
-                        );
-
-                        case "lte" -> predicates.add(
-                                criteriaBuilder.lessThanOrEqualTo(
-                                        field,
-                                        value
-                                )
-                        );
-
-                        case "between" -> {
-                            if (filter.getValueTo() == null || filter.getValueTo().isBlank()) {
-                                throw new NullFilterValueException(
-                                        "Second filter value cannot be null for operator: between"
-                                );
-                            }
-
-                            Integer valueTo = Integer.parseInt(filter.getValueTo());
-
-                            predicates.add(
-                                    criteriaBuilder.and(
-                                            criteriaBuilder.greaterThanOrEqualTo(field, value),
-                                            criteriaBuilder.lessThanOrEqualTo(field, valueTo)
-                                    )
-                            );
-                        }
-
-                        default -> throw new UnsupportedFilterOperatorException(
-                                "Unsupported filter operator: " + operator
-                        );
-                    }
-
-                } else if (Long.class.equals(path.getJavaType())
-                        || long.class.equals(path.getJavaType())) {
-
-                    Long value = Long.parseLong(filter.getValue());
-
-                    @SuppressWarnings("unchecked")
-                    Expression<Long> field = (Expression<Long>) path;
-
-                    switch (operator) {
-                        case "equals" -> predicates.add(
-                                criteriaBuilder.equal(field, value)
-                        );
-
-                        case "notEquals" -> predicates.add(
-                                criteriaBuilder.or(
-                                        criteriaBuilder.notEqual(field, value),
-                                        criteriaBuilder.isNull(path)
-                                )
-                        );
-
-                        case "gt" -> predicates.add(
-                                criteriaBuilder.greaterThan(field, value)
-                        );
-
-                        case "gte" -> predicates.add(
-                                criteriaBuilder.greaterThanOrEqualTo(
-                                        field,
-                                        value
-                                )
-                        );
-
-                        case "lt" -> predicates.add(
-                                criteriaBuilder.lessThan(field, value)
-                        );
-
-                        case "lte" -> predicates.add(
-                                criteriaBuilder.lessThanOrEqualTo(
-                                        field,
-                                        value
-                                )
-                        );
-
-                        case "between" -> {
-                            if (filter.getValueTo() == null || filter.getValueTo().isBlank()) {
-                                throw new NullFilterValueException(
-                                        "Second filter value cannot be null for operator: between"
-                                );
-                            }
-
-                            Long valueTo = Long.parseLong(filter.getValueTo());
-
-                            predicates.add(
-                                    criteriaBuilder.and(
-                                            criteriaBuilder.greaterThanOrEqualTo(field, value),
-                                            criteriaBuilder.lessThanOrEqualTo(field, valueTo)
-                                    )
-                            );
-                        }
-
-                        default -> throw new UnsupportedFilterOperatorException(
-                                "Unsupported filter operator: " + operator
-                        );
-                    }
-
-                } else if (Double.class.equals(path.getJavaType())
-                        || double.class.equals(path.getJavaType())) {
-
-                    Double value = Double.parseDouble(filter.getValue());
-
-                    @SuppressWarnings("unchecked")
-                    Expression<Double> field = (Expression<Double>) path;
-
-                    switch (operator) {
-                        case "equals" -> predicates.add(
-                                criteriaBuilder.equal(field, value)
-                        );
-
-                        case "notEquals" -> predicates.add(
-                                criteriaBuilder.or(
-                                        criteriaBuilder.notEqual(field, value),
-                                        criteriaBuilder.isNull(path)
-                                )
-                        );
-
-                        case "gt" -> predicates.add(
-                                criteriaBuilder.greaterThan(field, value)
-                        );
-
-                        case "gte" -> predicates.add(
-                                criteriaBuilder.greaterThanOrEqualTo(
-                                        field,
-                                        value
-                                )
-                        );
-
-                        case "lt" -> predicates.add(
-                                criteriaBuilder.lessThan(field, value)
-                        );
-
-                        case "lte" -> predicates.add(
-                                criteriaBuilder.lessThanOrEqualTo(
-                                        field,
-                                        value
-                                )
-                        );
-
-                        case "between" -> {
-                            if (filter.getValueTo() == null || filter.getValueTo().isBlank()) {
-                                throw new NullFilterValueException(
-                                        "Second filter value cannot be null for operator: between"
-                                );
-                            }
-
-                            Double valueTo = Double.parseDouble(filter.getValueTo());
-
-                            predicates.add(
-                                    criteriaBuilder.and(
-                                            criteriaBuilder.greaterThanOrEqualTo(field, value),
-                                            criteriaBuilder.lessThanOrEqualTo(field, valueTo)
-                                    )
-                            );
-                        }
-
-                        default -> throw new UnsupportedFilterOperatorException(
-                                "Unsupported filter operator: " + operator
-                        );
-                    }
-
-                } else if (Boolean.class.equals(path.getJavaType())
-                        || boolean.class.equals(path.getJavaType())) {
-
-                    boolean value = Boolean.parseBoolean(filter.getValue());
-
-                    @SuppressWarnings("unchecked")
-                    Expression<Boolean> field = (Expression<Boolean>) path;
-
-                    switch (operator) {
-                        case "equals" -> predicates.add(
-                                criteriaBuilder.equal(field, value)
-                        );
-
-                        case "notEquals" -> predicates.add(
-                                criteriaBuilder.or(
-                                        criteriaBuilder.notEqual(field, value),
-                                        criteriaBuilder.isNull(path)
-                                )
-                        );
-
-                        default -> throw new UnsupportedFilterOperatorException(
-                                "Unsupported filter operator: " + operator
-                        );
-                    }
-
-                } else if (LocalDate.class.equals(path.getJavaType())) {
-                    LocalDate value = LocalDate.parse(filter.getValue());
-
-                    @SuppressWarnings("unchecked")
-                    Expression<LocalDate> field = (Expression<LocalDate>) path;
-
-                    switch (operator) {
-                        case "equals" -> predicates.add(
-                                criteriaBuilder.equal(field, value)
-                        );
-
-                        case "notEquals" -> predicates.add(
-                                criteriaBuilder.or(
-                                        criteriaBuilder.notEqual(field, value),
-                                        criteriaBuilder.isNull(path)
-                                )
-                        );
-
-                        case "gt" -> predicates.add(
-                                criteriaBuilder.greaterThan(field, value)
-                        );
-
-                        case "gte" -> predicates.add(
-                                criteriaBuilder.greaterThanOrEqualTo(
-                                        field,
-                                        value
-                                )
-                        );
-
-                        case "lt" -> predicates.add(
-                                criteriaBuilder.lessThan(field, value)
-                        );
-
-                        case "lte" -> predicates.add(
-                                criteriaBuilder.lessThanOrEqualTo(
-                                        field,
-                                        value
-                                )
-                        );
-
-                        case "between" -> {
-                            if (filter.getValueTo() == null || filter.getValueTo().isBlank()) {
-                                throw new NullFilterValueException(
-                                        "Second filter value cannot be null for operator: between"
-                                );
-                            }
-
-                            LocalDate valueTo = LocalDate.parse(filter.getValueTo());
-
-                            predicates.add(
-                                    criteriaBuilder.and(
-                                            criteriaBuilder.greaterThanOrEqualTo(field, value),
-                                            criteriaBuilder.lessThanOrEqualTo(field, valueTo)
-                                    )
-                            );
-                        }
-
-                        default -> throw new UnsupportedFilterOperatorException(
-                                "Unsupported filter operator: " + operator
-                        );
-                    }
-
-                } else if (LocalDateTime.class.equals(path.getJavaType())) {
-                    LocalDateTime value;
-                    if (filter.getValue().length() == 10) { // format yyyy-MM-dd
-                        value = LocalDate.parse(filter.getValue(), DateTimeFormatter.ISO_LOCAL_DATE)
-                                .atStartOfDay();
-                    } else {
-                        value = LocalDateTime.parse(filter.getValue(), DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-                    }
-
-                    @SuppressWarnings("unchecked")
-                    Expression<LocalDateTime> field = (Expression<LocalDateTime>) path;
-
-                    switch (operator) {
-                        case "equals" -> {
-                            LocalDateTime startOfDay = value.toLocalDate().atStartOfDay();
-                            LocalDateTime endOfDay = value.toLocalDate().atTime(LocalTime.MAX);
-                            predicates.add(
-                                    criteriaBuilder.and(
-                                            criteriaBuilder.greaterThanOrEqualTo(field, startOfDay),
-                                            criteriaBuilder.lessThanOrEqualTo(field, endOfDay)
-                                    )
-                            );
-                        }
-
-                        case "notEquals" -> {
-                            LocalDateTime startOfDay = value.toLocalDate().atStartOfDay();
-                            LocalDateTime endOfDay = value.toLocalDate().atTime(LocalTime.MAX);
-                            predicates.add(
-                                    criteriaBuilder.or(
-                                            criteriaBuilder.isNull(path),
-                                            criteriaBuilder.lessThan(field, startOfDay),
-                                            criteriaBuilder.greaterThan(field, endOfDay)
-                                    )
-                            );
-                        }
-
-                        case "gt" -> {
-                            LocalDateTime endOfDay = value.toLocalDate().atTime(LocalTime.MAX);
-                            predicates.add(
-                                    criteriaBuilder.greaterThan(field, endOfDay)
-                            );
-                        }
-
-                        case "gte" -> {
-                            LocalDateTime startOfDay = value.toLocalDate().atStartOfDay();
-                            predicates.add(
-                                    criteriaBuilder.greaterThanOrEqualTo(
-                                            field,
-                                            startOfDay
-                                    )
-                            );
-                        }
-
-                        case "lt" -> predicates.add(
-                                criteriaBuilder.lessThan(field, value)
-                        );
-
-                        case "lte" -> {
-                            LocalDateTime endOfDay = value.toLocalDate().atTime(LocalTime.MAX);
-                            predicates.add(
-                                    criteriaBuilder.lessThanOrEqualTo(
-                                            field,
-                                            endOfDay
-                                    )
-                            );
-                        }
-
-                        case "between" -> {
-                            if (filter.getValueTo() == null || filter.getValueTo().isBlank()) {
-                                throw new NullFilterValueException(
-                                        "Second filter value cannot be null for operator: between"
-                                );
-                            }
-
-                            LocalDateTime valueTo;
-                            if (filter.getValueTo().length() == 10) { // yyyy-MM-dd
-                                // End of day for inclusive range
-                                valueTo = LocalDate.parse(filter.getValueTo(), DateTimeFormatter.ISO_LOCAL_DATE)
-                                        .atTime(LocalTime.MAX);
-                            } else {
-                                valueTo = LocalDateTime.parse(filter.getValueTo(), DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-                            }
-
-                            predicates.add(
-                                    criteriaBuilder.and(
-                                            criteriaBuilder.greaterThanOrEqualTo(field, value),
-                                            criteriaBuilder.lessThanOrEqualTo(field, valueTo)
-                                    )
-                            );
-                        }
-
-                        default -> throw new UnsupportedFilterOperatorException(
-                                "Unsupported filter operator: " + operator
-                        );
-                    }
-
-                } else {
-                    throw new UnsupportedFilterFieldTypeException(
-                            "Unsupported filter field type: "
-                                    + path.getJavaType().getName()
+        if (searchCriteria.getFilterList() == null
+                || searchCriteria.getFilterList().isEmpty()) {
+            return;
+        }
+
+        List<Predicate> predicates = new ArrayList<>();
+
+        for (GridFilter filter : searchCriteria.getFilterList()) {
+            if (filter == null) {
+                continue;
+            }
+
+            if (filter.getField() == null
+                    || filter.getField().isBlank()) {
+                throw new IllegalArgumentException(
+                        "Filter field cannot be null or blank"
+                );
+            }
+
+            String operator = normalizeOperator(filter.getOperator());
+
+            Path<?> path = resolvePath(
+                    root,
+                    filter.getField(),
+                    searchCriteria.getFIELD_MAPPINGS()
+            );
+
+            switch (operator) {
+                case "isNull" -> predicates.add(
+                        criteriaBuilder.isNull(path)
+                );
+
+                case "isNotNull" -> predicates.add(
+                        criteriaBuilder.isNotNull(path)
+                );
+
+                case "in" -> addInPredicate(
+                        criteriaBuilder,
+                        predicates,
+                        path,
+                        filter.getValues()
+                );
+
+                default -> {
+                    validateFilterValue(filter, operator);
+
+                    addSingleValuePredicate(
+                            criteriaBuilder,
+                            predicates,
+                            path,
+                            filter
                     );
                 }
             }
+        }
 
-            if (!predicates.isEmpty()) {
-                criteriaQuery.where(
-                        predicates.toArray(new Predicate[0])
+        if (!predicates.isEmpty()) {
+            criteriaQuery.where(
+                    predicates.toArray(new Predicate[0])
+            );
+        }
+    }
+
+    private void addInPredicate(
+            CriteriaBuilder criteriaBuilder,
+            List<Predicate> predicates,
+            Path<?> path,
+            Collection<?> values
+    ) {
+        if (values == null || values.isEmpty()) {
+            throw new NullFilterValueException(
+                    "Filter values cannot be null or empty for operator: in"
+            );
+        }
+
+        Class<?> fieldType = path.getJavaType();
+
+        if (String.class.equals(fieldType)) {
+            Expression<String> field =
+                    criteriaBuilder.lower(
+                            path.as(String.class)
+                    );
+
+            List<String> convertedValues = values.stream()
+                    .map(this::toStringValue)
+                    .map(value -> value.toLowerCase(Locale.ROOT))
+                    .toList();
+
+            predicates.add(field.in(convertedValues));
+            return;
+        }
+
+        List<?> convertedValues = convertValues(
+                values,
+                fieldType
+        );
+
+        addTypedInPredicate(
+                predicates,
+                path,
+                convertedValues
+        );
+    }
+
+    private void addTypedInPredicate(
+            List<Predicate> predicates,
+            Path<?> path,
+            List<?> values
+    ) {
+        predicates.add(path.in(values));
+    }
+
+    private List<?> convertValues(
+            Collection<?> values,
+            Class<?> fieldType
+    ) {
+        Function<String, ?> converter =
+                getValueConverter(fieldType);
+
+        return values.stream()
+                .map(this::toStringValue)
+                .map(converter)
+                .toList();
+    }
+
+    private Function<String, ?> getValueConverter(
+            Class<?> fieldType
+    ) {
+        if (Long.class.equals(fieldType)
+                || long.class.equals(fieldType)) {
+            return Long::valueOf;
+        }
+
+        if (Integer.class.equals(fieldType)
+                || int.class.equals(fieldType)) {
+            return Integer::valueOf;
+        }
+
+        if (Double.class.equals(fieldType)
+                || double.class.equals(fieldType)) {
+            return Double::valueOf;
+        }
+
+        if (BigDecimal.class.equals(fieldType)) {
+            return BigDecimal::new;
+        }
+
+        if (LocalDate.class.equals(fieldType)) {
+            return LocalDate::parse;
+        }
+
+        if (LocalDateTime.class.equals(fieldType)) {
+            return this::parseLocalDateTime;
+        }
+
+        if (Boolean.class.equals(fieldType)
+                || boolean.class.equals(fieldType)) {
+            return this::parseBoolean;
+        }
+
+        throw new UnsupportedFilterFieldTypeException(
+                "Unsupported filter field type for IN operator: "
+                        + fieldType.getName()
+        );
+    }
+
+    private void addSingleValuePredicate(
+            CriteriaBuilder criteriaBuilder,
+            List<Predicate> predicates,
+            Path<?> path,
+            GridFilter filter
+    ) {
+        Class<?> fieldType = path.getJavaType();
+
+        if (String.class.equals(fieldType)) {
+            addStringPredicate(
+                    criteriaBuilder,
+                    predicates,
+                    path,
+                    filter
+            );
+            return;
+        }
+
+        if (BigDecimal.class.equals(fieldType)) {
+            addComparablePredicate(
+                    criteriaBuilder,
+                    predicates,
+                    path,
+                    filter,
+                    BigDecimal::new
+            );
+            return;
+        }
+
+        if (Integer.class.equals(fieldType)
+                || int.class.equals(fieldType)) {
+            addComparablePredicate(
+                    criteriaBuilder,
+                    predicates,
+                    path,
+                    filter,
+                    Integer::valueOf
+            );
+            return;
+        }
+
+        if (Long.class.equals(fieldType)
+                || long.class.equals(fieldType)) {
+            addComparablePredicate(
+                    criteriaBuilder,
+                    predicates,
+                    path,
+                    filter,
+                    Long::valueOf
+            );
+            return;
+        }
+
+        if (Double.class.equals(fieldType)
+                || double.class.equals(fieldType)) {
+            addComparablePredicate(
+                    criteriaBuilder,
+                    predicates,
+                    path,
+                    filter,
+                    Double::valueOf
+            );
+            return;
+        }
+
+        if (Boolean.class.equals(fieldType)
+                || boolean.class.equals(fieldType)) {
+            addBooleanPredicate(
+                    criteriaBuilder,
+                    predicates,
+                    path,
+                    filter
+            );
+            return;
+        }
+
+        if (LocalDate.class.equals(fieldType)) {
+            addComparablePredicate(
+                    criteriaBuilder,
+                    predicates,
+                    path,
+                    filter,
+                    LocalDate::parse
+            );
+            return;
+        }
+
+        if (LocalDateTime.class.equals(fieldType)) {
+            addLocalDateTimePredicate(
+                    criteriaBuilder,
+                    predicates,
+                    path,
+                    filter
+            );
+            return;
+        }
+
+        throw new UnsupportedFilterFieldTypeException(
+                "Unsupported filter field type: "
+                        + fieldType.getName()
+        );
+    }
+
+    private void addStringPredicate(
+            CriteriaBuilder criteriaBuilder,
+            List<Predicate> predicates,
+            Path<?> path,
+            GridFilter filter
+    ) {
+        String value =
+                filter.getValue().toLowerCase(Locale.ROOT);
+
+        Expression<String> field =
+                criteriaBuilder.lower(
+                        path.as(String.class)
+                );
+
+        switch (filter.getOperator()) {
+            case "equals" -> predicates.add(
+                    criteriaBuilder.equal(field, value)
+            );
+
+            case "notEquals" -> predicates.add(
+                    criteriaBuilder.or(
+                            criteriaBuilder.notEqual(field, value),
+                            criteriaBuilder.isNull(path)
+                    )
+            );
+
+            case "contains" -> predicates.add(
+                    criteriaBuilder.like(
+                            field,
+                            "%" + value + "%"
+                    )
+            );
+
+            case "notContains" -> predicates.add(
+                    criteriaBuilder.or(
+                            criteriaBuilder.notLike(
+                                    field,
+                                    "%" + value + "%"
+                            ),
+                            criteriaBuilder.isNull(path)
+                    )
+            );
+
+            case "startsWith" -> predicates.add(
+                    criteriaBuilder.like(
+                            field,
+                            value + "%"
+                    )
+            );
+
+            case "endsWith" -> predicates.add(
+                    criteriaBuilder.like(
+                            field,
+                            "%" + value
+                    )
+            );
+
+            default -> throw unsupportedOperator(
+                    filter.getOperator()
+            );
+        }
+    }
+
+    private <T extends Comparable<? super T>> void addComparablePredicate(
+            CriteriaBuilder criteriaBuilder,
+            List<Predicate> predicates,
+            Path<?> path,
+            GridFilter filter,
+            Function<String, T> converter
+    ) {
+        T value = converter.apply(filter.getValue());
+
+        Expression<T> field = typedExpression(path);
+
+        switch (filter.getOperator()) {
+            case "equals" -> predicates.add(
+                    criteriaBuilder.equal(field, value)
+            );
+
+            case "notEquals" -> predicates.add(
+                    criteriaBuilder.or(
+                            criteriaBuilder.notEqual(field, value),
+                            criteriaBuilder.isNull(path)
+                    )
+            );
+
+            case "gt" -> predicates.add(
+                    criteriaBuilder.greaterThan(field, value)
+            );
+
+            case "gte" -> predicates.add(
+                    criteriaBuilder.greaterThanOrEqualTo(
+                            field,
+                            value
+                    )
+            );
+
+            case "lt" -> predicates.add(
+                    criteriaBuilder.lessThan(field, value)
+            );
+
+            case "lte" -> predicates.add(
+                    criteriaBuilder.lessThanOrEqualTo(
+                            field,
+                            value
+                    )
+            );
+
+            case "between" -> {
+                String valueTo = filter.getValueTo();
+
+                if (valueTo == null || valueTo.isBlank()) {
+                    throw new NullFilterValueException(
+                            "Second filter value cannot be null for operator: between"
+                    );
+                }
+
+                T upperValue = converter.apply(valueTo);
+
+                predicates.add(
+                        criteriaBuilder.and(
+                                criteriaBuilder.greaterThanOrEqualTo(
+                                        field,
+                                        value
+                                ),
+                                criteriaBuilder.lessThanOrEqualTo(
+                                        field,
+                                        upperValue
+                                )
+                        )
                 );
             }
+
+            default -> throw unsupportedOperator(
+                    filter.getOperator()
+            );
         }
+    }
+
+    private void addBooleanPredicate(
+            CriteriaBuilder criteriaBuilder,
+            List<Predicate> predicates,
+            Path<?> path,
+            GridFilter filter
+    ) {
+        Boolean value = parseBoolean(filter.getValue());
+
+        Expression<Boolean> field =
+                typedExpression(path);
+
+        switch (filter.getOperator()) {
+            case "equals" -> predicates.add(
+                    criteriaBuilder.equal(field, value)
+            );
+
+            case "notEquals" -> predicates.add(
+                    criteriaBuilder.or(
+                            criteriaBuilder.notEqual(field, value),
+                            criteriaBuilder.isNull(path)
+                    )
+            );
+
+            default -> throw unsupportedOperator(
+                    filter.getOperator()
+            );
+        }
+    }
+
+    private void addLocalDateTimePredicate(
+            CriteriaBuilder criteriaBuilder,
+            List<Predicate> predicates,
+            Path<?> path,
+            GridFilter filter
+    ) {
+        LocalDateTime value =
+                parseLocalDateTime(filter.getValue());
+
+        Expression<LocalDateTime> field =
+                typedExpression(path);
+
+        switch (filter.getOperator()) {
+            case "equals" -> {
+                LocalDateTime startOfDay =
+                        value.toLocalDate().atStartOfDay();
+
+                LocalDateTime endOfDay =
+                        value.toLocalDate().atTime(LocalTime.MAX);
+
+                predicates.add(
+                        criteriaBuilder.and(
+                                criteriaBuilder.greaterThanOrEqualTo(
+                                        field,
+                                        startOfDay
+                                ),
+                                criteriaBuilder.lessThanOrEqualTo(
+                                        field,
+                                        endOfDay
+                                )
+                        )
+                );
+            }
+
+            case "notEquals" -> {
+                LocalDateTime startOfDay =
+                        value.toLocalDate().atStartOfDay();
+
+                LocalDateTime endOfDay =
+                        value.toLocalDate().atTime(LocalTime.MAX);
+
+                predicates.add(
+                        criteriaBuilder.or(
+                                criteriaBuilder.isNull(path),
+                                criteriaBuilder.lessThan(
+                                        field,
+                                        startOfDay
+                                ),
+                                criteriaBuilder.greaterThan(
+                                        field,
+                                        endOfDay
+                                )
+                        )
+                );
+            }
+
+            case "gt" -> {
+                LocalDateTime endOfDay =
+                        value.toLocalDate().atTime(LocalTime.MAX);
+
+                predicates.add(
+                        criteriaBuilder.greaterThan(
+                                field,
+                                endOfDay
+                        )
+                );
+            }
+
+            case "gte" -> {
+                LocalDateTime startOfDay =
+                        value.toLocalDate().atStartOfDay();
+
+                predicates.add(
+                        criteriaBuilder.greaterThanOrEqualTo(
+                                field,
+                                startOfDay
+                        )
+                );
+            }
+
+            case "lt" -> predicates.add(
+                    criteriaBuilder.lessThan(field, value)
+            );
+
+            case "lte" -> {
+                LocalDateTime endOfDay =
+                        value.toLocalDate().atTime(LocalTime.MAX);
+
+                predicates.add(
+                        criteriaBuilder.lessThanOrEqualTo(
+                                field,
+                                endOfDay
+                        )
+                );
+            }
+
+            case "between" -> {
+                String valueTo = filter.getValueTo();
+
+                if (valueTo == null || valueTo.isBlank()) {
+                    throw new NullFilterValueException(
+                            "Second filter value cannot be null for operator: between"
+                    );
+                }
+
+                LocalDateTime upperValue =
+                        parseLocalDateTimeForUpperBound(valueTo);
+
+                predicates.add(
+                        criteriaBuilder.and(
+                                criteriaBuilder.greaterThanOrEqualTo(
+                                        field,
+                                        value
+                                ),
+                                criteriaBuilder.lessThanOrEqualTo(
+                                        field,
+                                        upperValue
+                                )
+                        )
+                );
+            }
+
+            default -> throw unsupportedOperator(
+                    filter.getOperator()
+            );
+        }
+    }
+
+    private LocalDateTime parseLocalDateTime(String value) {
+        if (value == null || value.isBlank()) {
+            throw new NullFilterValueException(
+                    "Date-time filter value cannot be null or blank"
+            );
+        }
+
+        if (value.length() == 10) {
+            return LocalDate.parse(
+                            value,
+                            DateTimeFormatter.ISO_LOCAL_DATE
+                    )
+                    .atStartOfDay();
+        }
+
+        return LocalDateTime.parse(
+                value,
+                DateTimeFormatter.ISO_LOCAL_DATE_TIME
+        );
+    }
+
+    private LocalDateTime parseLocalDateTimeForUpperBound(
+            String value
+    ) {
+        if (value == null || value.isBlank()) {
+            throw new NullFilterValueException(
+                    "Date-time filter value cannot be null or blank"
+            );
+        }
+
+        if (value.length() == 10) {
+            return LocalDate.parse(
+                            value,
+                            DateTimeFormatter.ISO_LOCAL_DATE
+                    )
+                    .atTime(LocalTime.MAX);
+        }
+
+        return LocalDateTime.parse(
+                value,
+                DateTimeFormatter.ISO_LOCAL_DATE_TIME
+        );
+    }
+
+    private Boolean parseBoolean(String value) {
+        if (value == null || value.isBlank()) {
+            throw new NullFilterValueException(
+                    "Boolean filter value cannot be null or blank"
+            );
+        }
+
+        if (!"true".equalsIgnoreCase(value)
+                && !"false".equalsIgnoreCase(value)) {
+            throw new IllegalArgumentException(
+                    "Invalid boolean filter value: " + value
+            );
+        }
+
+        return Boolean.parseBoolean(value);
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T> Expression<T> typedExpression(
+            Path<?> path
+    ) {
+        return (Expression<T>) path;
+    }
+
+    private String normalizeOperator(String operator) {
+        if (operator == null || operator.isBlank()) {
+            throw new UnsupportedFilterOperatorException(
+                    "Filter operator cannot be null or blank"
+            );
+        }
+
+        return operator.trim();
+    }
+
+    private void validateFilterValue(
+            GridFilter filter,
+            String operator
+    ) {
+        if (filter.getValue() == null
+                || filter.getValue().isBlank()) {
+            throw new NullFilterValueException(
+                    "Filter value cannot be null or blank for operator: "
+                            + operator
+            );
+        }
+    }
+
+    private String toStringValue(Object value) {
+        if (value == null) {
+            throw new NullFilterValueException(
+                    "Filter value cannot contain null values"
+            );
+        }
+
+        return value.toString();
+    }
+
+    private UnsupportedFilterOperatorException unsupportedOperator(
+            String operator
+    ) {
+        return new UnsupportedFilterOperatorException(
+                "Unsupported filter operator: " + operator
+        );
     }
 
     private Path<?> resolvePath(
@@ -662,17 +847,34 @@ public class GenericCriteriaService {
             String field,
             Map<String, String> fieldMap
     ) {
-        String mappedField = fieldMap != null ? fieldMap.getOrDefault(field, field) : field;
+        if (field == null || field.isBlank()) {
+            throw new IllegalArgumentException(
+                    "Field cannot be null or blank"
+            );
+        }
 
-        String[] parts = mappedField.split("\\.");
+        String mappedField =
+                fieldMap != null
+                        ? fieldMap.getOrDefault(field, field)
+                        : field;
+
+        String[] parts =
+                mappedField.split("\\.");
 
         Path<?> path = root;
 
         for (int i = 0; i < parts.length; i++) {
             String part = parts[i];
 
+            if (part == null || part.isBlank()) {
+                throw new IllegalArgumentException(
+                        "Invalid field path: " + mappedField
+                );
+            }
+
             if (i < parts.length - 1) {
-                path = ((From<?, ?>) path).join(part, JoinType.LEFT);
+                path = ((From<?, ?>) path)
+                        .join(part, JoinType.LEFT);
             } else {
                 path = path.get(part);
             }
@@ -680,5 +882,4 @@ public class GenericCriteriaService {
 
         return path;
     }
-
 }

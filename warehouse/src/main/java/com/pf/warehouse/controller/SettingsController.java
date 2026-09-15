@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/settings")
 @RequiredArgsConstructor
@@ -28,5 +30,10 @@ public class SettingsController {
     private ApiResponse saveReferenceObject(
             @Valid @RequestBody ReferenceObjectDto referenceObjectDto) {
         return settingsService.saveReferenceObject(referenceObjectDto);
+    }
+
+    @PostMapping("/deleteReferenceObject")
+    private ApiResponse deleteReferenceObject(@RequestBody List<Long> ids) {
+        return settingsService.deleteReferenceObject(ids);
     }
 }

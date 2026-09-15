@@ -1,6 +1,8 @@
 package com.pf.common.service.settings;
 
+import com.pf.common.dto.gp.GridFilter;
 import com.pf.common.dto.gp.GridResult;
+import com.pf.common.dto.gp.GridSort;
 import com.pf.common.dto.gp.SearchCriteria;
 import com.pf.common.dto.settings.ReferenceObjectDto;
 import com.pf.common.entity.generic.ApiResponse;
@@ -26,6 +28,13 @@ public class SettingsService {
     public GridResult fetchReferenceObjectGridData(SearchCriteria searchCriteria) {
         try {
             log.debug("fetchReferenceObjectGridData: {}", searchCriteria);
+            GridFilter gridFilter = GridFilter.builder()
+                    .field("createdBy")
+                    .operator("in")
+                    .values(List.of("SYSTEM", "testuser"))
+                    .build();
+            searchCriteria.getFilterList().add(gridFilter);
+            searchCriteria.getSortList().add(new GridSort("id", "asc"));
             long totalRecords = criteriaService.getCountBySearchCriteria(ReferenceObject.class, searchCriteria);
             List<ReferenceObjectDto> recordDetails = referenceObjectMapper.toDtoList(criteriaService.getDataBySearchCriteria(ReferenceObject.class, searchCriteria));
             log.debug("fetchReferenceObjectGridData: totalRecords: {}", totalRecords);
@@ -86,7 +95,24 @@ public class SettingsService {
                     e);
             return ApiResponse.builder()
                     .success(false)
-                    .message("Reference Object Name save failed.")
+                    .message("Reference Object Name save failed. Please contact system administrator.")
+                    .build();
+        }
+    }
+
+    public ApiResponse deleteReferenceObject(List<Long> ids) {
+        try {
+            log.debug("deleteReferenceObject: {}", ids);
+            referenceObjectRepository.deleteAllById(ids);
+            return ApiResponse.builder()
+                    .success(true)
+                    .message("Reference object deleted successfully.")
+                    .build();
+        } catch (Exception e) {
+            log.error("Error occurred while deleting reference object: {}", ids, e);
+            return ApiResponse.builder()
+                    .success(false)
+                    .message("Reference object delete failed. Please contact system administrator.")
                     .build();
         }
     }
