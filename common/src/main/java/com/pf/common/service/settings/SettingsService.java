@@ -1,5 +1,6 @@
 package com.pf.common.service.settings;
 
+import com.pf.common.dto.generic.SelectItem;
 import com.pf.common.dto.gp.GridFilter;
 import com.pf.common.dto.gp.GridResult;
 import com.pf.common.dto.gp.GridSort;
@@ -12,6 +13,7 @@ import com.pf.common.entity.settings.ReferenceValue;
 import com.pf.common.mapper.settings.ReferenceObjectMapper;
 import com.pf.common.mapper.settings.ReferenceValueMapper;
 import com.pf.common.repository.setting.ReferenceObjectRepository;
+import com.pf.common.repository.setting.ReferenceValueRepository;
 import com.pf.common.service.criteria.GenericCriteriaService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +30,7 @@ public class SettingsService {
     private final ReferenceObjectMapper referenceObjectMapper;
     private final ReferenceValueMapper referenceValueMapper;
     private final ReferenceObjectRepository referenceObjectRepository;
+    private final ReferenceValueRepository referenceValueRepository;
 
     public GridResult fetchReferenceObjectGridData(SearchCriteria searchCriteria) {
         try {
@@ -71,34 +74,42 @@ public class SettingsService {
         }
     }
 
-    public ApiResponse saveReferenceObject(ReferenceObjectDto referenceObjectDto) {
+    public ApiResponse saveReferenceValue(ReferenceValueDto referenceValueDto) {
         try {
-            log.debug("saveReferenceObject: {}", referenceObjectDto);
+            log.debug("saveReferenceValue: {}", referenceValueDto);
 
-            ReferenceObject referenceObject =
-                    referenceObjectMapper.toEntity(referenceObjectDto);
+            ReferenceValue referenceValue =
+                    referenceValueMapper.toEntity(referenceValueDto);
 
-            referenceObject.setRefObjName(referenceObject.getRefObjName().trim());
+            referenceValue.setReferenceCode(referenceValue.getReferenceCode().trim());
+            referenceValue.setReferenceCodeDescription(referenceValue.getReferenceCodeDescription().trim());
 
-            if (referenceObject.getId() == null) {
+            ReferenceObject referenceObject = referenceObjectRepository.findById(referenceValueDto.getRefObjNameId()).orElse(null);
+            referenceValue.setReferenceObject(referenceObject);
+
+            if (referenceValue.getId() == null) {
                 //Create
-                if (referenceObjectRepository
-                        .getCountByReferenceObjectName(referenceObject.getRefObjName()) > 0) {
+                if (referenceValueRepository
+                        .countByReferenceObjectIdAndReferenceCode(
+                                referenceValue.getReferenceObject().getId(),
+                                referenceValue.getReferenceCode()
+                        ) > 0
+                ) {
 
-                    log.error("addReferenceObject: reference object already exists");
+                    log.error("addReferenceValue: reference object name and code already exists");
 
                     return ApiResponse.builder()
                             .success(false)
-                            .message("Reference object name already exists")
+                            .message("Reference object bane and code combination already exists")
                             .build();
                 }
-                referenceObject.setCreatedBy("testuser");
+                referenceValue.setCreatedBy("testuser");
             } else {
                 //Update
                 if (referenceObjectRepository
                         .getCountByReferenceObjectNameIdNotEquals(
-                                referenceObject.getRefObjName(),
-                                referenceObject.getId()) > 0
+                                referenceValue.getReferenceCode(),
+                                referenceValue.getId()) > 0
                 ) {
                     log.error("updateReferenceObject: reference object already exists");
 
@@ -107,21 +118,21 @@ public class SettingsService {
                             .message("Reference object name already exists")
                             .build();
                 }
-                referenceObject.setUpdatedBy("testuser");
+                referenceValue.setUpdatedBy("testuser");
             }
-            referenceObjectRepository.save(referenceObject);
+            referenceValueRepository.save(referenceValue);
             return ApiResponse.builder()
                     .success(true)
                     .message("Reference Object Name saved successfully.")
                     .build();
         } catch (Exception e) {
             log.error(
-                    "Error occurred while saving reference object: {}",
-                    referenceObjectDto,
+                    "Error occurred while saving reference code: {}",
+                    referenceValueDto,
                     e);
             return ApiResponse.builder()
                     .success(false)
-                    .message("Reference Object Name save failed. Please contact system administrator.")
+                    .message("Reference Code save failed. Please contact system administrator.")
                     .build();
         }
     }
@@ -141,5 +152,9 @@ public class SettingsService {
                     .message("Reference object delete failed. Please contact system administrator.")
                     .build();
         }
+    }
+
+    public List<SelectItem> fetchCategoryTypes() {
+        return referenceObjectRepository.fetchCategoryTypes();
     }
 }

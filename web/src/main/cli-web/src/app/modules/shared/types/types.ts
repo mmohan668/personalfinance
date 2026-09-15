@@ -67,7 +67,7 @@ export interface ToolbarConfig {
   editRow: boolean | false;
 }
 
-export interface ReferenceObject {
-  id: number | null;
-  refObjName: number;
+export interface SelectItem {
+  value: any;
+  label: string;
 }

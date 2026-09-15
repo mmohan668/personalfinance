@@ -1,0 +1,84 @@
+<div class="dialog-container" cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+  <!-- Title Bar -->
+  <div class="dialog-title-bar" cdkDragHandle>
+    <span class="dialog-title">
+      @if (data.mode === 'Add') {
+        Add Reference Object
+      } @else {
+        Edit Reference Object
+      }
+    </span>
+
+    <button mat-icon-button type="button" aria-label="Close" (click)="close()">
+      <span class="material-icons">close</span>
+    </button>
+  </div>
+
+  <!-- Content -->
+  <div class="dialog-content">
+    <form [formGroup]="form" class="dialog-form">
+      <mat-form-field appearance="fill" class="dialog-field">
+        <mat-label>Reference Object Name</mat-label>
+
+        <mat-select formControlName="referenceObjectName" name="referenceObjectName">
+          @for (item of categoryTypes; track item.value) {
+            <mat-option [value]="item.value">
+              {{ item.label }}
+            </mat-option>
+          }
+        </mat-select>
+
+        @if (_cs.isInvalid(form.get('referenceObjectName'))) {
+          <mat-error>
+            {{ _cs.getValidationMessage(form.get('referenceObjectName'), 'Reference Object Name') }}
+          </mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="dialog-field">
+        <mat-label>Reference Code</mat-label>
+
+        <input matInput type="text" name="referenceCode" formControlName="referenceCode" />
+
+        @if (_cs.isInvalid(form.get('referenceCode'))) {
+          <mat-error>
+            {{ _cs.getValidationMessage(form.get('referenceCode'), 'Reference Code') }}
+          </mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="dialog-field">
+        <mat-label>Reference Code Description</mat-label>
+
+        <input
+          matInput
+          type="text"
+          name="referenceCodeDescription"
+          formControlName="referenceCodeDescription"
+        />
+
+        @if (_cs.isInvalid(form.get('referenceCodeDescription'))) {
+          <mat-error>
+            {{
+              _cs.getValidationMessage(
+                form.get('referenceCodeDescription'),
+                'Reference Code Description'
+              )
+            }}
+          </mat-error>
+        }
+      </mat-form-field>
+    </form>
+  </div>
+
+  <!-- Actions -->
+  <mat-dialog-actions class="dialog-actions">
+    <button mat-stroked-button type="button" (click)="clear()">Clear</button>
+
+    <span class="action-spacer"></span>
+
+    <button mat-stroked-button type="button" (click)="close()">Close</button>
+
+    <button mat-raised-button type="button" [disabled]="form.invalid" (click)="save()">Save</button>
+  </mat-dialog-actions>
+</div>

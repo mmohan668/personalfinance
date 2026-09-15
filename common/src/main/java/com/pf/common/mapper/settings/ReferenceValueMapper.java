@@ -12,7 +12,7 @@ import java.util.List;
 public interface ReferenceValueMapper {
     @Mapping(target = "refObjName", source = "referenceObject.refObjName")
     ReferenceValueDto toDto(ReferenceValue entity);
-
+    
     ReferenceValue toEntity(ReferenceValueDto dto);
 
     List<ReferenceValueDto> toDtoList(List<ReferenceValue> entityList);
