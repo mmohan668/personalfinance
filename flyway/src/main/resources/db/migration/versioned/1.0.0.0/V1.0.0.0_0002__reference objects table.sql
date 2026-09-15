@@ -41,7 +41,7 @@ VALUES ('CATEGORY_TYPE', 'SYSTEM'),
 
 INSERT INTO reference_value (ref_obj_name_id, reference_code, reference_code_description, created_by)
 VALUES ((SELECT id FROM reference_object WHERE ref_obj_name = 'CATEGORY_TYPE'),
-        'EXPENSE', 'EXPENSE Category Type', 'SYSTEM'),
+        'EXPENSE', 'EXPENSE - Category Type', 'SYSTEM'),
        ((SELECT id FROM reference_object WHERE ref_obj_name = 'CATEGORY_TYPE'),
         'INCOME', 'INCOME - Category Type', 'SYSTEM'),
        ((SELECT id FROM reference_object WHERE ref_obj_name = 'CATEGORY_TYPE'),

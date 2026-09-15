@@ -11,8 +11,9 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface ReferenceValueMapper {
     @Mapping(target = "refObjName", source = "referenceObject.refObjName")
+    @Mapping(target = "refObjNameId", source = "referenceObject.id")
     ReferenceValueDto toDto(ReferenceValue entity);
-    
+
     ReferenceValue toEntity(ReferenceValueDto dto);
 
     List<ReferenceValueDto> toDtoList(List<ReferenceValue> entityList);

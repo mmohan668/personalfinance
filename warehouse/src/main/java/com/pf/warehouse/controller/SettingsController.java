@@ -35,9 +35,9 @@ public class SettingsController {
         return settingsService.saveReferenceValue(referenceValueDto);
     }
 
-    @PostMapping("/deleteReferenceObject")
-    private ApiResponse deleteReferenceObject(@RequestBody List<Long> ids) {
-        return settingsService.deleteReferenceObject(ids);
+    @PostMapping("/deleteReferenceValue")
+    private ApiResponse deleteReferenceValue(@RequestBody List<Long> ids) {
+        return settingsService.deleteReferenceValue(ids);
     }
 
     @GetMapping("/fetchCategoryTypes")
