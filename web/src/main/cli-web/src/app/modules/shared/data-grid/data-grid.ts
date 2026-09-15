@@ -954,4 +954,13 @@ export class DataGrid implements OnInit {
       console.error('Error calling resetGridSettings API:', error);
     }
   };
+
+  clearSelection = () => {
+    this.selectedRows = [];
+  };
+
+  refreshGrid = () => {
+    this.clearSelection();
+    this.loadGridData();
+  };
 }

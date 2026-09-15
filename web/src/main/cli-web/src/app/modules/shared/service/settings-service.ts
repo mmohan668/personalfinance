@@ -15,4 +15,11 @@ export class SettingsService {
       referenceObject,
     );
   }
+
+  deleteReferenceObject(ids: any[]): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(
+      `${this.config.configValue.apiUrl}/settings/deleteReferenceObject`,
+      ids,
+    );
+  }
 }
