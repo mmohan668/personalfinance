@@ -1,6 +1,8 @@
-import { Service } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { ToolbarConfig } from '../types/types';
 import { AbstractControl } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
+import { NotificationService } from './notification-service';
 
 @Service()
 export class CommonService {
@@ -9,6 +11,13 @@ export class CommonService {
     { label: 'Active', value: true },
     { label: 'Inactive', value: false },
   ];
+
+  private dialog = inject(MatDialog);
+  private _ns = inject(NotificationService);
+
+  constructor() {
+    this.dialog.afterOpened.subscribe(() => this._ns.close());
+  }
 
   isNotNull(value: any) {
     return value !== undefined && value !== null && value !== '';
