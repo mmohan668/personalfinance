@@ -4,3 +4,5 @@ export const GRID_URL_MAP = new Map<string, string>([
   ['REFERENCE_OBJECTS_GRID', '/settings/fetchReferenceObjectGridData'],
   ['REFERENCE_VALUES_GRID', '/settings/fetchReferenceValueGridData'],
 ]);
+
+export const SYSTEM = 'SYSTEM';
