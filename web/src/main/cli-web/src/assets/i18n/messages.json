@@ -14,6 +14,9 @@
       "systemOnly": "System-generated reference values cannot be deleted.",
       "mixedSelection": "Some of the selected reference values are system-generated and cannot be deleted. Only the user-created reference values will be deleted. Do you want to continue?",
       "confirmation": "Are you sure you want to delete the selected reference values?"
+    },
+    "edit": {
+      "systemOnly": "System-generated reference values cannot be edited."
     }
   }
 }

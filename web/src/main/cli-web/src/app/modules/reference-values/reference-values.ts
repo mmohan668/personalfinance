@@ -1,6 +1,6 @@
 import { Component, inject, ViewChild } from '@angular/core';
-import { DATA_FIELDS, GRID_EXPORT_FILE_NAMES, GRID_NAMES } from '../shared/enums';
-import { SelectItem, ToolbarConfig } from '../shared/types/types';
+import { DATA_FIELDS, GRID_EXPORT_FILE_NAMES, GRID_NAMES, MODES } from '../shared/enums';
+import { ToolbarConfig } from '../shared/types/types';
 import { CommonService } from '../shared/service/common-service';
 import { DataGrid } from '../shared/data-grid/data-grid';
 import { MatDialog } from '@angular/material/dialog';
@@ -34,29 +34,22 @@ export class ReferenceValues {
     this.toolbarConfig = this._cs.toolbarConfig;
     this.toolbarConfig.addRow = true;
     this.toolbarConfig.deleteRow = true;
+    this.toolbarConfig.editRow = true;
   }
 
   addRow = async () => {
-    firstValueFrom(this._ss.fetchCategoryTypes())
-      .then((res: SelectItem[]) => {
-        const categoryTypes: SelectItem[] = res;
-        this.dialog
-          .open(AdEditReferenceValueDialog, {
-            width: '70vw',
-            maxWidth: '70vw',
-            data: {
-              mode: 'Add',
-              categoryTypes: categoryTypes,
-            },
-            disableClose: true,
-          })
-          .afterClosed()
-          .subscribe(() => {
-            this.dataGrid?.refreshGrid();
-          });
+    this.dialog
+      .open(AdEditReferenceValueDialog, {
+        width: '70vw',
+        maxWidth: '70vw',
+        data: {
+          mode: MODES.ADD,
+        },
+        disableClose: true,
       })
-      .catch((error) => {
-        console.log('Error while fetchCategoryTypes:', error);
+      .afterClosed()
+      .subscribe(() => {
+        this.dataGrid?.refreshGrid();
       });
   };
 
@@ -75,7 +68,7 @@ export class ReferenceValues {
       : this._ms.get('referenceValue.delete.confirmation');
     this.dialog
       .open(ConfirmationDialog, {
-        width: '70vm',
+        width: '60vw',
         data: {
           title: title,
           message: message,
@@ -101,6 +94,35 @@ export class ReferenceValues {
               console.log('Error while deleteReferenceValue:', error);
             });
         }
+      });
+  };
+
+  editRow = () => {
+    if (this.dataGrid.selectedRows.length === 0) {
+      this._ns.error(this._ms.get('common.edit.noSelection'));
+      return;
+    }
+    if (this.dataGrid.selectedRows.length > 1) {
+      this._ns.error(this._ms.get('common.edit.singleSelection'));
+      return;
+    }
+    if (this.dataGrid.selectedRows.every((row) => row.createdBy === SYSTEM)) {
+      this._ns.error(this._ms.get('referenceValue.edit.systemOnly'));
+      return;
+    }
+
+    this.dialog
+      .open(AdEditReferenceValueDialog, {
+        width: '70vw',
+        maxWidth: '70vw',
+        data: {
+          mode: MODES.EDIT,
+          selectedRow: this.dataGrid.selectedRows[0],
+        },
+      })
+      .afterClosed()
+      .subscribe(() => {
+        this.dataGrid.refreshGrid();
       });
   };
 }

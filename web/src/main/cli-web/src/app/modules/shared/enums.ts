@@ -82,3 +82,9 @@ export enum DATA_FIELDS {
   ID = 'id',
   USER_ID = 'user.id',
 }
+
+export enum MODES {
+  ADD = 'Add',
+  EDIT = 'Edit',
+  DELETE = 'Delete',
+}

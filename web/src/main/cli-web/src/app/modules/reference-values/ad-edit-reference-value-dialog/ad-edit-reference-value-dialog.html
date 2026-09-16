@@ -2,7 +2,7 @@
   <!-- Title Bar -->
   <div class="dialog-title-bar" cdkDragHandle>
     <span class="dialog-title">
-      @if (data.mode === 'Add') {
+      @if (data.mode === MODES.ADD) {
         Add Reference Object
       } @else {
         Edit Reference Object
@@ -21,7 +21,7 @@
         <mat-label>Reference Object Name</mat-label>
 
         <mat-select formControlName="referenceObjectName" name="referenceObjectName">
-          @for (item of categoryTypes; track item.value) {
+          @for (item of categoryTypes$ | async; track item.value) {
             <mat-option [value]="item.value">
               {{ item.label }}
             </mat-option>
