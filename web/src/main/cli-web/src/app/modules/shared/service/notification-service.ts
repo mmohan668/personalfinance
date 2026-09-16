@@ -21,45 +21,66 @@ export class NotificationService {
 
   private timer?: ReturnType<typeof setTimeout>;
 
-  /**
-   * Show success notification.
-   * Automatically closes after 5 seconds.
-   */
+  private remainingTime = 0;
+  private timerStartedAt = 0;
+
   success(message: string): void {
     this.show('success', message, 5000);
   }
 
-  /**
-   * Show error notification.
-   * Automatically closes after 10 seconds.
-   */
   error(message: string): void {
     this.show('error', message, 10000);
   }
 
-  /**
-   * Manually close the current notification.
-   */
+  pause(): void {
+    // Nothing to pause
+    if (!this.timer) {
+      return;
+    }
+
+    clearTimeout(this.timer);
+    this.timer = undefined;
+
+    const elapsed = Date.now() - this.timerStartedAt;
+
+    this.remainingTime = Math.max(0, this.remainingTime - elapsed);
+
+    this.timerStartedAt = 0;
+  }
+
+  resume(): void {
+    // No notification
+    if (!this.notification()) {
+      return;
+    }
+
+    // Already running
+    if (this.timer) {
+      return;
+    }
+
+    // Nothing remaining
+    if (this.remainingTime <= 0) {
+      this.close();
+      return;
+    }
+
+    this.startTimer();
+  }
+
   close(): void {
-    // Cancel existing timer
     if (this.timer) {
       clearTimeout(this.timer);
       this.timer = undefined;
     }
 
-    // Remove notification
+    this.remainingTime = 0;
+    this.timerStartedAt = 0;
+
     this.notification.set(null);
   }
 
-  /**
-   * Show a new notification.
-   *
-   * If another notification is already visible,
-   * it will be closed immediately.
-   */
   private show(type: NotificationType, message: string, duration: number): void {
-    // Close existing notification immediately.
-    // This also clears its timer.
     this.close();
 
     const notification: Notification = {
@@ -69,12 +90,27 @@ export class NotificationService {
       duration,
     };
 
-    // Show new notification
     this.notification.set(notification);
 
-    // Start new timer
-    this.timer = setTimeout(() => {
+    this.remainingTime = duration;
+
+    this.startTimer();
+  }
+
+  private startTimer(): void {
+    if (this.remainingTime <= 0) {
       this.close();
-    }, duration);
+      return;
+    }
+
+    this.timerStartedAt = Date.now();
+
+    this.timer = setTimeout(() => {
+      this.timer = undefined;
+      this.remainingTime = 0;
+      this.timerStartedAt = 0;
+
+      this.notification.set(null);
+    }, this.remainingTime);
   }
 }
