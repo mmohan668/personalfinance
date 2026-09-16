@@ -1,14 +1,17 @@
-@if (notificationService.item(); as notification) {
-  <div class="notification-container" role="alert" aria-live="assertive">
+<ng-template #notificationTemplate>
+  <div class="notification-container">
     <div
       class="notification"
-      [class.success]="notification.type === 'success'"
-      [class.error]="notification.type === 'error'"
+      role="alert"
+      aria-live="assertive"
+      [class.success]="notificationService.item()?.type === 'success'"
+      [class.error]="notificationService.item()?.type === 'error'"
+      (mouseenter)="pause()"
+      (mouseleave)="resume()"
     >
-      <!-- Icon + Message -->
       <div class="notification-content">
         <span class="icon" aria-hidden="true">
-          @if (notification.type === 'success') {
+          @if (notificationService.item()?.type === 'success') {
             ✓
           } @else {
             !
@@ -16,14 +19,13 @@
         </span>
 
         <span class="message">
-          {{ notification.message }}
+          {{ notificationService.item()?.message }}
         </span>
       </div>
 
-      <!-- Close button -->
       <button type="button" class="close-button" aria-label="Close notification" (click)="close()">
         ×
       </button>
     </div>
   </div>
-}
+</ng-template>

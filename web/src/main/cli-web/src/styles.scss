@@ -640,3 +640,7 @@ body {
 .mat-mdc-select-panel {
   background-color: #fff !important;
 }
+
+.notification-overlay-pane {
+  z-index: 10001 !important;
+}
