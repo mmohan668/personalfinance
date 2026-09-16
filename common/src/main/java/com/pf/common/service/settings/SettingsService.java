@@ -106,8 +106,9 @@ public class SettingsService {
                 referenceValue.setCreatedBy("testuser");
             } else {
                 //Update
-                if (referenceObjectRepository
+                if (referenceValueRepository
                         .getCountByReferenceObjectNameIdNotEquals(
+                                referenceValue.getReferenceObject().getId(),
                                 referenceValue.getReferenceCode(),
                                 referenceValue.getId()) > 0
                 ) {
@@ -118,6 +119,16 @@ public class SettingsService {
                             .message("Reference value already exists")
                             .build();
                 }
+                referenceValue = referenceValueRepository.findById(referenceValue.getId()).orElse(null);
+                if (referenceValue == null) {
+                    return ApiResponse.builder()
+                            .success(false)
+                            .message("Reference value not found")
+                            .build();
+                }
+                referenceValue.setReferenceObject(referenceObject);
+                referenceValue.setReferenceCodeDescription(referenceValueDto.getReferenceCodeDescription().trim());
+                referenceValue.setReferenceCode(referenceValueDto.getReferenceCode().trim());
                 referenceValue.setUpdatedBy("testuser");
             }
             referenceValueRepository.save(referenceValue);
