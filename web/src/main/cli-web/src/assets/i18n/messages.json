@@ -1,0 +1,19 @@
+{
+  "common": {
+    "delete": {
+      "title": "Delete Confirmation",
+      "noSelection": "Please select at least one record to delete."
+    },
+    "edit": {
+      "noSelection": "Please select at least one record to edit.",
+      "singleSelection": "Please select only one record to edit."
+    }
+  },
+  "referenceValue": {
+    "delete": {
+      "systemOnly": "System-generated reference values cannot be deleted.",
+      "mixedSelection": "Some of the selected reference values are system-generated and cannot be deleted. Only the user-created reference values will be deleted. Do you want to continue?",
+      "confirmation": "Are you sure you want to delete the selected reference values?"
+    }
+  }
+}
