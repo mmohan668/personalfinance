@@ -8,6 +8,7 @@ import { AdEditReferenceValueDialog } from './ad-edit-reference-value-dialog/ad-
 import { SettingsService } from '../shared/service/settings-service';
 import { firstValueFrom } from 'rxjs';
 import { NotificationService } from '../shared/service/notification-service';
+import { ConfirmationDialog } from '../shared/confirmation-dialog/confirmation-dialog';
 
 @Component({
   imports: [DataGrid],
@@ -58,27 +59,45 @@ export class ReferenceValues {
 
   deleteRow = () => {
     if (this.dataGrid.selectedRows.length === 0) {
-      this._ns.error('Please select at least one record');
+      this._ns.error('Please select at least one record to delete.');
       return;
     }
     if (this.dataGrid.selectedRows.every((row) => row.createdBy === 'SYSTEM')) {
-      this._ns.error('Cannot delete System Generated Reference Values');
+      this._ns.error('System-generated reference values cannot be deleted.');
       return;
     }
-    const ids = this.dataGrid.selectedRows
-      .filter((row) => row.createdBy !== 'SYSTEM')
-      .map((row) => row.id);
-    firstValueFrom(this._ss.deleteReferenceValue(ids))
-      .then((response) => {
-        if (response.success) {
-          this._ns.success(response.message);
-          this.dataGrid.refreshGrid();
-        } else {
-          this._ns.error(response.message);
-        }
+    const title = 'Delete Confirmation';
+    const message = this.dataGrid.selectedRows.some((row) => row.createdBy === 'SYSTEM')
+      ? 'Some of the selected reference values are system-generated and cannot be deleted. Only the user-created reference values will be deleted. Do you want to continue?'
+      : 'Are you sure you want to delete the selected reference values?';
+    this.dialog
+      .open(ConfirmationDialog, {
+        width: '70vm',
+        data: {
+          title: title,
+          message: message,
+          isNotification: false,
+        },
       })
-      .catch((error) => {
-        console.log('Error while deleteReferenceValue:', error);
+      .afterClosed()
+      .subscribe((value: boolean) => {
+        if (value) {
+          const ids = this.dataGrid.selectedRows
+            .filter((row) => row.createdBy !== 'SYSTEM')
+            .map((row) => row.id);
+          firstValueFrom(this._ss.deleteReferenceValue(ids))
+            .then((response) => {
+              if (response.success) {
+                this._ns.success(response.message);
+                this.dataGrid.refreshGrid();
+              } else {
+                this._ns.error(response.message);
+              }
+            })
+            .catch((error) => {
+              console.log('Error while deleteReferenceValue:', error);
+            });
+        }
       });
   };
 }

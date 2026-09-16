@@ -1,0 +1,30 @@
+<div class="dialog-container" cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+  <!-- Title Bar -->
+  <div class="dialog-title-bar" cdkDragHandle>
+    <span class="dialog-title">
+      {{ data.title }}
+    </span>
+
+    @if (!data.isNotification) {
+      <button mat-icon-button type="button" aria-label="Close" (click)="close()">
+        <span class="material-icons">close</span>
+      </button>
+    }
+  </div>
+
+  <!-- Content -->
+  <div class="dialog-content">
+    <p class="dialog-message" [innerHTML]="data.message"></p>
+  </div>
+
+  <!-- Actions -->
+  <mat-dialog-actions class="dialog-actions">
+    @if (!data.isNotification) {
+      <button mat-stroked-button type="button" (click)="no()">No</button>
+
+      <button mat-raised-button type="button" (click)="yes()">Yes</button>
+    } @else {
+      <button mat-raised-button type="button" (click)="ok()">OK</button>
+    }
+  </mat-dialog-actions>
+</div>

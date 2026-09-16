@@ -71,3 +71,9 @@ export interface SelectItem {
   value: any;
   label: string;
 }
+
+export interface ConfirmationDialogData {
+  title: string;
+  message: string;
+  isNotification: boolean | false;
+}
