@@ -18,6 +18,7 @@ import com.pf.common.service.criteria.GenericCriteriaService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
@@ -74,61 +75,86 @@ public class SettingsService {
         }
     }
 
+    @Transactional
     public ApiResponse saveReferenceValue(ReferenceValueDto referenceValueDto) {
         try {
             log.debug("saveReferenceValue: {}", referenceValueDto);
 
-            ReferenceValue referenceValue =
-                    referenceValueMapper.toEntity(referenceValueDto);
-
-            referenceValue.setReferenceCode(referenceValue.getReferenceCode().trim());
-            referenceValue.setReferenceCodeDescription(referenceValue.getReferenceCodeDescription().trim());
-
             ReferenceObject referenceObject = referenceObjectRepository.findById(referenceValueDto.getRefObjNameId()).orElse(null);
-            referenceValue.setReferenceObject(referenceObject);
+            if (referenceObject == null) {
+                log.warn(
+                        "saveReferenceValue: Reference object not found. refObjNameId = {}",
+                        referenceValueDto.getRefObjNameId()
+                );
 
-            if (referenceValue.getId() == null) {
+                return ApiResponse.builder()
+                        .success(false)
+                        .message("Reference object not found.")
+                        .build();
+            }
+            ReferenceValue referenceValue;
+            if (referenceValueDto.getId() == null) {
                 //Create
+                referenceValue =
+                        referenceValueMapper.toEntity(referenceValueDto);
+
+                referenceValue.setReferenceObject(referenceObject);
+
                 if (referenceValueRepository
                         .countByReferenceObjectIdAndReferenceCode(
-                                referenceValue.getReferenceObject().getId(),
+                                referenceObject.getId(),
                                 referenceValue.getReferenceCode()
                         ) > 0
                 ) {
 
-                    log.error("addReferenceValue: reference object name and value already exists");
+                    log.warn(
+                            "Reference code already exists for the selected reference object. refObjName = {}, referenceCode = {}",
+                            referenceObject.getRefObjName(),
+                            referenceValue.getReferenceCode()
+                    );
 
                     return ApiResponse.builder()
                             .success(false)
-                            .message("Reference object name and value combination already exists")
+                            .message("Reference code already exists for the selected reference object.")
                             .build();
                 }
                 referenceValue.setCreatedBy("testuser");
             } else {
                 //Update
-                if (referenceValueRepository
-                        .getCountByReferenceObjectNameIdNotEquals(
-                                referenceValue.getReferenceObject().getId(),
-                                referenceValue.getReferenceCode(),
-                                referenceValue.getId()) > 0
-                ) {
-                    log.error("updateReferenceObject: reference value already exists");
+                referenceValue = referenceValueRepository.findById(referenceValueDto.getId()).orElse(null);
+                if (referenceValue == null) {
+                    log.warn(
+                            "saveReferenceValue: Reference value not found. referenceValueId = {}",
+                            referenceValueDto.getId()
+                    );
 
                     return ApiResponse.builder()
                             .success(false)
-                            .message("Reference value already exists")
+                            .message("Reference value not found.")
                             .build();
                 }
-                referenceValue = referenceValueRepository.findById(referenceValue.getId()).orElse(null);
-                if (referenceValue == null) {
+
+                if (referenceValueRepository
+                        .countByReferenceObjectIdAndReferenceCodeAndIdNot(
+                                referenceObject.getId(),
+                                referenceValueDto.getReferenceCode(),
+                                referenceValue.getId()) > 0
+                ) {
+                    log.warn(
+                            "Reference code already exists for the selected reference object. referenceCode = {}, refObjName {}",
+                            referenceValueDto.getReferenceCode(),
+                            referenceObject.getRefObjName()
+                    );
+
                     return ApiResponse.builder()
                             .success(false)
-                            .message("Reference value not found")
+                            .message("Reference code already exists for the selected reference object.")
                             .build();
                 }
+
                 referenceValue.setReferenceObject(referenceObject);
-                referenceValue.setReferenceCodeDescription(referenceValueDto.getReferenceCodeDescription().trim());
-                referenceValue.setReferenceCode(referenceValueDto.getReferenceCode().trim());
+                referenceValue.setReferenceCode(referenceValueDto.getReferenceCode());
+                referenceValue.setReferenceCodeDescription(referenceValueDto.getReferenceCodeDescription());
                 referenceValue.setUpdatedBy("testuser");
             }
             referenceValueRepository.save(referenceValue);
@@ -138,29 +164,43 @@ public class SettingsService {
                     .build();
         } catch (Exception e) {
             log.error(
-                    "Error occurred while saving reference code: {}",
+                    "Error occurred while saving reference value: {}",
                     referenceValueDto,
-                    e);
+                    e
+            );
             return ApiResponse.builder()
                     .success(false)
-                    .message("Reference Code save failed. Please contact system administrator.")
+                    .message("Failed to save reference value. Please contact the system administrator.")
                     .build();
         }
     }
 
+    @Transactional
     public ApiResponse deleteReferenceValue(List<Long> ids) {
         try {
             log.debug("deleteReferenceValue: {}", ids);
+
+            if (ids == null || ids.isEmpty()) {
+                return ApiResponse.builder()
+                        .success(false)
+                        .message("No reference values selected for deletion.")
+                        .build();
+            }
+
             referenceValueRepository.deleteAllById(ids);
             return ApiResponse.builder()
                     .success(true)
                     .message("Reference value(s) deleted successfully.")
                     .build();
         } catch (Exception e) {
-            log.error("Error occurred while deleting reference value(s): {}", ids, e);
+            log.error(
+                    "Error occurred while deleting reference value(s): {}",
+                    ids,
+                    e
+            );
             return ApiResponse.builder()
                     .success(false)
-                    .message("Reference value(s) delete failed. Please contact system administrator.")
+                    .message("Failed to delete reference value(s). Please contact the system administrator.")
                     .build();
         }
     }

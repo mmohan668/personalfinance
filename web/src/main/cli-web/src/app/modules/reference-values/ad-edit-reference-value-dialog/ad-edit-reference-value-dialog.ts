@@ -74,8 +74,8 @@ export class AdEditReferenceValueDialog {
     const referenceValue: any = {
       id: this.data.mode === MODES.EDIT ? this.data.selectedRow.id : null,
       refObjNameId: this.form.value.referenceObjectName,
-      referenceCode: this.form.value.referenceCode,
-      referenceCodeDescription: this.form.value.referenceCodeDescription,
+      referenceCode: this.form.value.referenceCode.trim(),
+      referenceCodeDescription: this.form.value.referenceCodeDescription.trim(),
     };
     firstValueFrom(this._ss.saveReferenceValue(referenceValue))
       .then((response: ApiResponse) => {

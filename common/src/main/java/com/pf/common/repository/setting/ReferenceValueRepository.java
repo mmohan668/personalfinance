@@ -14,7 +14,7 @@ public interface ReferenceValueRepository extends JpaRepository<ReferenceValue, 
             WHERE rv.referenceObject.id = :refObjId
             AND LOWER(TRIM(referenceCode)) = LOWER(TRIM(:refCode))
             """)
-    int countByReferenceObjectIdAndReferenceCode(
+    long countByReferenceObjectIdAndReferenceCode(
             @Param("refObjId") Long refObjId,
             @Param("refCode") String refCode
     );
@@ -25,7 +25,7 @@ public interface ReferenceValueRepository extends JpaRepository<ReferenceValue, 
             WHERE rv.referenceObject.id = :refObjId
             AND LOWER(TRIM(rv.referenceCode)) = LOWER(TRIM(:referenceCode)) AND rv.id <> :id
             """)
-    long getCountByReferenceObjectNameIdNotEquals(
+    long countByReferenceObjectIdAndReferenceCodeAndIdNot(
             @Param("refObjId") Long refObjId,
             @Param("referenceCode") String referenceCode,
             @Param("id") Long id
