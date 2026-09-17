@@ -29,7 +29,10 @@ public class CategoryManagementService {
             log.debug("fetchCategoriesGridData: {}", searchCriteria);
             searchCriteria.setFetchPaths(List.of("referenceValue"));
             searchCriteria.setFIELD_MAPPINGS(UserCategoryDto.FIELD_MAPPINGS);
-            long totalRecords = criteriaService.getCountBySearchCriteria(UserCategory.class, searchCriteria);
+            long totalRecords = 0;
+            if (!searchCriteria.isLoadAllData()) {
+                totalRecords = criteriaService.getCountBySearchCriteria(UserCategory.class, searchCriteria);
+            }
             List<UserCategoryDto> recordDetails = userCategoryMapper.toDtoList(criteriaService.getDataBySearchCriteria(UserCategory.class, searchCriteria));
             log.debug("fetchCategoriesGridData: totalRecords: {}", totalRecords);
             return GridResult.builder().totalRecords(totalRecords).recordDetails(recordDetails).build();
@@ -42,7 +45,10 @@ public class CategoryManagementService {
     public GridResult fetchSubcategoriesGridData(SearchCriteria searchCriteria) {
         try {
             log.debug("fetchSubcategoriesGridData: {}", searchCriteria);
-            long totalRecords = criteriaService.getCountBySearchCriteria(SubcategoryView.class, searchCriteria);
+            long totalRecords = 0;
+            if (!searchCriteria.isLoadAllData()) {
+                totalRecords = criteriaService.getCountBySearchCriteria(UserCategory.class, searchCriteria);
+            }
             List<SubcategoryViewDto> recordDetails = subcategoryViewMapper.toDtoList(criteriaService.getDataBySearchCriteria(SubcategoryView.class, searchCriteria));
             log.debug("fetchSubcategoriesGridData: totalRecords: {}", totalRecords);
             return GridResult.builder().totalRecords(totalRecords).recordDetails(recordDetails).build();
