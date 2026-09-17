@@ -11,7 +11,9 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.*;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.jpa.HibernateHints;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -24,6 +26,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 @Slf4j
 @Repository
@@ -56,6 +59,7 @@ public class GenericCriteriaService {
                 .getSingleResult();
     }
 
+    @Transactional
     public <T> List<T> getDataBySearchCriteria(
             Class<T> entity,
             SearchCriteria searchCriteria
@@ -90,9 +94,50 @@ public class GenericCriteriaService {
         if (!searchCriteria.isLoadAllData()) {
             typedQuery.setFirstResult(searchCriteria.getSkip());
             typedQuery.setMaxResults(searchCriteria.getTake());
+            return typedQuery.getResultList();
         }
 
-        return typedQuery.getResultList();
+        typedQuery.setHint(HibernateHints.HINT_FETCH_SIZE, 1000);
+
+        try (Stream<T> stream = typedQuery.getResultStream()) {
+            return stream.toList();
+        }
+    }
+
+    @Transactional
+    public <T> Stream<T> streamDataBySearchCriteria(
+            Class<T> entity,
+            SearchCriteria searchCriteria
+    ) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+
+        CriteriaQuery<T> criteriaQuery = criteriaBuilder.createQuery(entity);
+        Root<T> root = criteriaQuery.from(entity);
+
+        applyFetches(root, searchCriteria);
+
+        criteriaQuery.select(root);
+
+        applyFilters(
+                criteriaBuilder,
+                criteriaQuery,
+                root,
+                searchCriteria
+        );
+        applySorting(
+                criteriaBuilder,
+                criteriaQuery,
+                root,
+                searchCriteria
+        );
+
+        TypedQuery<T> typedQuery =
+                entityManager.createQuery(criteriaQuery);
+
+        typedQuery.setHint(HibernateHints.HINT_FETCH_SIZE, 1000);
+        typedQuery.setHint(HibernateHints.HINT_READ_ONLY, true);
+
+        return typedQuery.getResultStream();
     }
 
     private <T> void applyFetches(
