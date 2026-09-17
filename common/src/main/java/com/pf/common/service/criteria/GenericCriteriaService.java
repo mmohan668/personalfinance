@@ -3,6 +3,7 @@ package com.pf.common.service.criteria;
 import com.pf.common.dto.gp.GridFilter;
 import com.pf.common.dto.gp.GridSort;
 import com.pf.common.dto.gp.SearchCriteria;
+import com.pf.common.enums.FilterOperator;
 import com.pf.common.exception.NullFilterValueException;
 import com.pf.common.exception.UnsupportedFilterFieldTypeException;
 import com.pf.common.exception.UnsupportedFilterOperatorException;
@@ -20,13 +21,12 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Stream;
+
+import static com.pf.common.constants.CommonConstants.*;
+import static com.pf.common.enums.SortOrder.*;
 
 @Slf4j
 @Repository
@@ -185,7 +185,7 @@ public class GenericCriteriaService {
             );
 
             boolean descending =
-                    "desc".equalsIgnoreCase(sort.getOrder());
+                    DESC.getValue().equalsIgnoreCase(sort.getOrder());
 
             Expression<?> sortExpression = path;
 
@@ -232,7 +232,7 @@ public class GenericCriteriaService {
                 );
             }
 
-            String operator = normalizeOperator(filter.getOperator());
+            FilterOperator filterOperator = normalizeOperator(filter.getOperator());
 
             Path<?> path = resolvePath(
                     root,
@@ -240,16 +240,16 @@ public class GenericCriteriaService {
                     searchCriteria.getFIELD_MAPPINGS()
             );
 
-            switch (operator) {
-                case "isNull" -> predicates.add(
+            switch (filterOperator) {
+                case IS_NULL -> predicates.add(
                         criteriaBuilder.isNull(path)
                 );
 
-                case "isNotNull" -> predicates.add(
+                case IS_NOT_NULL -> predicates.add(
                         criteriaBuilder.isNotNull(path)
                 );
 
-                case "in" -> addInPredicate(
+                case IN -> addInPredicate(
                         criteriaBuilder,
                         predicates,
                         path,
@@ -257,7 +257,7 @@ public class GenericCriteriaService {
                 );
 
                 default -> {
-                    validateFilterValue(filter, operator);
+                    validateFilterValue(filter, filterOperator.getValue());
 
                     addSingleValuePredicate(
                             criteriaBuilder,
@@ -495,47 +495,48 @@ public class GenericCriteriaService {
                 criteriaBuilder.lower(
                         path.as(String.class)
                 );
+        FilterOperator filterOperator = normalizeOperator(filter.getOperator());
 
-        switch (filter.getOperator()) {
-            case "equals" -> predicates.add(
+        switch (filterOperator) {
+            case EQUALS -> predicates.add(
                     criteriaBuilder.equal(field, value)
             );
 
-            case "notEquals" -> predicates.add(
+            case NOT_EQUALS -> predicates.add(
                     criteriaBuilder.or(
                             criteriaBuilder.notEqual(field, value),
                             criteriaBuilder.isNull(path)
                     )
             );
 
-            case "contains" -> predicates.add(
+            case CONTAINS -> predicates.add(
                     criteriaBuilder.like(
                             field,
-                            "%" + value + "%"
+                            LIKE_STR + value + LIKE_STR
                     )
             );
 
-            case "notContains" -> predicates.add(
+            case NOT_CONTAINS -> predicates.add(
                     criteriaBuilder.or(
                             criteriaBuilder.notLike(
                                     field,
-                                    "%" + value + "%"
+                                    LIKE_STR + value + LIKE_STR
                             ),
                             criteriaBuilder.isNull(path)
                     )
             );
 
-            case "startsWith" -> predicates.add(
+            case STARTS_WITH -> predicates.add(
                     criteriaBuilder.like(
                             field,
-                            value + "%"
+                            value + LIKE_STR
                     )
             );
 
-            case "endsWith" -> predicates.add(
+            case ENDS_WITH -> predicates.add(
                     criteriaBuilder.like(
                             field,
-                            "%" + value
+                            LIKE_STR + value
                     )
             );
 
@@ -555,42 +556,43 @@ public class GenericCriteriaService {
         T value = converter.apply(filter.getValue());
 
         Expression<T> field = typedExpression(path);
+        FilterOperator filterOperator = normalizeOperator(filter.getOperator());
 
-        switch (filter.getOperator()) {
-            case "equals" -> predicates.add(
+        switch (filterOperator) {
+            case EQUALS -> predicates.add(
                     criteriaBuilder.equal(field, value)
             );
 
-            case "notEquals" -> predicates.add(
+            case NOT_EQUALS -> predicates.add(
                     criteriaBuilder.or(
                             criteriaBuilder.notEqual(field, value),
                             criteriaBuilder.isNull(path)
                     )
             );
 
-            case "gt" -> predicates.add(
+            case GREATER_THAN -> predicates.add(
                     criteriaBuilder.greaterThan(field, value)
             );
 
-            case "gte" -> predicates.add(
+            case GREATER_THAN_OR_EQUALS -> predicates.add(
                     criteriaBuilder.greaterThanOrEqualTo(
                             field,
                             value
                     )
             );
 
-            case "lt" -> predicates.add(
+            case LESS_THAN -> predicates.add(
                     criteriaBuilder.lessThan(field, value)
             );
 
-            case "lte" -> predicates.add(
+            case LESS_THAN_OR_EQUALS -> predicates.add(
                     criteriaBuilder.lessThanOrEqualTo(
                             field,
                             value
                     )
             );
 
-            case "between" -> {
+            case BETWEEN -> {
                 String valueTo = filter.getValueTo();
 
                 if (valueTo == null || valueTo.isBlank()) {
@@ -631,13 +633,13 @@ public class GenericCriteriaService {
 
         Expression<Boolean> field =
                 typedExpression(path);
-
-        switch (filter.getOperator()) {
-            case "equals" -> predicates.add(
+        FilterOperator filterOperator = normalizeOperator(filter.getOperator());
+        switch (filterOperator) {
+            case EQUALS -> predicates.add(
                     criteriaBuilder.equal(field, value)
             );
 
-            case "notEquals" -> predicates.add(
+            case NOT_EQUALS -> predicates.add(
                     criteriaBuilder.or(
                             criteriaBuilder.notEqual(field, value),
                             criteriaBuilder.isNull(path)
@@ -661,9 +663,9 @@ public class GenericCriteriaService {
 
         Expression<LocalDateTime> field =
                 typedExpression(path);
-
-        switch (filter.getOperator()) {
-            case "equals" -> {
+        FilterOperator filterOperator = normalizeOperator(filter.getOperator());
+        switch (filterOperator) {
+            case EQUALS -> {
                 LocalDateTime startOfDay =
                         value.toLocalDate().atStartOfDay();
 
@@ -684,7 +686,7 @@ public class GenericCriteriaService {
                 );
             }
 
-            case "notEquals" -> {
+            case NOT_EQUALS -> {
                 LocalDateTime startOfDay =
                         value.toLocalDate().atStartOfDay();
 
@@ -706,7 +708,7 @@ public class GenericCriteriaService {
                 );
             }
 
-            case "gt" -> {
+            case GREATER_THAN -> {
                 LocalDateTime endOfDay =
                         value.toLocalDate().atTime(LocalTime.MAX);
 
@@ -718,7 +720,7 @@ public class GenericCriteriaService {
                 );
             }
 
-            case "gte" -> {
+            case GREATER_THAN_OR_EQUALS -> {
                 LocalDateTime startOfDay =
                         value.toLocalDate().atStartOfDay();
 
@@ -730,11 +732,11 @@ public class GenericCriteriaService {
                 );
             }
 
-            case "lt" -> predicates.add(
+            case LESS_THAN -> predicates.add(
                     criteriaBuilder.lessThan(field, value)
             );
 
-            case "lte" -> {
+            case LESS_THAN_OR_EQUALS -> {
                 LocalDateTime endOfDay =
                         value.toLocalDate().atTime(LocalTime.MAX);
 
@@ -746,7 +748,7 @@ public class GenericCriteriaService {
                 );
             }
 
-            case "between" -> {
+            case BETWEEN -> {
                 String valueTo = filter.getValueTo();
 
                 if (valueTo == null || valueTo.isBlank()) {
@@ -829,8 +831,8 @@ public class GenericCriteriaService {
             );
         }
 
-        if (!"true".equalsIgnoreCase(value)
-                && !"false".equalsIgnoreCase(value)) {
+        if (!TRUE_STR.equalsIgnoreCase(value)
+                && !FALSE_STR.equalsIgnoreCase(value)) {
             throw new IllegalArgumentException(
                     "Invalid boolean filter value: " + value
             );
@@ -839,21 +841,26 @@ public class GenericCriteriaService {
         return Boolean.parseBoolean(value);
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings(UNCHECKED_STR)
     private <T> Expression<T> typedExpression(
             Path<?> path
     ) {
         return (Expression<T>) path;
     }
 
-    private String normalizeOperator(String operator) {
+    private FilterOperator normalizeOperator(String operator) {
         if (operator == null || operator.isBlank()) {
             throw new UnsupportedFilterOperatorException(
                     "Filter operator cannot be null or blank"
             );
         }
 
-        return operator.trim();
+        return Arrays.stream(FilterOperator.values())
+                .filter(op -> op.getValue().equals(operator))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Unknown filter operator: " + operator
+                ));
     }
 
     private void validateFilterValue(
@@ -904,7 +911,7 @@ public class GenericCriteriaService {
                         : field;
 
         String[] parts =
-                mappedField.split("\\.");
+                mappedField.split(DOT_SPLIT_STR);
 
         Path<?> path = root;
 
