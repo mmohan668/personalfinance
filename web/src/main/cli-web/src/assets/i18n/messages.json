@@ -18,5 +18,10 @@
     "edit": {
       "systemOnly": "System-generated reference values cannot be edited."
     }
+  },
+  "category": {
+    "delete": {
+      "confirmation": "Are you sure you want to delete the selected categories?"
+    }
   }
 }

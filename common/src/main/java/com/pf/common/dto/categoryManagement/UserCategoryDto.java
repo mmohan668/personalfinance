@@ -20,6 +20,8 @@ public class UserCategoryDto {
 
     private Long userId;
 
+    private Long categoryTypeId;
+
     private String categoryType;
 
     private String categoryName;

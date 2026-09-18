@@ -37,7 +37,7 @@ export class ReferenceValues {
     this.toolbarConfig.editRow = true;
   }
 
-  addRow = async () => {
+  addRow = () => {
     this.dialog
       .open(AdEditReferenceValueDialog, {
         width: '70vw',
@@ -54,7 +54,7 @@ export class ReferenceValues {
   };
 
   deleteRow = () => {
-    if (this.dataGrid.selectedRows.length === 0) {
+    if (this.dataGrid?.selectedRows.length === 0) {
       this._ns.error(this._ms.get('common.delete.noSelection'));
       return;
     }

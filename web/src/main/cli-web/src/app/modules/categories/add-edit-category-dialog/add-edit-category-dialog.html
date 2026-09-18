@@ -1,0 +1,86 @@
+<div class="dialog-container" cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+  <!-- Title Bar -->
+  <div class="dialog-title-bar" cdkDragHandle>
+    <span class="dialog-title">
+      @if (data.mode === MODES.ADD) {
+        Add Category
+      } @else {
+        Edit Category
+      }
+    </span>
+
+    <button mat-icon-button type="button" aria-label="Close" (click)="close()">
+      <span class="material-icons">close</span>
+    </button>
+  </div>
+
+  <!-- Content -->
+  <div class="dialog-content">
+    <form [formGroup]="form" class="dialog-form">
+      <mat-form-field appearance="fill" class="dialog-field">
+        <mat-label>Category Type</mat-label>
+
+        <mat-select formControlName="categoryType" name="categoryType">
+          @for (item of categoryTypes$ | async; track item.value) {
+            <mat-option [value]="item.value">
+              {{ item.label }}
+            </mat-option>
+          }
+        </mat-select>
+
+        @if (_cs.isInvalid(form.get('categoryName'))) {
+          <mat-error>
+            {{ _cs.getValidationMessage(form.get('categoryName'), 'Category Type') }}
+          </mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="dialog-field">
+        <mat-label>Category Name</mat-label>
+
+        <input matInput type="text" name="categoryName" formControlName="categoryName" />
+
+        @if (_cs.isInvalid(form.get('categoryName'))) {
+          <mat-error>
+            {{ _cs.getValidationMessage(form.get('categoryName'), 'Category Name') }}
+          </mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="dialog-field">
+        <mat-label>Category Description</mat-label>
+
+        <input
+          matInput
+          type="text"
+          name="categoryDescription"
+          formControlName="categoryDescription"
+        />
+
+        @if (_cs.isInvalid(form.get('categoryDescription'))) {
+          <mat-error>
+            {{ _cs.getValidationMessage(form.get('categoryDescription'), 'Category Description') }}
+          </mat-error>
+        }
+      </mat-form-field>
+    </form>
+  </div>
+
+  <!-- Actions -->
+  <mat-dialog-actions class="dialog-actions">
+    <button mat-stroked-button type="button" (click)="clear()">Clear</button>
+
+    <span class="action-spacer"></span>
+
+    <button mat-stroked-button type="button" (click)="close()">Close</button>
+
+    <button
+      mat-raised-button
+      type="button"
+      [disabled]="form.invalid || form.pristine"
+      (click)="save()"
+    >
+      Save
+    </button>
+  </mat-dialog-actions>
+</div>
