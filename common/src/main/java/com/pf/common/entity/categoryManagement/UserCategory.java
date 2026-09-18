@@ -60,4 +60,15 @@ public class UserCategory {
     )
     @Builder.Default
     private List<UserSubcategory> subcategories = new ArrayList<>();
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+        active = true;
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
 }

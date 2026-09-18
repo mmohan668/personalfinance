@@ -14,7 +14,8 @@ public interface UserCategoryMapper {
 
     @Mapping(source = "user.id", target = "userId")
     @Mapping(source = "referenceValue.referenceCode", target = "categoryType")
-        UserCategoryDto toDto(UserCategory entity);
+    @Mapping(source = "referenceValue.id", target = "categoryTypeId")
+    UserCategoryDto toDto(UserCategory entity);
 
     @Mapping(source = "userId", target = "user.id")
     @Mapping(target = "subcategories", ignore = true)
