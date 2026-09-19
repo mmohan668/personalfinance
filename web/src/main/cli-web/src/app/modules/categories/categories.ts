@@ -138,8 +138,6 @@ export class Categories {
       this._ns.error(this._ms.get('category.activate.alreadyActive'));
       return;
     }
-    if (this.dataGrid?.selectedRows.some((row) => row.active === true)) {
-    }
     const title = this._ms.get('category.activate.title');
     const message = this.dataGrid?.selectedRows.some((row) => row.active === true)
       ? this._ms.get('category.activate.mixedSelection')
@@ -164,7 +162,9 @@ export class Categories {
             .afterClosed()
             .subscribe((value: string) => {
               if (value) {
-                const ids = this.dataGrid?.selectedRows.map((row) => row.id);
+                const ids = this.dataGrid?.selectedRows
+                  .filter((row) => row.active !== true)
+                  .map((row) => row.id);
                 firstValueFrom(this._cms.activateCategories(ids, value === 'Yes')).then((resp) => {
                   if (resp.success) {
                     this._ns.success(resp.message);
@@ -201,7 +201,9 @@ export class Categories {
       .afterClosed()
       .subscribe((value: boolean) => {
         if (value) {
-          const ids = this.dataGrid?.selectedRows.map((row) => row.id);
+          const ids = this.dataGrid?.selectedRows
+            .filter((row) => row.active === true)
+            .map((row) => row.id);
           firstValueFrom(this._cms.inactivateCategories(ids)).then((resp: ApiResponse) => {
             if (resp.success) {
               this._ns.success(resp.message);

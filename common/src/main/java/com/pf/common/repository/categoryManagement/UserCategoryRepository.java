@@ -1,5 +1,6 @@
 package com.pf.common.repository.categoryManagement;
 
+import com.pf.common.dto.generic.SelectItem;
 import com.pf.common.entity.categoryManagement.UserCategory;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -68,5 +69,21 @@ public interface UserCategoryRepository extends JpaRepository<UserCategory, Long
             @Param("ids") List<Long> ids,
             @Param("updatedBy") String updatedBy,
             @Param("updatedAt") LocalDateTime updatedAt
+    );
+
+    @Transactional(readOnly = true)
+    @Query("""
+            SELECT new com.pf.common.dto.generic.SelectItem(
+                        uc.id,
+                        uc.categoryName
+            )
+            FROM UserCategory uc
+            WHERE uc.user.adminUser.id = :adminUserId
+            AND uc.referenceValue.id = :referenceValueId
+            ORDER BY LOWER(uc.categoryName)
+            """)
+    List<SelectItem> fetchCategoriesByUserId(
+            @Param("adminUserId") Long adminUserId,
+            @Param("referenceValueId") Long referenceValueId
     );
 }

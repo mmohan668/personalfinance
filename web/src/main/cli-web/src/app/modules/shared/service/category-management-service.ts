@@ -1,9 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
-import { SelectItem } from 'primeng/api';
 import { Observable } from 'rxjs';
 import { AppConfigService } from './app-config-service';
-import { ApiResponse } from '../types/types';
+import { ApiResponse, SelectItem } from '../types/types';
 
 @Service()
 export class CategoryManagementService {
@@ -16,6 +15,18 @@ export class CategoryManagementService {
     );
   }
 
+  fetchCategories(referenceValueId: any): Observable<SelectItem[]> {
+    return this.http.get<SelectItem[]>(
+      `${this.config.configValue.apiUrl}/categoryManagement/fetchCategories`,
+      {
+        params: {
+          adminUserId: 1,
+          referenceValueId: referenceValueId,
+        },
+      },
+    );
+  }
+
   saveCategory(category: any): Observable<ApiResponse> {
     return this.http.post<ApiResponse>(
       `${this.config.configValue.apiUrl}/categoryManagement/saveCategory`,
@@ -23,9 +34,23 @@ export class CategoryManagementService {
     );
   }
 
+  saveSubcategory(subcategory: any): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(
+      `${this.config.configValue.apiUrl}/categoryManagement/saveSubcategory`,
+      subcategory,
+    );
+  }
+
   deleteCategories(ids: any[]): Observable<ApiResponse> {
     return this.http.post<ApiResponse>(
       `${this.config.configValue.apiUrl}/categoryManagement/deleteCategories`,
+      ids,
+    );
+  }
+
+  deleteSubcategories(ids: any[]): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(
+      `${this.config.configValue.apiUrl}/categoryManagement/deleteSubcategories`,
       ids,
     );
   }
@@ -45,6 +70,20 @@ export class CategoryManagementService {
   inactivateCategories(ids: any[]): Observable<ApiResponse> {
     return this.http.post<ApiResponse>(
       `${this.config.configValue.apiUrl}/categoryManagement/inactivateCategories`,
+      ids,
+    );
+  }
+
+  activateSubcategories(ids: any[]): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(
+      `${this.config.configValue.apiUrl}/categoryManagement/activateSubcategories`,
+      ids,
+    );
+  }
+
+  inactivateSubcategories(ids: any[]): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(
+      `${this.config.configValue.apiUrl}/categoryManagement/inactivateSubcategories`,
       ids,
     );
   }

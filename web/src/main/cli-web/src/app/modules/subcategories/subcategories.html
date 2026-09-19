@@ -1,7 +1,15 @@
 <app-data-grid
+  #dataGrid
   [gridName]="gridName"
   [gridExportFileName]="gridExportFileName"
   [dataKey]="dataKey"
   [calculateCellValue]="this.calculateCellValue"
   [booleanOptions]="_cs.activeInactiveBooleanOptions"
+  [toolbarConfig]="this.toolbarConfig"
+  [addRow]="this.addRow"
+  [editRow]="this.editRow"
+  [copyRow]="this.copyRow"
+  [deleteRow]="this.deleteRow"
+  [activate]="this.activate"
+  [inactivate]="this.inactivate"
 ></app-data-grid>

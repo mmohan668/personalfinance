@@ -7,10 +7,27 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<ApiResponse> handleNotFound(NoResourceFoundException ex, HttpServletRequest request) {
+        log.warn(
+                "Endpoint not found. Method: {}, URI: {}",
+                request.getMethod(),
+                request.getRequestURI()
+        );
+        ApiResponse response = ApiResponse.builder()
+                .success(false)
+                .message("The requested resource was not found. Please contact system administrator.")
+                .build();
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(response);
+    }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse> handleException(

@@ -1,6 +1,9 @@
+DROP VIEW IF EXISTS v_subcategories_view;
+
 CREATE OR REPLACE VIEW v_subcategories_view AS
 SELECT usc.id,
-       uc.id           AS user_category_id,
+       uc.id             AS user_category_id,
+       ro.id             AS category_type_id,
        ro.reference_code AS category_type,
        uc.category_name,
        uc.category_description,

@@ -45,6 +45,7 @@ public interface ReferenceValueRepository extends JpaRepository<ReferenceValue, 
             )
             FROM ReferenceValue rv
             WHERE rv.referenceObject.refObjName = 'CATEGORY_TYPE'
+            ORDER BY LOWER(rv.referenceCode)
             """)
     List<SelectItem> fetchCategoryTypes();
 }

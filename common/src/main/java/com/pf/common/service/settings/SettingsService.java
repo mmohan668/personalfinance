@@ -1,5 +1,6 @@
 package com.pf.common.service.settings;
 
+import com.google.common.collect.Lists;
 import com.pf.common.dto.generic.SelectItem;
 import com.pf.common.dto.gp.GridFilter;
 import com.pf.common.dto.gp.GridResult;
@@ -22,8 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.pf.common.constants.CommonConstants.SYSTEM;
-import static com.pf.common.constants.CommonConstants.TEST_USER;
+import static com.pf.common.constants.CommonConstants.*;
 import static com.pf.common.constants.FieldConstants.CREATED_BY;
 import static com.pf.common.constants.FieldConstants.ID;
 import static com.pf.common.enums.FilterOperator.IN;
@@ -140,7 +140,10 @@ public class SettingsService extends BaseService {
         if (ids == null || ids.isEmpty()) {
             return failure("No reference values selected for deletion.");
         }
-        referenceValueRepository.deleteAllById(ids);
+        List<List<Long>> chunks = Lists.partition(ids, CHUNK_SIZE);
+        for (List<Long> chunk : chunks) {
+            referenceValueRepository.deleteAllByIdInBatch(chunk);
+        }
         return success("Reference value(s) deleted successfully.");
     }
 

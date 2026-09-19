@@ -4,10 +4,9 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { CommonService } from '../../shared/service/common-service';
 import { CategoryManagementService } from '../../shared/service/category-management-service';
 import { BehaviorSubject, firstValueFrom } from 'rxjs';
-import { SelectItem } from 'primeng/api';
 import { NotificationService } from '../../shared/service/notification-service';
 import { MODES } from '../../shared/enums';
-import { ApiResponse } from '../../shared/types/types';
+import { ApiResponse, SelectItem } from '../../shared/types/types';
 import { CommonImportsModule } from '../../shared/common-imports/common-imports-module';
 
 @Component({
@@ -30,7 +29,6 @@ export class AddEditCategoryDialog {
   constructor() {
     this.fetchCategoryTypes();
     this.createForm();
-    console.log(this.data);
   }
 
   fetchCategoryTypes() {
@@ -44,8 +42,6 @@ export class AddEditCategoryDialog {
       'categoryType',
       new FormControl(this.data.mode === MODES.EDIT ? this.data.selectedRow.categoryTypeId : '', [
         Validators.required,
-        Validators.minLength(3),
-        Validators.maxLength(100),
       ]),
     );
     this.form.addControl(
@@ -97,9 +93,6 @@ export class AddEditCategoryDialog {
   }
 
   close(): void {
-    this._ns.close();
-    this.dialogRef.close({
-      action: 'close',
-    });
+    this.dialogRef.close();
   }
 }

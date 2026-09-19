@@ -8,6 +8,10 @@
       "noSelection": "Please select at least one record to edit.",
       "singleSelection": "Please select only one record to edit."
     },
+    "copy": {
+      "noSelection": "Please select at least one record to copy.",
+      "singleSelection": "Please select only one record to copy."
+    },
     "activate": {
       "noSelection": "Please select at least one record to activate."
     },
@@ -40,6 +44,24 @@
       "alreadyInactive": "Please select only active categories to inactivate.",
       "mixedSelection": "Some of the selected categories are already inactive. Only the active categories will be inactivated, along with their associated subcategories. Do you want to continue?",
       "confirmation": "Are you sure you want to inactivate the selected categories and their associated subcategories?"
+    }
+  },
+  "subcategory": {
+    "delete": {
+      "title": "Delete Confirmation",
+      "confirmation": "Are you sure you want to delete the selected subcategories?"
+    },
+    "activate": {
+      "title": "Activate Confirmation",
+      "alreadyActive": "Please select only inactive subcategories to activate.",
+      "mixedSelection": "Some of the selected subcategories are already active. Only the inactive subcategories will be activated. Do you want to continue?",
+      "confirmation": "Are you sure you want to activate the selected subcategories?"
+    },
+    "inactivate": {
+      "title": "Inactivate Confirmation",
+      "alreadyInactive": "Please select only active subcategories to inactivate.",
+      "mixedSelection": "Some of the selected subcategories are already inactive. Only the active subcategories will be inactivated. Do you want to continue?",
+      "confirmation": "Are you sure you want to inactivate the selected subcategories?"
     }
   }
 }
