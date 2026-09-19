@@ -45,6 +45,10 @@ export class ToolBar {
   @Input()
   deleteRow!: () => void;
   @Input()
+  activate!: () => void;
+  @Input()
+  inactivate!: () => void;
+  @Input()
   saveGridSetting!: () => void;
   @Input()
   resetGridSettings!: () => void;

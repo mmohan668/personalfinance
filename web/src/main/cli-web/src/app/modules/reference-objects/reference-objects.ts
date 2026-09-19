@@ -18,6 +18,6 @@ export class ReferenceObjects {
   private _cs = inject(CommonService);
 
   constructor() {
-    this.toolbarConfig = this._cs.toolbarConfig;
+    this.toolbarConfig = this._cs.toolbarConfig();
   }
 }

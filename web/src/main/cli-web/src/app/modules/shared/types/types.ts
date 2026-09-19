@@ -65,6 +65,8 @@ export interface ToolbarConfig {
   copyRow: boolean | false;
   deleteRow: boolean | false;
   editRow: boolean | false;
+  activate: boolean | false;
+  inactivate: boolean | false;
 }
 
 export interface SelectItem {

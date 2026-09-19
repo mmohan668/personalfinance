@@ -23,8 +23,15 @@ export class CommonService {
     return value !== undefined && value !== null && value !== '';
   }
 
-  get toolbarConfig(): ToolbarConfig {
-    return { addRow: false, copyRow: false, deleteRow: false, editRow: false };
+  toolbarConfig(value: boolean = false): ToolbarConfig {
+    return {
+      addRow: value,
+      copyRow: value,
+      deleteRow: value,
+      editRow: value,
+      activate: value,
+      inactivate: value,
+    };
   }
 
   /**

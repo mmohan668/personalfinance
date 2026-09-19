@@ -8,7 +8,6 @@ import { SelectItem } from 'primeng/api';
 import { NotificationService } from '../../shared/service/notification-service';
 import { MODES } from '../../shared/enums';
 import { ApiResponse } from '../../shared/types/types';
-import { SettingsService } from '../../shared/service/settings-service';
 import { CommonImportsModule } from '../../shared/common-imports/common-imports-module';
 
 @Component({
@@ -23,7 +22,6 @@ export class AddEditCategoryDialog {
   form: FormGroup = new FormGroup({});
   public _cs = inject(CommonService);
   private _cms = inject(CategoryManagementService);
-  private _ss = inject(SettingsService);
   public categoryTypesSubject = new BehaviorSubject<SelectItem[]>([]);
   categoryTypes$ = this.categoryTypesSubject.asObservable();
   private _ns = inject(NotificationService);
@@ -36,13 +34,9 @@ export class AddEditCategoryDialog {
   }
 
   fetchCategoryTypes() {
-    firstValueFrom(this._cms.fetchCategoryTypes())
-      .then((res: SelectItem[]) => {
-        this.categoryTypesSubject.next(res);
-      })
-      .catch((error) => {
-        console.log('Error while fetchCategoryTypes:', error);
-      });
+    firstValueFrom(this._cms.fetchCategoryTypes()).then((res: SelectItem[]) => {
+      this.categoryTypesSubject.next(res);
+    });
   }
 
   createForm(): void {
@@ -78,19 +72,15 @@ export class AddEditCategoryDialog {
       categoryName: this.form.value.categoryName.trim(),
       categoryDescription: this.form.value.categoryDescription.trim(),
     };
-    firstValueFrom(this._cms.saveCategory(category))
-      .then((response: ApiResponse) => {
-        console.log(response.success + ' : ' + response.message);
-        if (response.success) {
-          this._ns.success(response.message);
-          this.dialogRef.close(true);
-        } else {
-          this._ns.error(response.message);
-        }
-      })
-      .catch((error) => {
-        console.log('Error while saveReferenceValue', error);
-      });
+    firstValueFrom(this._cms.saveCategory(category)).then((response: ApiResponse) => {
+      console.log(response.success + ' : ' + response.message);
+      if (response.success) {
+        this._ns.success(response.message);
+        this.dialogRef.close(true);
+      } else {
+        this._ns.error(response.message);
+      }
+    });
   }
 
   clear(): void {

@@ -3,7 +3,6 @@ package com.pf.warehouse.controller;
 import com.pf.common.dto.generic.SelectItem;
 import com.pf.common.dto.gp.GridResult;
 import com.pf.common.dto.gp.SearchCriteria;
-import com.pf.common.dto.settings.ReferenceObjectDto;
 import com.pf.common.dto.settings.ReferenceValueDto;
 import com.pf.common.entity.generic.ApiResponse;
 import com.pf.common.service.settings.SettingsService;
@@ -20,28 +19,28 @@ public class SettingsController {
     private final SettingsService settingsService;
 
     @PostMapping("/fetchReferenceObjectGridData")
-    private GridResult fetchReferenceObjectGridData(@RequestBody SearchCriteria searchCriteria) {
+    public GridResult fetchReferenceObjectGridData(@RequestBody SearchCriteria searchCriteria) {
         return settingsService.fetchReferenceObjectGridData(searchCriteria);
     }
 
     @PostMapping("/fetchReferenceValueGridData")
-    private GridResult fetchReferenceValueGridData(@RequestBody SearchCriteria searchCriteria) {
+    public GridResult fetchReferenceValueGridData(@RequestBody SearchCriteria searchCriteria) {
         return settingsService.fetchReferenceValueGridData(searchCriteria);
     }
 
     @PostMapping("/saveReferenceValue")
-    private ApiResponse saveReferenceValue(
+    public ApiResponse saveReferenceValue(
             @Valid @RequestBody ReferenceValueDto referenceValueDto) {
         return settingsService.saveReferenceValue(referenceValueDto);
     }
 
     @PostMapping("/deleteReferenceValue")
-    private ApiResponse deleteReferenceValue(@RequestBody List<Long> ids) {
+    public ApiResponse deleteReferenceValue(@RequestBody List<Long> ids) {
         return settingsService.deleteReferenceValue(ids);
     }
 
     @GetMapping("/fetchCategoryTypes")
-    private List<SelectItem> fetchCategoryTypes() {
+    public List<SelectItem> fetchCategoryTypes() {
         return settingsService.fetchCategoryTypes();
     }
 }

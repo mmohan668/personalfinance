@@ -25,6 +25,7 @@ import { CommonService } from '../service/common-service';
 import { CommonImportsModule } from '../common-imports/common-imports-module';
 import { ColumnFilterComponent } from '../column-filter/column-filter';
 import { AppConfigService } from '../service/app-config-service';
+import { NotificationService } from '../service/notification-service';
 
 @Component({
   selector: 'app-data-grid',
@@ -40,6 +41,7 @@ export class DataGrid implements OnInit {
   public _cs = inject(CommonService);
   private _gs = inject(GridService);
   private _cp = inject(CurrencyPipe);
+  private _ns = inject(NotificationService);
   /* =========================================================
       TOOLBAR ACTIONS
       ========================================================= */
@@ -55,6 +57,12 @@ export class DataGrid implements OnInit {
 
   @Input()
   deleteRow!: () => void;
+
+  @Input()
+  activate!: () => void;
+
+  @Input()
+  inactivate!: () => void;
 
   @Input()
   toolbarConfig!: ToolbarConfig;
@@ -159,7 +167,7 @@ export class DataGrid implements OnInit {
 
   ngOnInit(): void {
     if (!this.toolbarConfig) {
-      this.toolbarConfig = this._cs.toolbarConfig;
+      this.toolbarConfig = this._cs.toolbarConfig();
     }
     this.fetchGridColumns();
   }
@@ -920,18 +928,13 @@ export class DataGrid implements OnInit {
       gridColumnJson: JSON.stringify(columnsToSave),
       userId: 1,
     };
-    try {
-      const apiResponse: ApiResponse = await firstValueFrom(
-        this._gs.saveGridSetting(gridPersonalizationDto),
-      );
-      if (apiResponse.success) {
-        console.log(apiResponse.message);
+    firstValueFrom(this._gs.saveGridSetting(gridPersonalizationDto)).then((resp: ApiResponse) => {
+      if (resp.success) {
+        this._ns.success(resp.message);
       } else {
-        console.error(apiResponse.message);
+        this._ns.error(resp.message);
       }
-    } catch (error) {
-      console.error('Error calling saveGridSetting API:', error);
-    }
+    });
   };
 
   resetGridSettings = async () => {
@@ -940,19 +943,13 @@ export class DataGrid implements OnInit {
       gridColumnJson: null,
       userId: 1,
     };
-    try {
-      const apiResponse: ApiResponse = await firstValueFrom(
-        this._gs.resetGridSettings(gridPersonalizationDto),
-      );
-      if (apiResponse.success) {
-        console.log(apiResponse.message);
-        this.fetchGridColumns();
+    firstValueFrom(this._gs.resetGridSettings(gridPersonalizationDto)).then((resp: ApiResponse) => {
+      if (resp.success) {
+        this._ns.success(resp.message);
       } else {
-        console.error(apiResponse.message);
+        this._ns.error(resp.message);
       }
-    } catch (error) {
-      console.error('Error calling resetGridSettings API:', error);
-    }
+    });
   };
 
   clearSelection = () => {
