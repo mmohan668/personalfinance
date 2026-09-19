@@ -17,7 +17,7 @@ import com.pf.common.repository.categoryManagement.UserCategoryRepository;
 import com.pf.common.repository.categoryManagement.UserSubcategoryRepository;
 import com.pf.common.repository.setting.ReferenceValueRepository;
 import com.pf.common.repository.user.UserRepository;
-import com.pf.common.service.criteria.GenericCriteriaService;
+import com.pf.common.service.generic.BaseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -32,8 +32,7 @@ import java.util.List;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class CategoryManagementService {
-    private final GenericCriteriaService criteriaService;
+public class CategoryManagementService extends BaseService {
     private final UserCategoryMapper userCategoryMapper;
     private final SubcategoryViewMapper subcategoryViewMapper;
     private final ReferenceValueRepository referenceValueRepository;
@@ -47,22 +46,22 @@ public class CategoryManagementService {
         searchCriteria.setFIELD_MAPPINGS(UserCategoryDto.FIELD_MAPPINGS);
         long totalRecords = 0;
         if (!searchCriteria.isLoadAllData()) {
-            totalRecords = criteriaService.getCountBySearchCriteria(UserCategory.class, searchCriteria);
+            totalRecords = getCountBySearchCriteria(UserCategory.class, searchCriteria);
         }
-        List<UserCategoryDto> recordDetails = userCategoryMapper.toDtoList(criteriaService.getDataBySearchCriteria(UserCategory.class, searchCriteria));
+        List<UserCategoryDto> recordDetails = userCategoryMapper.toDtoList(getDataBySearchCriteria(UserCategory.class, searchCriteria));
         log.debug("fetchCategoriesGridData: totalRecords: {}", totalRecords);
-        return GridResult.builder().totalRecords(totalRecords).recordDetails(recordDetails).build();
+        return gridResult(totalRecords, recordDetails);
     }
 
     public GridResult fetchSubcategoriesGridData(SearchCriteria searchCriteria) {
         log.debug("fetchSubcategoriesGridData: {}", searchCriteria);
         long totalRecords = 0;
         if (!searchCriteria.isLoadAllData()) {
-            totalRecords = criteriaService.getCountBySearchCriteria(SubcategoryView.class, searchCriteria);
+            totalRecords = getCountBySearchCriteria(SubcategoryView.class, searchCriteria);
         }
-        List<SubcategoryViewDto> recordDetails = subcategoryViewMapper.toDtoList(criteriaService.getDataBySearchCriteria(SubcategoryView.class, searchCriteria));
+        List<SubcategoryViewDto> recordDetails = subcategoryViewMapper.toDtoList(getDataBySearchCriteria(SubcategoryView.class, searchCriteria));
         log.debug("fetchSubcategoriesGridData: totalRecords: {}", totalRecords);
-        return GridResult.builder().totalRecords(totalRecords).recordDetails(recordDetails).build();
+        return gridResult(totalRecords, recordDetails);
     }
 
     public List<SelectItem> fetchCategoryTypes() {
@@ -75,24 +74,17 @@ public class CategoryManagementService {
         ReferenceValue referenceValue = referenceValueRepository.findById(userCategoryDto.getCategoryTypeId()).orElse(null);
         if (referenceValue == null) {
             log.warn("saveCategory: referenceValue is null");
-            return ApiResponse.builder()
-                    .success(false)
-                    .message("Selected category type not found")
-                    .build();
+            return failure("Selected category type not found");
         }
         User user = userRepository.findByUsername(TEST_USER);
         if (user == null) {
             log.warn("addCategory: user not found for username = {}", TEST_USER);
-            return ApiResponse.builder()
-                    .success(false)
-                    .message("User not found")
-                    .build();
+            return failure("User not found");
         }
         if (userCategoryDto.getId() == null) {
             log.debug("addCategory: userCategoryDto = {}", userCategoryDto);
             UserCategory userCategory = userCategoryMapper.toEntity(userCategoryDto);
             userCategory.setCreatedBy(TEST_USER);
-
             if (
                     userCategoryRepository.countByCategoryTypeAndNameAndUserId(
                             userCategoryDto.getCategoryTypeId(),
@@ -104,10 +96,7 @@ public class CategoryManagementService {
                         user.getUsername(),
                         userCategory.getCategoryName()
                 );
-                return ApiResponse.builder()
-                        .success(false)
-                        .message("Category already exists")
-                        .build();
+                return failure("Category already exists");
             }
             userCategory.setUser(user);
             userCategory.setReferenceValue(referenceValue);
@@ -117,10 +106,7 @@ public class CategoryManagementService {
             UserCategory userCategory = userCategoryRepository.findById(userCategoryDto.getId()).orElse(null);
             if (userCategory == null) {
                 log.warn("updateCategory: userCategory not found for category name = {}", userCategoryDto.getCategoryName());
-                return ApiResponse.builder()
-                        .success(false)
-                        .message("Category not found to update")
-                        .build();
+                return failure("Category not found to update");
             }
             if (userCategoryRepository.countByCategoryTypeAndNameAndUserIdAndIdNot(
                     userCategoryDto.getCategoryTypeId(),
@@ -133,10 +119,7 @@ public class CategoryManagementService {
                         user.getUsername(),
                         userCategoryDto.getCategoryName()
                 );
-                return ApiResponse.builder()
-                        .success(false)
-                        .message("Category already exists")
-                        .build();
+                return failure("Category already exists");
             }
             userCategory.setReferenceValue(referenceValue);
             userCategory.setUser(user);
@@ -145,10 +128,7 @@ public class CategoryManagementService {
             userCategory.setUpdatedBy(TEST_USER);
             userCategoryRepository.save(userCategory);
         }
-        return ApiResponse.builder()
-                .success(true)
-                .message("Category saved successfully")
-                .build();
+        return success("Category saved successfully");
     }
 
     @Transactional
@@ -156,33 +136,21 @@ public class CategoryManagementService {
         log.debug("deleteCategories: {}", ids);
         if (ids == null || ids.isEmpty()) {
             log.warn("deleteCategories: ids is empty");
-            return ApiResponse.builder()
-                    .success(false)
-                    .message("Ids is empty")
-                    .build();
+            return failure("Ids is empty");
         }
         if (userSubcategoryRepository.countByCategoryId(ids) > 0) {
             log.warn("Delete category failed, Subcategories associated with selected categories");
-            return ApiResponse.builder()
-                    .success(false)
-                    .message("Delete category failed. Subcategories associated with selected categories")
-                    .build();
+            return failure("Delete category failed. Subcategories associated with selected categories");
         }
         userCategoryRepository.deleteAllByIdInBatch(ids);
-        return ApiResponse.builder()
-                .success(true)
-                .message("Categories deleted successfully")
-                .build();
+        return success("Categories deleted successfully");
     }
 
     @Transactional
     public ApiResponse activateCategories(List<Long> ids, boolean activateSubcategories) {
         if (ids == null || ids.isEmpty()) {
             log.warn("activateCategories: ids are empty");
-            return ApiResponse.builder()
-                    .success(false)
-                    .message("IDs are empty")
-                    .build();
+            return failure("IDs are empty");
         }
         log.info("Activating {} categories", ids.size());
         LocalDateTime updatedTime = LocalDateTime.now();
@@ -197,20 +165,14 @@ public class CategoryManagementService {
         }
         log.info("Activated categories count: {}", categoryCount);
         log.info("Activated subcategories count: {}", subcategoryCount);
-        return ApiResponse.builder()
-                .success(true)
-                .message("Categories have been activated successfully.")
-                .build();
+        return success("Categories have been activated successfully.");
     }
 
     @Transactional
     public ApiResponse inactivateCategories(List<Long> ids) {
         if (ids == null || ids.isEmpty()) {
             log.warn("inactivateCategories: ids is empty");
-            return ApiResponse.builder()
-                    .success(false)
-                    .message("IDs are empty")
-                    .build();
+            return failure("IDs are empty");
         }
         log.info("Inactivating {} categories", ids.size());
         LocalDateTime updatedTime = LocalDateTime.now();
@@ -223,9 +185,6 @@ public class CategoryManagementService {
         }
         log.info("Inactivated categories count: {}", categoryCount);
         log.info("Inactivated subcategories count: {}", subcategoryCount);
-        return ApiResponse.builder()
-                .success(true)
-                .message("Categories and their associated subcategories have been inactivated successfully.")
-                .build();
+        return success("Categories and their associated subcategories have been inactivated successfully.");
     }
 }

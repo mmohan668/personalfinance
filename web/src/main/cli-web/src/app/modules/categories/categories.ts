@@ -163,15 +163,17 @@ export class Categories {
             })
             .afterClosed()
             .subscribe((value: string) => {
-              const ids = this.dataGrid?.selectedRows.map((row) => row.id);
-              firstValueFrom(this._cms.activateCategories(ids, value === 'Yes')).then((resp) => {
-                if (resp.success) {
-                  this._ns.success(resp.message);
-                  this.dataGrid?.refreshGrid();
-                } else {
-                  this._ns.error(resp.message);
-                }
-              });
+              if (value) {
+                const ids = this.dataGrid?.selectedRows.map((row) => row.id);
+                firstValueFrom(this._cms.activateCategories(ids, value === 'Yes')).then((resp) => {
+                  if (resp.success) {
+                    this._ns.success(resp.message);
+                    this.dataGrid?.refreshGrid();
+                  } else {
+                    this._ns.error(resp.message);
+                  }
+                });
+              }
             });
         }
       });

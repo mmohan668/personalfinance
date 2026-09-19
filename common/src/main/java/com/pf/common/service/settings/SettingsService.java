@@ -14,7 +14,7 @@ import com.pf.common.mapper.settings.ReferenceObjectMapper;
 import com.pf.common.mapper.settings.ReferenceValueMapper;
 import com.pf.common.repository.setting.ReferenceObjectRepository;
 import com.pf.common.repository.setting.ReferenceValueRepository;
-import com.pf.common.service.criteria.GenericCriteriaService;
+import com.pf.common.service.generic.BaseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -33,8 +33,7 @@ import static com.pf.common.constants.EntityConstants.REFERENCE_OBJECT;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class SettingsService {
-    private final GenericCriteriaService criteriaService;
+public class SettingsService extends BaseService {
     private final ReferenceObjectMapper referenceObjectMapper;
     private final ReferenceValueMapper referenceValueMapper;
     private final ReferenceObjectRepository referenceObjectRepository;
@@ -49,10 +48,10 @@ public class SettingsService {
                 .build();
         searchCriteria.getFilterList().add(gridFilter);
         searchCriteria.getSortList().add(new GridSort(ID, ASC.getValue()));
-        long totalRecords = criteriaService.getCountBySearchCriteria(ReferenceObject.class, searchCriteria);
-        List<ReferenceObjectDto> recordDetails = referenceObjectMapper.toDtoList(criteriaService.getDataBySearchCriteria(ReferenceObject.class, searchCriteria));
+        long totalRecords = getCountBySearchCriteria(ReferenceObject.class, searchCriteria);
+        List<ReferenceObjectDto> recordDetails = referenceObjectMapper.toDtoList(getDataBySearchCriteria(ReferenceObject.class, searchCriteria));
         log.debug("fetchReferenceObjectGridData: totalRecords: {}", totalRecords);
-        return GridResult.builder().totalRecords(totalRecords).recordDetails(recordDetails).build();
+        return gridResult(totalRecords, recordDetails);
     }
 
     public GridResult fetchReferenceValueGridData(SearchCriteria searchCriteria) {
@@ -66,10 +65,10 @@ public class SettingsService {
         searchCriteria.getSortList().add(new GridSort(ID, ASC.getValue()));
         searchCriteria.setFetchPaths(List.of(REFERENCE_OBJECT));
         searchCriteria.setFIELD_MAPPINGS(ReferenceValueDto.FIELD_MAPPINGS);
-        long totalRecords = criteriaService.getCountBySearchCriteria(ReferenceValue.class, searchCriteria);
-        List<ReferenceValueDto> recordDetails = referenceValueMapper.toDtoList(criteriaService.getDataBySearchCriteria(ReferenceValue.class, searchCriteria));
+        long totalRecords = getCountBySearchCriteria(ReferenceValue.class, searchCriteria);
+        List<ReferenceValueDto> recordDetails = referenceValueMapper.toDtoList(getDataBySearchCriteria(ReferenceValue.class, searchCriteria));
         log.debug("fetchReferenceValuesGridData: totalRecords: {}", totalRecords);
-        return GridResult.builder().totalRecords(totalRecords).recordDetails(recordDetails).build();
+        return gridResult(totalRecords, recordDetails);
     }
 
     @Transactional
@@ -81,10 +80,7 @@ public class SettingsService {
                     "saveReferenceValue: Reference object not found. refObjNameId = {}",
                     referenceValueDto.getRefObjNameId()
             );
-            return ApiResponse.builder()
-                    .success(false)
-                    .message("Reference object not found.")
-                    .build();
+            return failure("Reference object not found.");
         }
         ReferenceValue referenceValue;
         if (referenceValueDto.getId() == null) {
@@ -103,10 +99,7 @@ public class SettingsService {
                         referenceObject.getRefObjName(),
                         referenceValue.getReferenceCode()
                 );
-                return ApiResponse.builder()
-                        .success(false)
-                        .message("Reference code already exists for the selected reference object.")
-                        .build();
+                return failure("Reference code already exists for the selected reference object.");
             }
             referenceValue.setCreatedBy(TEST_USER);
         } else {
@@ -117,10 +110,7 @@ public class SettingsService {
                         "saveReferenceValue: Reference value not found. referenceValueId = {}",
                         referenceValueDto.getId()
                 );
-                return ApiResponse.builder()
-                        .success(false)
-                        .message("Reference value not found.")
-                        .build();
+                return failure("Reference value not found.");
             }
             if (referenceValueRepository
                     .countByReferenceObjectIdAndReferenceCodeAndIdNot(
@@ -133,10 +123,7 @@ public class SettingsService {
                         referenceValueDto.getReferenceCode(),
                         referenceObject.getRefObjName()
                 );
-                return ApiResponse.builder()
-                        .success(false)
-                        .message("Reference code already exists for the selected reference object.")
-                        .build();
+                return failure("Reference code already exists for the selected reference object.");
             }
             referenceValue.setReferenceObject(referenceObject);
             referenceValue.setReferenceCode(referenceValueDto.getReferenceCode());
@@ -144,26 +131,17 @@ public class SettingsService {
             referenceValue.setUpdatedBy(TEST_USER);
         }
         referenceValueRepository.save(referenceValue);
-        return ApiResponse.builder()
-                .success(true)
-                .message("Reference value saved successfully.")
-                .build();
+        return success("Reference value saved successfully.");
     }
 
     @Transactional
     public ApiResponse deleteReferenceValue(List<Long> ids) {
         log.debug("deleteReferenceValue: {}", ids);
         if (ids == null || ids.isEmpty()) {
-            return ApiResponse.builder()
-                    .success(false)
-                    .message("No reference values selected for deletion.")
-                    .build();
+            return failure("No reference values selected for deletion.");
         }
         referenceValueRepository.deleteAllById(ids);
-        return ApiResponse.builder()
-                .success(true)
-                .message("Reference value(s) deleted successfully.")
-                .build();
+        return success("Reference value(s) deleted successfully.");
     }
 
     public List<SelectItem> fetchCategoryTypes() {

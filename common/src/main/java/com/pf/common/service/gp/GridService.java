@@ -8,6 +8,7 @@ import com.pf.common.mapper.gp.GridPersonalizationMapper;
 import com.pf.common.repository.gp.GridColumnRepository;
 import com.pf.common.repository.gp.GridNameRepository;
 import com.pf.common.repository.gp.GridPersonalizationRepository;
+import com.pf.common.service.generic.BaseService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +22,7 @@ import java.util.List;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class GridService {
+public class GridService extends BaseService {
 
     private final GridColumnRepository gridColumnRepository;
     private final GridColumnMapper gridColumnMapper;
@@ -109,10 +110,7 @@ public class GridService {
                     gridName,
                     userId
             );
-            return ApiResponse.builder()
-                    .success(false)
-                    .message("Grid setting save failed: Grid not found")
-                    .build();
+            return failure("Grid setting save failed: Grid not found");
         }
         GridPersonalization gridPersonalization =
                 gridPersonalizationRepository
@@ -145,10 +143,7 @@ public class GridService {
                 gridName,
                 userId
         );
-        return ApiResponse.builder()
-                .success(true)
-                .message("Grid setting saved successfully")
-                .build();
+        return success("Grid setting saved successfully");
     }
 
     @Transactional
@@ -171,10 +166,7 @@ public class GridService {
                     gridName,
                     userId
             );
-            return ApiResponse.builder()
-                    .success(true)
-                    .message("No personalized grid setting found to reset")
-                    .build();
+            return failure("No personalized grid setting found to reset");
         }
         log.info(
                 "Grid personalization reset successfully for gridName: {}, userId: {}. " +
@@ -183,9 +175,6 @@ public class GridService {
                 userId,
                 deleteCount
         );
-        return ApiResponse.builder()
-                .success(true)
-                .message("Grid setting reset successfully")
-                .build();
+        return success("Grid setting reset successfully");
     }
 }

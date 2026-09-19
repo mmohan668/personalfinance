@@ -1,4 +1,4 @@
-package com.pf.common.service.criteria;
+package com.pf.common.service.generic;
 
 import com.pf.common.dto.gp.GridFilter;
 import com.pf.common.dto.gp.GridSort;
