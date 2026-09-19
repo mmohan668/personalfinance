@@ -8,6 +8,7 @@ import com.pf.common.dto.gp.GridResult;
 import com.pf.common.dto.gp.SearchCriteria;
 import com.pf.common.entity.categoryManagement.SubcategoryView;
 import com.pf.common.entity.categoryManagement.UserCategory;
+import com.pf.common.entity.categoryManagement.UserSubcategory;
 import com.pf.common.entity.generic.ApiResponse;
 import com.pf.common.entity.settings.ReferenceValue;
 import com.pf.common.entity.userManagement.User;
@@ -186,5 +187,99 @@ public class CategoryManagementService extends BaseService {
         log.info("Inactivated categories count: {}", categoryCount);
         log.info("Inactivated subcategories count: {}", subcategoryCount);
         return success("Categories and their associated subcategories have been inactivated successfully.");
+    }
+
+    public List<SelectItem> fetchCategories(Long adminUserId, Long referenceValueId) {
+        return userCategoryRepository.fetchCategoriesByUserId(adminUserId, referenceValueId);
+    }
+
+    @Transactional
+    public ApiResponse saveSubcategory(SubcategoryViewDto subcategoryViewDto) {
+        log.debug("saveSubcategory: {}", subcategoryViewDto);
+        UserCategory userCategory = userCategoryRepository.findById(subcategoryViewDto.getUserCategoryId()).orElse(null);
+        if (userCategory == null) {
+            log.warn("saveSubcategory: userCategory is null");
+            return failure("Selected category not found");
+        }
+        if (subcategoryViewDto.getId() == null) {
+            if (userSubcategoryRepository.countByCategoryIdAndSubcategoryName(
+                    subcategoryViewDto.getUserCategoryId(),
+                    subcategoryViewDto.getSubcategoryName()
+            ) > 0) {
+                return failure("Subcategory already exists in the selected category");
+            }
+            UserSubcategory userSubcategory = new UserSubcategory();
+            userSubcategory.setUserCategory(userCategory);
+            userSubcategory.setSubcategoryName(subcategoryViewDto.getSubcategoryName());
+            userSubcategory.setSubcategoryDescription(subcategoryViewDto.getSubcategoryDescription());
+            userSubcategory.setCreatedBy(TEST_USER);
+            userSubcategoryRepository.save(userSubcategory);
+        } else {
+            UserSubcategory userSubcategory = userSubcategoryRepository.findById(subcategoryViewDto.getId()).orElse(null);
+            if (userSubcategory == null) {
+                log.warn("saveSubcategory: userSubcategory is null");
+                return failure("Subcategory not found");
+            }
+            if (userSubcategoryRepository.countByCategoryIdAndSubcategoryNameAndIdNot(
+                    subcategoryViewDto.getUserCategoryId(),
+                    subcategoryViewDto.getSubcategoryName(),
+                    subcategoryViewDto.getId()
+            ) > 0) {
+                return failure("Subcategory already exists in the selected category");
+            }
+            userSubcategory.setUserCategory(userCategory);
+            userSubcategory.setSubcategoryName(subcategoryViewDto.getSubcategoryName());
+            userSubcategory.setSubcategoryDescription(subcategoryViewDto.getSubcategoryDescription());
+            userSubcategory.setUpdatedBy(TEST_USER);
+        }
+        return success("Subcategory saved successfully");
+    }
+
+    @Transactional
+    public ApiResponse deleteSubcategories(List<Long> ids) {
+        log.debug("deleteSubcategories: {}", ids);
+        if (ids == null || ids.isEmpty()) {
+            log.warn("deleteSubcategories: ids is empty");
+            return failure("Ids is empty");
+        }
+        List<List<Long>> chunks = Lists.partition(ids, CHUNK_SIZE);
+        for (List<Long> chunk : chunks) {
+            userSubcategoryRepository.deleteAllByIdInBatch(chunk);
+        }
+        return success("Categories deleted successfully");
+    }
+
+    @Transactional
+    public ApiResponse activateSubcategories(List<Long> ids) {
+        log.debug("activateSubcategories: {}", ids);
+        if (ids == null || ids.isEmpty()) {
+            log.warn("activateSubcategories: ids is empty");
+            return failure("Ids are empty");
+        }
+        long count = 0;
+        LocalDateTime updatedTime = LocalDateTime.now();
+        List<List<Long>> chunks = Lists.partition(ids, CHUNK_SIZE);
+        for (List<Long> chunk : chunks) {
+            count += userSubcategoryRepository.activateSubcategories(chunk, TEST_USER, updatedTime);
+        }
+        log.info("Activated {} subcategories", count);
+        return success("Subcategories activated successfully");
+    }
+
+    @Transactional
+    public ApiResponse inactivateSubcategories(List<Long> ids) {
+        log.debug("deactivateSubcategories: {}", ids);
+        if (ids == null || ids.isEmpty()) {
+            log.warn("deactivateSubcategories: ids is empty");
+            return failure("Ids are empty");
+        }
+        long count = 0;
+        LocalDateTime updatedTime = LocalDateTime.now();
+        List<List<Long>> chunks = Lists.partition(ids, CHUNK_SIZE);
+        for (List<Long> chunk : chunks) {
+            count += userSubcategoryRepository.inactivateSubcategories(chunk, TEST_USER, updatedTime);
+        }
+        log.info("Inactivated {} subcategories", count);
+        return success("Subcategories inactivated successfully");
     }
 }

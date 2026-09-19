@@ -9,5 +9,5 @@ public interface CommonConstants {
 
     String SYSTEM = "SYSTEM";
     String TEST_USER = "testuser";
-    int CHUNK_SIZE = 1000;
+    int CHUNK_SIZE = 900;
 }

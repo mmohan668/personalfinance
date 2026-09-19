@@ -2,7 +2,7 @@
   <!-- Title Bar -->
   <div class="dialog-title-bar" cdkDragHandle>
     <span class="dialog-title">
-      {{ data.mode + ' Category' }}
+      {{ data.mode + ' Subcategory' }}
     </span>
 
     <button mat-icon-button type="button" aria-label="Close" (click)="close()">
@@ -16,7 +16,12 @@
       <mat-form-field appearance="fill" class="dialog-field">
         <mat-label>Category Type</mat-label>
 
-        <mat-select formControlName="categoryType" name="categoryType">
+        <mat-select
+          #categoryType
+          formControlName="categoryType"
+          name="categoryType"
+          (valueChange)="this.fetchCategories(categoryType.value)"
+        >
           @for (item of categoryTypes$ | async; track item.value) {
             <mat-option [value]="item.value">
               {{ item.label }}
@@ -24,38 +29,61 @@
           }
         </mat-select>
 
-        @if (_cs.isInvalid(form.get('categoryName'))) {
+        @if (_cs.isInvalid(form.get('categoryType'))) {
           <mat-error>
-            {{ _cs.getValidationMessage(form.get('categoryName'), 'Category Type') }}
+            {{ _cs.getValidationMessage(form.get('categoryType'), 'Category Type') }}
           </mat-error>
         }
       </mat-form-field>
 
       <mat-form-field appearance="fill" class="dialog-field">
-        <mat-label>Category Name</mat-label>
+        <mat-label>Category</mat-label>
 
-        <input matInput type="text" name="categoryName" formControlName="categoryName" />
+        <mat-select formControlName="category" name="category">
+          @for (item of categories$ | async; track item.value) {
+            <mat-option [value]="item.value">
+              {{ item.label }}
+            </mat-option>
+          }
+        </mat-select>
 
-        @if (_cs.isInvalid(form.get('categoryName'))) {
+        @if (_cs.isInvalid(form.get('category'))) {
           <mat-error>
-            {{ _cs.getValidationMessage(form.get('categoryName'), 'Category Name') }}
+            {{ _cs.getValidationMessage(form.get('category'), 'Category') }}
           </mat-error>
         }
       </mat-form-field>
 
       <mat-form-field appearance="fill" class="dialog-field">
-        <mat-label>Category Description</mat-label>
+        <mat-label>Subcategory Name</mat-label>
+
+        <input matInput type="text" name="subcategoryName" formControlName="subcategoryName" />
+
+        @if (_cs.isInvalid(form.get('subcategoryName'))) {
+          <mat-error>
+            {{ _cs.getValidationMessage(form.get('subcategoryName'), 'Subcategory Name') }}
+          </mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="dialog-field">
+        <mat-label>Subcategory Description</mat-label>
 
         <input
           matInput
           type="text"
-          name="categoryDescription"
-          formControlName="categoryDescription"
+          name="subcategoryDescription"
+          formControlName="subcategoryDescription"
         />
 
-        @if (_cs.isInvalid(form.get('categoryDescription'))) {
+        @if (_cs.isInvalid(form.get('subcategoryDescription'))) {
           <mat-error>
-            {{ _cs.getValidationMessage(form.get('categoryDescription'), 'Category Description') }}
+            {{
+              _cs.getValidationMessage(
+                form.get('subcategoryDescription'),
+                'Subcategory Description'
+              )
+            }}
           </mat-error>
         }
       </mat-form-field>

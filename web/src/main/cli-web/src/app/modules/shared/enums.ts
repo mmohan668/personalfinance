@@ -85,6 +85,7 @@ export enum DATA_FIELDS {
 
 export enum MODES {
   ADD = 'Add',
+  COPY = 'Copy',
   EDIT = 'Edit',
   DELETE = 'Delete',
 }

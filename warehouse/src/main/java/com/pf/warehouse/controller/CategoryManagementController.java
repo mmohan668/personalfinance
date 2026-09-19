@@ -1,5 +1,6 @@
 package com.pf.warehouse.controller;
 
+import com.pf.common.dto.categoryManagement.SubcategoryViewDto;
 import com.pf.common.dto.categoryManagement.UserCategoryDto;
 import com.pf.common.dto.generic.SelectItem;
 import com.pf.common.dto.gp.GridResult;
@@ -37,9 +38,19 @@ public class CategoryManagementController {
         return categoryManagementService.saveCategory(userCategoryDto);
     }
 
+    @PostMapping("/saveSubcategory")
+    public ApiResponse saveSubcategory(@RequestBody SubcategoryViewDto subcategoryViewDto) {
+        return categoryManagementService.saveSubcategory(subcategoryViewDto);
+    }
+
     @PostMapping("/deleteCategories")
     public ApiResponse deleteCategories(@RequestBody List<Long> ids) {
         return categoryManagementService.deleteCategories(ids);
+    }
+
+    @PostMapping("/deleteSubcategories")
+    public ApiResponse deleteSubcategories(@RequestBody List<Long> ids) {
+        return categoryManagementService.deleteSubcategories(ids);
     }
 
     @PostMapping("/activateCategories")
@@ -50,5 +61,20 @@ public class CategoryManagementController {
     @PostMapping("/inactivateCategories")
     public ApiResponse inactivateCategories(@RequestBody List<Long> ids) {
         return categoryManagementService.inactivateCategories(ids);
+    }
+
+    @GetMapping("/fetchCategories")
+    public List<SelectItem> fetchCategories(@RequestParam Long adminUserId, @RequestParam Long referenceValueId) {
+        return categoryManagementService.fetchCategories(adminUserId, referenceValueId);
+    }
+
+    @PostMapping("/activateSubcategories")
+    public ApiResponse activateSubcategories(@RequestBody List<Long> ids) {
+        return categoryManagementService.activateSubcategories(ids);
+    }
+
+    @PostMapping("/inactivateSubcategories")
+    public ApiResponse inactivateSubcategories(@RequestBody List<Long> ids) {
+        return categoryManagementService.inactivateSubcategories(ids);
     }
 }

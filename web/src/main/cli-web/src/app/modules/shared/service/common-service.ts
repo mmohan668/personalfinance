@@ -17,6 +17,7 @@ export class CommonService {
 
   constructor() {
     this.dialog.afterOpened.subscribe(() => this._ns.close());
+    this.dialog.afterAllClosed.subscribe(() => this._ns.close());
   }
 
   isNotNull(value: any) {
