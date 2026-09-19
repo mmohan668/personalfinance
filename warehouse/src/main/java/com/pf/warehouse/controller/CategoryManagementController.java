@@ -28,17 +28,27 @@ public class CategoryManagementController {
     }
 
     @GetMapping("/fetchCategoryTypes")
-    private List<SelectItem> fetchCategoryTypes() {
+    public List<SelectItem> fetchCategoryTypes() {
         return categoryManagementService.fetchCategoryTypes();
     }
 
     @PostMapping("/saveCategory")
-    private ApiResponse saveCategory(@RequestBody UserCategoryDto userCategoryDto) {
+    public ApiResponse saveCategory(@RequestBody UserCategoryDto userCategoryDto) {
         return categoryManagementService.saveCategory(userCategoryDto);
     }
 
     @PostMapping("/deleteCategories")
-    private ApiResponse deleteCategories(@RequestBody List<Long> ids) {
+    public ApiResponse deleteCategories(@RequestBody List<Long> ids) {
         return categoryManagementService.deleteCategories(ids);
+    }
+
+    @PostMapping("/activateCategories")
+    public ApiResponse activateCategories(@RequestBody List<Long> ids, @RequestParam boolean activateSubcategories) {
+        return categoryManagementService.activateCategories(ids, activateSubcategories);
+    }
+
+    @PostMapping("/inactivateCategories")
+    public ApiResponse inactivateCategories(@RequestBody List<Long> ids) {
+        return categoryManagementService.inactivateCategories(ids);
     }
 }

@@ -9,6 +9,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { MatRadioModule } from '@angular/material/radio';
 import { PaginatorModule } from 'primeng/paginator';
 import { InputTextModule } from 'primeng/inputtext';
 import { DatePickerModule } from 'primeng/datepicker';
@@ -42,6 +43,7 @@ import { CdkDrag, CdkDragHandle } from '@angular/cdk/drag-drop';
     CdkDrag,
     CdkDragHandle,
     ReactiveFormsModule,
+    MatRadioModule,
   ],
   providers: [CurrencyPipe, DatePipe],
   exports: [
@@ -67,6 +69,7 @@ import { CdkDrag, CdkDragHandle } from '@angular/cdk/drag-drop';
     CdkDrag,
     CdkDragHandle,
     ReactiveFormsModule,
+    MatRadioModule,
   ],
 })
 export class CommonImportsModule {}

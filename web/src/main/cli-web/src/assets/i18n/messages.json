@@ -7,6 +7,12 @@
     "edit": {
       "noSelection": "Please select at least one record to edit.",
       "singleSelection": "Please select only one record to edit."
+    },
+    "activate": {
+      "noSelection": "Please select at least one record to activate."
+    },
+    "inactivate": {
+      "noSelection": "Please select at least one record to inactivate."
     }
   },
   "referenceValue": {
@@ -22,6 +28,18 @@
   "category": {
     "delete": {
       "confirmation": "Are you sure you want to delete the selected categories?"
+    },
+    "activate": {
+      "title": "Activate Confirmation",
+      "alreadyActive": "Please select only inactive categories to activate.",
+      "mixedSelection": "Some of the selected categories are already active. Only the inactive categories will be activated. Do you want to continue?",
+      "confirmation": "Are you sure you want to activate the selected categories?"
+    },
+    "inactivate": {
+      "title": "Inactivate Confirmation",
+      "alreadyInactive": "Please select only active categories to inactivate.",
+      "mixedSelection": "Some of the selected categories are already inactive. Only the active categories will be inactivated, along with their associated subcategories. Do you want to continue?",
+      "confirmation": "Are you sure you want to inactivate the selected categories and their associated subcategories?"
     }
   }
 }

@@ -14,7 +14,6 @@ public interface GridPersonalizationRepository extends JpaRepository<GridPersona
     @Transactional(readOnly = true)
     Optional<GridPersonalization> findByGridName_NameAndUserId(String name, Long userId);
 
-    @Transactional
     @Modifying(clearAutomatically = true,  flushAutomatically = true)
     int deleteByGridName_NameAndUserId(String name, Long userId);
 }

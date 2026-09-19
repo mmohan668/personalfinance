@@ -36,6 +36,32 @@
     </button>
   }
 
+  @if (toolbarConfig.activate) {
+    <!-- Activate -->
+    <button
+      mat-icon-button
+      class="toolbar-border"
+      type="button"
+      title="Activate"
+      (click)="activate()"
+    >
+      <mat-icon>toggle_on</mat-icon>
+    </button>
+  }
+
+  @if (toolbarConfig.inactivate) {
+    <!-- Inactivate -->
+    <button
+      mat-icon-button
+      class="toolbar-border"
+      type="button"
+      title="Inactivate"
+      (click)="inactivate()"
+    >
+      <mat-icon>toggle_off</mat-icon>
+    </button>
+  }
+
   <!-- =======================================================
        SETTINGS
        ======================================================= -->

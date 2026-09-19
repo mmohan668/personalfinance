@@ -29,4 +29,23 @@ export class CategoryManagementService {
       ids,
     );
   }
+
+  activateCategories(ids: any[], activateSubcategories: boolean = false): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(
+      `${this.config.configValue.apiUrl}/categoryManagement/activateCategories`,
+      ids,
+      {
+        params: {
+          activateSubcategories: activateSubcategories,
+        },
+      },
+    );
+  }
+
+  inactivateCategories(ids: any[]): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(
+      `${this.config.configValue.apiUrl}/categoryManagement/inactivateCategories`,
+      ids,
+    );
+  }
 }

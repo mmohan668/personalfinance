@@ -31,7 +31,7 @@ export class ReferenceValues {
   private _ns = inject(NotificationService);
 
   constructor() {
-    this.toolbarConfig = this._cs.toolbarConfig;
+    this.toolbarConfig = this._cs.toolbarConfig();
     this.toolbarConfig.addRow = true;
     this.toolbarConfig.deleteRow = true;
     this.toolbarConfig.editRow = true;
@@ -68,7 +68,7 @@ export class ReferenceValues {
       : this._ms.get('referenceValue.delete.confirmation');
     this.dialog
       .open(ConfirmationDialog, {
-        width: '60vw',
+        width: 'auto',
         data: {
           title: title,
           message: message,
@@ -81,18 +81,14 @@ export class ReferenceValues {
           const ids = this.dataGrid.selectedRows
             .filter((row) => row.createdBy !== SYSTEM)
             .map((row) => row.id);
-          firstValueFrom(this._ss.deleteReferenceValue(ids))
-            .then((response) => {
-              if (response.success) {
-                this._ns.success(response.message);
-                this.dataGrid.refreshGrid();
-              } else {
-                this._ns.error(response.message);
-              }
-            })
-            .catch((error) => {
-              console.log('Error while deleteReferenceValue:', error);
-            });
+          firstValueFrom(this._ss.deleteReferenceValue(ids)).then((response) => {
+            if (response.success) {
+              this._ns.success(response.message);
+              this.dataGrid.refreshGrid();
+            } else {
+              this._ns.error(response.message);
+            }
+          });
         }
       });
   };

@@ -11,13 +11,14 @@ import Aura from '@primeuix/themes/aura';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { loadingInterceptor } from './modules/shared/interceptor/loading.interceptor';
 import { MessageService } from './modules/shared/service/message-service';
+import { errorInterceptor } from './modules/shared/interceptor/error-interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideAppInitializer(() => {
       return inject(MessageService).load();
     }),
-    provideHttpClient(withInterceptors([loadingInterceptor])),
+    provideHttpClient(withInterceptors([loadingInterceptor, errorInterceptor])),
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
     providePrimeNG({

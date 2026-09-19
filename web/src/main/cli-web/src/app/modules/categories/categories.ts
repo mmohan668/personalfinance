@@ -16,6 +16,7 @@ import { CategoryManagementService } from '../shared/service/category-management
 import { NotificationService } from '../shared/service/notification-service';
 import { MessageService } from '../shared/service/message-service';
 import { ConfirmationDialog } from '../shared/confirmation-dialog/confirmation-dialog';
+import { ChoiceDialog } from '../shared/choice-dialog/choice-dialog';
 
 @Component({
   imports: [DataGrid],
@@ -40,10 +41,8 @@ export class Categories {
   protected _ns = inject(NotificationService);
 
   constructor() {
-    this.toolbaConfig = this._cs.toolbarConfig;
-    this.toolbaConfig.addRow = true;
-    this.toolbaConfig.editRow = true;
-    this.toolbaConfig.deleteRow = true;
+    this.toolbaConfig = this._cs.toolbarConfig(true);
+    this.toolbaConfig.copyRow = false;
   }
 
   calculateCellValue = (rowData: any, col: GridColumn) => {
@@ -107,7 +106,7 @@ export class Categories {
     const message = this._ms.get('category.delete.confirmation');
     this.dialog
       .open(ConfirmationDialog, {
-        width: '60vw',
+        width: 'auto',
         data: {
           title: title,
           message: message,
@@ -118,18 +117,97 @@ export class Categories {
       .subscribe((value: boolean) => {
         if (value) {
           const ids = this.dataGrid?.selectedRows.map((row) => row.id);
-          firstValueFrom(this._cms.deleteCategories(ids))
-            .then((resp: ApiResponse) => {
-              if (resp.success) {
-                this._ns.success(resp.message);
-                this.dataGrid?.refreshGrid();
-              } else {
-                this._ns.error(resp.message);
-              }
+          firstValueFrom(this._cms.deleteCategories(ids)).then((resp: ApiResponse) => {
+            if (resp.success) {
+              this._ns.success(resp.message);
+              this.dataGrid?.refreshGrid();
+            } else {
+              this._ns.error(resp.message);
+            }
+          });
+        }
+      });
+  };
+
+  activate = () => {
+    if (this.dataGrid?.selectedRows.length === 0) {
+      this._ns.error(this._ms.get('common.activate.noSelection'));
+      return;
+    }
+    if (this.dataGrid?.selectedRows.every((row) => row.active === true)) {
+      this._ns.error(this._ms.get('category.activate.alreadyActive'));
+      return;
+    }
+    if (this.dataGrid?.selectedRows.some((row) => row.active === true)) {
+    }
+    const title = this._ms.get('category.activate.title');
+    const message = this.dataGrid?.selectedRows.some((row) => row.active === true)
+      ? this._ms.get('category.activate.mixedSelection')
+      : this._ms.get('category.activate.confirmation');
+    this.dialog
+      .open(ConfirmationDialog, {
+        width: 'auto',
+        data: { title: title, message: message },
+        disableClose: true,
+      })
+      .afterClosed()
+      .subscribe((value: boolean) => {
+        if (value) {
+          this.dialog
+            .open(ChoiceDialog, {
+              width: 'auto',
+              data: {
+                title: 'Confirmation',
+                message: 'Do you want to activate subcategories as well?',
+              },
             })
-            .catch((error) => {
-              console.log('Error while deleteCategories: ', error);
+            .afterClosed()
+            .subscribe((value: string) => {
+              const ids = this.dataGrid?.selectedRows.map((row) => row.id);
+              firstValueFrom(this._cms.activateCategories(ids, value === 'Yes')).then((resp) => {
+                if (resp.success) {
+                  this._ns.success(resp.message);
+                  this.dataGrid?.refreshGrid();
+                } else {
+                  this._ns.error(resp.message);
+                }
+              });
             });
+        }
+      });
+  };
+
+  inactivate = () => {
+    if (this.dataGrid?.selectedRows.length === 0) {
+      this._ns.error(this._ms.get('common.inactivate.noSelection'));
+      return;
+    }
+    if (this.dataGrid?.selectedRows.every((row) => row.active === false)) {
+      this._ns.error(this._ms.get('category.inactivate.alreadyInactive'));
+      return;
+    }
+    const title = this._ms.get('category.inactivate.title');
+    const message = this.dataGrid?.selectedRows.some((row) => row.active === false)
+      ? this._ms.get('category.inactivate.mixedSelection')
+      : this._ms.get('category.inactivate.confirmation');
+    this.dialog
+      .open(ConfirmationDialog, {
+        width: 'auto',
+        data: { title: title, message: message },
+        disableClose: true,
+      })
+      .afterClosed()
+      .subscribe((value: boolean) => {
+        if (value) {
+          const ids = this.dataGrid?.selectedRows.map((row) => row.id);
+          firstValueFrom(this._cms.inactivateCategories(ids)).then((resp: ApiResponse) => {
+            if (resp.success) {
+              this._ns.success(resp.message);
+              this.dataGrid?.refreshGrid();
+            } else {
+              this._ns.error(resp.message);
+            }
+          });
         }
       });
   };

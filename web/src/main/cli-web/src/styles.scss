@@ -644,3 +644,17 @@ body {
 .notification-overlay-pane {
   z-index: 10001 !important;
 }
+
+.mat-mdc-radio-button
+  .mdc-radio__native-control:enabled:checked
+  + .mdc-radio__background
+  > .mdc-radio__outer-circle {
+  border-color: #4caf50 !important;
+}
+
+.mat-mdc-radio-button
+  .mdc-radio__native-control:enabled:checked
+  + .mdc-radio__background
+  > .mdc-radio__inner-circle {
+  background-color: #4caf50 !important;
+}

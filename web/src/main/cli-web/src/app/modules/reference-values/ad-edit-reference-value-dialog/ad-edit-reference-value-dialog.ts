@@ -35,13 +35,9 @@ export class AdEditReferenceValueDialog {
   }
 
   fetchCategoryTypes() {
-    firstValueFrom(this._ss.fetchCategoryTypes())
-      .then((res: SelectItem[]) => {
-        this.categoryTypesSubject.next(res);
-      })
-      .catch((error) => {
-        console.log('Error while fetchCategoryTypes:', error);
-      });
+    firstValueFrom(this._ss.fetchCategoryTypes()).then((res: SelectItem[]) => {
+      this.categoryTypesSubject.next(res);
+    });
   }
 
   createForm(): void {
@@ -77,19 +73,15 @@ export class AdEditReferenceValueDialog {
       referenceCode: this.form.value.referenceCode.trim(),
       referenceCodeDescription: this.form.value.referenceCodeDescription.trim(),
     };
-    firstValueFrom(this._ss.saveReferenceValue(referenceValue))
-      .then((response: ApiResponse) => {
-        console.log(response.success + ' : ' + response.message);
-        if (response.success) {
-          this._ns.success(response.message);
-          this.dialogRef.close();
-        } else {
-          this._ns.error(response.message);
-        }
-      })
-      .catch((error) => {
-        console.log('Error while saveReferenceValue', error);
-      });
+    firstValueFrom(this._ss.saveReferenceValue(referenceValue)).then((response: ApiResponse) => {
+      console.log(response.success + ' : ' + response.message);
+      if (response.success) {
+        this._ns.success(response.message);
+        this.dialogRef.close();
+      } else {
+        this._ns.error(response.message);
+      }
+    });
   }
 
   clear(): void {
