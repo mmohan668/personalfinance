@@ -53,4 +53,9 @@ public class SettingsController {
     public List<SelectItem> fetchLocations() {
         return settingsService.fetchLocations();
     }
+
+    @GetMapping("/fetchIdByReferenceCodeAndRefObjName")
+    public Long fetchIdByReferenceCodeAndRefObjName(@RequestParam String referenceCode, @RequestParam String refObjName) {
+        return settingsService.fetchIdByReferenceCodeAndRefObjName(referenceCode, refObjName);
+    }
 }

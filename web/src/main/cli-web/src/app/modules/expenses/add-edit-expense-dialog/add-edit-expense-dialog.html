@@ -37,7 +37,14 @@
       <mat-form-field appearance="fill" class="dialog-field">
         <mat-label>Amount</mat-label>
 
-        <input matInput type="number" name="amount" formControlName="amount" />
+        <input
+          matInput
+          type="text"
+          name="amount"
+          formControlName="amount"
+          inputmode="decimal"
+          (input)="_cs.onAmountInput($event, 'amount', form)"
+        />
 
         @if (_cs.isInvalid(form.get('amount'))) {
           <mat-error>

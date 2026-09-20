@@ -1,6 +1,6 @@
 import { inject, Service } from '@angular/core';
 import { ToolbarConfig } from '../types/types';
-import { AbstractControl } from '@angular/forms';
+import { AbstractControl, FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { NotificationService } from './notification-service';
 
@@ -87,5 +87,48 @@ export class CommonService {
     }
 
     return `${fieldName} is invalid`;
+  }
+
+  onAmountInput(event: Event, controlName: string, form: FormGroup): void {
+    const input = event.target as HTMLInputElement;
+
+    let value = input.value;
+
+    // Allow only numbers, '-' and '.'
+    value = value.replace(/[^0-9.-]/g, '');
+
+    // '-' is allowed only at the beginning
+    if (value.includes('-')) {
+      value = '-' + value.replace(/-/g, '');
+    }
+
+    // Allow only one '.'
+    const firstDotIndex = value.indexOf('.');
+    if (firstDotIndex !== -1) {
+      value =
+        value.substring(0, firstDotIndex + 1) +
+        value.substring(firstDotIndex + 1).replace(/\./g, '');
+    }
+
+    // Allow maximum 4 digits after '.'
+    const decimalIndex = value.indexOf('.');
+    if (decimalIndex !== -1) {
+      value =
+        value.substring(0, decimalIndex + 1) + value.substring(decimalIndex + 1, decimalIndex + 5);
+    }
+
+    input.value = value;
+
+    form.get(controlName)?.setValue(value, {
+      emitEvent: false,
+    });
+  }
+
+  formatDateOnly(date: Date): string | null {
+    if (!date) {
+      return null;
+    }
+
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
   }
 }
