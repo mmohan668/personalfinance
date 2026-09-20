@@ -18,5 +18,5 @@ public interface ReferenceObjectRepository extends JpaRepository<ReferenceObject
             )
             FROM ReferenceObject rv
             """)
-    List<SelectItem> fetchCategoryTypes();
+    List<SelectItem> fetchRefObjNames();
 }

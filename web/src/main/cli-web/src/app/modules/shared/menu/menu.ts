@@ -113,7 +113,7 @@ export class Menu {
    * Parent menus expanded by default.
    */
   readonly expandedItems = signal<Set<string>>(
-    new Set(['Expense Management', 'Category Management', 'Settings']),
+    new Set(['Financial Transaction', 'Category Management', 'Settings']),
   );
 
   readonly currentUrl = signal(this.router.url);

@@ -8,6 +8,7 @@ import { NotificationService } from '../../shared/service/notification-service';
 import { MODES } from '../../shared/enums';
 import { ApiResponse, SelectItem } from '../../shared/types/types';
 import { CommonImportsModule } from '../../shared/common-imports/common-imports-module';
+import { SettingsService } from '../../shared/service/settings-service';
 
 @Component({
   imports: [CommonImportsModule],
@@ -21,6 +22,7 @@ export class AddEditCategoryDialog {
   form: FormGroup = new FormGroup({});
   public _cs = inject(CommonService);
   private _cms = inject(CategoryManagementService);
+  private _ss = inject(SettingsService);
   public categoryTypesSubject = new BehaviorSubject<SelectItem[]>([]);
   categoryTypes$ = this.categoryTypesSubject.asObservable();
   private _ns = inject(NotificationService);
@@ -32,7 +34,7 @@ export class AddEditCategoryDialog {
   }
 
   fetchCategoryTypes() {
-    firstValueFrom(this._cms.fetchCategoryTypes()).then((res: SelectItem[]) => {
+    firstValueFrom(this._ss.fetchCategoryTypes()).then((res: SelectItem[]) => {
       this.categoryTypesSubject.next(res);
     });
   }

@@ -1,6 +1,10 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, inject, ViewChild } from '@angular/core';
 import { DataGrid } from '../shared/data-grid/data-grid';
-import { DATA_FIELDS, GRID_EXPORT_FILE_NAMES, GRID_NAMES } from '../shared/enums';
+import { DATA_FIELDS, GRID_EXPORT_FILE_NAMES, GRID_NAMES, MODES } from '../shared/enums';
+import { CommonService } from '../shared/service/common-service';
+import { ToolbarConfig } from '../shared/types/types';
+import { MatDialog } from '@angular/material/dialog';
+import { AddEditExpenseDialog } from './add-edit-expense-dialog/add-edit-expense-dialog';
 
 @Component({
   imports: [DataGrid],
@@ -10,7 +14,26 @@ import { DATA_FIELDS, GRID_EXPORT_FILE_NAMES, GRID_NAMES } from '../shared/enums
 })
 export class Expenses {
   @ViewChild('dataGrid') dataGrid!: DataGrid;
+  private dialog = inject(MatDialog);
   protected readonly dataKey = DATA_FIELDS.ID;
   protected readonly gridName = GRID_NAMES.EXPENSES_GRID;
   protected readonly gridExportFileName = GRID_EXPORT_FILE_NAMES.EXPENSES_GRID_EFN;
+  public _cs = inject(CommonService);
+  toolbarConfig!: ToolbarConfig;
+
+  constructor() {
+    this.toolbarConfig = this._cs.toolbarConfig();
+    this.toolbarConfig.addRow = true;
+  }
+
+  addRow = () => {
+    this.dialog.open(AddEditExpenseDialog, {
+      width: '70vw',
+      maxWidth: '70vw',
+      data: {
+        mode: MODES.ADD,
+      },
+      disableClose: true,
+    });
+  };
 }

@@ -79,3 +79,14 @@ export interface ConfirmationDialogData {
   message: string;
   isNotification: boolean | false;
 }
+
+export interface FinancialTransactionDto {
+  id: number;
+  amount: number;
+  transactionAt: any;
+  transactionTypeId: number;
+  categoryId: number;
+  subcategoryId: number;
+  locationId: number;
+  remarks: string;
+}

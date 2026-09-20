@@ -65,10 +65,6 @@ public class CategoryManagementService extends BaseService {
         return gridResult(totalRecords, recordDetails);
     }
 
-    public List<SelectItem> fetchCategoryTypes() {
-        return referenceValueRepository.fetchCategoryTypes();
-    }
-
     @Transactional
     public ApiResponse saveCategory(UserCategoryDto userCategoryDto) {
         log.debug("saveCategory: {}", userCategoryDto);
@@ -191,6 +187,14 @@ public class CategoryManagementService extends BaseService {
 
     public List<SelectItem> fetchCategories(Long adminUserId, Long referenceValueId) {
         return userCategoryRepository.fetchCategoriesByUserId(adminUserId, referenceValueId);
+    }
+
+    public List<SelectItem> fetchSubcategoriesByCategory(Long categoryId) {
+        return userSubcategoryRepository.fetchSubcategoriesByCategory(categoryId);
+    }
+
+    public List<SelectItem> fetchCategoriesByReferenceCode(Long adminUserId, String referenceCode) {
+        return userCategoryRepository.fetchCategoriesByReferenceCode(adminUserId, referenceCode);
     }
 
     @Transactional

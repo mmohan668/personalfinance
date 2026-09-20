@@ -27,6 +27,8 @@ import static com.pf.common.constants.CommonConstants.*;
 import static com.pf.common.constants.FieldConstants.CREATED_BY;
 import static com.pf.common.constants.FieldConstants.ID;
 import static com.pf.common.enums.FilterOperator.IN;
+import static com.pf.common.enums.RefObjectNames.CATEGORY_TYPE;
+import static com.pf.common.enums.RefObjectNames.LOCATION;
 import static com.pf.common.enums.SortOrder.ASC;
 import static com.pf.common.constants.EntityConstants.REFERENCE_OBJECT;
 
@@ -147,7 +149,15 @@ public class SettingsService extends BaseService {
         return success("Reference value(s) deleted successfully.");
     }
 
+    public List<SelectItem> fetchRefObjNames() {
+        return referenceObjectRepository.fetchRefObjNames();
+    }
+
     public List<SelectItem> fetchCategoryTypes() {
-        return referenceObjectRepository.fetchCategoryTypes();
+        return referenceValueRepository.fetchReferenceValuesByRefObjName(String.valueOf(CATEGORY_TYPE));
+    }
+
+    public List<SelectItem> fetchLocations() {
+        return referenceValueRepository.fetchReferenceValuesByRefObjName(String.valueOf(LOCATION));
     }
 }

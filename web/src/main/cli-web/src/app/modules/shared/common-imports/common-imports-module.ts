@@ -17,6 +17,8 @@ import { OverlayModule } from '@angular/cdk/overlay';
 import { SelectModule } from 'primeng/select';
 import { MatDialogModule } from '@angular/material/dialog';
 import { CdkDrag, CdkDragHandle } from '@angular/cdk/drag-drop';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 
 @NgModule({
   declarations: [],
@@ -44,6 +46,8 @@ import { CdkDrag, CdkDragHandle } from '@angular/cdk/drag-drop';
     CdkDragHandle,
     ReactiveFormsModule,
     MatRadioModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
   ],
   providers: [CurrencyPipe, DatePipe],
   exports: [
@@ -70,6 +74,8 @@ import { CdkDrag, CdkDragHandle } from '@angular/cdk/drag-drop';
     CdkDragHandle,
     ReactiveFormsModule,
     MatRadioModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
   ],
 })
 export class CommonImportsModule {}

@@ -27,6 +27,29 @@ export class CategoryManagementService {
     );
   }
 
+  fetchCategoriesByReferenceCode(referenceCode: string): Observable<SelectItem[]> {
+    return this.http.get<SelectItem[]>(
+      `${this.config.configValue.apiUrl}/categoryManagement/fetchCategoriesByReferenceCode`,
+      {
+        params: {
+          adminUserId: 1,
+          referenceCode: referenceCode,
+        },
+      },
+    );
+  }
+
+  fetchSubcategoriesByCategory(categoryId: string): Observable<SelectItem[]> {
+    return this.http.get<SelectItem[]>(
+      `${this.config.configValue.apiUrl}/categoryManagement/fetchSubcategoriesByCategory`,
+      {
+        params: {
+          categoryId: categoryId,
+        },
+      },
+    );
+  }
+
   saveCategory(category: any): Observable<ApiResponse> {
     return this.http.post<ApiResponse>(
       `${this.config.configValue.apiUrl}/categoryManagement/saveCategory`,
