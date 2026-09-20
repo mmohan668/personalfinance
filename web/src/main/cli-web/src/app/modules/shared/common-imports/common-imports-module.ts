@@ -47,7 +47,6 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
     ReactiveFormsModule,
     MatRadioModule,
     MatDatepickerModule,
-    MatNativeDateModule,
   ],
   providers: [CurrencyPipe, DatePipe],
   exports: [
@@ -75,7 +74,6 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
     ReactiveFormsModule,
     MatRadioModule,
     MatDatepickerModule,
-    MatNativeDateModule,
   ],
 })
 export class CommonImportsModule {}
