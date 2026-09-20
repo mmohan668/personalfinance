@@ -1,6 +1,7 @@
 package com.pf.common.exception.handler;
 
 import com.pf.common.entity.generic.ApiResponse;
+import com.pf.common.exception.ResourceNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -23,6 +24,23 @@ public class GlobalExceptionHandler {
         ApiResponse response = ApiResponse.builder()
                 .success(false)
                 .message("The requested resource was not found. Please contact system administrator.")
+                .build();
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(response);
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ApiResponse> handleResourceNotFound(ResourceNotFoundException ex, HttpServletRequest request) {
+        log.error(
+                "ResourceNotFoundException occurred. Method: {}, URI: {}",
+                request.getMethod(),
+                request.getRequestURI(),
+                ex
+        );
+        ApiResponse response = ApiResponse.builder()
+                .success(false)
+                .message(ex.getMessage())
                 .build();
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
