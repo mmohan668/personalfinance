@@ -5,10 +5,12 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { CategoryManagementService } from '../../shared/service/category-management-service';
 import { CommonService } from '../../shared/service/common-service';
 import { BehaviorSubject, firstValueFrom } from 'rxjs';
-import { SelectItem } from '../../shared/types/types';
+import { ApiResponse, FinancialTransactionDto, SelectItem } from '../../shared/types/types';
 import { SettingsService } from '../../shared/service/settings-service';
-import { CATEGORY_TYPES, FORM_CONTROLES, MODES } from '../../shared/enums';
+import { CATEGORY_TYPES, FORM_CONTROLES, MODES, REF_OBJ_NAMES } from '../../shared/enums';
 import { EMPTY } from '../../shared/constants';
+import { FinancialTransactionsService } from '../../shared/service/financial-transactions-service';
+import { NotificationService } from '../../shared/service/notification-service';
 
 @Component({
   imports: [CommonImportsModule],
@@ -22,6 +24,8 @@ export class AddEditExpenseDialog {
   private _cms = inject(CategoryManagementService);
   public _cs = inject(CommonService);
   private _ss = inject(SettingsService);
+  private _fts = inject(FinancialTransactionsService);
+  private _ns = inject(NotificationService);
   protected categoriesSubject = new BehaviorSubject<SelectItem[]>([]);
   protected categories$ = this.categoriesSubject.asObservable();
   protected subcategoriesSubject = new BehaviorSubject<SelectItem[]>([]);
@@ -30,11 +34,13 @@ export class AddEditExpenseDialog {
   protected locations$ = this.locationsSubject.asObservable();
   maxDate = new Date();
   form: FormGroup = new FormGroup({});
+  categoryTypeId!: any;
 
   constructor() {
     this.fetchCategories();
     this.fetchLocations();
     this.createForm();
+    this.fetchCategoryTypeId();
   }
 
   fetchCategories() {
@@ -43,6 +49,17 @@ export class AddEditExpenseDialog {
         this.categoriesSubject.next(resp);
       },
     );
+  }
+
+  fetchCategoryTypeId() {
+    firstValueFrom(
+      this._ss.fetchIdByReferenceCodeAndRefObjName(
+        CATEGORY_TYPES.EXPENSE,
+        REF_OBJ_NAMES.CATEGORY_TYPE,
+      ),
+    ).then((resp: any) => {
+      this.categoryTypeId = resp;
+    });
   }
 
   fetchLocations() {
@@ -87,9 +104,7 @@ export class AddEditExpenseDialog {
     );
     this.form.addControl(
       FORM_CONTROLES.LOCATION,
-      new FormControl(this.data.mode === MODES.ADD ? EMPTY : this.data.selectedRow.locationId, [
-        Validators.required,
-      ]),
+      new FormControl(this.data.mode === MODES.ADD ? EMPTY : this.data.selectedRow.locationId),
     );
     this.form.addControl(
       FORM_CONTROLES.REMARKS,
@@ -107,5 +122,24 @@ export class AddEditExpenseDialog {
     }
   }
 
-  save() {}
+  save() {
+    const financialTransactionDto: FinancialTransactionDto = {
+      transactionAt: this._cs.formatDateOnly(this.form.value.expenseDate),
+      amount: this.form.value.amount,
+      categoryId: this.form.value.category,
+      subcategoryId: this.form.value.subcategory,
+      locationId: this.form.value.location,
+      remarks: this.form.value.remarks,
+      transactionTypeId: this.categoryTypeId,
+    };
+    firstValueFrom(this._fts.saveFinancialTransaction(financialTransactionDto)).then(
+      (resp: ApiResponse) => {
+        if (resp.success) {
+          this.dialogRef.close(resp.message);
+        } else {
+          this._ns.error(resp.message);
+        }
+      },
+    );
+  }
 }

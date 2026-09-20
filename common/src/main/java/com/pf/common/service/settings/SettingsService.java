@@ -160,4 +160,8 @@ public class SettingsService extends BaseService {
     public List<SelectItem> fetchLocations() {
         return referenceValueRepository.fetchReferenceValuesByRefObjName(String.valueOf(LOCATION));
     }
+
+    public Long fetchIdByReferenceCodeAndRefObjName(String referenceCode, String refObjName) {
+        return referenceValueRepository.fetchIdByReferenceCodeAndRefObjName(referenceCode, refObjName);
+    }
 }

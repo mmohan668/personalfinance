@@ -47,6 +47,9 @@ public class FinancialTransactionService extends BaseService {
         log.debug("saveFinancialTransaction: {}", financialTransactionDto);
         if (financialTransactionDto.getId() == null) {
             FinancialTransaction financialTransaction = financialTransactionMapper.toEntity(financialTransactionDto);
+            financialTransaction.setAdminUser(
+                    entityManager.getReference(User.class, 1)
+            );
             financialTransaction.setCreatedBy(
                     entityManager.getReference(User.class, 1)
             );

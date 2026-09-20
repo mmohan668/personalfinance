@@ -36,8 +36,18 @@ export class SettingsService {
   }
 
   fetchLocations(): Observable<SelectItem[]> {
-    return this.http.get<SelectItem[]>(
-      `${this.config.configValue.apiUrl}/settings/fetchLocations`,
+    return this.http.get<SelectItem[]>(`${this.config.configValue.apiUrl}/settings/fetchLocations`);
+  }
+
+  fetchIdByReferenceCodeAndRefObjName(referenceCode: string, refObjName: string): Observable<any> {
+    return this.http.get<any>(
+      `${this.config.configValue.apiUrl}/settings/fetchIdByReferenceCodeAndRefObjName`,
+      {
+        params: {
+          referenceCode: referenceCode,
+          refObjName: refObjName,
+        },
+      },
     );
   }
 }
