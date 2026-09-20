@@ -35,7 +35,7 @@ export class Menu {
       route: '/dashboard',
     },
     {
-      label: 'Expense Management',
+      label: 'Financial Transaction',
       icon: 'receipt_long',
       children: [
         {

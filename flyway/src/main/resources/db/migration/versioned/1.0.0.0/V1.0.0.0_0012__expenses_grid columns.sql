@@ -1,5 +1,5 @@
 -- ============================================================
--- Subcategories Grid Configuration
+-- Expenses Grid Configuration
 -- ============================================================
 
 BEGIN;
@@ -10,7 +10,7 @@ BEGIN;
 -- ============================================================
 
 INSERT INTO grid_name(name)
-VALUES ('SUBCATEGORIES_GRID')
+VALUES ('EXPENSES_GRID')
 ON CONFLICT (LOWER(TRIM(name)))
     DO NOTHING;
 
@@ -19,7 +19,7 @@ ON CONFLICT (LOWER(TRIM(name)))
 -- 2. GRID COLUMNS
 -- ============================================================
 
--- Category Type
+-- Transaction Date
 INSERT INTO grid_column
 (grid_name_id,
  field,
@@ -32,15 +32,37 @@ INSERT INTO grid_column
  sort_index)
 VALUES ((SELECT id
          FROM grid_name
-         WHERE LOWER(TRIM(name)) = LOWER(TRIM('SUBCATEGORIES_GRID'))),
-        'categoryType',
-        'Category Type',
-        'text',
-        'contains',
+         WHERE LOWER(TRIM(name)) = LOWER(TRIM('EXPENSES_GRID'))),
+        'transactionAt',
+        'Transaction Date',
+        'date',
+        'equals',
         200,
         0,
-        'asc',
+        'desc',
         0)
+ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
+    DO NOTHING;
+
+
+-- Amount
+INSERT INTO grid_column
+(grid_name_id,
+ field,
+ header,
+ data_type,
+ default_filter_operator,
+ width,
+ visible_index)
+VALUES ((SELECT id
+         FROM grid_name
+         WHERE LOWER(TRIM(name)) = LOWER(TRIM('EXPENSES_GRID'))),
+        'amount',
+        'Amount',
+        'number',
+        'equals',
+        200,
+        1)
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 
@@ -53,20 +75,16 @@ INSERT INTO grid_column
  data_type,
  default_filter_operator,
  width,
- visible_index,
- default_sort_order,
- sort_index)
+ visible_index)
 VALUES ((SELECT id
          FROM grid_name
-         WHERE LOWER(TRIM(name)) = LOWER(TRIM('SUBCATEGORIES_GRID'))),
+         WHERE LOWER(TRIM(name)) = LOWER(TRIM('EXPENSES_GRID'))),
         'categoryName',
         'Category Name',
         'text',
         'contains',
         250,
-        1,
-        'asc',
-        1)
+        2)
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 
@@ -83,13 +101,13 @@ INSERT INTO grid_column
  visible)
 VALUES ((SELECT id
          FROM grid_name
-         WHERE LOWER(TRIM(name)) = LOWER(TRIM('SUBCATEGORIES_GRID'))),
+         WHERE LOWER(TRIM(name)) = LOWER(TRIM('EXPENSES_GRID'))),
         'categoryDescription',
         'Category Description',
         'text',
         'contains',
         250,
-        2,
+        3,
         false)
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
@@ -103,20 +121,16 @@ INSERT INTO grid_column
  data_type,
  default_filter_operator,
  width,
- visible_index,
- default_sort_order,
- sort_index)
+ visible_index)
 VALUES ((SELECT id
          FROM grid_name
-         WHERE LOWER(TRIM(name)) = LOWER(TRIM('SUBCATEGORIES_GRID'))),
+         WHERE LOWER(TRIM(name)) = LOWER(TRIM('EXPENSES_GRID'))),
         'subcategoryName',
         'Subcategory Name',
         'text',
         'contains',
         250,
-        3,
-        'asc',
-        2)
+        4)
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 
@@ -129,43 +143,66 @@ INSERT INTO grid_column
  data_type,
  default_filter_operator,
  width,
- visible_index)
+ visible_index,
+ visible)
 VALUES ((SELECT id
          FROM grid_name
-         WHERE LOWER(TRIM(name)) = LOWER(TRIM('SUBCATEGORIES_GRID'))),
+         WHERE LOWER(TRIM(name)) = LOWER(TRIM('EXPENSES_GRID'))),
         'subcategoryDescription',
         'Subcategory Description',
         'text',
         'contains',
         250,
-        4)
+        5,
+        false)
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 
 
--- Active Status
+-- Remarks
 INSERT INTO grid_column
 (grid_name_id,
  field,
  header,
  data_type,
  default_filter_operator,
- visible_index,
- cell_template,
- align)
+ width,
+ visible_index)
 VALUES ((SELECT id
          FROM grid_name
-         WHERE LOWER(TRIM(name)) = LOWER(TRIM('SUBCATEGORIES_GRID'))),
-        'isActive',
-        'Active Status',
-        'boolean',
-        'equals',
-        5,
-        'cellValueTemplate',
-        'CENTER')
+         WHERE LOWER(TRIM(name)) = LOWER(TRIM('EXPENSES_GRID'))),
+        'remarks',
+        'Remarks',
+        'text',
+        'contains',
+        250,
+        6)
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 
+
+-- Location
+INSERT INTO grid_column
+(grid_name_id,
+ field,
+ header,
+ data_type,
+ default_filter_operator,
+ width,
+ visible_index,
+ cell_template)
+VALUES ((SELECT id
+         FROM grid_name
+         WHERE LOWER(TRIM(name)) = LOWER(TRIM('EXPENSES_GRID'))),
+        'location',
+        'Location',
+        'text',
+        'contains',
+        250,
+        7,
+        'titleCellTemplate')
+ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
+    DO NOTHING;
 
 -- Created By
 INSERT INTO grid_column
@@ -178,13 +215,13 @@ INSERT INTO grid_column
  visible_index)
 VALUES ((SELECT id
          FROM grid_name
-         WHERE LOWER(TRIM(name)) = LOWER(TRIM('SUBCATEGORIES_GRID'))),
+         WHERE LOWER(TRIM(name)) = LOWER(TRIM('EXPENSES_GRID'))),
         'createdBy',
         'Created By',
         'text',
         'contains',
         200,
-        6)
+        8)
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 
@@ -197,16 +234,20 @@ INSERT INTO grid_column
  data_type,
  default_filter_operator,
  width,
- visible_index)
+ visible_index,
+ default_sort_order,
+ sort_index)
 VALUES ((SELECT id
          FROM grid_name
-         WHERE LOWER(TRIM(name)) = LOWER(TRIM('SUBCATEGORIES_GRID'))),
+         WHERE LOWER(TRIM(name)) = LOWER(TRIM('EXPENSES_GRID'))),
         'createdAt',
         'Created Date',
         'datetime',
         'equals',
         200,
-        7)
+        9,
+        'desc',
+        1)
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 
@@ -222,13 +263,13 @@ INSERT INTO grid_column
  visible_index)
 VALUES ((SELECT id
          FROM grid_name
-         WHERE LOWER(TRIM(name)) = LOWER(TRIM('SUBCATEGORIES_GRID'))),
+         WHERE LOWER(TRIM(name)) = LOWER(TRIM('EXPENSES_GRID'))),
         'updatedBy',
         'Modified By',
         'text',
         'contains',
         200,
-        8)
+        10)
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 
@@ -244,13 +285,13 @@ INSERT INTO grid_column
  visible_index)
 VALUES ((SELECT id
          FROM grid_name
-         WHERE LOWER(TRIM(name)) = LOWER(TRIM('SUBCATEGORIES_GRID'))),
+         WHERE LOWER(TRIM(name)) = LOWER(TRIM('EXPENSES_GRID'))),
         'updatedAt',
         'Modified Date',
         'datetime',
         'equals',
         200,
-        9)
+        11)
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 
