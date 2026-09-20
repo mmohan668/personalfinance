@@ -39,8 +39,18 @@ public class SettingsController {
         return settingsService.deleteReferenceValue(ids);
     }
 
+    @GetMapping("/fetchRefObjNames")
+    public List<SelectItem> fetchRefObjNames() {
+        return settingsService.fetchRefObjNames();
+    }
+
     @GetMapping("/fetchCategoryTypes")
     public List<SelectItem> fetchCategoryTypes() {
         return settingsService.fetchCategoryTypes();
+    }
+
+    @GetMapping("/fetchLocations")
+    public List<SelectItem> fetchLocations() {
+        return settingsService.fetchLocations();
     }
 }

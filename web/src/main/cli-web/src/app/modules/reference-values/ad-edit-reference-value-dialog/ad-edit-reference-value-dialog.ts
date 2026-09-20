@@ -35,7 +35,7 @@ export class AdEditReferenceValueDialog {
   }
 
   fetchCategoryTypes() {
-    firstValueFrom(this._ss.fetchCategoryTypes()).then((res: SelectItem[]) => {
+    firstValueFrom(this._ss.fetchRefObjNames()).then((res: SelectItem[]) => {
       this.categoryTypesSubject.next(res);
     });
   }

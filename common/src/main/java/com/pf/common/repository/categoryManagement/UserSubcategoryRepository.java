@@ -1,5 +1,6 @@
 package com.pf.common.repository.categoryManagement;
 
+import com.pf.common.dto.generic.SelectItem;
 import com.pf.common.entity.categoryManagement.UserSubcategory;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -100,4 +101,16 @@ public interface UserSubcategoryRepository extends JpaRepository<UserSubcategory
             @Param("updatedBy") String updatedBy,
             @Param("updatedAt") LocalDateTime updatedAt
     );
+
+
+    @Query("""
+            SELECT new com.pf.common.dto.generic.SelectItem(
+                        usc.id,
+                        usc.subcategoryName
+            )
+            FROM UserSubcategory usc
+            WHERE usc.userCategory.id = :categoryId
+            ORDER BY LOWER(usc.subcategoryName)
+            """)
+    List<SelectItem> fetchSubcategoriesByCategory(Long categoryId);
 }

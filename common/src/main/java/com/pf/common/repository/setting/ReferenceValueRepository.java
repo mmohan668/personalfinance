@@ -44,8 +44,8 @@ public interface ReferenceValueRepository extends JpaRepository<ReferenceValue, 
                         rv.referenceCode
             )
             FROM ReferenceValue rv
-            WHERE rv.referenceObject.refObjName = 'CATEGORY_TYPE'
+            WHERE rv.referenceObject.refObjName = :refObjName
             ORDER BY LOWER(rv.referenceCode)
             """)
-    List<SelectItem> fetchCategoryTypes();
+    List<SelectItem> fetchReferenceValuesByRefObjName(@Param("refObjName") String refObjName);
 }

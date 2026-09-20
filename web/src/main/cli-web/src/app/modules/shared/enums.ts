@@ -91,3 +91,19 @@ export enum MODES {
   EDIT = 'Edit',
   DELETE = 'Delete',
 }
+
+export enum FORM_CONTROLES {
+  CATEGORY = 'category',
+  SUBCATEGORY = 'subcategory',
+  LOCATION = 'location',
+  EXPENSE_DATE = 'expenseDate',
+  AMOUNT = 'amount',
+  REMARKS = 'remarks',
+}
+
+export enum CATEGORY_TYPES {
+  EXPENSE = 'EXPENSE',
+  INCOME = 'INCOME',
+  INVESTMENT = 'INVESTMENT',
+  TRANSFER = 'TRANSFER',
+}

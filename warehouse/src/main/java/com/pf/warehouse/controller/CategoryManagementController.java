@@ -28,11 +28,6 @@ public class CategoryManagementController {
         return categoryManagementService.fetchSubcategoriesGridData(searchCriteria);
     }
 
-    @GetMapping("/fetchCategoryTypes")
-    public List<SelectItem> fetchCategoryTypes() {
-        return categoryManagementService.fetchCategoryTypes();
-    }
-
     @PostMapping("/saveCategory")
     public ApiResponse saveCategory(@RequestBody UserCategoryDto userCategoryDto) {
         return categoryManagementService.saveCategory(userCategoryDto);
@@ -66,6 +61,16 @@ public class CategoryManagementController {
     @GetMapping("/fetchCategories")
     public List<SelectItem> fetchCategories(@RequestParam Long adminUserId, @RequestParam Long referenceValueId) {
         return categoryManagementService.fetchCategories(adminUserId, referenceValueId);
+    }
+
+    @GetMapping("/fetchSubcategoriesByCategory")
+    public List<SelectItem> fetchSubcategoriesByCategory(@RequestParam Long categoryId) {
+        return categoryManagementService.fetchSubcategoriesByCategory(categoryId);
+    }
+
+    @GetMapping("/fetchCategoriesByReferenceCode")
+    public List<SelectItem> fetchCategoriesByReferenceCode(@RequestParam Long adminUserId, @RequestParam String referenceCode) {
+        return categoryManagementService.fetchCategoriesByReferenceCode(adminUserId, referenceCode);
     }
 
     @PostMapping("/activateSubcategories")

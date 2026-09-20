@@ -9,3 +9,4 @@ export const GRID_URL_MAP = new Map<string, string>([
 ]);
 
 export const SYSTEM = 'SYSTEM';
+export const EMPTY = '';

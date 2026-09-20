@@ -8,6 +8,7 @@ import { ApiResponse, SelectItem } from '../../shared/types/types';
 import { CommonService } from '../../shared/service/common-service';
 import { CategoryManagementService } from '../../shared/service/category-management-service';
 import { NotificationService } from '../../shared/service/notification-service';
+import { SettingsService } from '../../shared/service/settings-service';
 
 @Component({
   imports: [CommonImportsModule],
@@ -25,6 +26,7 @@ export class AddEditSubCategoryDialog {
   public _cs = inject(CommonService);
   private _cms = inject(CategoryManagementService);
   private _ns = inject(NotificationService);
+  private _ss = inject(SettingsService);
   MODES = MODES;
   form: FormGroup = new FormGroup({});
   constructor() {
@@ -36,12 +38,13 @@ export class AddEditSubCategoryDialog {
   }
 
   fetchCategoryTypes() {
-    firstValueFrom(this._cms.fetchCategoryTypes()).then((resp: SelectItem[]) => {
+    firstValueFrom(this._ss.fetchCategoryTypes()).then((resp: SelectItem[]) => {
       this.categoryTypesSubject.next(resp);
     });
   }
 
   fetchCategories(referenceValueId: any) {
+    this.form.controls['category'].setValue('');
     firstValueFrom(this._cms.fetchCategories(referenceValueId)).then((resp: SelectItem[]) => {
       this.categoriesSubject.next(resp);
     });

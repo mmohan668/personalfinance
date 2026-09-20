@@ -23,9 +23,21 @@ export class SettingsService {
     );
   }
 
+  fetchRefObjNames(): Observable<SelectItem[]> {
+    return this.http.get<SelectItem[]>(
+      `${this.config.configValue.apiUrl}/settings/fetchRefObjNames`,
+    );
+  }
+
   fetchCategoryTypes(): Observable<SelectItem[]> {
     return this.http.get<SelectItem[]>(
       `${this.config.configValue.apiUrl}/settings/fetchCategoryTypes`,
+    );
+  }
+
+  fetchLocations(): Observable<SelectItem[]> {
+    return this.http.get<SelectItem[]>(
+      `${this.config.configValue.apiUrl}/settings/fetchLocations`,
     );
   }
 }

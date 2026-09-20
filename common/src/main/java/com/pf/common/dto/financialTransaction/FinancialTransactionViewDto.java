@@ -19,17 +19,25 @@ public class FinancialTransactionViewDto {
 
     private BigDecimal amount;
 
+    private Long transactionTypeId;
+
     private String transactionType;
+
+    private Long categoryId;
 
     private String categoryName;
 
     private String categoryDescription;
+
+    private Long subcategoryId;
 
     private String subcategoryName;
 
     private String subcategoryDescription;
 
     private String remarks;
+
+    private Long locationId;
 
     private String location;
 

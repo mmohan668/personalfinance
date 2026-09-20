@@ -19,12 +19,17 @@ import java.time.LocalDateTime;
 public class FinancialTransactionView {
 
     @Id
+    @Column(name = "id")
     private Long id;
 
     @Column(name = "transaction_at")
     private LocalDateTime transactionAt;
 
+    @Column(name = "amount")
     private BigDecimal amount;
+
+    @Column(name = "transaction_type_id")
+    private Long transactionTypeId;
 
     @Column(name = "transaction_type")
     private String transactionType;
@@ -32,17 +37,28 @@ public class FinancialTransactionView {
     @Column(name = "category_name")
     private String categoryName;
 
+    @Column(name = "category_id")
+    private Long categoryId;
+
     @Column(name = "category_description")
     private String categoryDescription;
 
     @Column(name = "subcategory_name")
     private String subcategoryName;
 
+    @Column(name = "subcategory_id")
+    private Long subcategoryId;
+
     @Column(name = "subcategory_description")
     private String subcategoryDescription;
 
+    @Column(name = "remarks")
     private String remarks;
 
+    @Column(name = "location_id")
+    private Long locationId;
+
+    @Column(name = "location")
     private String location;
 
     @Column(name = "location_description")
