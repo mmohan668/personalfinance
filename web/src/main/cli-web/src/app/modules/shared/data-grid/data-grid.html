@@ -147,6 +147,9 @@
             <td [ngStyle]="{ 'text-align': column.align }">
               @if (column.cellTemplate === 'cellValueTemplate') {
                 {{ calculateCellValue(row, column) }}
+              }
+              @if (column.cellTemplate === 'titleCellTemplate') {
+                <span [title]="fetchTitle(row, column)">{{ row[column.field] }}</span>
               } @else if (column.cellTemplate === 'currencyCellTemplate') {
                 {{ row[column.field] | currency: currencyCode }}
               } @else if (column.dataType === 'date') {

@@ -1,5 +1,5 @@
 -- ============================================================
--- Expenses Grid Configuration
+-- Incomes Grid Configuration
 -- ============================================================
 
 BEGIN;
@@ -10,7 +10,7 @@ BEGIN;
 -- ============================================================
 
 INSERT INTO grid_name(name)
-VALUES ('EXPENSES_GRID')
+VALUES ('INCOMES_GRID')
 ON CONFLICT (LOWER(TRIM(name)))
     DO NOTHING;
 
@@ -32,7 +32,7 @@ INSERT INTO grid_column
  sort_index)
 VALUES ((SELECT id
          FROM grid_name
-         WHERE LOWER(TRIM(name)) = LOWER(TRIM('EXPENSES_GRID'))),
+         WHERE LOWER(TRIM(name)) = LOWER(TRIM('INCOMES_GRID'))),
         'transactionAt',
         'Transaction Date',
         'date',
@@ -57,7 +57,7 @@ INSERT INTO grid_column
  cell_template)
 VALUES ((SELECT id
          FROM grid_name
-         WHERE LOWER(TRIM(name)) = LOWER(TRIM('EXPENSES_GRID'))),
+         WHERE LOWER(TRIM(name)) = LOWER(TRIM('INCOMES_GRID'))),
         'amount',
         'Amount',
         'number',
@@ -80,7 +80,7 @@ INSERT INTO grid_column
  visible_index)
 VALUES ((SELECT id
          FROM grid_name
-         WHERE LOWER(TRIM(name)) = LOWER(TRIM('EXPENSES_GRID'))),
+         WHERE LOWER(TRIM(name)) = LOWER(TRIM('INCOMES_GRID'))),
         'categoryName',
         'Category Name',
         'text',
@@ -103,7 +103,7 @@ INSERT INTO grid_column
  visible)
 VALUES ((SELECT id
          FROM grid_name
-         WHERE LOWER(TRIM(name)) = LOWER(TRIM('EXPENSES_GRID'))),
+         WHERE LOWER(TRIM(name)) = LOWER(TRIM('INCOMES_GRID'))),
         'categoryDescription',
         'Category Description',
         'text',
@@ -126,7 +126,7 @@ INSERT INTO grid_column
  visible_index)
 VALUES ((SELECT id
          FROM grid_name
-         WHERE LOWER(TRIM(name)) = LOWER(TRIM('EXPENSES_GRID'))),
+         WHERE LOWER(TRIM(name)) = LOWER(TRIM('INCOMES_GRID'))),
         'subcategoryName',
         'Subcategory Name',
         'text',
@@ -149,7 +149,7 @@ INSERT INTO grid_column
  visible)
 VALUES ((SELECT id
          FROM grid_name
-         WHERE LOWER(TRIM(name)) = LOWER(TRIM('EXPENSES_GRID'))),
+         WHERE LOWER(TRIM(name)) = LOWER(TRIM('INCOMES_GRID'))),
         'subcategoryDescription',
         'Subcategory Description',
         'text',
@@ -172,7 +172,7 @@ INSERT INTO grid_column
  visible_index)
 VALUES ((SELECT id
          FROM grid_name
-         WHERE LOWER(TRIM(name)) = LOWER(TRIM('EXPENSES_GRID'))),
+         WHERE LOWER(TRIM(name)) = LOWER(TRIM('INCOMES_GRID'))),
         'remarks',
         'Remarks',
         'text',
@@ -195,7 +195,7 @@ INSERT INTO grid_column
  cell_template)
 VALUES ((SELECT id
          FROM grid_name
-         WHERE LOWER(TRIM(name)) = LOWER(TRIM('EXPENSES_GRID'))),
+         WHERE LOWER(TRIM(name)) = LOWER(TRIM('INCOMES_GRID'))),
         'location',
         'Location',
         'text',
@@ -217,7 +217,7 @@ INSERT INTO grid_column
  visible_index)
 VALUES ((SELECT id
          FROM grid_name
-         WHERE LOWER(TRIM(name)) = LOWER(TRIM('EXPENSES_GRID'))),
+         WHERE LOWER(TRIM(name)) = LOWER(TRIM('INCOMES_GRID'))),
         'createdBy',
         'Created By',
         'text',
@@ -241,7 +241,7 @@ INSERT INTO grid_column
  sort_index)
 VALUES ((SELECT id
          FROM grid_name
-         WHERE LOWER(TRIM(name)) = LOWER(TRIM('EXPENSES_GRID'))),
+         WHERE LOWER(TRIM(name)) = LOWER(TRIM('INCOMES_GRID'))),
         'createdAt',
         'Created Date',
         'datetime',
@@ -265,7 +265,7 @@ INSERT INTO grid_column
  visible_index)
 VALUES ((SELECT id
          FROM grid_name
-         WHERE LOWER(TRIM(name)) = LOWER(TRIM('EXPENSES_GRID'))),
+         WHERE LOWER(TRIM(name)) = LOWER(TRIM('INCOMES_GRID'))),
         'updatedBy',
         'Modified By',
         'text',
@@ -287,7 +287,7 @@ INSERT INTO grid_column
  visible_index)
 VALUES ((SELECT id
          FROM grid_name
-         WHERE LOWER(TRIM(name)) = LOWER(TRIM('EXPENSES_GRID'))),
+         WHERE LOWER(TRIM(name)) = LOWER(TRIM('INCOMES_GRID'))),
         'updatedAt',
         'Modified Date',
         'datetime',
