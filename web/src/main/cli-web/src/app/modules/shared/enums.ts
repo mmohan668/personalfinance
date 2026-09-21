@@ -70,6 +70,9 @@ export enum GRID_NAMES {
   REFERENCE_OBJECTS_GRID = 'REFERENCE_OBJECTS_GRID',
   REFERENCE_VALUES_GRID = 'REFERENCE_VALUES_GRID',
   EXPENSES_GRID = 'EXPENSES_GRID',
+  INCOMES_GRID = 'INCOMES_GRID',
+  INVESTMENTS_GRID = 'INVESTMENTS_GRID',
+  TRANSFERS_GRID = 'TRANSFERS_GRID',
 }
 
 export enum GRID_EXPORT_FILE_NAMES {
@@ -77,7 +80,10 @@ export enum GRID_EXPORT_FILE_NAMES {
   SUBCATEGORIES_EFN = 'subcategories',
   REFERENCE_OBJECTS_EFN = 'reference_objects',
   REFERENCE_VALUES_EFN = 'reference_values',
-  EXPENSES_GRID_EFN = 'expenses',
+  EXPENSES_GRID_EFN = 'expense_transactions',
+  INCOMES_GRID_EFN = 'income_transactions',
+  INVESTMENTS_GRID_EFN = 'investment_transactions',
+  TRANSFERS_GRID_EFN = 'transfer_transactions',
 }
 
 export enum DATA_FIELDS {
@@ -99,7 +105,7 @@ export enum FORM_CONTROLES {
   CATEGORY = 'category',
   SUBCATEGORY = 'subcategory',
   LOCATION = 'location',
-  EXPENSE_DATE = 'expenseDate',
+  TRANSACTION_DATE = 'transactionDate',
   AMOUNT = 'amount',
   REMARKS = 'remarks',
 }

@@ -14,23 +14,23 @@
   <div class="dialog-content">
     <form [formGroup]="form" class="dialog-form">
       <mat-form-field appearance="fill" class="dialog-field">
-        <mat-label>Expense Date</mat-label>
+        <mat-label>Transaction Date</mat-label>
 
         <input
           matInput
           [matDatepicker]="expenseDatePicker"
-          name="expenseDate"
+          name="transactionDate"
           [max]="maxDate"
-          formControlName="expenseDate"
+          formControlName="transactionDate"
         />
 
         <mat-datepicker-toggle matIconSuffix [for]="expenseDatePicker"> </mat-datepicker-toggle>
 
         <mat-datepicker #expenseDatePicker></mat-datepicker>
 
-        @if (_cs.isInvalid(form.get('expenseDate'))) {
+        @if (_cs.isInvalid(form.get('transactionDate'))) {
           <mat-error>
-            {{ _cs.getValidationMessage(form.get('expenseDate'), 'Expense Date') }}
+            {{ _cs.getValidationMessage(form.get('transactionDate'), 'Transaction Date') }}
           </mat-error>
         }
       </mat-form-field>

@@ -19,9 +19,9 @@ import java.util.List;
 public class FinancialTransactionController {
     private final FinancialTransactionService financialTransactionService;
 
-    @PostMapping("/fetchExpensesGridData")
-    public GridResult fetchExpensesGridData(@RequestBody SearchCriteria searchCriteria) {
-        return financialTransactionService.fetchExpensesGridData(searchCriteria);
+    @PostMapping("/financialTransactionGridData")
+    public GridResult financialTransactionGridData(@RequestBody SearchCriteria searchCriteria) {
+        return financialTransactionService.financialTransactionGridData(searchCriteria);
     }
 
     @PostMapping("/saveFinancialTransaction")
