@@ -35,6 +35,17 @@ export class CommonService {
     };
   }
 
+  toolbarConfigExcludeActivateInactivate(): ToolbarConfig {
+    return {
+      addRow: true,
+      copyRow: true,
+      deleteRow: true,
+      editRow: true,
+      activate: false,
+      inactivate: false,
+    };
+  }
+
   /**
    * Returns true when the control is invalid and has been touched.
    */
@@ -84,6 +95,19 @@ export class CommonService {
 
     if (control.hasError('pattern')) {
       return `${fieldName} has an invalid format`;
+    }
+
+    // Angular Material datepicker
+    if (control.hasError('matDatepickerMax')) {
+      return `${fieldName} must be on or before ${this.formatDateOnly(
+        control.getError('matDatepickerMax')?.max,
+      )}`;
+    }
+
+    if (control.hasError('matDatepickerMin')) {
+      return `${fieldName} must be on or after ${this.formatDateOnly(
+        control.getError('matDatepickerMin')?.min,
+      )}`;
     }
 
     return `${fieldName} is invalid`;

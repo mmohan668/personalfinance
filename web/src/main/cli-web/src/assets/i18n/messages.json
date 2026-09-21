@@ -63,5 +63,10 @@
       "mixedSelection": "Some of the selected subcategories are already inactive. Only the active subcategories will be inactivated. Do you want to continue?",
       "confirmation": "Are you sure you want to inactivate the selected subcategories?"
     }
+  },
+  "financialTransaction": {
+    "delete": {
+      "confirmation": "Are you sure you want to delete the selected financial transactions?"
+    }
   }
 }

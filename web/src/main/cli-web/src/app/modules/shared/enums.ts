@@ -83,6 +83,7 @@ export enum GRID_EXPORT_FILE_NAMES {
 export enum DATA_FIELDS {
   ID = 'id',
   USER_ID = 'user.id',
+  TRANSACTION_TYPE = 'transactionType',
 }
 
 export enum MODES {
@@ -101,7 +102,7 @@ export enum FORM_CONTROLES {
   REMARKS = 'remarks',
 }
 
-export enum CATEGORY_TYPES {
+export enum TRANSACTION_TYPES {
   EXPENSE = 'EXPENSE',
   INCOME = 'INCOME',
   INVESTMENT = 'INVESTMENT',
