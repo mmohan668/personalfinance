@@ -17,4 +17,11 @@ export class FinancialTransactionsService {
       financialTransactionDto,
     );
   }
+
+  deleteFinancialTransactions(ids: any[]): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(
+      `${this.config.configValue.apiUrl}/financialTransaction/deleteFinancialTransactions`,
+      ids,
+    );
+  }
 }

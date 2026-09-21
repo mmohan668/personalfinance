@@ -7,7 +7,7 @@ import { CommonService } from '../../shared/service/common-service';
 import { BehaviorSubject, firstValueFrom } from 'rxjs';
 import { ApiResponse, FinancialTransactionDto, SelectItem } from '../../shared/types/types';
 import { SettingsService } from '../../shared/service/settings-service';
-import { CATEGORY_TYPES, FORM_CONTROLES, MODES, REF_OBJ_NAMES } from '../../shared/enums';
+import { TRANSACTION_TYPES, FORM_CONTROLES, MODES, REF_OBJ_NAMES } from '../../shared/enums';
 import { EMPTY } from '../../shared/constants';
 import { FinancialTransactionsService } from '../../shared/service/financial-transactions-service';
 import { NotificationService } from '../../shared/service/notification-service';
@@ -41,10 +41,13 @@ export class AddEditExpenseDialog {
     this.fetchLocations();
     this.createForm();
     this.fetchCategoryTypeId();
+    if ([MODES.COPY, MODES.EDIT].includes(this.data.mode)) {
+      this.fetchSubcategories(this.data.selectedRow.categoryId, false);
+    }
   }
 
   fetchCategories() {
-    firstValueFrom(this._cms.fetchCategoriesByReferenceCode(CATEGORY_TYPES.EXPENSE)).then(
+    firstValueFrom(this._cms.fetchCategoriesByReferenceCode(TRANSACTION_TYPES.EXPENSE)).then(
       (resp: SelectItem[]) => {
         this.categoriesSubject.next(resp);
       },
@@ -54,7 +57,7 @@ export class AddEditExpenseDialog {
   fetchCategoryTypeId() {
     firstValueFrom(
       this._ss.fetchIdByReferenceCodeAndRefObjName(
-        CATEGORY_TYPES.EXPENSE,
+        TRANSACTION_TYPES.EXPENSE,
         REF_OBJ_NAMES.CATEGORY_TYPE,
       ),
     ).then((resp: any) => {
@@ -68,8 +71,10 @@ export class AddEditExpenseDialog {
     });
   }
 
-  fetchSubcategories(categoryId: any) {
-    this.form.controls[FORM_CONTROLES.SUBCATEGORY].setValue('');
+  fetchSubcategories(categoryId: any, clearValue: boolean = true) {
+    if (clearValue) {
+      this.form.controls[FORM_CONTROLES.SUBCATEGORY].setValue('');
+    }
     firstValueFrom(this._cms.fetchSubcategoriesByCategory(categoryId)).then(
       (resp: SelectItem[]) => {
         this.subcategoriesSubject.next(resp);
@@ -123,14 +128,18 @@ export class AddEditExpenseDialog {
   }
 
   save() {
+    const expenseDate = this.form.value.expenseDate;
+    const transactionAt =
+      typeof expenseDate === 'string' ? expenseDate : this._cs.formatDateOnly(expenseDate);
     const financialTransactionDto: FinancialTransactionDto = {
-      transactionAt: this._cs.formatDateOnly(this.form.value.expenseDate),
+      transactionAt: transactionAt,
       amount: this.form.value.amount,
       categoryId: this.form.value.category,
       subcategoryId: this.form.value.subcategory,
       locationId: this.form.value.location,
       remarks: this.form.value.remarks,
       transactionTypeId: this.categoryTypeId,
+      id: this.data.mode !== MODES.EDIT ? null : this.data.selectedRow.id,
     };
     firstValueFrom(this._fts.saveFinancialTransaction(financialTransactionDto)).then(
       (resp: ApiResponse) => {

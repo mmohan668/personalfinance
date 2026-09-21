@@ -81,7 +81,7 @@ export interface ConfirmationDialogData {
 }
 
 export interface FinancialTransactionDto {
-  id?: number;
+  id: number | null;
   amount: number;
   transactionAt: any;
   transactionTypeId: number;
