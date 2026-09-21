@@ -7,20 +7,20 @@ import { CommonService } from '../../shared/service/common-service';
 import { BehaviorSubject, firstValueFrom } from 'rxjs';
 import { ApiResponse, FinancialTransactionDto, SelectItem } from '../../shared/types/types';
 import { SettingsService } from '../../shared/service/settings-service';
-import { TRANSACTION_TYPES, FORM_CONTROLES, MODES, REF_OBJ_NAMES } from '../../shared/enums';
+import { FORM_CONTROLES, MODES, REF_OBJ_NAMES } from '../../shared/enums';
 import { EMPTY } from '../../shared/constants';
 import { FinancialTransactionsService } from '../../shared/service/financial-transactions-service';
 import { NotificationService } from '../../shared/service/notification-service';
 
 @Component({
   imports: [CommonImportsModule],
-  selector: 'app-add-edit-expense-dialog',
-  styleUrl: './add-edit-expense-dialog.scss',
-  templateUrl: './add-edit-expense-dialog.html',
+  selector: 'app-copy-add-edit-financialtransaction-dialog',
+  styleUrl: './add-copy-edit-financialtransaction-dialog.scss',
+  templateUrl: './add-copy-edit-financialtransaction-dialog.html',
 })
-export class AddEditExpenseDialog {
+export class AddCopyEditFinancialTransactionDialog {
   protected readonly data = inject<any>(MAT_DIALOG_DATA);
-  private dialogRef = inject(MatDialogRef<AddEditExpenseDialog>);
+  private dialogRef = inject(MatDialogRef<AddCopyEditFinancialTransactionDialog>);
   private _cms = inject(CategoryManagementService);
   public _cs = inject(CommonService);
   private _ss = inject(SettingsService);
@@ -47,7 +47,7 @@ export class AddEditExpenseDialog {
   }
 
   fetchCategories() {
-    firstValueFrom(this._cms.fetchCategoriesByReferenceCode(TRANSACTION_TYPES.EXPENSE)).then(
+    firstValueFrom(this._cms.fetchCategoriesByReferenceCode(this.data.categoryType)).then(
       (resp: SelectItem[]) => {
         this.categoriesSubject.next(resp);
       },
@@ -57,7 +57,7 @@ export class AddEditExpenseDialog {
   fetchCategoryTypeId() {
     firstValueFrom(
       this._ss.fetchIdByReferenceCodeAndRefObjName(
-        TRANSACTION_TYPES.EXPENSE,
+        this.data.categoryType,
         REF_OBJ_NAMES.CATEGORY_TYPE,
       ),
     ).then((resp: any) => {
@@ -84,10 +84,11 @@ export class AddEditExpenseDialog {
 
   createForm() {
     this.form.addControl(
-      FORM_CONTROLES.EXPENSE_DATE,
-      new FormControl(this.data.mode === MODES.ADD ? EMPTY : this.data.selectedRow.transactionAt, [
-        Validators.required,
-      ]),
+      FORM_CONTROLES.TRANSACTION_DATE,
+      new FormControl(
+        this.data.mode === MODES.ADD ? new Date() : this.data.selectedRow.transactionAt,
+        [Validators.required],
+      ),
     );
     this.form.addControl(
       FORM_CONTROLES.AMOUNT,
@@ -128,9 +129,11 @@ export class AddEditExpenseDialog {
   }
 
   save() {
-    const expenseDate = this.form.value.expenseDate;
+    const transactionDate = this.form.value.transactionDate;
     const transactionAt =
-      typeof expenseDate === 'string' ? expenseDate : this._cs.formatDateOnly(expenseDate);
+      typeof transactionDate === 'string'
+        ? transactionDate
+        : this._cs.formatDateOnly(transactionDate);
     const financialTransactionDto: FinancialTransactionDto = {
       transactionAt: transactionAt,
       amount: this.form.value.amount,

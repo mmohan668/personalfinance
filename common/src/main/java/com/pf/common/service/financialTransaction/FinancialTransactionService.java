@@ -33,14 +33,14 @@ public class FinancialTransactionService extends BaseService {
     private final EntityManager entityManager;
     private final FinancialTransactionViewMapper financialTransactionViewMapper;
 
-    public GridResult fetchExpensesGridData(SearchCriteria searchCriteria) {
-        log.debug("fetchExpensesGridData: searchCriteria: {}", searchCriteria);
+    public GridResult financialTransactionGridData(SearchCriteria searchCriteria) {
+        log.debug("financialTransactionGridData: searchCriteria: {}", searchCriteria);
         long totalRecords = 0;
         if (!searchCriteria.isLoadAllData()) {
             totalRecords = getCountBySearchCriteria(FinancialTransactionView.class, searchCriteria);
         }
         List<FinancialTransactionViewDto> recordDetails = financialTransactionViewMapper.toDtoList(getDataBySearchCriteria(FinancialTransactionView.class, searchCriteria));
-        log.debug("fetchExpensesGridData: totalRecords: {}", totalRecords);
+        log.debug("financialTransactionGridData: totalRecords: {}", totalRecords);
         return gridResult(totalRecords, recordDetails);
     }
 

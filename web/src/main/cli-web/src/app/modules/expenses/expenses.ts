@@ -11,7 +11,7 @@ import {
 import { CommonService } from '../shared/service/common-service';
 import { ApiResponse, GridColumn, GridFilter, ToolbarConfig } from '../shared/types/types';
 import { MatDialog } from '@angular/material/dialog';
-import { AddEditExpenseDialog } from './add-edit-expense-dialog/add-edit-expense-dialog';
+import { AddCopyEditFinancialTransactionDialog } from '../shared/add-copy-edit-financialtransaction-dialog/add-copy-edit-financialtransaction-dialog';
 import { NotificationService } from '../shared/service/notification-service';
 import { MessageService } from '../shared/service/message-service';
 import { FinancialTransactionsService } from '../shared/service/financial-transactions-service';
@@ -56,10 +56,11 @@ export class Expenses {
 
   addRow = () => {
     this.dialog
-      .open(AddEditExpenseDialog, {
+      .open(AddCopyEditFinancialTransactionDialog, {
         width: '70vw',
         maxWidth: '70vw',
         data: {
+          categoryType: TRANSACTION_TYPES.EXPENSE,
           mode: MODES.ADD,
         },
         disableClose: true,
@@ -83,10 +84,11 @@ export class Expenses {
       return;
     }
     this.dialog
-      .open(AddEditExpenseDialog, {
+      .open(AddCopyEditFinancialTransactionDialog, {
         width: '70vw',
         maxWidth: '70vw',
         data: {
+          categoryType: TRANSACTION_TYPES.EXPENSE,
           mode: MODES.EDIT,
           selectedRow: this.dataGrid?.selectedRows[0],
         },
@@ -111,10 +113,11 @@ export class Expenses {
       return;
     }
     this.dialog
-      .open(AddEditExpenseDialog, {
+      .open(AddCopyEditFinancialTransactionDialog, {
         width: '70vw',
         maxWidth: '70vw',
         data: {
+          categoryType: TRANSACTION_TYPES.EXPENSE,
           mode: MODES.COPY,
           selectedRow: this.dataGrid?.selectedRows[0],
         },

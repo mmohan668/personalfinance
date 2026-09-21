@@ -1,1 +1,13 @@
-<p>transfers works!</p>
+<app-data-grid
+  #dataGrid
+  [dataKey]="this.dataKey"
+  [gridName]="this.gridName"
+  [gridExportFileName]="this.gridExportFileName"
+  [toolbarConfig]="this.toolbarConfig"
+  [addRow]="this.addRow"
+  [deleteRow]="this.deleteRow"
+  [editRow]="this.editRow"
+  [copyRow]="this.copyRow"
+  [fetchTitle]="this.fetchTitle"
+  [additionalFilters]="this.additionalGridFilters"
+/>
