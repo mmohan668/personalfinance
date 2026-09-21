@@ -84,6 +84,8 @@ export enum DATA_FIELDS {
   ID = 'id',
   USER_ID = 'user.id',
   TRANSACTION_TYPE = 'transactionType',
+  LOCATION = 'location',
+  LOCATION_DESCRIPTION = 'locationDescription',
 }
 
 export enum MODES {

@@ -147,6 +147,9 @@ export class DataGrid implements OnInit {
   @Input()
   calculateCellValue!: (rowData: any, col: GridColumn) => any;
 
+  @Input()
+  fetchTitle!: (rowData: any, col: GridColumn) => any;
+
   currencyCode: string = 'INR';
 
   @Input() groupBy: string | null = null;

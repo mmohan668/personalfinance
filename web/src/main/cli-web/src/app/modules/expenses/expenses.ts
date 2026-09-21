@@ -9,7 +9,7 @@ import {
   MODES,
 } from '../shared/enums';
 import { CommonService } from '../shared/service/common-service';
-import { ApiResponse, GridFilter, ToolbarConfig } from '../shared/types/types';
+import { ApiResponse, GridColumn, GridFilter, ToolbarConfig } from '../shared/types/types';
 import { MatDialog } from '@angular/material/dialog';
 import { AddEditExpenseDialog } from './add-edit-expense-dialog/add-edit-expense-dialog';
 import { NotificationService } from '../shared/service/notification-service';
@@ -46,6 +46,13 @@ export class Expenses {
   constructor() {
     this.toolbarConfig = this._cs.toolbarConfigExcludeActivateInactivate();
   }
+
+  fetchTitle = (rowData: any, col: GridColumn) => {
+    if (col.field === DATA_FIELDS.LOCATION) {
+      return rowData[DATA_FIELDS.LOCATION] + ' ~ ' + rowData[DATA_FIELDS.LOCATION_DESCRIPTION];
+    }
+    return rowData[col.field];
+  };
 
   addRow = () => {
     this.dialog
