@@ -1,47 +1,40 @@
 import { Component, inject, ViewChild } from '@angular/core';
 import { DataGrid } from '../shared/data-grid/data-grid';
-import { MatDialog } from '@angular/material/dialog';
 import {
+  TRANSACTION_TYPES,
   DATA_FIELDS,
   FILTER_OPERATORS,
   GRID_EXPORT_FILE_NAMES,
   GRID_NAMES,
   MODES,
-  TRANSACTION_TYPES,
 } from '../shared/enums';
 import { CommonService } from '../shared/service/common-service';
+import { ApiResponse, GridColumn, GridFilter, ToolbarConfig } from '../shared/types/types';
+import { MatDialog } from '@angular/material/dialog';
+import { AddCopyEditFinancialTransactionDialog } from '../shared/add-copy-edit-financialtransaction-dialog/add-copy-edit-financialtransaction-dialog';
 import { NotificationService } from '../shared/service/notification-service';
 import { MessageService } from '../shared/service/message-service';
 import { FinancialTransactionsService } from '../shared/service/financial-transactions-service';
-import { ApiResponse, GridColumn, GridFilter, ToolbarConfig } from '../shared/types/types';
-import { AddCopyEditFinancialTransactionDialog } from '../shared/add-copy-edit-financialtransaction-dialog/add-copy-edit-financialtransaction-dialog';
-import { ConfirmationDialog } from '../shared/confirmation-dialog/confirmation-dialog';
 import { firstValueFrom } from 'rxjs';
+import { ConfirmationDialog } from '../shared/confirmation-dialog/confirmation-dialog';
 
 @Component({
   imports: [DataGrid],
-  selector: 'app-investments',
-  styleUrl: './investments.scss',
-  templateUrl: './investments.html',
+  selector: 'app-all-transactions',
+  styleUrl: './all-transactions.scss',
+  templateUrl: './all-transactions.html',
 })
-export class Investments {
+export class AllTransactions {
   @ViewChild('dataGrid') dataGrid!: DataGrid;
   private dialog = inject(MatDialog);
   protected readonly dataKey = DATA_FIELDS.ID;
-  protected readonly gridName = GRID_NAMES.INVESTMENTS_GRID;
-  protected readonly gridExportFileName = GRID_EXPORT_FILE_NAMES.INVESTMENTS_GRID_EFN;
+  protected readonly gridName = GRID_NAMES.ALL_TRANSACTIONS_GRID;
+  protected readonly gridExportFileName = GRID_EXPORT_FILE_NAMES.ALL_TRANSACTIONS_GRID_EFN;
   public _cs = inject(CommonService);
   private _ns = inject(NotificationService);
   private _ms = inject(MessageService);
   private _fts = inject(FinancialTransactionsService);
   toolbarConfig!: ToolbarConfig;
-  additionalGridFilters: GridFilter[] = [
-    {
-      field: DATA_FIELDS.TRANSACTION_TYPE,
-      operator: FILTER_OPERATORS.EQUALS,
-      value: TRANSACTION_TYPES.INVESTMENT,
-    },
-  ];
 
   constructor() {
     this.toolbarConfig = this._cs.toolbarConfigExcludeActivateInactivate();
@@ -60,8 +53,8 @@ export class Investments {
         width: '70vw',
         maxWidth: '70vw',
         data: {
-          transactionType: TRANSACTION_TYPES.INVESTMENT,
           mode: MODES.ADD,
+          allTransactions: true,
         },
         disableClose: true,
       })
@@ -88,9 +81,9 @@ export class Investments {
         width: '70vw',
         maxWidth: '70vw',
         data: {
-          transactionType: TRANSACTION_TYPES.INVESTMENT,
           mode: MODES.EDIT,
           selectedRow: this.dataGrid?.selectedRows[0],
+          allTransactions: true,
         },
         disableClose: true,
       })
@@ -117,9 +110,9 @@ export class Investments {
         width: '70vw',
         maxWidth: '70vw',
         data: {
-          transactionType: TRANSACTION_TYPES.INVESTMENT,
           mode: MODES.COPY,
           selectedRow: this.dataGrid?.selectedRows[0],
+          allTransactions: true,
         },
         disableClose: true,
       })

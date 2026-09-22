@@ -39,13 +39,18 @@ export class Menu {
       icon: 'receipt_long',
       children: [
         {
+          label: 'All Transactions',
+          icon: 'list_alt',
+          route: '/allTransactions',
+        },
+        {
           label: 'Expense',
-          icon: 'payments',
+          icon: 'arrow_downward',
           route: '/expenses',
         },
         {
           label: 'Income',
-          icon: 'trending_up',
+          icon: 'arrow_upward',
           route: '/income',
         },
         {
@@ -55,7 +60,7 @@ export class Menu {
         },
         {
           label: 'Investment',
-          icon: 'account_balance',
+          icon: 'trending_up',
           route: '/investments',
         },
       ],

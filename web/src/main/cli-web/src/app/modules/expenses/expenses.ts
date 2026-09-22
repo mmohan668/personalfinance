@@ -60,7 +60,7 @@ export class Expenses {
         width: '70vw',
         maxWidth: '70vw',
         data: {
-          categoryType: TRANSACTION_TYPES.EXPENSE,
+          transactionType: TRANSACTION_TYPES.EXPENSE,
           mode: MODES.ADD,
         },
         disableClose: true,
@@ -88,7 +88,7 @@ export class Expenses {
         width: '70vw',
         maxWidth: '70vw',
         data: {
-          categoryType: TRANSACTION_TYPES.EXPENSE,
+          transactionType: TRANSACTION_TYPES.EXPENSE,
           mode: MODES.EDIT,
           selectedRow: this.dataGrid?.selectedRows[0],
         },
@@ -117,7 +117,7 @@ export class Expenses {
         width: '70vw',
         maxWidth: '70vw',
         data: {
-          categoryType: TRANSACTION_TYPES.EXPENSE,
+          transactionType: TRANSACTION_TYPES.EXPENSE,
           mode: MODES.COPY,
           selectedRow: this.dataGrid?.selectedRows[0],
         },

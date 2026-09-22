@@ -60,7 +60,7 @@ export class Transfers {
         width: '70vw',
         maxWidth: '70vw',
         data: {
-          categoryType: TRANSACTION_TYPES.TRANSFER,
+          transactionType: TRANSACTION_TYPES.TRANSFER,
           mode: MODES.ADD,
         },
         disableClose: true,
@@ -88,7 +88,7 @@ export class Transfers {
         width: '70vw',
         maxWidth: '70vw',
         data: {
-          categoryType: TRANSACTION_TYPES.TRANSFER,
+          transactionType: TRANSACTION_TYPES.TRANSFER,
           mode: MODES.EDIT,
           selectedRow: this.dataGrid?.selectedRows[0],
         },
@@ -117,7 +117,7 @@ export class Transfers {
         width: '70vw',
         maxWidth: '70vw',
         data: {
-          categoryType: TRANSACTION_TYPES.TRANSFER,
+          transactionType: TRANSACTION_TYPES.TRANSFER,
           mode: MODES.COPY,
           selectedRow: this.dataGrid?.selectedRows[0],
         },
