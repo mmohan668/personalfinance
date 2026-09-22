@@ -498,3 +498,25 @@
    */
   -webkit-overflow-scrolling: touch;
 }
+
+:host ::ng-deep {
+  .row-expense > td {
+    background-color: #fee2e2;
+  }
+
+  .row-income > td {
+    background-color: #dcfce7;
+  }
+
+  .row-investment > td {
+    background-color: #dbeafe;
+  }
+
+  .row-transfer > td {
+    background-color: #f3e8ff;
+  }
+
+  .selected-row > td {
+    background-color: #e3f2fd !important;
+  }
+}

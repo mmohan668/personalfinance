@@ -130,7 +130,11 @@
            BODY
            =================================================== -->
       <ng-template #body let-row>
-        <tr [class.selected-row]="isRowSelected(row)" (click)="onRowClick(row)">
+        <tr
+          [class.selected-row]="isRowSelected(row)"
+          [ngClass]="getTransactionRowClass(row)"
+          (click)="onRowClick(row)"
+        >
           <!-- Row selection -->
           <td class="selection-column selection-cell">
             <mat-checkbox
