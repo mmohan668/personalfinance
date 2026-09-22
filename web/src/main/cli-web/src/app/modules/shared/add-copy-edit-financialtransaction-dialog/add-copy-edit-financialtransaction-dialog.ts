@@ -7,7 +7,7 @@ import { CommonService } from '../../shared/service/common-service';
 import { BehaviorSubject, firstValueFrom } from 'rxjs';
 import { ApiResponse, FinancialTransactionDto, SelectItem } from '../../shared/types/types';
 import { SettingsService } from '../../shared/service/settings-service';
-import { FORM_CONTROLES, MODES, REF_OBJ_NAMES } from '../../shared/enums';
+import { FORM_CONTROLES, MODES, REF_OBJ_NAMES, TRANSACTION_TYPES } from '../../shared/enums';
 import { EMPTY } from '../../shared/constants';
 import { FinancialTransactionsService } from '../../shared/service/financial-transactions-service';
 import { NotificationService } from '../../shared/service/notification-service';
@@ -37,6 +37,7 @@ export class AddCopyEditFinancialTransactionDialog {
   maxDate = new Date();
   form: FormGroup = new FormGroup({});
   transactionType!: any;
+  transactionTypeId!: any;
 
   constructor() {
     this.transactionType = this.data.transactionType;
@@ -85,7 +86,7 @@ export class AddCopyEditFinancialTransactionDialog {
         REF_OBJ_NAMES.CATEGORY_TYPE,
       ),
     ).then((resp: any) => {
-      this.transactionType = resp;
+      this.transactionTypeId = resp;
     });
   }
 
@@ -188,16 +189,27 @@ export class AddCopyEditFinancialTransactionDialog {
       typeof transactionDate === 'string'
         ? transactionDate
         : this._cs.formatDateOnly(transactionDate);
+
+    const transactionType = this.data.allTransactions
+      ? this.transactionTypesSubject.value.find((e) => e.value === this.form.value.transactionType)
+          ?.label
+      : this.transactionType;
+
+    const amount =
+      transactionType === TRANSACTION_TYPES.EXPENSE
+        ? -Math.abs(this.form.value.amount)
+        : Math.abs(this.form.value.amount);
+
     const financialTransactionDto: FinancialTransactionDto = {
       transactionAt: transactionAt,
-      amount: this.form.value.amount,
+      amount: amount,
       categoryId: this.form.value.category,
       subcategoryId: this.form.value.subcategory,
       locationId: this.form.value.location,
       remarks: this.form.value.remarks,
       transactionTypeId: this.data.allTransactions
         ? this.form.value.transactionType
-        : this.transactionType,
+        : this.transactionTypeId,
       id: this.data.mode !== MODES.EDIT ? null : this.data.selectedRow.id,
     };
     firstValueFrom(this._fts.saveFinancialTransaction(financialTransactionDto)).then(
