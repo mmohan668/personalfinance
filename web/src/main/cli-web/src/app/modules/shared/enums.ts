@@ -73,6 +73,7 @@ export enum GRID_NAMES {
   INCOMES_GRID = 'INCOMES_GRID',
   INVESTMENTS_GRID = 'INVESTMENTS_GRID',
   TRANSFERS_GRID = 'TRANSFERS_GRID',
+  ALL_TRANSACTIONS_GRID = 'ALL_TRANSACTIONS_GRID',
 }
 
 export enum GRID_EXPORT_FILE_NAMES {
@@ -84,6 +85,7 @@ export enum GRID_EXPORT_FILE_NAMES {
   INCOMES_GRID_EFN = 'income_transactions',
   INVESTMENTS_GRID_EFN = 'investment_transactions',
   TRANSFERS_GRID_EFN = 'transfer_transactions',
+  ALL_TRANSACTIONS_GRID_EFN = 'all_transactions',
 }
 
 export enum DATA_FIELDS {
@@ -108,6 +110,7 @@ export enum FORM_CONTROLES {
   TRANSACTION_DATE = 'transactionDate',
   AMOUNT = 'amount',
   REMARKS = 'remarks',
+  TRANSACTION_TYPE = 'transactionType',
 }
 
 export enum TRANSACTION_TYPES {

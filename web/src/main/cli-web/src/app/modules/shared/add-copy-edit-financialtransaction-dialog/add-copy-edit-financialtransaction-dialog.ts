@@ -26,6 +26,8 @@ export class AddCopyEditFinancialTransactionDialog {
   private _ss = inject(SettingsService);
   private _fts = inject(FinancialTransactionsService);
   private _ns = inject(NotificationService);
+  protected transactionTypesSubject = new BehaviorSubject<SelectItem[]>([]);
+  protected transactionTypes$ = this.transactionTypesSubject.asObservable();
   protected categoriesSubject = new BehaviorSubject<SelectItem[]>([]);
   protected categories$ = this.categoriesSubject.asObservable();
   protected subcategoriesSubject = new BehaviorSubject<SelectItem[]>([]);
@@ -34,34 +36,56 @@ export class AddCopyEditFinancialTransactionDialog {
   protected locations$ = this.locationsSubject.asObservable();
   maxDate = new Date();
   form: FormGroup = new FormGroup({});
-  categoryTypeId!: any;
+  transactionType!: any;
 
   constructor() {
-    this.fetchCategories();
+    this.transactionType = this.data.transactionType;
     this.fetchLocations();
     this.createForm();
-    this.fetchCategoryTypeId();
+    if (this.data.allTransactions) {
+      this.fetchTransactionTypes();
+    } else {
+      this.fetchCategories(this.transactionType, false);
+      this.fetchCategoryTypeId();
+    }
     if ([MODES.COPY, MODES.EDIT].includes(this.data.mode)) {
       this.fetchSubcategories(this.data.selectedRow.categoryId, false);
     }
   }
 
-  fetchCategories() {
-    firstValueFrom(this._cms.fetchCategoriesByReferenceCode(this.data.categoryType)).then(
-      (resp: SelectItem[]) => {
-        this.categoriesSubject.next(resp);
-      },
-    );
+  fetchTransactionTypes() {
+    firstValueFrom(this._ss.fetchCategoryTypes()).then((resp: SelectItem[]) => {
+      this.transactionTypesSubject.next(resp);
+      if ([MODES.COPY, MODES.EDIT].includes(this.data.mode)) {
+        this.fetchCategories(this.data.selectedRow.transactionTypeId, false);
+      }
+    });
+  }
+
+  fetchCategories(transactionTypeId: any, clearValue: boolean = true) {
+    if (clearValue) {
+      this.form.controls[FORM_CONTROLES.CATEGORY].setValue('');
+    }
+    const transactionType = this.transactionTypesSubject.value?.filter(
+      (e) => e.value === transactionTypeId,
+    )[0]?.label;
+    firstValueFrom(
+      this._cms.fetchCategoriesByReferenceCode(
+        transactionType ? transactionType : this.transactionType,
+      ),
+    ).then((resp: SelectItem[]) => {
+      this.categoriesSubject.next(resp);
+    });
   }
 
   fetchCategoryTypeId() {
     firstValueFrom(
       this._ss.fetchIdByReferenceCodeAndRefObjName(
-        this.data.categoryType,
+        this.data.transactionType,
         REF_OBJ_NAMES.CATEGORY_TYPE,
       ),
     ).then((resp: any) => {
-      this.categoryTypeId = resp;
+      this.transactionType = resp;
     });
   }
 
@@ -96,6 +120,15 @@ export class AddCopyEditFinancialTransactionDialog {
         Validators.required,
       ]),
     );
+    if (this.data.allTransactions) {
+      this.form.addControl(
+        FORM_CONTROLES.TRANSACTION_TYPE,
+        new FormControl(
+          this.data.mode === MODES.ADD ? EMPTY : this.data.selectedRow.transactionTypeId,
+          [Validators.required],
+        ),
+      );
+    }
     this.form.addControl(
       FORM_CONTROLES.CATEGORY,
       new FormControl(this.data.mode === MODES.ADD ? EMPTY : this.data.selectedRow.categoryId, [
@@ -124,7 +157,28 @@ export class AddCopyEditFinancialTransactionDialog {
 
   clear() {
     if (this.data.mode === MODES.ADD) {
-      this.form.reset();
+      this.form.reset({ transactionDate: new Date() });
+    } else {
+      this.form.reset(
+        this.data.allTransactions
+          ? {
+              transactionDate: this.data.selectedRow.transactionAt,
+              amount: this.data.selectedRow.amount,
+              transactionType: this.data.selectedRow.transactionTypeId,
+              category: this.data.selectedRow.categoryId,
+              subcategory: this.data.selectedRow.subcategoryId,
+              location: this.data.selectedRow.locationId,
+              remarks: this.data.selectedRow.remarks,
+            }
+          : {
+              transactionDate: this.data.selectedRow.transactionAt,
+              amount: this.data.selectedRow.amount,
+              category: this.data.selectedRow.categoryId,
+              subcategory: this.data.selectedRow.subcategoryId,
+              location: this.data.selectedRow.locationId,
+              remarks: this.data.selectedRow.remarks,
+            },
+      );
     }
   }
 
@@ -141,7 +195,9 @@ export class AddCopyEditFinancialTransactionDialog {
       subcategoryId: this.form.value.subcategory,
       locationId: this.form.value.location,
       remarks: this.form.value.remarks,
-      transactionTypeId: this.categoryTypeId,
+      transactionTypeId: this.data.allTransactions
+        ? this.form.value.transactionType
+        : this.transactionType,
       id: this.data.mode !== MODES.EDIT ? null : this.data.selectedRow.id,
     };
     firstValueFrom(this._fts.saveFinancialTransaction(financialTransactionDto)).then(

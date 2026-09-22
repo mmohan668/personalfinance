@@ -52,6 +52,30 @@
           </mat-error>
         }
       </mat-form-field>
+      @if (data.allTransactions) {
+        <mat-form-field appearance="fill" class="dialog-field">
+          <mat-label>Transaction Type</mat-label>
+
+          <mat-select
+            #transactionType
+            formControlName="transactionType"
+            name="transactionType"
+            (valueChange)="this.fetchCategories($event)"
+          >
+            @for (item of transactionTypes$ | async; track item.value) {
+              <mat-option [value]="item.value">
+                {{ item.label }}
+              </mat-option>
+            }
+          </mat-select>
+
+          @if (_cs.isInvalid(form.get('transactionType'))) {
+            <mat-error>
+              {{ _cs.getValidationMessage(form.get('transactionType'), 'Transaction Type') }}
+            </mat-error>
+          }
+        </mat-form-field>
+      }
       <mat-form-field appearance="fill" class="dialog-field">
         <mat-label>Category</mat-label>
 
@@ -88,7 +112,7 @@
 
         @if (_cs.isInvalid(form.get('subcategory'))) {
           <mat-error>
-            {{ _cs.getValidationMessage(form.get('subcategory'), 'subcategory') }}
+            {{ _cs.getValidationMessage(form.get('subcategory'), 'Subcategory') }}
           </mat-error>
         }
       </mat-form-field>

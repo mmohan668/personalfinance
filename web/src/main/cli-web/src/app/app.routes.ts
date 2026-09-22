@@ -13,6 +13,11 @@ export const routes: Routes = [
   },
 
   {
+    path: 'allTransactions',
+    loadComponent: () =>
+      import('./modules/all-transactions/all-transactions').then((m) => m.AllTransactions),
+  },
+  {
     path: 'expenses',
     loadComponent: () => import('./modules/expenses/expenses').then((m) => m.Expenses),
   },

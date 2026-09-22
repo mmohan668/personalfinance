@@ -9,6 +9,7 @@ export const GRID_URL_MAP = new Map<string, string>([
   [GRID_NAMES.INCOMES_GRID, '/financialTransaction/financialTransactionGridData'],
   [GRID_NAMES.INVESTMENTS_GRID, '/financialTransaction/financialTransactionGridData'],
   [GRID_NAMES.TRANSFERS_GRID, '/financialTransaction/financialTransactionGridData'],
+  [GRID_NAMES.ALL_TRANSACTIONS_GRID, '/financialTransaction/financialTransactionGridData'],
 ]);
 
 export const SYSTEM = 'SYSTEM';
