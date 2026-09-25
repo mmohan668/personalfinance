@@ -1,4 +1,4 @@
-import { Component, inject, ViewChild } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { DataGrid } from '../shared/data-grid/data-grid';
 import { DATA_FIELDS, GRID_EXPORT_FILE_NAMES, GRID_NAMES } from '../shared/enums';
 import { ToolbarConfig } from '../shared/types/types';
@@ -14,8 +14,8 @@ export class ReferenceObjects {
   protected readonly gridName = GRID_NAMES.REFERENCE_OBJECTS_GRID;
   protected readonly dataKey = DATA_FIELDS.ID;
   protected readonly gridExportFileName = GRID_EXPORT_FILE_NAMES.REFERENCE_OBJECTS_EFN;
-  toolbarConfig!: ToolbarConfig;
-  private _cs = inject(CommonService);
+  protected readonly toolbarConfig!: ToolbarConfig;
+  private readonly _cs = inject(CommonService);
 
   constructor() {
     this.toolbarConfig = this._cs.toolbarConfig();

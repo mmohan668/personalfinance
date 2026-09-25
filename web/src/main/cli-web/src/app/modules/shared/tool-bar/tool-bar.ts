@@ -23,35 +23,35 @@ import { MatInputModule } from '@angular/material/input';
 })
 export class ToolBar {
   @Input()
-  columnSearch: string = '';
+  public columnSearch: string = '';
   @Input()
-  exportExcel!: (value: string) => void;
+  public exportExcel!: (value: string) => void;
   @Input()
-  allColumnsSelected!: () => boolean;
+  public allColumnsSelected!: () => boolean;
   @Input()
-  someColumnsSelected!: () => boolean;
+  public someColumnsSelected!: () => boolean;
   @Input()
-  toggleAllColumns!: (checked: boolean) => void;
+  public toggleAllColumns!: (checked: boolean) => void;
   @Input()
-  getColumns!: (searchInput: string) => GridColumn[];
+  public getColumns!: (searchInput: string) => GridColumn[];
   @Input()
-  toggleColumn!: (col: GridColumn, checked: boolean) => void;
+  public toggleColumn!: (col: GridColumn, checked: boolean) => void;
   @Input()
-  addRow!: () => void;
+  public addRow!: () => void;
   @Input()
-  copyRow!: () => void;
+  public copyRow!: () => void;
   @Input()
-  editRow!: () => void;
+  public editRow!: () => void;
   @Input()
-  deleteRow!: () => void;
+  public deleteRow!: () => void;
   @Input()
-  activate!: () => void;
+  public activate!: () => void;
   @Input()
-  inactivate!: () => void;
+  public inactivate!: () => void;
   @Input()
-  saveGridSetting!: () => void;
+  public saveGridSetting!: () => void;
   @Input()
-  resetGridSettings!: () => void;
+  public resetGridSettings!: () => void;
   @Input()
-  toolbarConfig!: ToolbarConfig;
+  public toolbarConfig!: ToolbarConfig;
 }

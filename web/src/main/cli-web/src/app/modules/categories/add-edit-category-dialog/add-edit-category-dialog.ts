@@ -1,11 +1,11 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { CommonService } from '../../shared/service/common-service';
 import { CategoryManagementService } from '../../shared/service/category-management-service';
-import { BehaviorSubject, firstValueFrom } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 import { NotificationService } from '../../shared/service/notification-service';
-import { MODES } from '../../shared/enums';
+import { DATA_FIELDS, MODES } from '../../shared/enums';
 import { ApiResponse, SelectItem } from '../../shared/types/types';
 import { CommonImportsModule } from '../../shared/common-imports/common-imports-module';
 import { SettingsService } from '../../shared/service/settings-service';
@@ -17,50 +17,54 @@ import { SettingsService } from '../../shared/service/settings-service';
   templateUrl: './add-edit-category-dialog.html',
 })
 export class AddEditCategoryDialog {
-  private readonly dialogRef = inject(MatDialogRef<AddEditCategoryDialog>);
-  readonly data = inject<any>(MAT_DIALOG_DATA);
-  form: FormGroup = new FormGroup({});
-  public _cs = inject(CommonService);
-  private _cms = inject(CategoryManagementService);
-  private _ss = inject(SettingsService);
-  public categoryTypesSubject = new BehaviorSubject<SelectItem[]>([]);
-  categoryTypes$ = this.categoryTypesSubject.asObservable();
-  private _ns = inject(NotificationService);
-  MODES = MODES;
+  protected readonly dialogRef = inject(MatDialogRef<AddEditCategoryDialog>);
+  protected readonly data = inject<any>(MAT_DIALOG_DATA);
+  public readonly _cs = inject(CommonService);
+  private readonly _cms = inject(CategoryManagementService);
+  private readonly _ss = inject(SettingsService);
+  private readonly _ns = inject(NotificationService);
+
+  public categoryTypes = signal<SelectItem[]>([]);
+
+  protected form!: FormGroup;
+  protected MODES = MODES;
 
   constructor() {
     this.fetchCategoryTypes();
     this.createForm();
   }
 
-  fetchCategoryTypes() {
+  fetchCategoryTypes(): void {
     firstValueFrom(this._ss.fetchCategoryTypes()).then((res: SelectItem[]) => {
-      this.categoryTypesSubject.next(res);
+      this.categoryTypes.set(res);
     });
   }
 
+  getEditValue(fieldName: string): any {
+    return this.data.mode === MODES.EDIT ? this.data.selectedRow[fieldName] : '';
+  }
+
   createForm(): void {
-    this.form.addControl(
-      'categoryType',
-      new FormControl(this.data.mode === MODES.EDIT ? this.data.selectedRow.categoryTypeId : '', [
-        Validators.required,
-      ]),
-    );
-    this.form.addControl(
-      'categoryName',
-      new FormControl(this.data.mode === MODES.EDIT ? this.data.selectedRow.categoryName : '', [
-        Validators.required,
-        Validators.minLength(3),
-        Validators.maxLength(100),
-      ]),
-    );
-    this.form.addControl(
-      'categoryDescription',
-      new FormControl(
-        this.data.mode === MODES.EDIT ? this.data.selectedRow.categoryDescription : '',
-        [Validators.required, Validators.minLength(3), Validators.maxLength(200)],
+    this.form = new FormGroup({
+      categoryType: new FormControl<number | string>(
+        this.getEditValue(DATA_FIELDS.CATEGORY_TYPE_ID),
+        {
+          nonNullable: true,
+          validators: [Validators.required],
+        },
       ),
-    );
+      categoryName: new FormControl<string>(this.getEditValue(DATA_FIELDS.CATEGORY_NAME), {
+        nonNullable: true,
+        validators: [Validators.required, Validators.minLength(3), Validators.maxLength(100)],
+      }),
+      categoryDescription: new FormControl<string>(
+        this.getEditValue(DATA_FIELDS.CATEGORY_DESCRIPTION),
+        {
+          nonNullable: true,
+          validators: [Validators.required, Validators.minLength(3), Validators.maxLength(200)],
+        },
+      ),
+    });
   }
 
   save(): void {
@@ -79,22 +83,5 @@ export class AddEditCategoryDialog {
         this._ns.error(response.message);
       }
     });
-  }
-
-  clear(): void {
-    this._ns.close();
-    if (this.data.mode === MODES.EDIT) {
-      this.form.patchValue({
-        categoryType: this.data.selectedRow.categoryTypeId,
-        categoryName: this.data.selectedRow.categoryName,
-        categoryDescription: this.data.selectedRow.categoryDescription,
-      });
-    } else {
-      this.form.reset();
-    }
-  }
-
-  close(): void {
-    this.dialogRef.close();
   }
 }

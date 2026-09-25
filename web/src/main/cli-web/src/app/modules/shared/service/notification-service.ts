@@ -16,11 +16,9 @@ export class NotificationService {
   private readonly notification = signal<Notification | null>(null);
 
   readonly item = this.notification.asReadonly();
-
-  private nextId = 1;
-
   private timer?: ReturnType<typeof setTimeout>;
 
+  private nextId = 1;
   private remainingTime = 0;
   private timerStartedAt = 0;
 
@@ -37,14 +35,10 @@ export class NotificationService {
     if (!this.timer) {
       return;
     }
-
     clearTimeout(this.timer);
     this.timer = undefined;
-
     const elapsed = Date.now() - this.timerStartedAt;
-
     this.remainingTime = Math.max(0, this.remainingTime - elapsed);
-
     this.timerStartedAt = 0;
   }
 
@@ -53,18 +47,15 @@ export class NotificationService {
     if (!this.notification()) {
       return;
     }
-
     // Already running
     if (this.timer) {
       return;
     }
-
     // Nothing remaining
     if (this.remainingTime <= 0) {
       this.close();
       return;
     }
-
     this.startTimer();
   }
 
@@ -73,10 +64,8 @@ export class NotificationService {
       clearTimeout(this.timer);
       this.timer = undefined;
     }
-
     this.remainingTime = 0;
     this.timerStartedAt = 0;
-
     this.notification.set(null);
   }
 
@@ -91,9 +80,7 @@ export class NotificationService {
     };
 
     this.notification.set(notification);
-
     this.remainingTime = duration;
-
     this.startTimer();
   }
 
@@ -102,14 +89,11 @@ export class NotificationService {
       this.close();
       return;
     }
-
     this.timerStartedAt = Date.now();
-
     this.timer = setTimeout(() => {
       this.timer = undefined;
       this.remainingTime = 0;
       this.timerStartedAt = 0;
-
       this.notification.set(null);
     }, this.remainingTime);
   }

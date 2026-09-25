@@ -20,13 +20,11 @@ export class Menu {
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
 
-  /**
-   * Whether the entire sidebar is collapsed.
-   *
-   * false = 260px sidebar
-   * true  = 72px sidebar
-   */
   readonly collapsed = signal(false);
+  readonly expandedItems = signal<Set<string>>(
+    new Set(['Financial Transaction', 'Category Management', 'Settings']),
+  );
+  readonly currentUrl = signal(this.router.url);
 
   readonly menuItems: MenuItem[] = [
     {
@@ -114,15 +112,6 @@ export class Menu {
     },
   ];
 
-  /**
-   * Parent menus expanded by default.
-   */
-  readonly expandedItems = signal<Set<string>>(
-    new Set(['Financial Transaction', 'Category Management', 'Settings']),
-  );
-
-  readonly currentUrl = signal(this.router.url);
-
   constructor() {
     this.router.events
       .pipe(
@@ -137,36 +126,24 @@ export class Menu {
     this.expandActiveParent();
   }
 
-  /**
-   * Collapse / expand the entire sidebar.
-   */
   toggleSidebar(): void {
     this.collapsed.update((value) => !value);
   }
 
-  /**
-   * Expand / collapse a submenu.
-   */
   toggleMenu(item: MenuItem): void {
     if (!item.children?.length) {
       return;
     }
-
-    // If sidebar is collapsed, clicking a parent
-    // first expands the sidebar.
     if (this.collapsed()) {
       this.collapsed.set(false);
     }
-
     this.expandedItems.update((expanded) => {
       const next = new Set(expanded);
-
       if (next.has(item.label)) {
         next.delete(item.label);
       } else {
         next.add(item.label);
       }
-
       return next;
     });
   }
@@ -177,44 +154,35 @@ export class Menu {
 
   isActive(item: MenuItem): boolean {
     const url = this.currentUrl();
-
     if (item.route) {
       return this.isRouteActive(url, item.route);
     }
-
     if (item.children?.length) {
       return item.children.some((child) => child.route && this.isRouteActive(url, child.route));
     }
-
     return false;
   }
 
   private isRouteActive(currentUrl: string, route: string): boolean {
     const currentPath = currentUrl.split('?')[0].split('#')[0];
-
     return currentPath === route || currentPath.startsWith(`${route}/`);
   }
 
   private expandActiveParent(): void {
     const url = this.currentUrl();
-
     this.expandedItems.update((expanded) => {
       const next = new Set(expanded);
-
       for (const item of this.menuItems) {
         if (!item.children?.length) {
           continue;
         }
-
         const childIsActive = item.children.some(
           (child) => child.route && this.isRouteActive(url, child.route),
         );
-
         if (childIsActive) {
           next.add(item.label);
         }
       }
-
       return next;
     });
   }

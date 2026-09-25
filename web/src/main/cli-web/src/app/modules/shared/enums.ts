@@ -94,6 +94,24 @@ export enum DATA_FIELDS {
   TRANSACTION_TYPE = 'transactionType',
   LOCATION = 'location',
   LOCATION_DESCRIPTION = 'locationDescription',
+  CATEGORY_TYPE_ID = 'categoryTypeId',
+  CATEGORY_NAME = 'categoryName',
+  CATEGORY_DESCRIPTION = 'categoryDescription',
+  REF_OBJ_NAME_ID = 'refObjNameId',
+  REFERENCE_CODE = 'referenceCode',
+  REFERENCE_CODE_DESCRIPTION = 'referenceCodeDescription',
+  TRANSACTION_AT = 'transactionAt',
+  AMOUNT = 'amount',
+  TRANSACTION_TYPE_ID = 'transactionTypeId',
+  CATEGORY_ID = 'categoryId',
+  SUBCATEGORY_ID = 'subcategoryId',
+  LOCATION_ID = 'locationId',
+  REMARKS = 'remarks',
+  USER_CATEGORY_ID = 'userCategoryId',
+  CATEGORY = 'category',
+  SUBCATEGORY_NAME = 'subcategoryName',
+  SUBCATEGORY_DESCRIPTION = 'subcategoryDescription',
+  IS_ACTIVE = 'isActive',
 }
 
 export enum MODES {
@@ -101,16 +119,6 @@ export enum MODES {
   COPY = 'Copy',
   EDIT = 'Edit',
   DELETE = 'Delete',
-}
-
-export enum FORM_CONTROLES {
-  CATEGORY = 'category',
-  SUBCATEGORY = 'subcategory',
-  LOCATION = 'location',
-  TRANSACTION_DATE = 'transactionDate',
-  AMOUNT = 'amount',
-  REMARKS = 'remarks',
-  TRANSACTION_TYPE = 'transactionType',
 }
 
 export enum TRANSACTION_TYPES {
@@ -124,4 +132,9 @@ export enum REF_OBJ_NAMES {
   CATEGORY_TYPE = 'CATEGORY_TYPE',
   CURRENCY_CODE = 'CURRENCY_CODE',
   LOCATION = 'LOCATION',
+}
+
+export enum STATUS {
+  ACTIVE = 'Active',
+  INACTIVE = 'Inactive',
 }

@@ -1,12 +1,4 @@
-import {
-  Component,
-  DestroyRef,
-  TemplateRef,
-  ViewChild,
-  ViewContainerRef,
-  inject,
-} from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Component, TemplateRef, ViewChild, ViewContainerRef, effect, inject } from '@angular/core';
 import { Overlay, OverlayRef } from '@angular/cdk/overlay';
 import { TemplatePortal } from '@angular/cdk/portal';
 import { LoadingService } from '../service/loading-service';
@@ -51,26 +43,22 @@ import { LoadingService } from '../service/loading-service';
   ],
 })
 export class LoadingSpinner {
-  @ViewChild('spinnerTemplate')
-  spinnerTemplate!: TemplateRef<unknown>;
+  @ViewChild('spinnerTemplate') protected spinnerTemplate!: TemplateRef<unknown>;
 
   private readonly overlay = inject(Overlay);
   private readonly viewContainerRef = inject(ViewContainerRef);
   private readonly loadingService = inject(LoadingService);
-  private readonly destroyRef = inject(DestroyRef);
 
   private overlayRef: OverlayRef | null = null;
 
   constructor() {
-    this.loadingService.loading$
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((isLoading) => {
-        if (isLoading) {
-          this.show();
-        } else {
-          this.hide();
-        }
-      });
+    effect(() => {
+      if (this.loadingService.loading()) {
+        this.show();
+      } else {
+        this.hide();
+      }
+    });
   }
 
   private show(): void {

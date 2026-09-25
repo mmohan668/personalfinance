@@ -1,13 +1,13 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { CommonImportsModule } from '../../shared/common-imports/common-imports-module';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { CommonService } from '../../shared/service/common-service';
 import { ApiResponse, SelectItem } from '../../shared/types/types';
-import { BehaviorSubject, firstValueFrom } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 import { SettingsService } from '../../shared/service/settings-service';
 import { NotificationService } from '../../shared/service/notification-service';
-import { MODES } from '../../shared/enums';
+import { DATA_FIELDS, MODES } from '../../shared/enums';
 
 @Component({
   selector: 'app-ad-edit-reference-value-dialog',
@@ -20,13 +20,12 @@ import { MODES } from '../../shared/enums';
 export class AdEditReferenceValueDialog {
   private readonly dialogRef = inject(MatDialogRef<AdEditReferenceValueDialog>);
   readonly data = inject<any>(MAT_DIALOG_DATA);
-  form: FormGroup = new FormGroup({});
+  protected form!: FormGroup;
   public _cs = inject(CommonService);
   private _ss = inject(SettingsService);
-  public categoryTypesSubject = new BehaviorSubject<SelectItem[]>([]);
-  categoryTypes$ = this.categoryTypesSubject.asObservable();
+  public categoryTypes = signal<SelectItem[]>([]);
   private _ns = inject(NotificationService);
-  MODES = MODES;
+  protected MODES = MODES;
 
   constructor() {
     this.fetchCategoryTypes();
@@ -36,34 +35,38 @@ export class AdEditReferenceValueDialog {
 
   fetchCategoryTypes() {
     firstValueFrom(this._ss.fetchRefObjNames()).then((res: SelectItem[]) => {
-      this.categoryTypesSubject.next(res);
+      this.categoryTypes.set(res);
     });
   }
 
+  getEditVlue(fieldName: string): any {
+    return this.data.mode === MODES.EDIT ? this.data.selectedRow[fieldName] : '';
+  }
+
   createForm(): void {
-    this.form.addControl(
-      'referenceObjectName',
-      new FormControl(this.data.mode === MODES.EDIT ? this.data.selectedRow.refObjNameId : '', [
-        Validators.required,
-        Validators.minLength(3),
-        Validators.maxLength(100),
-      ]),
-    );
-    this.form.addControl(
-      'referenceCode',
-      new FormControl(this.data.mode === MODES.EDIT ? this.data.selectedRow.referenceCode : '', [
-        Validators.required,
-        Validators.minLength(3),
-        Validators.maxLength(100),
-      ]),
-    );
-    this.form.addControl(
-      'referenceCodeDescription',
-      new FormControl(
-        this.data.mode === MODES.EDIT ? this.data.selectedRow.referenceCodeDescription : '',
-        [Validators.required, Validators.minLength(3), Validators.maxLength(200)],
+    this.form = new FormGroup({
+      referenceObjectName: new FormControl<number | string>(
+        this.getEditVlue(DATA_FIELDS.REF_OBJ_NAME_ID),
+        {
+          nonNullable: true,
+          validators: [Validators.required, Validators.minLength(3), Validators.maxLength(100)],
+        },
       ),
-    );
+      referenceCode: new FormControl<number | string>(
+        this.getEditVlue(DATA_FIELDS.REFERENCE_CODE),
+        {
+          nonNullable: true,
+          validators: [Validators.required, Validators.minLength(3), Validators.maxLength(100)],
+        },
+      ),
+      referenceCodeDescription: new FormControl<number | string>(
+        this.getEditVlue(DATA_FIELDS.REFERENCE_CODE_DESCRIPTION),
+        {
+          nonNullable: true,
+          validators: [Validators.required, Validators.minLength(3), Validators.maxLength(100)],
+        },
+      ),
+    });
   }
 
   save(): void {

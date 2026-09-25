@@ -669,8 +669,8 @@ public class GenericCriteriaService {
                 LocalDateTime startOfDay =
                         value.toLocalDate().atStartOfDay();
 
-                LocalDateTime endOfDay =
-                        value.toLocalDate().atTime(LocalTime.MAX);
+                LocalDateTime nextDay =
+                        value.toLocalDate().plusDays(1).atStartOfDay();
 
                 predicates.add(
                         criteriaBuilder.and(
@@ -678,9 +678,9 @@ public class GenericCriteriaService {
                                         field,
                                         startOfDay
                                 ),
-                                criteriaBuilder.lessThanOrEqualTo(
+                                criteriaBuilder.lessThan(
                                         field,
-                                        endOfDay
+                                        nextDay
                                 )
                         )
                 );
@@ -690,8 +690,8 @@ public class GenericCriteriaService {
                 LocalDateTime startOfDay =
                         value.toLocalDate().atStartOfDay();
 
-                LocalDateTime endOfDay =
-                        value.toLocalDate().atTime(LocalTime.MAX);
+                LocalDateTime nextDay =
+                        value.toLocalDate().plusDays(1).atStartOfDay();
 
                 predicates.add(
                         criteriaBuilder.or(
@@ -700,22 +700,22 @@ public class GenericCriteriaService {
                                         field,
                                         startOfDay
                                 ),
-                                criteriaBuilder.greaterThan(
+                                criteriaBuilder.greaterThanOrEqualTo(
                                         field,
-                                        endOfDay
+                                        nextDay
                                 )
                         )
                 );
             }
 
             case GREATER_THAN -> {
-                LocalDateTime endOfDay =
-                        value.toLocalDate().atTime(LocalTime.MAX);
+                LocalDateTime nextDay =
+                        value.toLocalDate().plusDays(1).atStartOfDay();
 
                 predicates.add(
-                        criteriaBuilder.greaterThan(
+                        criteriaBuilder.greaterThanOrEqualTo(
                                 field,
-                                endOfDay
+                                nextDay
                         )
                 );
             }
@@ -732,18 +732,22 @@ public class GenericCriteriaService {
                 );
             }
 
-            case LESS_THAN -> predicates.add(
-                    criteriaBuilder.lessThan(field, value)
-            );
+            case LESS_THAN -> {
+                LocalDateTime startOfDay =
+                        value.toLocalDate().atStartOfDay();
+                predicates.add(
+                        criteriaBuilder.lessThan(field, startOfDay)
+                );
+            }
 
             case LESS_THAN_OR_EQUALS -> {
-                LocalDateTime endOfDay =
-                        value.toLocalDate().atTime(LocalTime.MAX);
+                LocalDateTime nextDay =
+                        value.toLocalDate().plusDays(1).atStartOfDay();
 
                 predicates.add(
-                        criteriaBuilder.lessThanOrEqualTo(
+                        criteriaBuilder.lessThan(
                                 field,
-                                endOfDay
+                                nextDay
                         )
                 );
             }
@@ -760,15 +764,18 @@ public class GenericCriteriaService {
                 LocalDateTime upperValue =
                         parseLocalDateTimeForUpperBound(valueTo);
 
+                LocalDateTime startOfDay = value.toLocalDate().atStartOfDay();
+                LocalDateTime nextDay = upperValue.toLocalDate().plusDays(1).atStartOfDay();
+
                 predicates.add(
                         criteriaBuilder.and(
                                 criteriaBuilder.greaterThanOrEqualTo(
                                         field,
-                                        value
+                                        startOfDay
                                 ),
-                                criteriaBuilder.lessThanOrEqualTo(
+                                criteriaBuilder.lessThan(
                                         field,
-                                        upperValue
+                                        nextDay
                                 )
                         )
                 );

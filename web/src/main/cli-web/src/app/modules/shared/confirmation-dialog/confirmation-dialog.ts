@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonImportsModule } from '../common-imports/common-imports-module';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { ConfirmationDialogData } from '../types/types';
@@ -10,10 +10,10 @@ import { ConfirmationDialogData } from '../types/types';
   templateUrl: './confirmation-dialog.html',
 })
 export class ConfirmationDialog {
-  constructor(
-    private dialogRef: MatDialogRef<ConfirmationDialog>,
-    @Inject(MAT_DIALOG_DATA) public data: ConfirmationDialogData,
-  ) {}
+  private dialogRef = inject(MatDialogRef<ConfirmationDialog>);
+  protected data = inject<ConfirmationDialogData>(MAT_DIALOG_DATA);
+
+  constructor() {}
 
   yes(): void {
     this.dialogRef.close(true);

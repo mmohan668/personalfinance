@@ -1,16 +1,14 @@
 <div class="dialog-container" cdkDrag cdkDragRootElement=".cdk-overlay-pane">
-  <!-- Title Bar -->
   <div class="dialog-title-bar" cdkDragHandle>
     <span class="dialog-title">
       {{ data.mode + ' Subcategory' }}
     </span>
 
-    <button mat-icon-button type="button" aria-label="Close" (click)="close()">
+    <button mat-icon-button type="button" aria-label="Close" (click)="dialogRef.close()">
       <span class="material-icons">close</span>
     </button>
   </div>
 
-  <!-- Content -->
   <div class="dialog-content">
     <form [formGroup]="form" class="dialog-form">
       <mat-form-field appearance="fill" class="dialog-field">
@@ -22,7 +20,7 @@
           name="categoryType"
           (valueChange)="this.fetchCategories(categoryType.value)"
         >
-          @for (item of categoryTypes$ | async; track item.value) {
+          @for (item of categoryTypes(); track item.value) {
             <mat-option [value]="item.value">
               {{ item.label }}
             </mat-option>
@@ -40,7 +38,7 @@
         <mat-label>Category</mat-label>
 
         <mat-select formControlName="category" name="category">
-          @for (item of categories$ | async; track item.value) {
+          @for (item of categories(); track item.value) {
             <mat-option [value]="item.value">
               {{ item.label }}
             </mat-option>
@@ -90,14 +88,10 @@
     </form>
   </div>
 
-  <!-- Actions -->
   <mat-dialog-actions class="dialog-actions">
-    <button mat-stroked-button type="button" (click)="clear()">Clear</button>
-
+    <button mat-stroked-button type="button" (click)="resetForm()">Reset</button>
     <span class="action-spacer"></span>
-
-    <button mat-stroked-button type="button" (click)="close()">Close</button>
-
+    <button mat-stroked-button type="button" (click)="dialogRef.close()">Close</button>
     <button
       mat-raised-button
       type="button"

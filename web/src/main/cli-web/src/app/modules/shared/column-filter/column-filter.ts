@@ -32,55 +32,25 @@ export interface FilterOperator {
   styleUrl: './column-filter.scss',
 })
 export class ColumnFilterComponent implements OnInit, OnDestroy {
-  // ============================================================
-  // INPUTS
-  // ============================================================
-
   @Input()
-  column!: GridColumn;
-
-  /**
-   * Application-wide date format.
-   *
-   * Examples:
-   *   dd/MM/yyyy
-   *   MM/dd/yyyy
-   *
-   * This is NOT the PrimeNG format.
-   */
+  public column!: GridColumn;
   @Input({ required: true })
-  dateFormat!: string;
-
-  // ============================================================
-  // OUTPUTS
-  // ============================================================
-
-  @Output()
-  valueChange = new EventEmitter<GridFilter>();
-
-  @Output()
-  operatorChange = new EventEmitter<GridFilter>();
-
-  // ============================================================
-  // STATE
-  // ============================================================
-
-  operators: FilterOperator[] = [];
-
-  selectedOperator = '';
-
-  filter!: GridFilter;
-
-  menuOpen = false;
-
-  betweenError = '';
-
+  public dateFormat!: string;
   @Input()
   booleanOptions!: { label: string; value: boolean | null }[];
 
-  readonly COLUMN_TYPES = COLUMN_TYPES;
+  @Output()
+  valueChange = new EventEmitter<GridFilter>();
+  @Output()
+  operatorChange = new EventEmitter<GridFilter>();
 
-  readonly FILTER_OPERATORS = FILTER_OPERATORS;
+  protected operators: FilterOperator[] = [];
+  protected selectedOperator = '';
+  protected filter!: GridFilter;
+  protected menuOpen = false;
+  protected betweenError = '';
+  protected readonly COLUMN_TYPES = COLUMN_TYPES;
+  protected readonly FILTER_OPERATORS = FILTER_OPERATORS;
 
   @HostBinding('class.between-date-filter')
   get isBetweenDateFilter(): boolean {
@@ -98,19 +68,11 @@ export class ColumnFilterComponent implements OnInit, OnDestroy {
    * Do NOT bind the PrimeNG DatePicker directly to a getter
    * that creates a new Date every change-detection cycle.
    */
-  filterDateValue: Date | null = null;
-
-  filterDateToValue: Date | null = null;
-
+  protected filterDateValue: Date | null = null;
+  protected filterDateToValue: Date | null = null;
   private readonly valueChangeSubject = new Subject<GridFilter>();
-
   private readonly destroy$ = new Subject<void>();
-
-  // ============================================================
-  // OPERATORS
-  // ============================================================
-
-  textOperators: FilterOperator[] = [
+  private textOperators: FilterOperator[] = [
     {
       label: FILTER_LABLES.CONTAINS,
       value: FILTER_OPERATORS.CONTAINS,
@@ -201,12 +163,7 @@ export class ColumnFilterComponent implements OnInit, OnDestroy {
     },
   ];
 
-  booleanOperators: FilterOperator[] = [];
-
-  // ============================================================
-  // PRIME NG DATE FORMAT
-  // ============================================================
-
+  private booleanOperators: FilterOperator[] = [];
   /**
    * Converts application date format to PrimeNG DatePicker format.
    *
@@ -269,15 +226,7 @@ export class ColumnFilterComponent implements OnInit, OnDestroy {
     });
   }
 
-  // ============================================================
-  // CONSTRUCTOR
-  // ============================================================
-
   constructor(private elementRef: ElementRef) {}
-
-  // ============================================================
-  // LIFECYCLE
-  // ============================================================
 
   ngOnInit(): void {
     this.initializeFilter();
@@ -315,10 +264,6 @@ export class ColumnFilterComponent implements OnInit, OnDestroy {
     this.valueChangeSubject.complete();
   }
 
-  // ============================================================
-  // DATE MODEL
-  // ============================================================
-
   /**
    * Keep the PrimeNG model synchronized with the stored
    * yyyy-MM-dd filter values.
@@ -329,9 +274,7 @@ export class ColumnFilterComponent implements OnInit, OnDestroy {
       this.filterDateToValue = null;
       return;
     }
-
     this.filterDateValue = this.parseFilterDate(this.filter?.value);
-
     this.filterDateToValue = this.parseFilterDate(this.filter?.valueTo);
   }
 
@@ -383,10 +326,6 @@ export class ColumnFilterComponent implements OnInit, OnDestroy {
 
     return formatDate(value, 'yyyy-MM-dd', 'en-US');
   }
-
-  // ============================================================
-  // DATE PICKER EVENTS
-  // ============================================================
 
   /**
    * Normal/single DatePicker.
@@ -452,10 +391,6 @@ export class ColumnFilterComponent implements OnInit, OnDestroy {
       ...this.filter,
     });
   }
-
-  // ============================================================
-  // GENERIC INPUT
-  // ============================================================
 
   /**
    * Normal non-date filter input.
@@ -549,10 +484,6 @@ export class ColumnFilterComponent implements OnInit, OnDestroy {
     return isNaN(date.getTime()) ? null : date;
   }
 
-  // ============================================================
-  // FILTER INITIALIZATION
-  // ============================================================
-
   initializeFilter(): void {
     if (this.column.filterable) {
       this.filter = {
@@ -597,10 +528,6 @@ export class ColumnFilterComponent implements OnInit, OnDestroy {
         return this.textOperators;
     }
   }
-
-  // ============================================================
-  // OPERATOR MENU
-  // ============================================================
 
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent): void {
@@ -659,19 +586,11 @@ export class ColumnFilterComponent implements OnInit, OnDestroy {
     });
   }
 
-  // ============================================================
-  // VALUE CHANGE
-  // ============================================================
-
   onValueChange(gridFilter: GridFilter): void {
     this.valueChange.emit({
       ...gridFilter,
     });
   }
-
-  // ============================================================
-  // BETWEEN VALIDATION
-  // ============================================================
 
   private isValidBetween(): boolean {
     this.betweenError = '';
@@ -711,10 +630,6 @@ export class ColumnFilterComponent implements OnInit, OnDestroy {
 
     return true;
   }
-
-  // ============================================================
-  // RESET
-  // ============================================================
 
   onReset(): void {
     this.betweenError = '';

@@ -1,4 +1,3 @@
-// grid-column.model.ts
 export interface GridColumn {
   field: string;
   header: string;

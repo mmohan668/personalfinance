@@ -19,16 +19,18 @@ import { SYSTEM } from '../shared/constants';
   templateUrl: './reference-values.html',
 })
 export class ReferenceValues {
-  @ViewChild('dataGrid') dataGrid!: DataGrid;
+  @ViewChild('dataGrid') private dataGrid!: DataGrid;
+
+  private readonly _cs = inject(CommonService);
+  private readonly dialog = inject(MatDialog);
+  private readonly _ss = inject(SettingsService);
+  private readonly _ns = inject(NotificationService);
+  protected readonly _ms = inject(MessageService);
+
   protected readonly gridName = GRID_NAMES.REFERENCE_VALUES_GRID;
   protected readonly dataKey = DATA_FIELDS.ID;
   protected readonly gridExportFileName = GRID_EXPORT_FILE_NAMES.REFERENCE_VALUES_EFN;
-  protected readonly _ms = inject(MessageService);
-  toolbarConfig!: ToolbarConfig;
-  private _cs = inject(CommonService);
-  private dialog = inject(MatDialog);
-  private _ss = inject(SettingsService);
-  private _ns = inject(NotificationService);
+  protected readonly toolbarConfig!: ToolbarConfig;
 
   constructor() {
     this.toolbarConfig = this._cs.toolbarConfig();
@@ -37,7 +39,7 @@ export class ReferenceValues {
     this.toolbarConfig.editRow = true;
   }
 
-  addRow = () => {
+  addRow = (): void => {
     this.dialog
       .open(AdEditReferenceValueDialog, {
         width: '70vw',
@@ -53,7 +55,7 @@ export class ReferenceValues {
       });
   };
 
-  deleteRow = () => {
+  deleteRow = (): void => {
     if (this.dataGrid?.selectedRows.length === 0) {
       this._ns.error(this._ms.get('common.delete.noSelection'));
       return;
@@ -93,7 +95,7 @@ export class ReferenceValues {
       });
   };
 
-  editRow = () => {
+  editRow = (): void => {
     if (this.dataGrid.selectedRows.length === 0) {
       this._ns.error(this._ms.get('common.edit.noSelection'));
       return;
