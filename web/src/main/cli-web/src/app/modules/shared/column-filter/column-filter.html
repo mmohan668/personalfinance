@@ -1,14 +1,11 @@
 @if (column) {
   <div class="column-filter">
-    <!-- =========================================================
-         OPERATOR BUTTON
-         ========================================================= -->
-
     <button
       #operatorButton
       type="button"
       class="operator-button"
       [class.active]="menuOpen"
+      (mouseenter)="menuOpen = true"
       (click)="toggleMenu()"
       aria-label="Filter operator"
     >
@@ -17,17 +14,9 @@
       </span>
     </button>
 
-    <!-- =========================================================
-         BETWEEN FILTER
-         ========================================================= -->
-
     @if (selectedOperator === FILTER_OPERATORS.BETWEEN) {
       <div class="between-filter">
         <div class="between-inputs">
-          <!-- ===================================================
-               FROM DATE
-               =================================================== -->
-
           @if (column.dataType === 'date' || column.dataType === 'datetime') {
             <div class="filter-control date-filter-control">
               <p-datepicker
@@ -38,15 +27,10 @@
                 [(ngModel)]="filterDateValue"
                 (ngModelChange)="onBetweenDateChange('from', $event)"
                 appendTo="body"
+                (onFocus)="menuOpen = false"
               />
             </div>
-          }
-
-          <!-- ===================================================
-               FROM NON-DATE
-               =================================================== -->
-
-          @else {
+          } @else {
             <div class="filter-control">
               <input
                 pInputText
@@ -54,13 +38,10 @@
                 [placeholder]="'From ' + column.header"
                 [value]="filter.value"
                 (input)="onBetweenInput('from', $any($event.target).value)"
+                (onFocus)="menuOpen = false"
               />
             </div>
           }
-
-          <!-- ===================================================
-               TO DATE
-               =================================================== -->
 
           @if (column.dataType === 'date' || column.dataType === 'datetime') {
             <div class="filter-control date-filter-control">
@@ -72,15 +53,10 @@
                 [(ngModel)]="filterDateToValue"
                 (ngModelChange)="onBetweenDateChange('to', $event)"
                 appendTo="body"
+                (onFocus)="menuOpen = false"
               />
             </div>
-          }
-
-          <!-- ===================================================
-               TO NON-DATE
-               =================================================== -->
-
-          @else {
+          } @else {
             <div class="filter-control">
               <input
                 pInputText
@@ -88,14 +64,11 @@
                 [placeholder]="'To ' + column.header"
                 [value]="filter.valueTo ?? ''"
                 (input)="onBetweenInput('to', $any($event.target).value)"
+                (onFocus)="menuOpen = false"
               />
             </div>
           }
         </div>
-
-        <!-- =====================================================
-             BETWEEN ERROR
-             ===================================================== -->
 
         @if (betweenError) {
           <div class="between-error">
@@ -103,17 +76,7 @@
           </div>
         }
       </div>
-    }
-
-    <!-- =========================================================
-         NORMAL FILTER
-         ========================================================= -->
-
-    @else {
-      <!-- =======================================================
-           NORMAL DATE FILTER
-           ======================================================= -->
-
+    } @else {
       @if (column.dataType === 'date' || column.dataType === 'datetime') {
         <div class="filter-control date-filter-control">
           <p-datepicker
@@ -124,15 +87,10 @@
             [(ngModel)]="filterDateValue"
             (ngModelChange)="onDateChange($event)"
             appendTo="body"
+            (onFocus)="menuOpen = false"
           />
         </div>
-      }
-
-      <!-- =======================================================
-           NUMBER FILTER
-           ======================================================= -->
-
-      @else if (column.dataType === 'number') {
+      } @else if (column.dataType === 'number') {
         <div class="filter-control">
           <input
             pInputText
@@ -142,14 +100,10 @@
             [value]="filter.value"
             (keydown)="onNumberKeyDown($event)"
             (input)="onInput($any($event.target).value)"
+            (focus)="menuOpen = false"
           />
         </div>
-      }
-      <!-- =======================================================
-     BOOLEAN FILTER
-     ======================================================= -->
-
-      @else if (column.dataType === 'boolean') {
+      } @else if (column.dataType === 'boolean') {
         <div class="filter-control boolean-filter-control">
           <p-select
             [options]="booleanOptions"
@@ -161,13 +115,7 @@
             appendTo="body"
           />
         </div>
-      }
-
-      <!-- =======================================================
-           NORMAL FILTER
-           ======================================================= -->
-
-      @else {
+      } @else {
         <div class="filter-control">
           <input
             pInputText
@@ -175,14 +123,11 @@
             [placeholder]="column.header"
             [value]="filter.value"
             (input)="onInput($any($event.target).value)"
+            (focus)="menuOpen = false"
           />
         </div>
       }
     }
-
-    <!-- =========================================================
-         OPERATOR MENU
-         ========================================================= -->
 
     <ng-template
       cdkConnectedOverlay
@@ -198,7 +143,7 @@
         },
       ]"
     >
-      <div class="operator-menu">
+      <div class="operator-menu" (mouseleave)="menuOpen = false">
         @for (operator of operators; track operator.value) {
           <button
             type="button"
