@@ -1,9 +1,5 @@
 <aside class="menu" [class.menu--collapsed]="collapsed()">
   <nav class="menu__nav" aria-label="Main navigation">
-    <!-- ========================================= -->
-    <!-- Collapse button                            -->
-    <!-- ========================================= -->
-
     <button
       type="button"
       class="menu__collapse"
@@ -16,10 +12,6 @@
     </button>
 
     @for (item of menuItems; track item.label) {
-      <!-- ======================================= -->
-      <!-- Simple menu item                        -->
-      <!-- ======================================= -->
-
       @if (!item.children?.length) {
         <a
           class="menu__item"
@@ -39,10 +31,6 @@
           }
         </a>
       }
-
-      <!-- ======================================= -->
-      <!-- Parent menu item                        -->
-      <!-- ======================================= -->
 
       @if (item.children?.length) {
         <button
@@ -71,10 +59,6 @@
             </span>
           }
         </button>
-
-        <!-- ===================================== -->
-        <!-- Submenu                                -->
-        <!-- ===================================== -->
 
         @if (!collapsed() && isExpanded(item)) {
           <div class="submenu">

@@ -6,6 +6,7 @@ import {
   GRID_EXPORT_FILE_NAMES,
   GRID_NAMES,
   MODES,
+  STATUS,
 } from '../shared/enums';
 import { ApiResponse, GridColumn, GridFilter, ToolbarConfig } from '../shared/types/types';
 import { CommonService } from '../shared/service/common-service';
@@ -14,7 +15,6 @@ import { AddEditSubCategoryDialog } from './add-edit-sub-category-dialog/add-edi
 import { NotificationService } from '../shared/service/notification-service';
 import { MessageService } from '../shared/service/message-service';
 import { ConfirmationDialog } from '../shared/confirmation-dialog/confirmation-dialog';
-import { title } from 'process';
 import { CategoryManagementService } from '../shared/service/category-management-service';
 import { firstValueFrom } from 'rxjs';
 
@@ -25,28 +25,29 @@ import { firstValueFrom } from 'rxjs';
   templateUrl: './subcategories.html',
 })
 export class Subcategories {
-  @ViewChild('dataGrid') dataGrid!: DataGrid;
+  @ViewChild('dataGrid') private dataGrid!: DataGrid;
+
+  public readonly _cs = inject(CommonService);
+  private readonly dialog = inject(MatDialog);
+  private readonly _ns = inject(NotificationService);
+  private readonly _ms = inject(MessageService);
+  private readonly _cms = inject(CategoryManagementService);
+
   protected readonly gridName = GRID_NAMES.SUBCATEGORIES_GRID;
   protected readonly gridExportFileName = GRID_EXPORT_FILE_NAMES.SUBCATEGORIES_EFN;
   protected readonly dataKey = DATA_FIELDS.ID;
+  protected readonly toolbarConfig: ToolbarConfig;
   protected readonly additionalFilters: GridFilter[] = [
     { field: DATA_FIELDS.USER_ID, operator: FILTER_OPERATORS.EQUALS, value: 1 },
   ];
-  public _cs = inject(CommonService);
-  toolbarConfig: ToolbarConfig;
-  private dialog = inject(MatDialog);
-  private _ns = inject(NotificationService);
-  private _ms = inject(MessageService);
-  private _cms = inject(CategoryManagementService);
 
   constructor() {
     this.toolbarConfig = this._cs.toolbarConfig(true);
-    // this.toolbarConfig.copyRow = false;
   }
 
   calculateCellValue = (rowData: any, col: GridColumn) => {
-    if (col.field === 'isActive') {
-      return rowData[col.field] ? 'Active' : 'Inactive';
+    if (col.field === DATA_FIELDS.IS_ACTIVE) {
+      return rowData[col.field] ? STATUS.ACTIVE : STATUS.INACTIVE;
     }
     return rowData[col.field];
   };

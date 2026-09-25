@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, inject, Inject } from '@angular/core';
 import { CommonImportsModule } from '../common-imports/common-imports-module';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
@@ -9,12 +9,9 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
   templateUrl: './choice-dialog.html',
 })
 export class ChoiceDialog {
-  selectedAnswer: 'Yes' | 'No' | null = null;
-
-  constructor(
-    private dialogRef: MatDialogRef<ChoiceDialog>,
-    @Inject(MAT_DIALOG_DATA) public data: any,
-  ) {}
+  protected selectedAnswer: 'Yes' | 'No' | null = null;
+  private dialogRef = inject(MatDialogRef<ChoiceDialog>);
+  protected data = inject<any>(Inject(MAT_DIALOG_DATA));
 
   close(): void {
     this.dialogRef.close(false);

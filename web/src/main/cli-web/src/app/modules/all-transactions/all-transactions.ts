@@ -1,15 +1,8 @@
 import { Component, inject, ViewChild } from '@angular/core';
 import { DataGrid } from '../shared/data-grid/data-grid';
-import {
-  TRANSACTION_TYPES,
-  DATA_FIELDS,
-  FILTER_OPERATORS,
-  GRID_EXPORT_FILE_NAMES,
-  GRID_NAMES,
-  MODES,
-} from '../shared/enums';
+import { DATA_FIELDS, GRID_EXPORT_FILE_NAMES, GRID_NAMES, MODES } from '../shared/enums';
 import { CommonService } from '../shared/service/common-service';
-import { ApiResponse, GridColumn, GridFilter, ToolbarConfig } from '../shared/types/types';
+import { ApiResponse, GridColumn, ToolbarConfig } from '../shared/types/types';
 import { MatDialog } from '@angular/material/dialog';
 import { AddCopyEditFinancialTransactionDialog } from '../shared/add-copy-edit-financialtransaction-dialog/add-copy-edit-financialtransaction-dialog';
 import { NotificationService } from '../shared/service/notification-service';
@@ -25,29 +18,31 @@ import { ConfirmationDialog } from '../shared/confirmation-dialog/confirmation-d
   templateUrl: './all-transactions.html',
 })
 export class AllTransactions {
-  @ViewChild('dataGrid') dataGrid!: DataGrid;
-  private dialog = inject(MatDialog);
+  @ViewChild('dataGrid') private dataGrid!: DataGrid;
+
+  private readonly dialog = inject(MatDialog);
+  public readonly _cs = inject(CommonService);
+  private readonly _ns = inject(NotificationService);
+  private readonly _ms = inject(MessageService);
+  private readonly _fts = inject(FinancialTransactionsService);
+
   protected readonly dataKey = DATA_FIELDS.ID;
   protected readonly gridName = GRID_NAMES.ALL_TRANSACTIONS_GRID;
   protected readonly gridExportFileName = GRID_EXPORT_FILE_NAMES.ALL_TRANSACTIONS_GRID_EFN;
-  public _cs = inject(CommonService);
-  private _ns = inject(NotificationService);
-  private _ms = inject(MessageService);
-  private _fts = inject(FinancialTransactionsService);
-  toolbarConfig!: ToolbarConfig;
+  protected readonly toolbarConfig!: ToolbarConfig;
 
   constructor() {
     this.toolbarConfig = this._cs.toolbarConfigExcludeActivateInactivate();
   }
 
-  fetchTitle = (rowData: any, col: GridColumn) => {
+  fetchTitle = (rowData: any, col: GridColumn): any => {
     if (col.field === DATA_FIELDS.LOCATION) {
       return rowData[DATA_FIELDS.LOCATION] + ' ~ ' + rowData[DATA_FIELDS.LOCATION_DESCRIPTION];
     }
     return rowData[col.field];
   };
 
-  addRow = () => {
+  addRow = (): void => {
     this.dialog
       .open(AddCopyEditFinancialTransactionDialog, {
         width: '70vw',
@@ -67,7 +62,7 @@ export class AllTransactions {
       });
   };
 
-  editRow = () => {
+  editRow = (): void => {
     if (this.dataGrid?.selectedRows.length === 0) {
       this._ns.error(this._ms.get('common.edit.noSelection'));
       return;
@@ -96,7 +91,7 @@ export class AllTransactions {
       });
   };
 
-  copyRow = () => {
+  copyRow = (): void => {
     if (this.dataGrid?.selectedRows.length === 0) {
       this._ns.error(this._ms.get('common.copy.noSelection'));
       return;
@@ -125,7 +120,7 @@ export class AllTransactions {
       });
   };
 
-  deleteRow = () => {
+  deleteRow = (): void => {
     if (this.dataGrid?.selectedRows.length === 0) {
       this._ns.error(this._ms.get('common.delete.noSelection'));
       return;

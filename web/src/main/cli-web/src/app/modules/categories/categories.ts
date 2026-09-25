@@ -26,33 +26,35 @@ import { ChoiceDialog } from '../shared/choice-dialog/choice-dialog';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Categories {
-  @ViewChild('dataGrid') dataGrid!: DataGrid;
+  @ViewChild('dataGrid') private dataGrid!: DataGrid;
+
+  public readonly _cs = inject(CommonService);
+  protected readonly dialog = inject(MatDialog);
+  private readonly _cms = inject(CategoryManagementService);
+  protected readonly _ns = inject(NotificationService);
+  protected readonly _ms = inject(MessageService);
+
   protected readonly gridName = GRID_NAMES.CATEGORIES_GRID;
   protected readonly gridExportFileName = GRID_EXPORT_FILE_NAMES.CATEGORIES_EFN;
   protected readonly dataKey = DATA_FIELDS.ID;
-  protected readonly _ms = inject(MessageService);
+  protected readonly toolbaConfig!: ToolbarConfig;
   protected readonly additionalFilters: GridFilter[] = [
     { field: DATA_FIELDS.USER_ID, operator: FILTER_OPERATORS.EQUALS, value: 1 },
   ];
-  public _cs = inject(CommonService);
-  protected toolbaConfig!: ToolbarConfig;
-  private dialog = inject(MatDialog);
-  private _cms = inject(CategoryManagementService);
-  protected _ns = inject(NotificationService);
 
   constructor() {
     this.toolbaConfig = this._cs.toolbarConfig(true);
     this.toolbaConfig.copyRow = false;
   }
 
-  calculateCellValue = (rowData: any, col: GridColumn) => {
+  calculateCellValue = (rowData: any, col: GridColumn): any => {
     if (col.field === 'active') {
       return rowData[col.field] ? 'Active' : 'Inactive';
     }
     return rowData[col.field];
   };
 
-  addRow = () => {
+  addRow = (): void => {
     this.dialog
       .open(AddEditCategoryDialog, {
         width: '70vw',
@@ -70,7 +72,7 @@ export class Categories {
       });
   };
 
-  editRow = () => {
+  editRow = (): void => {
     if (this.dataGrid?.selectedRows.length === 0) {
       this._ns.error(this._ms.get('common.edit.noSelection'));
       return;
@@ -97,7 +99,7 @@ export class Categories {
       });
   };
 
-  deleteRow = () => {
+  deleteRow = (): void => {
     if (this.dataGrid?.selectedRows.length === 0) {
       this._ns.error(this._ms.get('common.delete.noSelection'));
       return;
@@ -129,7 +131,7 @@ export class Categories {
       });
   };
 
-  activate = () => {
+  activate = (): void => {
     if (this.dataGrid?.selectedRows.length === 0) {
       this._ns.error(this._ms.get('common.activate.noSelection'));
       return;
@@ -179,7 +181,7 @@ export class Categories {
       });
   };
 
-  inactivate = () => {
+  inactivate = (): void => {
     if (this.dataGrid?.selectedRows.length === 0) {
       this._ns.error(this._ms.get('common.inactivate.noSelection'));
       return;

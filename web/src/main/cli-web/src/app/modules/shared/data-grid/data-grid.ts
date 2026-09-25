@@ -1,12 +1,9 @@
 import { CurrencyPipe, DatePipe } from '@angular/common';
-import { Component, inject, Input, OnInit, ViewChild } from '@angular/core';
-
+import { Component, computed, inject, Input, OnInit, signal, ViewChild } from '@angular/core';
 import { SelectItem, SortEvent, SortMeta } from 'primeng/api';
 import { Table } from 'primeng/table';
 import { Paginator } from 'primeng/paginator';
-
-import { BehaviorSubject, firstValueFrom } from 'rxjs';
-
+import { firstValueFrom } from 'rxjs';
 import {
   ApiResponse,
   GridColumn,
@@ -16,16 +13,16 @@ import {
   SearchCriteria,
   ToolbarConfig,
 } from '../types/types';
-
 import { GridService } from '../service/grid-service';
 import { GRID_NAMES, SORT_ICONS, SORT_ORDERS, TRANSACTION_TYPES } from '../enums';
-
 import * as FileSaver from 'file-saver';
 import { CommonService } from '../service/common-service';
 import { CommonImportsModule } from '../common-imports/common-imports-module';
 import { ColumnFilterComponent } from '../column-filter/column-filter';
 import { AppConfigService } from '../service/app-config-service';
 import { NotificationService } from '../service/notification-service';
+import { GridStateService } from '../service/grid-state-service';
+import { EXCEL_EXTENSION, EXCEL_TYPE, EXPORT_DELEMETER } from '../constants';
 
 @Component({
   selector: 'app-data-grid',
@@ -35,201 +32,123 @@ import { NotificationService } from '../service/notification-service';
   templateUrl: './data-grid.html',
 })
 export class DataGrid implements OnInit {
-  @ViewChild('dt') dt!: Table;
-  @ViewChild('paginator') paginator!: Paginator;
+  @ViewChild('dataTable') private dataTable!: Table;
+  @ViewChild('paginator') private paginator!: Paginator;
+
+  @Input()
+  public addRow!: () => void;
+  @Input()
+  public copyRow!: () => void;
+  @Input()
+  public editRow!: () => void;
+  @Input()
+  public deleteRow!: () => void;
+  @Input()
+  public activate!: () => void;
+  @Input()
+  public inactivate!: () => void;
+  @Input({ required: true })
+  public toolbarConfig!: ToolbarConfig;
+  @Input({ required: true })
+  public gridName!: string;
+  @Input({ required: true })
+  public gridExportFileName!: string;
+  @Input({ required: true })
+  public dataKey!: string;
+  @Input()
+  public additionalFilters!: GridFilter[];
+  @Input()
+  public booleanOptions!: { label: string; value: boolean | null }[];
+  @Input()
+  public calculateCellValue!: (rowData: any, col: GridColumn) => any;
+  @Input()
+  public fetchTitle!: (rowData: any, col: GridColumn) => any;
+  @Input()
+  public groupBy: string | null = null;
+
   public config = inject(AppConfigService);
   public _cs = inject(CommonService);
   private _gs = inject(GridService);
   private _cp = inject(CurrencyPipe);
   private _ns = inject(NotificationService);
-  /* =========================================================
-      TOOLBAR ACTIONS
-      ========================================================= */
+  private _gss = inject(GridStateService);
 
-  @Input()
-  addRow!: () => void;
+  private readonly columns = signal<GridColumn[]>([]);
+  protected dataSource = signal<any[]>([]);
+  protected readonly showGrid = signal(false);
 
-  @Input()
-  copyRow!: () => void;
+  protected visibleColumns = computed(() =>
+    this.columns().filter((column) => column.visible === true),
+  );
+  protected columnOptions = computed<SelectItem[]>(() =>
+    this.columns().map((col) => ({
+      label: col.header,
+      value: col,
+    })),
+  );
 
-  @Input()
-  editRow!: () => void;
-
-  @Input()
-  deleteRow!: () => void;
-
-  @Input()
-  activate!: () => void;
-
-  @Input()
-  inactivate!: () => void;
-
-  @Input()
-  toolbarConfig!: ToolbarConfig;
-
-  @Input({ required: true })
-  gridName!: string;
-
-  @Input({ required: true })
-  gridExportFileName!: string;
-
-  @Input({ required: true })
-  dataKey!: string;
-
-  @Input()
-  additionalFilters!: GridFilter[];
-
-  @Input()
-  booleanOptions!: { label: string; value: boolean | null }[];
-
-  /* =========================================================
-     DATA
-     ========================================================= */
-
-  dataSourceSubject = new BehaviorSubject<any[]>([]);
-
-  dataSource$ = this.dataSourceSubject.asObservable();
-
-  totalRecords = 0;
-
-  skip = 0;
-
-  take = this.config.configValue.defaultPageSize;
-
-  /* =========================================================
-     FILTER
-     ========================================================= */
-
-  filters: GridFilter[] = [];
-
-  /* =========================================================
-     COLUMNS
-     ========================================================= */
-
-  columns: GridColumn[] = [];
-
-  visibleColumnsSubject = new BehaviorSubject<GridColumn[]>([]);
-
-  visibleColumns$ = this.visibleColumnsSubject.asObservable();
-
-  columnOptions: SelectItem[] = [];
-
-  columnSearch = '';
-
-  /* =========================================================
-     ROW SELECTION
-     ========================================================= */
-
-  selectedRows: any[] = [];
-
-  /* =========================================================
-     SORT
-     =========================================================
-     
-     IMPORTANT:
-     PrimeNG uses:
-     
-       order = 1  -> ascending
-       order = -1 -> descending
-
-     Keep PrimeNG's SortMeta[] internally.
-
-     Only convert to GridSort[] when sending
-     the request to the backend.
-     ========================================================= */
-
-  sortMeta: SortMeta[] = [];
-
-  sortField = '';
-
-  sortOrder: 1 | -1 = 1;
-
-  @Input()
-  calculateCellValue!: (rowData: any, col: GridColumn) => any;
-
-  @Input()
-  fetchTitle!: (rowData: any, col: GridColumn) => any;
-
-  currencyCode: string = 'INR';
-
-  @Input() groupBy: string | null = null;
-
-  dateFormat: string = 'dd/MM/yyyy';
-
-  dateTimeFormat: string = 'dd/MM/yyyy HH:mm:ss';
-
-  /* =========================================================
-     CONSTRUCTOR
-     ========================================================= */
+  protected columnSearch = '';
+  public selectedRows: any[] = [];
+  protected sortMeta: SortMeta[] = [];
+  protected sortField = '';
+  protected sortOrder: 1 | -1 = 1;
+  protected totalRecords = 0;
+  protected skip = 0;
+  protected take = this.config.configValue.defaultPageSize;
+  protected filters: GridFilter[] = [];
+  protected currencyCode: string = 'INR';
+  protected dateFormat: string = 'dd/MM/yyyy';
+  protected dateTimeFormat: string = 'dd/MM/yyyy HH:mm:ss';
 
   constructor() {}
-
-  /* =========================================================
-     INIT
-     ========================================================= */
 
   ngOnInit(): void {
     if (!this.toolbarConfig) {
       this.toolbarConfig = this._cs.toolbarConfig();
     }
+    this.loadGridColumns();
+  }
+
+  private loadGridColumns(): void {
+    const cachedColumns = this._gss.getColumns(this.gridName);
+    if (cachedColumns) {
+      this.initializeColumns([...cachedColumns]);
+      return;
+    }
     this.fetchGridColumns();
   }
 
-  private fetchGridColumns() {
+  private fetchGridColumns(): void {
     this._gs.loadGridColumns(this.gridName).subscribe((columns) => {
-      this.columns = columns.map((column) => ({
+      const normalizedColumns = columns.map((column) => ({
         ...column,
         visible: column.visible !== false,
       }));
-
-      this.visibleColumnsSubject.next(this.columns.filter((column) => column.visible === true));
-
-      this.columnOptions = this.columns.map((col) => ({
-        label: col.header,
-        value: col,
-      }));
-
-      /*
-       * Build the initial/default sort state.
-       *
-       * This is important because the table is using
-       * sortMode="multiple".
-       */
-      this.initializeDefaultSort(this.columns);
-      if (this.additionalFilters?.length) {
-        this.filters.push(...this.additionalFilters);
-      }
-      /*
-       * Load the initial data using the default sort.
-       */
-      this.loadGridData();
+      this._gss.setColumns(this.gridName, normalizedColumns);
+      this.initializeColumns([...normalizedColumns]);
     });
   }
 
-  /* =========================================================
-     DATA
-     ========================================================= */
+  initializeColumns(columns: GridColumn[]): void {
+    this.columns.set(
+      columns.map((column) => ({
+        ...column,
+      })),
+    );
+    this.initializeDefaultSort(this.columns());
+    if (this.additionalFilters?.length) {
+      this.filters.push(...this.additionalFilters);
+    }
+    this.showGrid.set(true);
+    this.loadGridData();
+  }
+
+  private updateCachedColumns(): void {
+    this._gss.setColumns(this.gridName, this.columns());
+  }
 
   loadGridData(): void {
-    /*
-     * PrimeNG SortMeta[]
-     *
-     * Example:
-     *
-     * [
-     *   { field: 'name', order: 1 },
-     *   { field: 'price', order: -1 }
-     * ]
-     *
-     * becomes:
-     *
-     * [
-     *   { field: 'name', order: 'asc' },
-     *   { field: 'price', order: 'desc' }
-     * ]
-     */
     const sorts: GridSort[] = this.getSorts();
-
     const request: SearchCriteria = {
       sortList: sorts,
       filterList: this.filters,
@@ -238,15 +157,14 @@ export class DataGrid implements OnInit {
       loadAllData: false,
       gridName: this.gridName,
     };
-
     this._gs.loadGridData(request).subscribe({
       next: (result) => {
-        this.dataSourceSubject.next(result.recordDetails);
+        this.dataSource.set(result.recordDetails);
         this.totalRecords = result.totalRecords;
       },
       error: (error) => {
         console.error('Error loading grid data:', error);
-        this.dataSourceSubject.next([]);
+        this.dataSource.set([]);
         this.totalRecords = 0;
       },
     });
@@ -264,10 +182,6 @@ export class DataGrid implements OnInit {
       }));
   }
 
-  /* =========================================================
-     DEFAULT SORT
-     ========================================================= */
-
   initializeDefaultSort(columns: GridColumn[]): void {
     const defaultSortColumns = columns
       .filter((column) => column.sortable !== false && column.defaultSortOrder)
@@ -275,128 +189,57 @@ export class DataGrid implements OnInit {
         (a, b) =>
           (a.sortIndex ?? Number.MAX_SAFE_INTEGER) - (b.sortIndex ?? Number.MAX_SAFE_INTEGER),
       );
-
     if (!defaultSortColumns.length) {
       this.sortMeta = [];
       this.sortField = '';
       this.sortOrder = 1;
-
       return;
     }
-
     this.sortMeta = defaultSortColumns.map((column) => ({
       field: column.field,
       order: column.defaultSortOrder === SORT_ORDERS.DESCENDING ? -1 : 1,
     }));
-
-    /*
-     * Keep the first sort column for compatibility
-     * with the single-sort properties.
-     */
     this.sortField = this.sortMeta[0].field;
     this.sortOrder = this.sortMeta[0].order as any;
   }
 
-  /* =========================================================
-     SORT
-     ========================================================= */
-
   onSort(event: SortEvent): void {
-    /*
-     * IMPORTANT:
-     *
-     * Your installed PrimeNG version emits:
-     *
-     *   event.multisortmeta
-     *
-     * rather than:
-     *
-     *   event.multiSortMeta
-     *
-     * This is why the previous code was always getting [].
-     *
-     * Use both here so this code is safe with either event shape.
-     */
     const eventData = event as SortEvent & {
       multisortmeta?: SortMeta[];
     };
-
     const multiSortMeta = eventData.multisortmeta ?? eventData.multiSortMeta ?? [];
-
-    /*
-     * MULTIPLE SORT
-     *
-     * Example after Ctrl-clicking Name and Category:
-     *
-     * [
-     *   { field: 'name', order: 1 },
-     *   { field: 'category', order: 1 }
-     * ]
-     */
     if (multiSortMeta.length > 0) {
       this.sortMeta = multiSortMeta.map((sort) => ({
         field: sort.field,
         order: sort.order === -1 ? -1 : 1,
       }));
-
-      /*
-       * Keep these values synchronized with the first
-       * active sort item.
-       */
       this.sortField = this.sortMeta[0]?.field ?? '';
-
       this.sortOrder = this.sortMeta[0]?.order === -1 ? -1 : 1;
     } else {
-      /*
-       * If PrimeNG sends an empty multi-sort list,
-       * clear the sort state.
-       */
       this.sortMeta = [];
-
       this.sortField = '';
-
       this.sortOrder = 1;
     }
     this.resetGrid();
-    /*
-     * Reload using the new sort state.
-     */
     this.loadGridData();
   }
 
-  /* =========================================================
-     SORT ICON
-     ========================================================= */
-
   getSortIcon(field: string): string {
     const sort = this.sortMeta.find((item) => item.field === field);
-
     if (!sort) {
       return '';
     }
-
     return sort.order === 1 ? SORT_ICONS.ASCENDING : SORT_ICONS.DESCENDING;
   }
 
-  /* =========================================================
-     PAGE
-     ========================================================= */
-
   onPage(event: any): void {
     const loadData = this.skip !== event.first || this.take !== event.rows;
-
     this.skip = event.first ?? 0;
-
     this.take = event.rows ?? 5;
-
     if (loadData) {
       this.loadGridData();
     }
   }
-
-  /* =========================================================
-     FILTER
-     ========================================================= */
 
   changeOperator(gridFilter: GridFilter): void {
     this.filters = this.filters.filter((filter) => filter.field !== gridFilter.field);
@@ -423,25 +266,14 @@ export class DataGrid implements OnInit {
     this.loadGridData();
   }
 
-  /* =========================================================
-     COLUMN VISIBILITY
-     ========================================================= */
-
   toggleColumn = (col: GridColumn, checked: boolean): void => {
-    const column = this.columns.find((column) => column.field === col.field);
-
-    if (!column) {
-      return;
-    }
-
-    column.visible = checked;
-
-    this.visibleColumnsSubject.next(this.columns.filter((column) => column.visible === true));
+    this.columns.update((columns) =>
+      columns.map((column) =>
+        column.field === col.field ? { ...column, visible: checked } : column,
+      ),
+    );
+    this.updateCachedColumns();
   };
-
-  /* =========================================================
-     ROW SELECTION
-     ========================================================= */
 
   isRowSelected(row: any): boolean {
     return this.selectedRows.some((selected) => selected.id === row.id);
@@ -456,121 +288,75 @@ export class DataGrid implements OnInit {
       if (!this.isRowSelected(row)) {
         this.selectedRows = [...this.selectedRows, row];
       }
-
       return;
     }
-
     this.selectedRows = this.selectedRows.filter((selected) => selected.id !== row.id);
   }
 
-  /* =========================================================
-     HEADER SELECTION STATE
-     ========================================================= */
-
   allRowsSelected(): boolean {
-    const rows = this.dataSourceSubject.value;
-
+    const rows = this.dataSource();
     if (rows.length === 0) {
       return false;
     }
-
     return rows.every((row) => this.isRowSelected(row));
   }
 
   someRowsSelected(): boolean {
-    const rows = this.dataSourceSubject.value;
-
+    const rows = this.dataSource();
     if (rows.length === 0) {
       return false;
     }
-
     const selectedCount = rows.filter((row) => this.isRowSelected(row)).length;
-
     return selectedCount > 0 && selectedCount < rows.length;
   }
 
-  /* =========================================================
-     SELECT / UNSELECT ALL
-     ========================================================= */
-
   toggleAllRows(checked: boolean): void {
-    const rows = this.dataSourceSubject.value;
-
+    const rows = this.dataSource();
     if (checked) {
-      /*
-       * Add current page rows while
-       * preserving existing selections.
-       */
       const selectedMap = new Map(this.selectedRows.map((row) => [row.id, row]));
-
       for (const row of rows) {
         selectedMap.set(row.id, row);
       }
-
       this.selectedRows = Array.from(selectedMap.values());
-
       return;
     }
-
-    /*
-     * Remove only the rows from the
-     * current data set.
-     */
     const rowIds = new Set(rows.map((row) => row.id));
-
     this.selectedRows = this.selectedRows.filter((row) => !rowIds.has(row.id));
   }
 
-  /* =========================================================
-     COLUMN SEARCH
-     ========================================================= */
-
   getColumns = (searchInput: string): GridColumn[] => {
+    const columns = this.columns();
     if (searchInput !== undefined && searchInput !== null && searchInput !== '') {
-      return this.columns.filter((col) =>
-        col.header.toLowerCase().includes(searchInput.toLowerCase()),
-      );
+      return columns.filter((col) => col.header.toLowerCase().includes(searchInput.toLowerCase()));
     }
-
-    return this.columns;
+    return columns;
   };
 
-  /* =========================================================
-     COLUMN SELECTION
-     ========================================================= */
-
   allColumnsSelected = (): boolean => {
-    return this.columns.length > 0 && this.columns.every((col) => col.visible !== false);
+    const columns = this.columns();
+    return columns.length > 0 && columns.every((col) => col.visible !== false);
   };
 
   someColumnsSelected = (): boolean => {
-    const selectedCount = this.columns.filter((col) => col.visible !== false).length;
-
-    return selectedCount > 0 && selectedCount < this.columns.length;
+    const columns = this.columns();
+    const selectedCount = columns.filter((col) => col.visible !== false).length;
+    return selectedCount > 0 && selectedCount < columns.length;
   };
 
   toggleAllColumns = (checked: boolean): void => {
-    this.columns.forEach((col) => {
-      col.visible = checked;
-    });
-
-    this.visibleColumnsSubject.next(this.columns.filter((col) => col.visible === true));
+    this.columns.update((columns) =>
+      columns.map((col) => ({
+        ...col,
+        visible: checked,
+      })),
+    );
+    this.updateCachedColumns();
   };
-
-  /* =========================================================
-     EXPORT
-     ========================================================= */
 
   exportExcel = async (selectionType: string): Promise<void> => {
     const module = await import('exceljs');
     const ExcelJS = module.default ?? module;
-
-    const visibleColumns = this.visibleColumnsSubject.value;
-
-    // =====================================================
-    // SOURCE DATA
-    // =====================================================
-
+    const visibleColumns = this.visibleColumns();
     let sourceRows: any[] = [];
 
     if (selectionType === 'SELECTED') {
@@ -578,7 +364,6 @@ export class DataGrid implements OnInit {
         console.log('No rows selected');
         return;
       }
-
       sourceRows = this.selectedRows;
     } else {
       const sorts: GridSort[] = this.sortMeta
@@ -590,7 +375,6 @@ export class DataGrid implements OnInit {
           field: sort.field,
           order: sort.order === 1 ? 'asc' : 'desc',
         }));
-
       const request: SearchCriteria = {
         sortList: sorts,
         filterList: this.filters,
@@ -599,29 +383,12 @@ export class DataGrid implements OnInit {
         loadAllData: true,
         gridName: this.gridName,
       };
-
       sourceRows = (await firstValueFrom(this._gs.loadGridData(request))).recordDetails;
     }
 
-    // =====================================================
-    // CREATE WORKBOOK
-    // =====================================================
-
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('data');
-
-    // Get currency symbol once.
-    // Example:
-    // USD -> $
-    // INR -> ₹
-    // EUR -> €
-    // GBP -> £
     const currencySymbol = this.getCurrencySymbol();
-
-    // =====================================================
-    // MAIN HEADER
-    // =====================================================
-
     const headerRow = worksheet.addRow(visibleColumns.map((col) => col.header));
 
     headerRow.eachCell((cell) => {
@@ -629,31 +396,20 @@ export class DataGrid implements OnInit {
         bold: true,
         size: 13,
       };
-
       cell.alignment = {
         vertical: 'middle',
       };
     });
 
-    // =====================================================
-    // GROUP / DATA ROWS
-    // =====================================================
-
     let previousGroup: any = Symbol('initial');
 
     for (const row of sourceRows) {
       const currentGroup = this.groupBy ? row[this.groupBy] : undefined;
-
-      // ===================================================
-      // GROUP HEADER
-      // ===================================================
-
       if (this.groupBy && currentGroup !== previousGroup) {
         const groupHeaderRow = worksheet.addRow([
           `${this.getGroupColumnHeader()}: ${currentGroup}`,
         ]);
 
-        // Merge group header across all visible columns
         if (visibleColumns.length > 1) {
           worksheet.mergeCells(
             groupHeaderRow.number,
@@ -663,96 +419,41 @@ export class DataGrid implements OnInit {
           );
         }
 
-        // Group header styling
         const groupCell = groupHeaderRow.getCell(1);
-
         groupCell.font = {
           bold: true,
           size: 13,
         };
-
         groupCell.alignment = {
           vertical: 'middle',
         };
-
         previousGroup = currentGroup;
       }
 
-      // ===================================================
-      // DATA ROW
-      // ===================================================
-
       const dataRow = worksheet.addRow(
         visibleColumns.map((col) => {
-          // -----------------------------------------------
-          // CUSTOM CELL VALUE
-          // -----------------------------------------------
-
           if (col.cellTemplate === 'cellValueTemplate') {
             return this.calculateCellValue(row, col);
           }
-
-          // -----------------------------------------------
-          // CURRENCY
-          // -----------------------------------------------
-
           if (col.cellTemplate === 'currencyCellTemplate') {
-            // IMPORTANT:
-            // Keep the actual Excel value as NUMBER.
-            //
-            // Do NOT use:
-            // this.currency.transform(...)
-            //
-            // because CurrencyPipe returns a STRING.
             return this.getNumericCurrencyValue(row, col);
           }
-          // -----------------------------------------------
-          // DATE VALUE
-          // -----------------------------------------------
-
           if (col.dataType === 'date' || col.dataType === 'datetime') {
             const value = row[col.field];
-
             if (!value) {
               return null;
             }
-
             const formatted = new DatePipe('en-GB').transform(value, this.dateTimeFormat);
             return formatted ? formatted : null;
           }
-
-          // -----------------------------------------------
-          // NORMAL VALUE
-          // -----------------------------------------------
-
           return row[col.field];
         }),
       );
 
-      // ===================================================
-      // APPLY COLUMN FORMATTING
-      // ===================================================
-
       visibleColumns.forEach((col, index) => {
         const cell = dataRow.getCell(index + 1);
-
-        // -----------------------------------------------
-        // CURRENCY FORMAT
-        // -----------------------------------------------
-
         if (col.cellTemplate === 'currencyCellTemplate') {
-          // Keep the value numeric
           cell.value = this.getNumericCurrencyValue(row, col);
-
-          // Display currency symbol while retaining
-          // numeric Excel value.
-          //
-          // Example:
-          // 50000 -> $50,000.00
-          // 50000 -> ₹50,000.00
-          // 50000 -> €50,000.00
-          //
-          // SUM / AVERAGE continue to work.
           cell.numFmt = `${currencySymbol}#,##0.00`;
         }
         if (col.dataType === 'date') {
@@ -761,19 +462,10 @@ export class DataGrid implements OnInit {
           cell.numFmt = this.getDateTimeFormateForExport();
         }
       });
-
-      // ===================================================
-      // EXCEL OUTLINE / GROUPING
-      // ===================================================
-
       if (this.groupBy) {
         dataRow.outlineLevel = 1;
       }
     }
-
-    // =====================================================
-    // COLUMN WIDTH
-    // =====================================================
 
     visibleColumns.forEach((col, index) => {
       worksheet.getColumn(index + 1).width = this.getExcelColumnWidth(
@@ -783,20 +475,12 @@ export class DataGrid implements OnInit {
       );
     });
 
-    // =====================================================
-    // FREEZE MAIN HEADER
-    // =====================================================
-
     worksheet.views = [
       {
         state: 'frozen',
         ySplit: 1,
       },
     ];
-
-    // =====================================================
-    // OUTLINE SETTINGS
-    // =====================================================
 
     if (this.groupBy) {
       worksheet.properties.outlineProperties = {
@@ -805,38 +489,22 @@ export class DataGrid implements OnInit {
       };
     }
 
-    // =====================================================
-    // WRITE FILE
-    // =====================================================
-
     workbook.xlsx.writeBuffer().then((buffer) => {
       this.saveAsExcelFile(buffer, this.gridExportFileName);
     });
   };
 
-  /* =========================================================
-     SAVE EXCEL
-     ========================================================= */
-
   saveAsExcelFile(buffer: any, fileName: string): void {
-    const EXCEL_TYPE =
-      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
-
-    const EXCEL_EXTENSION = '.xlsx';
-
     const data: Blob = new Blob([buffer], {
       type: EXCEL_TYPE,
     });
-
-    FileSaver.saveAs(data, fileName + '_export_' + new Date().getTime() + EXCEL_EXTENSION);
+    FileSaver.saveAs(data, fileName + EXPORT_DELEMETER + new Date().getTime() + EXCEL_EXTENSION);
   }
 
   getExcelColumnWidth(worksheet: any, columnIndex: number, header: string): number {
     let maxLength = header.length;
-
     worksheet.getColumn(columnIndex).eachCell((cell: any) => {
       const value = cell.value;
-
       if (value !== null && value !== undefined) {
         maxLength = Math.max(maxLength, String(value).length);
       }
@@ -846,35 +514,33 @@ export class DataGrid implements OnInit {
 
   private getNumericCurrencyValue(row: any, col: GridColumn): number | null {
     const value = row[col.field];
-
     if (value === null || value === undefined || value === '') {
       return null;
     }
-
     const numericValue = Number(value);
-
     return Number.isNaN(numericValue) ? null : numericValue;
   }
 
   private getCurrencySymbol(): string {
     const transformed = this._cp.transform(0, this.currencyCode, 'symbol', '1.0-0');
-
     if (!transformed) {
       return this.currencyCode;
     }
-
-    // Remove the formatted numeric part.
     return transformed.replace(/[\d\s.,-]+$/, '').trim();
   }
 
-  onColReorder(event: any) {
-    const moved = this.columns.splice(event.dragIndex, 1)[0];
-    this.columns.splice(event.dropIndex, 0, moved);
-    this.visibleColumnsSubject.next(this.columns.filter((col) => col.visible === true));
+  onColReorder(event: any): void {
+    this.columns.update((columns) => {
+      const next = [...columns];
+      const [moved] = next.splice(event.dragIndex, 1);
+      next.splice(event.dropIndex, 0, moved);
+      return next;
+    });
+    this.updateCachedColumns();
   }
 
-  getGroupColumnHeader() {
-    return this.columns.filter((col) => col.field === this.groupBy)[0].header;
+  getGroupColumnHeader(): string {
+    return this.columns().find((col) => col.field === this.groupBy)?.header ?? '';
   }
 
   getDateFormate(): string {
@@ -894,28 +560,18 @@ export class DataGrid implements OnInit {
   }
 
   private resetGrid(): void {
-    /*
-     * Reset the selected rows when filters change.
-     */
     this.selectedRows = [];
-    /*
-     * Reset the page to the first page when filters change.
-     */
     this.skip = 0;
-    /*
-     * Reset the number of items per page when filters change.
-     */
     this.take = this.take ?? 25;
-    /*
-     * Reset the first index when filters change.
-     */
     if (this.paginator) {
       this.paginator.first.set(0);
     }
   }
 
-  saveGridSetting = async () => {
-    const columnsToSave = this.columns.map((col) => col);
+  saveGridSetting = async (): Promise<void> => {
+    const columnsToSave = this.columns().map((col) => ({
+      ...col,
+    }));
     const sorts: GridSort[] = this.getSorts();
     columnsToSave.forEach((col) => {
       const sortIndex = sorts.findIndex((s) => s.field === col.field);
@@ -933,6 +589,8 @@ export class DataGrid implements OnInit {
     };
     firstValueFrom(this._gs.saveGridSetting(gridPersonalizationDto)).then((resp: ApiResponse) => {
       if (resp.success) {
+        this._gss.setColumns(this.gridName, columnsToSave);
+        this.columns.set(columnsToSave.map((col) => ({ ...col })));
         this._ns.success(resp.message);
       } else {
         this._ns.error(resp.message);
@@ -940,7 +598,7 @@ export class DataGrid implements OnInit {
     });
   };
 
-  resetGridSettings = async () => {
+  resetGridSettings = async (): Promise<void> => {
     const gridPersonalizationDto: GridPersonalizationDto = {
       gridName: this.gridName,
       gridColumnJson: null,
@@ -948,18 +606,20 @@ export class DataGrid implements OnInit {
     };
     firstValueFrom(this._gs.resetGridSettings(gridPersonalizationDto)).then((resp: ApiResponse) => {
       if (resp.success) {
+        this._gss.clearColumns(this.gridName);
         this._ns.success(resp.message);
+        this.fetchGridColumns();
       } else {
         this._ns.error(resp.message);
       }
     });
   };
 
-  clearSelection = () => {
+  clearSelection = (): void => {
     this.selectedRows = [];
   };
 
-  refreshGrid = () => {
+  refreshGrid = (): void => {
     this.clearSelection();
     this.loadGridData();
   };
@@ -971,16 +631,12 @@ export class DataGrid implements OnInit {
     switch (row.transactionType) {
       case TRANSACTION_TYPES.EXPENSE:
         return 'row-expense';
-
       case TRANSACTION_TYPES.INCOME:
         return 'row-income';
-
       case TRANSACTION_TYPES.INVESTMENT:
         return 'row-investment';
-
       case TRANSACTION_TYPES.TRANSFER:
         return 'row-transfer';
-
       default:
         return '';
     }

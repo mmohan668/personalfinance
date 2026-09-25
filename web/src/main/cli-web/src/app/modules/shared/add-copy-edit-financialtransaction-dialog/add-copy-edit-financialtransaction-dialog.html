@@ -62,7 +62,7 @@
             name="transactionType"
             (valueChange)="this.fetchCategories($event)"
           >
-            @for (item of transactionTypes$ | async; track item.value) {
+            @for (item of transactionTypes(); track item.value) {
               <mat-option [value]="item.value">
                 {{ item.label }}
               </mat-option>
@@ -85,7 +85,7 @@
           name="category"
           (valueChange)="this.fetchSubcategories(category.value)"
         >
-          @for (item of categories$ | async; track item.value) {
+          @for (item of categories(); track item.value) {
             <mat-option [value]="item.value">
               {{ item.label }}
             </mat-option>
@@ -103,7 +103,7 @@
         <mat-label>Subcategory</mat-label>
 
         <mat-select formControlName="subcategory" name="subcategory">
-          @for (item of subcategories$ | async; track item.value) {
+          @for (item of subcategories(); track item.value) {
             <mat-option [value]="item.value">
               {{ item.label }}
             </mat-option>
@@ -121,7 +121,7 @@
         <mat-label>Location</mat-label>
 
         <mat-select formControlName="location" name="location">
-          @for (item of locations$ | async; track item.value) {
+          @for (item of locations(); track item.value) {
             <mat-option [value]="item.value">
               {{ item.label }}
             </mat-option>

@@ -1,15 +1,15 @@
 <app-data-grid
   #dataGrid
   [gridName]="gridName"
-  [calculateCellValue]="this.calculateCellValue"
+  [calculateCellValue]="calculateCellValue"
   [booleanOptions]="_cs.activeInactiveBooleanOptions"
   [additionalFilters]="additionalFilters"
   [gridExportFileName]="gridExportFileName"
   [dataKey]="dataKey"
-  [toolbarConfig]="this.toolbaConfig"
-  [addRow]="this.addRow"
-  [editRow]="this.editRow"
-  [deleteRow]="this.deleteRow"
-  [activate]="this.activate"
-  [inactivate]="this.inactivate"
+  [toolbarConfig]="toolbaConfig"
+  [addRow]="addRow"
+  [editRow]="editRow"
+  [deleteRow]="deleteRow"
+  [activate]="activate"
+  [inactivate]="inactivate"
 ></app-data-grid>
