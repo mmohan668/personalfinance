@@ -21,7 +21,7 @@ export class AddEditSubCategoryDialog {
   protected dialogRef = inject(MatDialogRef<AddEditSubCategoryDialog>);
   public readonly data = inject<any>(MAT_DIALOG_DATA);
   protected categories = signal<SelectItem[]>([]);
-  protected categoryTypes = signal<SelectItem[]>([]);
+  protected transactionTypes = signal<SelectItem[]>([]);
   public _cs = inject(CommonService);
   private _cms = inject(CategoryManagementService);
   private _ns = inject(NotificationService);
@@ -30,21 +30,21 @@ export class AddEditSubCategoryDialog {
   protected form!: FormGroup;
   constructor() {
     this.createForm();
-    this.fetchCategoryTypes();
+    this.fetchTransactionTypes();
     this.fetchdropdowns();
   }
 
   fetchdropdowns() {
     if ([MODES.COPY, MODES.EDIT].includes(this.data.mode)) {
-      this.fetchCategories(this.data.selectedRow.categoryTypeId, false);
+      this.fetchCategories(this.data.selectedRow.transactionTypeId, false);
     } else {
       this.categories.set([]);
     }
   }
 
-  fetchCategoryTypes() {
-    firstValueFrom(this._ss.fetchCategoryTypes()).then((resp: SelectItem[]) => {
-      this.categoryTypes.set(resp);
+  fetchTransactionTypes() {
+    firstValueFrom(this._ss.fetchTransactionTypes()).then((resp: SelectItem[]) => {
+      this.transactionTypes.set(resp);
     });
   }
 
@@ -58,7 +58,7 @@ export class AddEditSubCategoryDialog {
   }
 
   getValue(fieldName: DATA_FIELDS) {
-    if ([DATA_FIELDS.CATEGORY_TYPE_ID, DATA_FIELDS.USER_CATEGORY_ID].includes(fieldName)) {
+    if ([DATA_FIELDS.transaction_type_ID, DATA_FIELDS.USER_CATEGORY_ID].includes(fieldName)) {
       return this.data.mode === MODES.EDIT || this.data.mode === MODES.COPY
         ? this.data.selectedRow[fieldName]
         : EMPTY;
@@ -68,7 +68,7 @@ export class AddEditSubCategoryDialog {
 
   createForm() {
     this.form = new FormGroup({
-      categoryType: new FormControl<number | string>(this.getValue(DATA_FIELDS.CATEGORY_TYPE_ID), {
+      transactionType: new FormControl<number | string>(this.getValue(DATA_FIELDS.transaction_type_ID), {
         nonNullable: true,
         validators: [Validators.required],
       }),
@@ -94,7 +94,7 @@ export class AddEditSubCategoryDialog {
   save() {
     const subcategory: any = {
       id: this.data.mode === MODES.EDIT ? this.data.selectedRow.id : null,
-      categoryTypeId: this.form.value.categoryType,
+      transactionTypeId: this.form.value.transactionTypeId,
       userCategoryId: this.form.value.category,
       subcategoryName: this.form.value.subcategoryName,
       subcategoryDescription: this.form.value.subcategoryDescription,

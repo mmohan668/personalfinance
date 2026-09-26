@@ -29,9 +29,9 @@ export class SettingsService {
     );
   }
 
-  fetchCategoryTypes(): Observable<SelectItem[]> {
+  fetchTransactionTypes(): Observable<SelectItem[]> {
     return this.http.get<SelectItem[]>(
-      `${this.config.configValue.apiUrl}/settings/fetchCategoryTypes`,
+      `${this.config.configValue.apiUrl}/settings/fetchTransactionTypes`,
     );
   }
 

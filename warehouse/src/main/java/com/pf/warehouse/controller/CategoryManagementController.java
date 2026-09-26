@@ -59,8 +59,8 @@ public class CategoryManagementController {
     }
 
     @GetMapping("/fetchCategories")
-    public List<SelectItem> fetchCategories(@RequestParam Long adminUserId, @RequestParam Long referenceValueId) {
-        return categoryManagementService.fetchCategories(adminUserId, referenceValueId);
+    public List<SelectItem> fetchCategories(@RequestParam Long referenceValueId) {
+        return categoryManagementService.fetchCategories(referenceValueId);
     }
 
     @GetMapping("/fetchSubcategoriesByCategory")
@@ -69,8 +69,8 @@ public class CategoryManagementController {
     }
 
     @GetMapping("/fetchCategoriesByReferenceCode")
-    public List<SelectItem> fetchCategoriesByReferenceCode(@RequestParam Long adminUserId, @RequestParam String referenceCode) {
-        return categoryManagementService.fetchCategoriesByReferenceCode(adminUserId, referenceCode);
+    public List<SelectItem> fetchCategoriesByReferenceCode(@RequestParam String referenceCode) {
+        return categoryManagementService.fetchCategoriesByReferenceCode(referenceCode);
     }
 
     @PostMapping("/activateSubcategories")

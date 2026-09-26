@@ -68,7 +68,7 @@ VALUES ((SELECT id
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 
--- Category Type
+-- Transaction Type
 INSERT INTO grid_column
 (grid_name_id,
  field,
@@ -81,7 +81,7 @@ VALUES ((SELECT id
          FROM grid_name
          WHERE LOWER(TRIM(name)) = LOWER(TRIM('ALL_TRANSACTIONS_GRID'))),
         'transactionType',
-        'Category Type',
+        'Transaction Type',
         'text',
         'contains',
         250,

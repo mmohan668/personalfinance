@@ -24,19 +24,19 @@ export class AddEditCategoryDialog {
   private readonly _ss = inject(SettingsService);
   private readonly _ns = inject(NotificationService);
 
-  public categoryTypes = signal<SelectItem[]>([]);
+  public transactionTypes = signal<SelectItem[]>([]);
 
   protected form!: FormGroup;
   protected MODES = MODES;
 
   constructor() {
-    this.fetchCategoryTypes();
+    this.fetchTransactionTypes();
     this.createForm();
   }
 
-  fetchCategoryTypes(): void {
-    firstValueFrom(this._ss.fetchCategoryTypes()).then((res: SelectItem[]) => {
-      this.categoryTypes.set(res);
+  fetchTransactionTypes(): void {
+    firstValueFrom(this._ss.fetchTransactionTypes()).then((res: SelectItem[]) => {
+      this.transactionTypes.set(res);
     });
   }
 
@@ -46,8 +46,8 @@ export class AddEditCategoryDialog {
 
   createForm(): void {
     this.form = new FormGroup({
-      categoryType: new FormControl<number | string>(
-        this.getEditValue(DATA_FIELDS.CATEGORY_TYPE_ID),
+      transactionType: new FormControl<number | string>(
+        this.getEditValue(DATA_FIELDS.transaction_type_ID),
         {
           nonNullable: true,
           validators: [Validators.required],
@@ -70,15 +70,14 @@ export class AddEditCategoryDialog {
   save(): void {
     const category: any = {
       id: this.data.mode === MODES.EDIT ? this.data.selectedRow.id : null,
-      categoryTypeId: this.form.value.categoryType,
+      transactionTypeId: this.form.value.transactionType,
       categoryName: this.form.value.categoryName.trim(),
       categoryDescription: this.form.value.categoryDescription.trim(),
     };
     firstValueFrom(this._cms.saveCategory(category)).then((response: ApiResponse) => {
       console.log(response.success + ' : ' + response.message);
       if (response.success) {
-        this._ns.success(response.message);
-        this.dialogRef.close(true);
+        this.dialogRef.close(response.message);
       } else {
         this._ns.error(response.message);
       }

@@ -1,5 +1,6 @@
 package com.pf.common.entity.settings;
 
+import com.pf.common.entity.userManagement.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -42,17 +43,16 @@ public class ReferenceValue {
     @Column(name = "reference_code_3", length = 100)
     private String referenceCode3;
 
-    @NotBlank
-    @Size(max = 100)
-    @Column(name = "created_by", nullable = false, length = 100)
-    private String createdBy;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "created_by", nullable = false)
+    private User createdBy;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
-    @Size(max = 100)
-    @Column(name = "updated_by", length = 100)
-    private String updatedBy;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "updated_by")
+    private User updatedBy;
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;

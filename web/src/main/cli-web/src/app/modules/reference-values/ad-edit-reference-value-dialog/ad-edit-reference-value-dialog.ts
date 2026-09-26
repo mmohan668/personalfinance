@@ -23,18 +23,18 @@ export class AdEditReferenceValueDialog {
   protected form!: FormGroup;
   public _cs = inject(CommonService);
   private _ss = inject(SettingsService);
-  public categoryTypes = signal<SelectItem[]>([]);
+  public transactionTypes = signal<SelectItem[]>([]);
   private _ns = inject(NotificationService);
   protected MODES = MODES;
 
   constructor() {
-    this.fetchCategoryTypes();
+    this.fetchTransactionTypes();
     this.createForm();
   }
 
-  fetchCategoryTypes() {
+  fetchTransactionTypes() {
     firstValueFrom(this._ss.fetchRefObjNames()).then((res: SelectItem[]) => {
-      this.categoryTypes.set(res);
+      this.transactionTypes.set(res);
     });
   }
 
@@ -92,8 +92,7 @@ export class AdEditReferenceValueDialog {
     firstValueFrom(this._ss.saveReferenceValue(referenceValue)).then((response: ApiResponse) => {
       console.log(response.success + ' : ' + response.message);
       if (response.success) {
-        this._ns.success(response.message);
-        this.dialogRef.close(true);
+        this.dialogRef.close(response.message);
       } else {
         this._ns.error(response.message);
       }

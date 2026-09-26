@@ -10,7 +10,7 @@ BEGIN;
 -- ============================================================
 
 INSERT INTO categories
-(category_type,
+(transaction_type,
  category_name,
  category_description,
  is_active,
@@ -28,67 +28,67 @@ FROM (VALUES
 
           ('EXPENSE', 'Banking & Finance',
            'Banking fees, financial charges, interest and penalties',
-           TRUE, 'SYSTEM'),
+           TRUE, (SELECT id FROM users WHERE username = 'PERSONALFINANCEAPP')),
 
           ('EXPENSE', 'Bills & Utilities',
            'Recurring household utility and communication bills',
-           TRUE, 'SYSTEM'),
+           TRUE, (SELECT id FROM users WHERE username = 'PERSONALFINANCEAPP')),
 
           ('EXPENSE', 'Child Expenses',
            'Expenses related to children and their daily needs',
-           TRUE, 'SYSTEM'),
+           TRUE, (SELECT id FROM users WHERE username = 'PERSONALFINANCEAPP')),
 
           ('EXPENSE', 'Dining & Food Delivery',
            'Restaurant meals, cafes, fast food and food delivery',
-           TRUE, 'SYSTEM'),
+           TRUE, (SELECT id FROM users WHERE username = 'PERSONALFINANCEAPP')),
 
           ('EXPENSE', 'Donations & Contributions',
            'Charitable donations, religious giving, tips and contributions',
-           TRUE, 'SYSTEM'),
+           TRUE, (SELECT id FROM users WHERE username = 'PERSONALFINANCEAPP')),
 
           ('EXPENSE', 'Education',
            'Education fees, learning materials, courses and coaching',
-           TRUE, 'SYSTEM'),
+           TRUE, (SELECT id FROM users WHERE username = 'PERSONALFINANCEAPP')),
 
           ('EXPENSE', 'Electronics',
            'Electronic devices, accessories, repairs and related expenses',
-           TRUE, 'SYSTEM'),
+           TRUE, (SELECT id FROM users WHERE username = 'PERSONALFINANCEAPP')),
 
           ('EXPENSE', 'Entertainment',
            'Entertainment, hobbies, gaming, subscriptions and events',
-           TRUE, 'SYSTEM'),
+           TRUE, (SELECT id FROM users WHERE username = 'PERSONALFINANCEAPP')),
 
           ('EXPENSE', 'Food & Groceries',
            'Groceries, fresh food, dairy, meat and household food items',
-           TRUE, 'SYSTEM'),
+           TRUE, (SELECT id FROM users WHERE username = 'PERSONALFINANCEAPP')),
 
           ('EXPENSE', 'Healthcare',
            'Medical consultations, medicines, tests and health insurance',
-           TRUE, 'SYSTEM'),
+           TRUE, (SELECT id FROM users WHERE username = 'PERSONALFINANCEAPP')),
 
           ('EXPENSE', 'Housing & Household',
            'Home rent, loan payments, maintenance and household expenses',
-           TRUE, 'SYSTEM'),
+           TRUE, (SELECT id FROM users WHERE username = 'PERSONALFINANCEAPP')),
 
           ('EXPENSE', 'Insurance',
            'Life insurance and other insurance-related expenses',
-           TRUE, 'SYSTEM'),
+           TRUE, (SELECT id FROM users WHERE username = 'PERSONALFINANCEAPP')),
 
           ('EXPENSE', 'Lifestyle Shopping',
            'Clothing, footwear, accessories, jewelry and personal shopping',
-           TRUE, 'SYSTEM'),
+           TRUE, (SELECT id FROM users WHERE username = 'PERSONALFINANCEAPP')),
 
           ('EXPENSE', 'Personal Care',
            'Personal grooming, cosmetics, fitness and laundry expenses',
-           TRUE, 'SYSTEM'),
+           TRUE, (SELECT id FROM users WHERE username = 'PERSONALFINANCEAPP')),
 
           ('EXPENSE', 'Transportation',
            'Fuel, charging, public transport, parking and vehicle expenses',
-           TRUE, 'SYSTEM'),
+           TRUE, (SELECT id FROM users WHERE username = 'PERSONALFINANCEAPP')),
 
           ('EXPENSE', 'Travel & Vacation',
            'Travel accommodation, sightseeing, documents and insurance',
-           TRUE, 'SYSTEM'),
+           TRUE, (SELECT id FROM users WHERE username = 'PERSONALFINANCEAPP')),
 
 
           -- =========================
@@ -97,35 +97,35 @@ FROM (VALUES
 
           ('INCOME', 'Business Income',
            'Income received from business activities',
-           TRUE, 'SYSTEM'),
+           TRUE, (SELECT id FROM users WHERE username = 'PERSONALFINANCEAPP')),
 
           ('INCOME', 'Freelance & Contract Work',
            'Income received from freelance and contract work',
-           TRUE, 'SYSTEM'),
+           TRUE, (SELECT id FROM users WHERE username = 'PERSONALFINANCEAPP')),
 
           ('INCOME', 'Gifts & Windfalls',
            'Cash gifts, prize money and other unexpected receipts',
-           TRUE, 'SYSTEM'),
+           TRUE, (SELECT id FROM users WHERE username = 'PERSONALFINANCEAPP')),
 
           ('INCOME', 'Government Benefits',
            'Pensions, tax refunds and other government benefits',
-           TRUE, 'SYSTEM'),
+           TRUE, (SELECT id FROM users WHERE username = 'PERSONALFINANCEAPP')),
 
           ('INCOME', 'Investment Income',
            'Income generated from investments and financial assets',
-           TRUE, 'SYSTEM'),
+           TRUE, (SELECT id FROM users WHERE username = 'PERSONALFINANCEAPP')),
 
           ('INCOME', 'Other Income',
            'Income that does not fit into another income category',
-           TRUE, 'SYSTEM'),
+           TRUE, (SELECT id FROM users WHERE username = 'PERSONALFINANCEAPP')),
 
           ('INCOME', 'Rental Income',
            'Income received from rental properties',
-           TRUE, 'SYSTEM'),
+           TRUE, (SELECT id FROM users WHERE username = 'PERSONALFINANCEAPP')),
 
           ('INCOME', 'Salary & Employment',
            'Salary, bonuses and other employment-related income',
-           TRUE, 'SYSTEM'),
+           TRUE, (SELECT id FROM users WHERE username = 'PERSONALFINANCEAPP')),
 
 
           -- =========================
@@ -134,7 +134,7 @@ FROM (VALUES
 
           ('TRANSFER', 'Transfer',
            'Movement of money between people or accounts',
-           TRUE, 'SYSTEM'),
+           TRUE, (SELECT id FROM users WHERE username = 'PERSONALFINANCEAPP')),
 
 
           -- =========================
@@ -143,18 +143,18 @@ FROM (VALUES
 
           ('INVESTMENT', 'Investments',
            'Money allocated to investments and long-term financial assets',
-           TRUE, 'SYSTEM')) AS v
+           TRUE, (SELECT id FROM users WHERE username = 'PERSONALFINANCEAPP'))) AS v
          (
-          category_type,
+          transaction_type,
           category_name,
           category_description,
           is_active,
           created_by
              )
          JOIN reference_value rv
-              ON LOWER(TRIM(rv.reference_code)) = LOWER(TRIM(v.category_type))
+              ON LOWER(TRIM(rv.reference_code)) = LOWER(TRIM(v.transaction_type))
 
-ON CONFLICT (category_type, LOWER(TRIM(category_name)))
+ON CONFLICT (transaction_type, LOWER(TRIM(category_name)))
     DO NOTHING;
 
 
@@ -172,7 +172,7 @@ SELECT c.id,
        s.subcategory_name,
        s.subcategory_description,
        TRUE,
-       'SYSTEM'
+       (SELECT id FROM users WHERE username = 'PERSONALFINANCEAPP')
 FROM (VALUES
 
           -- ========================================================
@@ -762,15 +762,15 @@ FROM (VALUES
            'Stocks / Shares',
            'Stock and share market investments')) AS s
          (
-          category_type,
+          transaction_type,
           category_name,
           subcategory_name,
           subcategory_description
              )
          JOIN reference_value rv
-              ON LOWER(TRIM(rv.reference_code)) = LOWER(TRIM(s.category_type))
+              ON LOWER(TRIM(rv.reference_code)) = LOWER(TRIM(s.transaction_type))
          JOIN categories c
-              ON c.category_type = rv.id
+              ON c.transaction_type = rv.id
                   AND LOWER(TRIM(c.category_name)) = LOWER(TRIM(s.category_name))
 
 ON CONFLICT (category_id, LOWER(TRIM(subcategory_name)))

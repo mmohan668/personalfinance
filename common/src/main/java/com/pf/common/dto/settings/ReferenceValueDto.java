@@ -13,7 +13,9 @@ import java.util.Map;
 public class ReferenceValueDto {
 
     public static final Map<String, String> FIELD_MAPPINGS = Map.of(
-            "refObjName", "referenceObject.refObjName"
+            "refObjName", "referenceObject.refObjName",
+            "createdBy", "createdBy.username",
+            "updatedBy", "updatedBy.username"
     );
 
     private Long id;

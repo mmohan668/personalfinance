@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Map;
 
 @Data
 @NoArgsConstructor
@@ -15,6 +16,12 @@ import java.time.LocalDateTime;
 public class ReferenceObjectDto implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
+
+    public static final Map<String, String> FIELD_MAPPINGS = Map.of(
+            "createdBy", "createdBy.username",
+            "updatedBy", "updatedBy.username"
+    );
+
     private Long id;
     @NotBlank(message = "Reference object name is required")
     private String refObjName;

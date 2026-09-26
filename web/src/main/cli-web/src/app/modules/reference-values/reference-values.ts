@@ -50,8 +50,9 @@ export class ReferenceValues {
         disableClose: true,
       })
       .afterClosed()
-      .subscribe((value: boolean) => {
-        if (value) {
+      .subscribe((message) => {
+        if (message) {
+          this._ns.success(message);
           this.dataGrid?.refreshGrid();
         }
       });
@@ -110,7 +111,6 @@ export class ReferenceValues {
       this._ns.error(this._ms.get('referenceValue.edit.systemOnly'));
       return;
     }
-
     this.dialog
       .open(AdEditReferenceValueDialog, {
         width: '70vw',
@@ -121,8 +121,9 @@ export class ReferenceValues {
         },
       })
       .afterClosed()
-      .subscribe((value: boolean) => {
-        if (value) {
+      .subscribe((message) => {
+        if (message) {
+          this._ns.success(message);
           this.dataGrid.refreshGrid();
         }
       });

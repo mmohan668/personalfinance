@@ -19,12 +19,12 @@ public interface UserCategoryRepository extends JpaRepository<UserCategory, Long
     @Query("""
             SELECT COUNT(uc)
             FROM UserCategory uc
-            WHERE uc.referenceValue.id = :categoryType
+            WHERE uc.referenceValue.id = :transactionType
             AND LOWER(TRIM(uc.categoryName)) =LOWER(TRIM(:categoryName))
             AND uc.user.adminUser.id = :userId
             """)
-    long countByCategoryTypeAndNameAndUserId(
-            @Param("categoryType") Long categoryType,
+    long countByTransactionTypeAndNameAndUserId(
+            @Param("transactionType") Long transactionType,
             @Param("categoryName") String categoryName,
             @Param("userId") Long userId
     );
@@ -33,13 +33,13 @@ public interface UserCategoryRepository extends JpaRepository<UserCategory, Long
     @Query("""
             SELECT COUNT(uc)
             FROM UserCategory uc
-            WHERE uc.referenceValue.id = :categoryType
+            WHERE uc.referenceValue.id = :transactionType
             AND LOWER(TRIM(uc.categoryName)) =LOWER(TRIM(:categoryName))
             AND uc.user.adminUser.id = :userId
             AND uc.id <> :id
             """)
-    long countByCategoryTypeAndNameAndUserIdAndIdNot(
-            @Param("categoryType") Long categoryType,
+    long countByTransactionTypeAndNameAndUserIdAndIdNot(
+            @Param("transactionType") Long transactionType,
             @Param("categoryName") String categoryName,
             @Param("userId") Long userId,
             @Param("id") Long id
@@ -54,7 +54,7 @@ public interface UserCategoryRepository extends JpaRepository<UserCategory, Long
             """)
     long activateUserCategory(
             @Param("ids") List<Long> ids,
-            @Param("updatedBy") String updatedBy,
+            @Param("updatedBy") Long updatedBy,
             @Param("updatedAt") LocalDateTime updatedAt
     );
 
@@ -67,7 +67,7 @@ public interface UserCategoryRepository extends JpaRepository<UserCategory, Long
             """)
     long inactivateUserCategory(
             @Param("ids") List<Long> ids,
-            @Param("updatedBy") String updatedBy,
+            @Param("updatedBy") Long updatedBy,
             @Param("updatedAt") LocalDateTime updatedAt
     );
 

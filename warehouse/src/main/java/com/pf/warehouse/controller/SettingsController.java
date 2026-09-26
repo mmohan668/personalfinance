@@ -44,9 +44,9 @@ public class SettingsController {
         return settingsService.fetchRefObjNames();
     }
 
-    @GetMapping("/fetchCategoryTypes")
-    public List<SelectItem> fetchCategoryTypes() {
-        return settingsService.fetchCategoryTypes();
+    @GetMapping("/fetchTransactionTypes")
+    public List<SelectItem> fetchTransactionTypes() {
+        return settingsService.fetchTransactionTypes();
     }
 
     @GetMapping("/fetchLocations")

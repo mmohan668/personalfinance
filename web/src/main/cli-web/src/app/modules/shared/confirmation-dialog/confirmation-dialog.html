@@ -6,7 +6,7 @@
     </span>
 
     @if (!data.isNotification) {
-      <button mat-icon-button type="button" aria-label="Close" (click)="close()">
+      <button mat-icon-button type="button" aria-label="Close" (click)="dialogRef.close(false)">
         <span class="material-icons">close</span>
       </button>
     }
@@ -20,11 +20,10 @@
   <!-- Actions -->
   <mat-dialog-actions class="dialog-actions">
     @if (!data.isNotification) {
-      <button mat-stroked-button type="button" (click)="no()">No</button>
-
-      <button mat-raised-button type="button" (click)="yes()">Yes</button>
+      <button mat-stroked-button type="button" (click)="dialogRef.close(false)">No</button>
+      <button mat-raised-button type="button" (click)="dialogRef.close(true)">Yes</button>
     } @else {
-      <button mat-raised-button type="button" (click)="ok()">OK</button>
+      <button mat-raised-button type="button" (click)="dialogRef.close(true)">OK</button>
     }
   </mat-dialog-actions>
 </div>

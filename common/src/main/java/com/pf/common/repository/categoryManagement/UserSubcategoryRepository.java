@@ -33,7 +33,7 @@ public interface UserSubcategoryRepository extends JpaRepository<UserSubcategory
             """)
     long activateSubcategory(
             @Param("ids") List<Long> ids,
-            @Param("updatedBy") String updatedBy,
+            @Param("updatedBy") Long updatedBy,
             @Param("updatedAt") LocalDateTime updatedAt
     );
 
@@ -46,7 +46,7 @@ public interface UserSubcategoryRepository extends JpaRepository<UserSubcategory
             """)
     long inactivateSubcategory(
             @Param("ids") List<Long> ids,
-            @Param("updatedBy") String updatedBy,
+            @Param("updatedBy") Long updatedBy,
             @Param("updatedAt") LocalDateTime updatedAt
     );
 
@@ -85,7 +85,7 @@ public interface UserSubcategoryRepository extends JpaRepository<UserSubcategory
             """)
     long activateSubcategories(
             @Param("ids") List<Long> ids,
-            @Param("updatedBy") String updatedBy,
+            @Param("updatedBy") Long updatedBy,
             @Param("updatedAt") LocalDateTime updatedAt
     );
 
@@ -98,7 +98,7 @@ public interface UserSubcategoryRepository extends JpaRepository<UserSubcategory
             """)
     long inactivateSubcategories(
             @Param("ids") List<Long> ids,
-            @Param("updatedBy") String updatedBy,
+            @Param("updatedBy") Long updatedBy,
             @Param("updatedAt") LocalDateTime updatedAt
     );
 

@@ -4,8 +4,8 @@ CREATE VIEW v_financial_transactions AS
 SELECT ft.id,
        ft.transaction_at,
        ft.amount,
-       category_type.id                    AS transaction_type_id,
-       category_type.reference_code        AS transaction_type,
+       transaction_type.id                 AS transaction_type_id,
+       transaction_type.reference_code     AS transaction_type,
        uc.id                               AS category_id,
        uc.category_name,
        uc.category_description,
@@ -22,8 +22,8 @@ SELECT ft.id,
        u2.username                         AS updated_by,
        ft.updated_at
 FROM financial_transactions ft
-         LEFT JOIN reference_value category_type
-                   ON category_type.id = ft.transaction_type_id
+         LEFT JOIN reference_value transaction_type
+                   ON transaction_type.id = ft.transaction_type_id
          LEFT JOIN reference_value location
                    ON location.id = ft.location_id
          LEFT JOIN user_categories uc

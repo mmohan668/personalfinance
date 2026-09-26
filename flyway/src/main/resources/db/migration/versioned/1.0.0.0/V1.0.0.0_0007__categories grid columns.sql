@@ -19,7 +19,7 @@ ON CONFLICT (LOWER(TRIM(name)))
 -- 2. GRID COLUMNS
 -- ============================================================
 
--- Category Type
+-- Transaction Type
 INSERT INTO grid_column
 (grid_name_id,
  field,
@@ -33,8 +33,8 @@ INSERT INTO grid_column
 VALUES ((SELECT id
          FROM grid_name
          WHERE LOWER(TRIM(name)) = LOWER(TRIM('CATEGORIES_GRID'))),
-        'categoryType',
-        'Category Type',
+        'transactionType',
+        'Transaction Type',
         'text',
         'contains',
         200,
