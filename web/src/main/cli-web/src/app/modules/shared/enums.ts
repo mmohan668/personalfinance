@@ -99,6 +99,8 @@ export enum DATA_FIELDS {
   CATEGORY_DESCRIPTION = 'categoryDescription',
   REF_OBJ_NAME_ID = 'refObjNameId',
   REFERENCE_CODE = 'referenceCode',
+  REFERENCE_CODE_2 = 'referenceCode2',
+  REFERENCE_CODE_3 = 'referenceCode3',
   REFERENCE_CODE_DESCRIPTION = 'referenceCodeDescription',
   TRANSACTION_AT = 'transactionAt',
   AMOUNT = 'amount',

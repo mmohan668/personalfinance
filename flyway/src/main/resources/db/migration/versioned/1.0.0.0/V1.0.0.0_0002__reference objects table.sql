@@ -20,6 +20,7 @@ CREATE TABLE reference_value
     reference_code_description VARCHAR(200) NOT NULL
         CHECK ( TRIM(reference_code_description) <> '' ),
     reference_code_2           VARCHAR(100),
+    reference_code_3           VARCHAR(100),
     created_by                 VARCHAR(100) NOT NULL
         CHECK ( TRIM(created_by) <> '' ),
     created_at                 TIMESTAMPTZ  NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -39,16 +40,17 @@ VALUES ('CATEGORY_TYPE', 'SYSTEM'),
        ('CURRENCY_CODE', 'SYSTEM'),
        ('LOCATION', 'SYSTEM');
 
-INSERT INTO reference_value (ref_obj_name_id, reference_code, reference_code_description, created_by)
+INSERT INTO reference_value (ref_obj_name_id, reference_code, reference_code_2, reference_code_3,
+                             reference_code_description, created_by)
 VALUES ((SELECT id FROM reference_object WHERE ref_obj_name = 'CATEGORY_TYPE'),
-        'EXPENSE', 'EXPENSE - Category Type', 'SYSTEM'),
+        'EXPENSE', null, null, 'EXPENSE - Category Type', 'SYSTEM'),
        ((SELECT id FROM reference_object WHERE ref_obj_name = 'CATEGORY_TYPE'),
-        'INCOME', 'INCOME - Category Type', 'SYSTEM'),
+        'INCOME', null, null, 'INCOME - Category Type', 'SYSTEM'),
        ((SELECT id FROM reference_object WHERE ref_obj_name = 'CATEGORY_TYPE'),
-        'INVESTMENT', 'INVESTMENT - Category Type', 'SYSTEM'),
+        'INVESTMENT', null, null, 'INVESTMENT - Category Type', 'SYSTEM'),
        ((SELECT id FROM reference_object WHERE ref_obj_name = 'CATEGORY_TYPE'),
-        'TRANSFER', 'TRANSFER - Category Type', 'SYSTEM'),
+        'TRANSFER', null, null, 'TRANSFER - Category Type', 'SYSTEM'),
        ((SELECT id FROM reference_object WHERE ref_obj_name = 'CURRENCY_CODE'),
-        'INR', 'Indian Currency Code', 'SYSTEM'),
+        'INR', 'en-IN', 'DD/MM/YYYY', 'Indian Currency Code', 'SYSTEM'),
        ((SELECT id FROM reference_object WHERE ref_obj_name = 'CURRENCY_CODE'),
-        'USD', 'USA Currency Code', 'SYSTEM');
+        'USD', 'en-US', 'MM/DD/YYYY', 'USA Currency Code', 'SYSTEM');

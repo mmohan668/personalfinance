@@ -29,10 +29,16 @@ export class AddEditSubCategoryDialog {
   protected MODES = MODES;
   protected form!: FormGroup;
   constructor() {
-    this.fetchCategoryTypes();
     this.createForm();
+    this.fetchCategoryTypes();
+    this.fetchdropdowns();
+  }
+
+  fetchdropdowns() {
     if ([MODES.COPY, MODES.EDIT].includes(this.data.mode)) {
-      this.fetchCategories(this.data.selectedRow.categoryTypeId);
+      this.fetchCategories(this.data.selectedRow.categoryTypeId, false);
+    } else {
+      this.categories.set([]);
     }
   }
 
@@ -42,15 +48,17 @@ export class AddEditSubCategoryDialog {
     });
   }
 
-  fetchCategories(referenceValueId: any) {
-    this.form.controls['category'].setValue('');
+  fetchCategories(referenceValueId: any, clearValue: boolean = true) {
+    if (clearValue) {
+      this.form.controls['category'].setValue('');
+    }
     firstValueFrom(this._cms.fetchCategories(referenceValueId)).then((resp: SelectItem[]) => {
       this.categories.set(resp);
     });
   }
 
   getValue(fieldName: DATA_FIELDS) {
-    if ([DATA_FIELDS.USER_CATEGORY_ID, DATA_FIELDS.CATEGORY].includes(fieldName)) {
+    if ([DATA_FIELDS.CATEGORY_TYPE_ID, DATA_FIELDS.USER_CATEGORY_ID].includes(fieldName)) {
       return this.data.mode === MODES.EDIT || this.data.mode === MODES.COPY
         ? this.data.selectedRow[fieldName]
         : EMPTY;
@@ -60,11 +68,11 @@ export class AddEditSubCategoryDialog {
 
   createForm() {
     this.form = new FormGroup({
-      categoryType: new FormControl<number | string>(this.getValue(DATA_FIELDS.USER_CATEGORY_ID), {
+      categoryType: new FormControl<number | string>(this.getValue(DATA_FIELDS.CATEGORY_TYPE_ID), {
         nonNullable: true,
         validators: [Validators.required],
       }),
-      category: new FormControl<number | string>(this.getValue(DATA_FIELDS.CATEGORY), {
+      category: new FormControl<number | string>(this.getValue(DATA_FIELDS.USER_CATEGORY_ID), {
         nonNullable: true,
         validators: [Validators.required],
       }),
@@ -80,19 +88,7 @@ export class AddEditSubCategoryDialog {
         },
       ),
     });
-  }
-
-  resetForm() {
-    this.form.reset();
-    if ([MODES.COPY, MODES.EDIT].includes(this.data.mode)) {
-      this.fetchCategories(this.data.selectedRow.categoryTypeId);
-    } else {
-      this.categories.set([]);
-    }
-  }
-
-  close() {
-    this.dialogRef.close();
+    console.log(this.form);
   }
 
   save() {

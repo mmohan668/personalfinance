@@ -560,10 +560,6 @@ export class ColumnFilterComponent implements OnInit, OnDestroy {
     if (operator.value === FILTER_OPERATORS.BETWEEN) {
       this.filter.value = '';
       this.filter.valueTo = '';
-
-      /*
-       * Clear both DatePicker models too.
-       */
       this.filterDateValue = null;
       this.filterDateToValue = null;
     } else if (
@@ -633,25 +629,15 @@ export class ColumnFilterComponent implements OnInit, OnDestroy {
 
   onReset(): void {
     this.betweenError = '';
-
     this.filter.value = '';
-
     this.filter.valueTo = undefined;
-
     this.filter.operator = this.getDefaultOperator(this.column);
-
     this.selectedOperator = this.filter.operator;
-
-    /*
-     * Clear actual DatePicker models.
-     */
     this.filterDateValue = null;
     this.filterDateToValue = null;
-
     this.valueChange.emit({
       ...this.filter,
     });
-
     this.menuOpen = false;
   }
 

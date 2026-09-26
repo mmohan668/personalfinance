@@ -38,6 +38,10 @@ public class ReferenceValue {
     @Column(name = "reference_code_2", length = 100)
     private String referenceCode2;
 
+    @Size(max = 100)
+    @Column(name = "reference_code_3", length = 100)
+    private String referenceCode3;
+
     @NotBlank
     @Size(max = 100)
     @Column(name = "created_by", nullable = false, length = 100)
