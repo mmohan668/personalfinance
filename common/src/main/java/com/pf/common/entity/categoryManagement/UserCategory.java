@@ -27,7 +27,7 @@ public class UserCategory {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "category_type", nullable = false)
+    @JoinColumn(name = "transaction_type", nullable = false)
     private ReferenceValue referenceValue;
 
     @Column(name = "category_name", nullable = false, length = 100)
@@ -40,14 +40,16 @@ public class UserCategory {
     @Builder.Default
     private Boolean active = true;
 
-    @Column(name = "created_by", nullable = false, length = 100)
-    private String createdBy;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "created_by", nullable = false)
+    private User createdBy;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_by", length = 100)
-    private String updatedBy;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "updated_by")
+    private User updatedBy;
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;

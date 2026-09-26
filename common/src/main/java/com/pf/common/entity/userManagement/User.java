@@ -49,13 +49,13 @@ public class User {
     @Builder.Default
     private Boolean active = true;
 
-    @Column(name = "created_by", nullable = false, length = 100)
+    @Column(name = "created_by", nullable = false)
     private String createdBy;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_by", length = 100)
+    @Column(name = "updated_by")
     private String updatedBy;
 
     @Column(name = "updated_at")

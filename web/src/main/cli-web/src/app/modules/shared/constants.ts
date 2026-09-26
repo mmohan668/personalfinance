@@ -12,7 +12,7 @@ export const GRID_URL_MAP = new Map<string, string>([
   [GRID_NAMES.ALL_TRANSACTIONS_GRID, '/financialTransaction/financialTransactionGridData'],
 ]);
 
-export const SYSTEM = 'SYSTEM';
+export const SYSTEM = 'PERSONALFINANCEAPP';
 export const EMPTY = '';
 export const EXCEL_TYPE =
   'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';

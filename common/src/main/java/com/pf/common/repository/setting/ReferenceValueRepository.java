@@ -41,7 +41,7 @@ public interface ReferenceValueRepository extends JpaRepository<ReferenceValue, 
     @Query("""
             SELECT new com.pf.common.dto.generic.SelectItem(
                         rv.id,
-                        rv.referenceCode
+                        rv.referenceCode || ' ~ '|| rv.referenceCodeDescription
             )
             FROM ReferenceValue rv
             WHERE rv.referenceObject.refObjName = :refObjName

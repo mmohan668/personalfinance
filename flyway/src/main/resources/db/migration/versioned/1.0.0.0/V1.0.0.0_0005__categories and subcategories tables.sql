@@ -1,37 +1,33 @@
 CREATE TABLE categories
 (
     id                   BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    category_type        BIGINT       NOT NULL,
-    category_name        VARCHAR(100) NOT NULL
-        CHECK ( TRIM(category_name) <> '' ),
+    transaction_type     BIGINT       NOT NULL,
+    category_name        VARCHAR(100) NOT NULL CHECK ( TRIM(category_name) <> '' ),
     category_description TEXT,
     is_active            BOOLEAN      NOT NULL DEFAULT TRUE,
-    created_by           VARCHAR(100) NOT NULL
-        CHECK ( TRIM(created_by) <> '' ),
+    created_by           BIGINT       NOT NULL REFERENCES users (id),
     created_at           TIMESTAMPTZ  NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_by           VARCHAR(100),
+    updated_by           BIGINT REFERENCES users (id),
     updated_at           TIMESTAMPTZ,
 
-    CONSTRAINT fk_category_type
-        FOREIGN KEY (category_type)
+    CONSTRAINT fk_transaction_type
+        FOREIGN KEY (transaction_type)
             REFERENCES reference_value (id)
 );
 
 CREATE UNIQUE INDEX ux_category
-    ON categories (category_type, LOWER(TRIM(category_name)));
+    ON categories (transaction_type, LOWER(TRIM(category_name)));
 
 CREATE TABLE subcategories
 (
     id                      BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     category_id             BIGINT       NOT NULL,
-    subcategory_name        VARCHAR(100) NOT NULL
-        CHECK (TRIM(subcategory_name) <> ''),
+    subcategory_name        VARCHAR(100) NOT NULL CHECK (TRIM(subcategory_name) <> ''),
     subcategory_description TEXT,
     is_active               BOOLEAN      NOT NULL DEFAULT TRUE,
-    created_by              VARCHAR(100) NOT NULL
-        CHECK (TRIM(created_by) <> ''),
+    created_by              BIGINT       NOT NULL REFERENCES users (id),
     created_at              TIMESTAMPTZ  NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_by              VARCHAR(100),
+    updated_by              BIGINT REFERENCES users (id),
     updated_at              TIMESTAMPTZ,
 
     CONSTRAINT fk_subcategories_category
@@ -46,40 +42,36 @@ CREATE TABLE user_categories
 (
     id                   BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     user_id              BIGINT       NOT NULL,
-    category_type        BIGINT       NOT NULL,
-    category_name        VARCHAR(100) NOT NULL
-        CHECK (TRIM(category_name) <> ''),
+    transaction_type     BIGINT       NOT NULL,
+    category_name        VARCHAR(100) NOT NULL CHECK (TRIM(category_name) <> ''),
     category_description TEXT,
     is_active            BOOLEAN      NOT NULL DEFAULT TRUE,
-    created_by           VARCHAR(100) NOT NULL
-        CHECK (TRIM(created_by) <> ''),
+    created_by           BIGINT       NOT NULL REFERENCES users (id),
     created_at           TIMESTAMPTZ  NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_by           VARCHAR(100),
+    updated_by           BIGINT REFERENCES users (id),
     updated_at           TIMESTAMPTZ,
 
     CONSTRAINT fk_user_categories_user
         FOREIGN KEY (user_id)
             REFERENCES users (id),
-    CONSTRAINT fk_user_category_type
-        FOREIGN KEY (category_type)
+    CONSTRAINT fk_user_transaction_type
+        FOREIGN KEY (transaction_type)
             REFERENCES reference_value (id)
 );
 
 CREATE UNIQUE INDEX ux_user_category
-    ON user_categories (user_id, category_type, LOWER(TRIM(category_name)));
+    ON user_categories (user_id, transaction_type, LOWER(TRIM(category_name)));
 
 CREATE TABLE user_subcategories
 (
     id                      BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     user_category_id        BIGINT       NOT NULL,
-    subcategory_name        VARCHAR(100) NOT NULL
-        CHECK (TRIM(subcategory_name) <> ''),
+    subcategory_name        VARCHAR(100) NOT NULL CHECK (TRIM(subcategory_name) <> ''),
     subcategory_description TEXT,
     is_active               BOOLEAN      NOT NULL DEFAULT TRUE,
-    created_by              VARCHAR(100) NOT NULL
-        CHECK (TRIM(created_by) <> ''),
+    created_by              BIGINT       NOT NULL REFERENCES users (id),
     created_at              TIMESTAMPTZ  NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_by              VARCHAR(100),
+    updated_by              BIGINT REFERENCES users (id),
     updated_at              TIMESTAMPTZ,
 
     CONSTRAINT fk_user_subcategories_user_category

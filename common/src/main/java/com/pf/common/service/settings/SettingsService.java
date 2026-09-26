@@ -11,6 +11,7 @@ import com.pf.common.dto.settings.ReferenceValueDto;
 import com.pf.common.entity.generic.ApiResponse;
 import com.pf.common.entity.settings.ReferenceObject;
 import com.pf.common.entity.settings.ReferenceValue;
+import com.pf.common.entity.userManagement.User;
 import com.pf.common.mapper.settings.ReferenceObjectMapper;
 import com.pf.common.mapper.settings.ReferenceValueMapper;
 import com.pf.common.repository.setting.ReferenceObjectRepository;
@@ -24,13 +25,13 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 import static com.pf.common.constants.CommonConstants.*;
+import static com.pf.common.constants.EntityConstants.*;
 import static com.pf.common.constants.FieldConstants.CREATED_BY;
 import static com.pf.common.constants.FieldConstants.ID;
 import static com.pf.common.enums.FilterOperator.IN;
-import static com.pf.common.enums.RefObjectNames.CATEGORY_TYPE;
+import static com.pf.common.enums.RefObjectNames.TRANSACTION_TYPE;
 import static com.pf.common.enums.RefObjectNames.LOCATION;
 import static com.pf.common.enums.SortOrder.ASC;
-import static com.pf.common.constants.EntityConstants.REFERENCE_OBJECT;
 
 @Slf4j
 @Service
@@ -46,10 +47,12 @@ public class SettingsService extends BaseService {
         GridFilter gridFilter = GridFilter.builder()
                 .field(CREATED_BY)
                 .operator(IN.getValue())
-                .values(List.of(SYSTEM, TEST_USER))
+                .values(List.of(PERSONAL_FINANCE_APP, fetchLoginUser().getUsername()))
                 .build();
         searchCriteria.getFilterList().add(gridFilter);
         searchCriteria.getSortList().add(new GridSort(ID, ASC.getValue()));
+        searchCriteria.setFetchPaths(List.of(CREATED_BY_USER, UPDATED_BY_USER));
+        searchCriteria.setFIELD_MAPPINGS(ReferenceObjectDto.FIELD_MAPPINGS);
         long totalRecords = getCountBySearchCriteria(ReferenceObject.class, searchCriteria);
         List<ReferenceObjectDto> recordDetails = referenceObjectMapper.toDtoList(getDataBySearchCriteria(ReferenceObject.class, searchCriteria));
         log.debug("fetchReferenceObjectGridData: totalRecords: {}", totalRecords);
@@ -61,14 +64,15 @@ public class SettingsService extends BaseService {
         GridFilter gridFilter = GridFilter.builder()
                 .field(CREATED_BY)
                 .operator(IN.getValue())
-                .values(List.of(SYSTEM, TEST_USER))
+                .values(List.of(PERSONAL_FINANCE_APP, fetchLoginUser().getUsername()))
                 .build();
         searchCriteria.getFilterList().add(gridFilter);
         searchCriteria.getSortList().add(new GridSort(ID, ASC.getValue()));
-        searchCriteria.setFetchPaths(List.of(REFERENCE_OBJECT));
+        searchCriteria.setFetchPaths(List.of(REFERENCE_OBJECT, CREATED_BY_USER, UPDATED_BY_USER));
         searchCriteria.setFIELD_MAPPINGS(ReferenceValueDto.FIELD_MAPPINGS);
         long totalRecords = getCountBySearchCriteria(ReferenceValue.class, searchCriteria);
-        List<ReferenceValueDto> recordDetails = referenceValueMapper.toDtoList(getDataBySearchCriteria(ReferenceValue.class, searchCriteria));
+        List<ReferenceValue> referenceValues = getDataBySearchCriteria(ReferenceValue.class, searchCriteria);
+        List<ReferenceValueDto> recordDetails = referenceValueMapper.toDtoList(referenceValues);
         log.debug("fetchReferenceValuesGridData: totalRecords: {}", totalRecords);
         return gridResult(totalRecords, recordDetails);
     }
@@ -76,6 +80,7 @@ public class SettingsService extends BaseService {
     @Transactional
     public ApiResponse saveReferenceValue(ReferenceValueDto referenceValueDto) {
         log.debug("saveReferenceValue: {}", referenceValueDto);
+        User user = fetchLoginUser();
         ReferenceObject referenceObject = referenceObjectRepository.findById(referenceValueDto.getRefObjNameId()).orElse(null);
         if (referenceObject == null) {
             log.warn(
@@ -103,7 +108,7 @@ public class SettingsService extends BaseService {
                 );
                 return failure("Reference code already exists for the selected reference object.");
             }
-            referenceValue.setCreatedBy(TEST_USER);
+            referenceValue.setCreatedBy(user);
         } else {
             //Update
             referenceValue = referenceValueRepository.findById(referenceValueDto.getId()).orElse(null);
@@ -132,7 +137,7 @@ public class SettingsService extends BaseService {
             referenceValue.setReferenceCodeDescription(referenceValueDto.getReferenceCodeDescription());
             referenceValue.setReferenceCode2(referenceValueDto.getReferenceCode2());
             referenceValue.setReferenceCode3(referenceValueDto.getReferenceCode3());
-            referenceValue.setUpdatedBy(TEST_USER);
+            referenceValue.setUpdatedBy(user);
         }
         referenceValueRepository.save(referenceValue);
         return success("Reference value saved successfully.");
@@ -155,8 +160,8 @@ public class SettingsService extends BaseService {
         return referenceObjectRepository.fetchRefObjNames();
     }
 
-    public List<SelectItem> fetchCategoryTypes() {
-        return referenceValueRepository.fetchReferenceValuesByRefObjName(String.valueOf(CATEGORY_TYPE));
+    public List<SelectItem> fetchTransactionTypes() {
+        return referenceValueRepository.fetchReferenceValuesByRefObjName(String.valueOf(TRANSACTION_TYPE));
     }
 
     public List<SelectItem> fetchLocations() {

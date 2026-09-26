@@ -49,7 +49,7 @@ export class AddCopyEditFinancialTransactionDialog {
       this.fetchTransactionTypes();
     } else {
       this.fetchCategories(this.transactionType, false);
-      this.fetchCategoryTypeId();
+      this.fetchTransactionTypeId();
     }
     if ([MODES.COPY, MODES.EDIT].includes(this.data.mode)) {
       this.fetchSubcategories(this.data.selectedRow.categoryId, false);
@@ -57,7 +57,7 @@ export class AddCopyEditFinancialTransactionDialog {
   }
 
   fetchTransactionTypes(): void {
-    firstValueFrom(this._ss.fetchCategoryTypes()).then((resp: SelectItem[]) => {
+    firstValueFrom(this._ss.fetchTransactionTypes()).then((resp: SelectItem[]) => {
       this.transactionTypes.set(resp);
       if ([MODES.COPY, MODES.EDIT].includes(this.data.mode)) {
         this.fetchCategories(this.data.selectedRow.transactionTypeId, false);
@@ -80,11 +80,11 @@ export class AddCopyEditFinancialTransactionDialog {
     });
   }
 
-  fetchCategoryTypeId(): void {
+  fetchTransactionTypeId(): void {
     firstValueFrom(
       this._ss.fetchIdByReferenceCodeAndRefObjName(
         this.data.transactionType,
-        REF_OBJ_NAMES.CATEGORY_TYPE,
+        REF_OBJ_NAMES.TRANSACTION_TYPE,
       ),
     ).then((resp: any) => {
       this.transactionTypeId = resp;
@@ -130,7 +130,7 @@ export class AddCopyEditFinancialTransactionDialog {
         this.getValue(DATA_FIELDS.TRANSACTION_TYPE_ID),
         {
           nonNullable: true,
-          validators: [Validators.required],
+          validators: this.data.allTransactions ? [Validators.required] : [],
         },
       ),
       category: new FormControl<number | string>(this.getValue(DATA_FIELDS.CATEGORY_ID), {

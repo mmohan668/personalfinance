@@ -39,7 +39,7 @@ export class Categories {
   protected readonly dataKey = DATA_FIELDS.ID;
   protected readonly toolbaConfig!: ToolbarConfig;
   protected readonly additionalFilters: GridFilter[] = [
-    { field: DATA_FIELDS.USER_ID, operator: FILTER_OPERATORS.EQUALS, value: 1 },
+    { field: DATA_FIELDS.USER_ID, operator: FILTER_OPERATORS.EQUALS, value: 2 },
   ];
 
   constructor() {
@@ -65,8 +65,9 @@ export class Categories {
         disableClose: true,
       })
       .afterClosed()
-      .subscribe((refresh: boolean) => {
-        if (refresh) {
+      .subscribe((message) => {
+        if (message) {
+          this._ns.success(message);
           this.dataGrid?.refreshGrid();
         }
       });
@@ -92,8 +93,9 @@ export class Categories {
         disableClose: true,
       })
       .afterClosed()
-      .subscribe((refresh: boolean) => {
-        if (refresh) {
+      .subscribe((message) => {
+        if (message) {
+          this._ns.success(message);
           this.dataGrid?.refreshGrid();
         }
       });

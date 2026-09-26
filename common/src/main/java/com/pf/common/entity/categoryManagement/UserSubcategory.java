@@ -1,5 +1,6 @@
 package com.pf.common.entity.categoryManagement;
 
+import com.pf.common.entity.userManagement.User;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -32,14 +33,16 @@ public class UserSubcategory {
     @Builder.Default
     private Boolean active = true;
 
-    @Column(name = "created_by", nullable = false, length = 100)
-    private String createdBy;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "created_by", nullable = false)
+    private User createdBy;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_by", length = 100)
-    private String updatedBy;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "updated_by")
+    private User updatedBy;
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;

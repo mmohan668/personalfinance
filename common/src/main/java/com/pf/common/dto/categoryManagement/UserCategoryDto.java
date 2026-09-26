@@ -13,16 +13,16 @@ import java.util.Map;
 public class UserCategoryDto {
 
     public static final Map<String, String> FIELD_MAPPINGS = Map.of(
-            "categoryType", "referenceValue.referenceCode"
+            "transactionType", "referenceValue.referenceCode"
     );
 
     private Long id;
 
     private Long userId;
 
-    private Long categoryTypeId;
+    private Long transactionTypeId;
 
-    private String categoryType;
+    private String transactionType;
 
     private String categoryName;
 

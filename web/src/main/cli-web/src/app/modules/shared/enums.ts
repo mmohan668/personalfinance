@@ -94,7 +94,7 @@ export enum DATA_FIELDS {
   TRANSACTION_TYPE = 'transactionType',
   LOCATION = 'location',
   LOCATION_DESCRIPTION = 'locationDescription',
-  CATEGORY_TYPE_ID = 'categoryTypeId',
+  transaction_type_ID = 'transactionTypeId',
   CATEGORY_NAME = 'categoryName',
   CATEGORY_DESCRIPTION = 'categoryDescription',
   REF_OBJ_NAME_ID = 'refObjNameId',
@@ -131,7 +131,7 @@ export enum TRANSACTION_TYPES {
 }
 
 export enum REF_OBJ_NAMES {
-  CATEGORY_TYPE = 'CATEGORY_TYPE',
+  TRANSACTION_TYPE = 'TRANSACTION_TYPE',
   CURRENCY_CODE = 'CURRENCY_CODE',
   LOCATION = 'LOCATION',
 }

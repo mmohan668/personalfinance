@@ -9,9 +9,9 @@ export class CategoryManagementService {
   private http = inject(HttpClient);
   private config = inject(AppConfigService);
 
-  fetchCategoryTypes(): Observable<SelectItem[]> {
+  fetchTransactionTypes(): Observable<SelectItem[]> {
     return this.http.get<SelectItem[]>(
-      `${this.config.configValue.apiUrl}/categoryManagement/fetchCategoryTypes`,
+      `${this.config.configValue.apiUrl}/categoryManagement/fetchTransactionTypes`,
     );
   }
 
@@ -20,7 +20,6 @@ export class CategoryManagementService {
       `${this.config.configValue.apiUrl}/categoryManagement/fetchCategories`,
       {
         params: {
-          adminUserId: 1,
           referenceValueId: referenceValueId,
         },
       },
@@ -32,7 +31,6 @@ export class CategoryManagementService {
       `${this.config.configValue.apiUrl}/categoryManagement/fetchCategoriesByReferenceCode`,
       {
         params: {
-          adminUserId: 1,
           referenceCode: referenceCode,
         },
       },
