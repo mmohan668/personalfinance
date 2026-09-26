@@ -155,4 +155,10 @@ export class CommonService {
 
     return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
   }
+
+  trimDesc(value: string) {
+    return this.isNotNull(value) && value.includes(' ~ ')
+      ? value.substring(0, value.indexOf(' ~ '))
+      : value;
+  }
 }

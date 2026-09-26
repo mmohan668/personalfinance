@@ -69,8 +69,9 @@ export class AddCopyEditFinancialTransactionDialog {
     if (clearValue) {
       this.form.controls['category'].setValue('');
     }
-    const transactionType = this.transactionTypes().filter((e) => e.value === transactionTypeId)[0]
-      ?.label;
+    const transactionType = this._cs.trimDesc(
+      this.transactionTypes().filter((e) => e.value === transactionTypeId)[0]?.label,
+    );
     firstValueFrom(
       this._cms.fetchCategoriesByReferenceCode(
         transactionType ? transactionType : this.transactionType,
@@ -157,10 +158,11 @@ export class AddCopyEditFinancialTransactionDialog {
         ? transactionDate
         : this._cs.formatDateOnly(transactionDate);
 
-    const transactionType = this.data.allTransactions
-      ? this.transactionTypes().find((e) => e.value === this.form.value.transactionType)?.label
-      : this.transactionType;
-
+    const transactionType = this._cs.trimDesc(
+      this.data.allTransactions
+        ? this.transactionTypes().find((e) => e.value === this.form.value.transactionType)?.label
+        : this.transactionType,
+    );
     const amount =
       transactionType === TRANSACTION_TYPES.EXPENSE
         ? -Math.abs(this.form.value.amount)
