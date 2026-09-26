@@ -20,7 +20,7 @@ import { NotificationService } from '../../shared/service/notification-service';
 })
 export class AddCopyEditFinancialTransactionDialog {
   protected readonly data = inject<any>(MAT_DIALOG_DATA);
-  private readonly dialogRef = inject(MatDialogRef<AddCopyEditFinancialTransactionDialog>);
+  protected readonly dialogRef = inject(MatDialogRef<AddCopyEditFinancialTransactionDialog>);
   private readonly _cms = inject(CategoryManagementService);
   public readonly _cs = inject(CommonService);
   private readonly _ss = inject(SettingsService);
@@ -40,7 +40,11 @@ export class AddCopyEditFinancialTransactionDialog {
   constructor() {
     this.transactionType = this.data.transactionType;
     this.fetchLocations();
+    this.fetchdropdowns();
     this.createForm();
+  }
+
+  fetchdropdowns() {
     if (this.data.allTransactions) {
       this.fetchTransactionTypes();
     } else {
@@ -139,39 +143,11 @@ export class AddCopyEditFinancialTransactionDialog {
       }),
       location: new FormControl<number | string>(this.getValue(DATA_FIELDS.LOCATION_ID), {
         nonNullable: true,
-        validators: [Validators.required],
       }),
       remarks: new FormControl<string>(this.getValue(DATA_FIELDS.REMARKS), {
         nonNullable: true,
       }),
     });
-  }
-
-  close() {
-    this.dialogRef.close();
-  }
-
-  clear() {
-    if (this.data.mode === MODES.ADD) {
-      this.form.reset({ transactionDate: new Date() });
-      return;
-    }
-    const values = {
-      transactionDate: new Date(this.data.selectedRow.transactionAt),
-      amount: this.data.selectedRow.amount,
-      category: this.data.selectedRow.categoryId,
-      subcategory: this.data.selectedRow.subcategoryId,
-      location: this.data.selectedRow.locationId,
-      remarks: this.data.selectedRow.remarks,
-    };
-    if (this.data.allTransactions) {
-      this.form.reset({
-        ...values,
-        transactionType: this.data.selectedRow.transactionTypeId,
-      });
-    } else {
-      this.form.reset(values);
-    }
   }
 
   save() {

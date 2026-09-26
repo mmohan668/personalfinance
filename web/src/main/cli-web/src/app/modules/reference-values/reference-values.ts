@@ -50,8 +50,10 @@ export class ReferenceValues {
         disableClose: true,
       })
       .afterClosed()
-      .subscribe(() => {
-        this.dataGrid?.refreshGrid();
+      .subscribe((value: boolean) => {
+        if (value) {
+          this.dataGrid?.refreshGrid();
+        }
       });
   };
 
@@ -119,8 +121,10 @@ export class ReferenceValues {
         },
       })
       .afterClosed()
-      .subscribe(() => {
-        this.dataGrid.refreshGrid();
+      .subscribe((value: boolean) => {
+        if (value) {
+          this.dataGrid.refreshGrid();
+        }
       });
   };
 }

@@ -130,6 +130,8 @@ public class SettingsService extends BaseService {
             referenceValue.setReferenceObject(referenceObject);
             referenceValue.setReferenceCode(referenceValueDto.getReferenceCode());
             referenceValue.setReferenceCodeDescription(referenceValueDto.getReferenceCodeDescription());
+            referenceValue.setReferenceCode2(referenceValueDto.getReferenceCode2());
+            referenceValue.setReferenceCode3(referenceValueDto.getReferenceCode3());
             referenceValue.setUpdatedBy(TEST_USER);
         }
         referenceValueRepository.save(referenceValue);

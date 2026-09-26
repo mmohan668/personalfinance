@@ -22,6 +22,7 @@ public class ReferenceValueDto {
     private String referenceCode;
     private String referenceCodeDescription;
     private String referenceCode2;
+    private String referenceCode3;
     private String createdBy;
     private LocalDateTime createdAt;
     private String updatedBy;

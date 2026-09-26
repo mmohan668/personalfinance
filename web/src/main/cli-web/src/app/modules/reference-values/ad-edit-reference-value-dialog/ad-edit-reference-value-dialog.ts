@@ -18,7 +18,7 @@ import { DATA_FIELDS, MODES } from '../../shared/enums';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AdEditReferenceValueDialog {
-  private readonly dialogRef = inject(MatDialogRef<AdEditReferenceValueDialog>);
+  protected readonly dialogRef = inject(MatDialogRef<AdEditReferenceValueDialog>);
   readonly data = inject<any>(MAT_DIALOG_DATA);
   protected form!: FormGroup;
   public _cs = inject(CommonService);
@@ -30,7 +30,6 @@ export class AdEditReferenceValueDialog {
   constructor() {
     this.fetchCategoryTypes();
     this.createForm();
-    console.log(this.data);
   }
 
   fetchCategoryTypes() {
@@ -66,6 +65,18 @@ export class AdEditReferenceValueDialog {
           validators: [Validators.required, Validators.minLength(3), Validators.maxLength(100)],
         },
       ),
+      referenceCode2: new FormControl<number | string>(
+        this.getEditVlue(DATA_FIELDS.REFERENCE_CODE_2),
+        {
+          nonNullable: true,
+        },
+      ),
+      referenceCode3: new FormControl<number | string>(
+        this.getEditVlue(DATA_FIELDS.REFERENCE_CODE_3),
+        {
+          nonNullable: true,
+        },
+      ),
     });
   }
 
@@ -75,35 +86,17 @@ export class AdEditReferenceValueDialog {
       refObjNameId: this.form.value.referenceObjectName,
       referenceCode: this.form.value.referenceCode.trim(),
       referenceCodeDescription: this.form.value.referenceCodeDescription.trim(),
+      referenceCode2: this.form.value.referenceCode2.trim(),
+      referenceCode3: this.form.value.referenceCode3.trim(),
     };
     firstValueFrom(this._ss.saveReferenceValue(referenceValue)).then((response: ApiResponse) => {
       console.log(response.success + ' : ' + response.message);
       if (response.success) {
         this._ns.success(response.message);
-        this.dialogRef.close();
+        this.dialogRef.close(true);
       } else {
         this._ns.error(response.message);
       }
-    });
-  }
-
-  clear(): void {
-    this._ns.close();
-    if (this.data.mode === MODES.EDIT) {
-      this.form.patchValue({
-        referenceObjectName: this.data.selectedRow.refObjNameId,
-        referenceCode: this.data.selectedRow.referenceCode,
-        referenceCodeDescription: this.data.selectedRow.referenceCodeDescription,
-      });
-    } else {
-      this.form.reset();
-    }
-  }
-
-  close(): void {
-    this._ns.close();
-    this.dialogRef.close({
-      action: 'close',
     });
   }
 }
