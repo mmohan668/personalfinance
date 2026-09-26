@@ -23,6 +23,7 @@ import { AppConfigService } from '../service/app-config-service';
 import { NotificationService } from '../service/notification-service';
 import { GridStateService } from '../service/grid-state-service';
 import { EXCEL_EXTENSION, EXCEL_TYPE, EXPORT_DELEMETER } from '../constants';
+import { SystemConfigService } from '../service/system-config-service';
 
 @Component({
   selector: 'app-data-grid',
@@ -72,6 +73,7 @@ export class DataGrid implements OnInit {
   private _cp = inject(CurrencyPipe);
   private _ns = inject(NotificationService);
   private _gss = inject(GridStateService);
+  private _scs = inject(SystemConfigService);
 
   private readonly columns = signal<GridColumn[]>([]);
   protected dataSource = signal<any[]>([]);
@@ -97,8 +99,6 @@ export class DataGrid implements OnInit {
   protected take = this.config.configValue.defaultPageSize;
   protected filters: GridFilter[] = [];
   protected currencyCode: string = 'INR';
-  protected dateFormat: string = 'dd/MM/yyyy';
-  protected dateTimeFormat: string = 'dd/MM/yyyy HH:mm:ss';
 
   constructor() {}
 
@@ -443,7 +443,7 @@ export class DataGrid implements OnInit {
             if (!value) {
               return null;
             }
-            const formatted = new DatePipe('en-GB').transform(value, this.dateTimeFormat);
+            const formatted = new DatePipe('en-GB').transform(value, this._scs.dateTimeFormat());
             return formatted ? formatted : null;
           }
           return row[col.field];
@@ -544,19 +544,19 @@ export class DataGrid implements OnInit {
   }
 
   getDateFormate(): string {
-    return this.dateFormat;
+    return this._scs.dateFormat();
   }
 
   getDateTimeFormate(): string {
-    return this.dateTimeFormat;
+    return this._scs.dateTimeFormat();
   }
 
   getDateFormateForExport(): string {
-    return this.dateFormat.replace(/\//g, '"/"');
+    return this._scs.dateFormat().replace(/\//g, '"/"');
   }
 
   getDateTimeFormateForExport(): string {
-    return this.dateTimeFormat.replace(/\//g, '"/"');
+    return this._scs.dateTimeFormat().replace(/\//g, '"/"');
   }
 
   private resetGrid(): void {

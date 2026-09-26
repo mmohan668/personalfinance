@@ -30,7 +30,6 @@ import java.util.List;
 public class FinancialTransactionService extends BaseService {
     private final FinancialTransactionRepository financialTransactionRepository;
     private final FinancialTransactionMapper financialTransactionMapper;
-    private final EntityManager entityManager;
     private final FinancialTransactionViewMapper financialTransactionViewMapper;
 
     public GridResult financialTransactionGridData(SearchCriteria searchCriteria) {
@@ -47,14 +46,11 @@ public class FinancialTransactionService extends BaseService {
     @Transactional
     public ApiResponse saveFinancialTransaction(FinancialTransactionDto financialTransactionDto) {
         log.debug("saveFinancialTransaction: {}", financialTransactionDto);
+        User user = fetchLoginUser();
         if (financialTransactionDto.getId() == null) {
             FinancialTransaction financialTransaction = financialTransactionMapper.toEntity(financialTransactionDto);
-            financialTransaction.setAdminUser(
-                    entityManager.getReference(User.class, 1)
-            );
-            financialTransaction.setCreatedBy(
-                    entityManager.getReference(User.class, 1)
-            );
+            financialTransaction.setAdminUser(user.getAdminUser());
+            financialTransaction.setCreatedBy(user);
             financialTransactionRepository.save(financialTransaction);
         } else {
             FinancialTransaction financialTransaction =
@@ -68,9 +64,7 @@ public class FinancialTransactionService extends BaseService {
                                     }
                             );
             financialTransactionMapper.updateEntity(financialTransactionDto, financialTransaction);
-            financialTransaction.setUpdatedBy(
-                    entityManager.getReference(User.class, 1)
-            );
+            financialTransaction.setUpdatedBy(user);
         }
         return success("Financial transaction saved successfully");
     }
