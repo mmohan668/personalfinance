@@ -110,6 +110,10 @@ export class CommonService {
       )}`;
     }
 
+    if (control.hasError('dateFormat')) {
+      return `${fieldName} is invalid. Please check the Help section for available date formats.`;
+    }
+
     return `${fieldName} is invalid`;
   }
 

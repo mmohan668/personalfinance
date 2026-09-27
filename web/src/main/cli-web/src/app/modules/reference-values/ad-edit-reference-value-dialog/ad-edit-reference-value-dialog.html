@@ -21,7 +21,7 @@
         <mat-label>Reference Object Name</mat-label>
 
         <mat-select formControlName="referenceObjectName" name="referenceObjectName">
-          @for (item of transactionTypes(); track item.value) {
+          @for (item of referenceObjects(); track item.value) {
             <mat-option [value]="item.value">
               {{ item.label }}
             </mat-option>

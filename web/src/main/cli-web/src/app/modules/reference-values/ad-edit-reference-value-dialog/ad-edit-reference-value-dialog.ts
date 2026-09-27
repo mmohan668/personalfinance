@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { CommonImportsModule } from '../../shared/common-imports/common-imports-module';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
@@ -7,7 +7,8 @@ import { ApiResponse, SelectItem } from '../../shared/types/types';
 import { firstValueFrom } from 'rxjs';
 import { SettingsService } from '../../shared/service/settings-service';
 import { NotificationService } from '../../shared/service/notification-service';
-import { DATA_FIELDS, MODES } from '../../shared/enums';
+import { DATA_FIELDS, MODES, REF_OBJ_NAMES } from '../../shared/enums';
+import { CustomValidators } from '../../shared/validator/custom-validators';
 
 @Component({
   selector: 'app-ad-edit-reference-value-dialog',
@@ -17,13 +18,13 @@ import { DATA_FIELDS, MODES } from '../../shared/enums';
   templateUrl: './ad-edit-reference-value-dialog.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AdEditReferenceValueDialog {
+export class AdEditReferenceValueDialog implements OnInit {
   protected readonly dialogRef = inject(MatDialogRef<AdEditReferenceValueDialog>);
   readonly data = inject<any>(MAT_DIALOG_DATA);
   protected form!: FormGroup;
   public _cs = inject(CommonService);
   private _ss = inject(SettingsService);
-  public transactionTypes = signal<SelectItem[]>([]);
+  public referenceObjects = signal<SelectItem[]>([]);
   private _ns = inject(NotificationService);
   protected MODES = MODES;
 
@@ -32,9 +33,25 @@ export class AdEditReferenceValueDialog {
     this.createForm();
   }
 
+  ngOnInit(): void {
+    this.form.get('referenceObjectName')?.valueChanges.subscribe((value) => {
+      const referenceCode3 = this.form.get('referenceCode3');
+      if (!referenceCode3) {
+        return;
+      }
+      const lebal = this.referenceObjects().find((e) => e.value === value)?.label;
+      if (lebal === REF_OBJ_NAMES.CURRENCY_CODE) {
+        referenceCode3.setValidators([CustomValidators.dateFormat()]);
+      } else {
+        referenceCode3.clearValidators();
+      }
+      referenceCode3.updateValueAndValidity();
+    });
+  }
+
   fetchTransactionTypes() {
     firstValueFrom(this._ss.fetchRefObjNames()).then((res: SelectItem[]) => {
-      this.transactionTypes.set(res);
+      this.referenceObjects.set(res);
     });
   }
 

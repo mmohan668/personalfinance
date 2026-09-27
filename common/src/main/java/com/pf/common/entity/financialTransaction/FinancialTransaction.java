@@ -1,6 +1,5 @@
 package com.pf.common.entity.financialTransaction;
 
-import com.pf.common.entity.categoryManagement.UserCategory;
 import com.pf.common.entity.categoryManagement.UserSubcategory;
 import com.pf.common.entity.settings.ReferenceValue;
 import com.pf.common.entity.userManagement.User;
@@ -29,14 +28,6 @@ public class FinancialTransaction {
 
     @Column(name = "transaction_at", nullable = false)
     private LocalDate transactionAt;
-
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "transaction_type_id", nullable = false)
-    private ReferenceValue transactionType;
-
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "category_id", nullable = false)
-    private UserCategory category;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "subcategory_id", nullable = false)

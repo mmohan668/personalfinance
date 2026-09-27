@@ -16,6 +16,7 @@ import com.pf.common.mapper.categoryManagement.SubcategoryViewMapper;
 import com.pf.common.mapper.categoryManagement.UserCategoryMapper;
 import com.pf.common.repository.categoryManagement.UserCategoryRepository;
 import com.pf.common.repository.categoryManagement.UserSubcategoryRepository;
+import com.pf.common.repository.financialTransaction.FinancialTransactionRepository;
 import com.pf.common.repository.setting.ReferenceValueRepository;
 import com.pf.common.service.generic.BaseService;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +39,7 @@ public class CategoryManagementService extends BaseService {
     private final ReferenceValueRepository referenceValueRepository;
     private final UserCategoryRepository userCategoryRepository;
     private final UserSubcategoryRepository userSubcategoryRepository;
+    private final FinancialTransactionRepository financialTransactionRepository;
 
     public GridResult fetchCategoriesGridData(SearchCriteria searchCriteria) {
         log.debug("fetchCategoriesGridData: {}", searchCriteria);
@@ -246,6 +248,12 @@ public class CategoryManagementService extends BaseService {
             return failure("Ids is empty");
         }
         List<List<Long>> chunks = Lists.partition(ids, CHUNK_SIZE);
+        //validate all subcategories before deleting anything.
+        for (List<Long> chunk : chunks) {
+            if (financialTransactionRepository.existsBySubcategoryIds(chunk)) {
+                return failure("Subcategories cannot be deleted because one or more are currently in use");
+            }
+        }
         for (List<Long> chunk : chunks) {
             userSubcategoryRepository.deleteAllByIdInBatch(chunk);
         }
