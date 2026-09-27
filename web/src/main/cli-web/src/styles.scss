@@ -693,3 +693,7 @@ body {
   cursor: pointer !important;
   color: #4caf50 !important;
 }
+
+.dialog-actions button[mat-raised-button]:disabled {
+  cursor: not-allowed !important;
+}

@@ -101,6 +101,11 @@ export class Menu {
       ],
     },
     {
+      label: 'Bulk Upload',
+      icon: 'upload_file',
+      route: '/bulkupload',
+    },
+    {
       label: 'User Management',
       icon: 'group',
       route: '/users',

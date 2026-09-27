@@ -17,6 +17,7 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./modules/all-transactions/all-transactions').then((m) => m.AllTransactions),
   },
+
   {
     path: 'expenses',
     loadComponent: () => import('./modules/expenses/expenses').then((m) => m.Expenses),
@@ -71,5 +72,10 @@ export const routes: Routes = [
   {
     path: 'downloads',
     loadComponent: () => import('./modules/downloads/downloads').then((m) => m.Downloads),
+  },
+
+  {
+    path: 'bulkupload',
+    loadComponent: () => import('./modules/bulk-upload/bulk-upload').then((m) => m.BulkUpload),
   },
 ];

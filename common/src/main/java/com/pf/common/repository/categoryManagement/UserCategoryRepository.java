@@ -48,7 +48,7 @@ public interface UserCategoryRepository extends JpaRepository<UserCategory, Long
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("""
             UPDATE UserCategory uc
-            SET uc.active = true, uc.updatedBy = :updatedBy, uc.updatedAt = :updatedAt
+            SET uc.active = true, uc.updatedBy.id = :updatedBy, uc.updatedAt = :updatedAt
             WHERE uc.active = false
             AND uc.id IN (:ids)
             """)
@@ -61,7 +61,7 @@ public interface UserCategoryRepository extends JpaRepository<UserCategory, Long
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("""
             UPDATE UserCategory uc
-            SET uc.active = false, uc.updatedBy = :updatedBy, uc.updatedAt = :updatedAt
+            SET uc.active = false, uc.updatedBy.id = :updatedBy, uc.updatedAt = :updatedAt
             WHERE uc.active = true
             AND uc.id IN (:ids)
             """)
