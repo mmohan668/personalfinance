@@ -22,14 +22,14 @@ SELECT ft.id,
        u2.username                         AS updated_by,
        ft.updated_at
 FROM financial_transactions ft
-         LEFT JOIN reference_value transaction_type
-                   ON transaction_type.id = ft.transaction_type_id
          LEFT JOIN reference_value location
                    ON location.id = ft.location_id
-         LEFT JOIN user_categories uc
-                   ON uc.id = ft.category_id
          LEFT JOIN user_subcategories usc
-                   ON usc.id = ft.subcategory_id AND usc.user_category_id = uc.id
+                   ON usc.id = ft.subcategory_id
+         LEFT JOIN user_categories uc
+                   ON uc.id = usc.user_category_id
+         LEFT JOIN reference_value transaction_type
+                   ON transaction_type.id = uc.transaction_type
          LEFT JOIN users u1
                    ON u1.id = ft.created_by
          LEFT JOIN users u2

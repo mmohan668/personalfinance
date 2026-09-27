@@ -1,7 +1,6 @@
 package com.pf.common.mapper.financialTransaction;
 
 import com.pf.common.dto.financialTransaction.FinancialTransactionDto;
-import com.pf.common.entity.categoryManagement.UserCategory;
 import com.pf.common.entity.categoryManagement.UserSubcategory;
 import com.pf.common.entity.financialTransaction.FinancialTransaction;
 import com.pf.common.entity.settings.ReferenceValue;
@@ -15,17 +14,6 @@ import org.mapstruct.*;
         unmappedTargetPolicy = ReportingPolicy.IGNORE
 )
 public abstract class FinancialTransactionMapper {
-
-    @Mapping(
-            target = "transactionType",
-            source = "transactionTypeId",
-            qualifiedByName = "referenceValue"
-    )
-    @Mapping(
-            target = "category",
-            source = "categoryId",
-            qualifiedByName = "userCategory"
-    )
     @Mapping(
             target = "subcategory",
             source = "subcategoryId",
@@ -56,14 +44,6 @@ public abstract class FinancialTransactionMapper {
     );
 
     @Mapping(
-            target = "transactionTypeId",
-            source = "transactionType.id"
-    )
-    @Mapping(
-            target = "categoryId",
-            source = "category.id"
-    )
-    @Mapping(
             target = "subcategoryId",
             source = "subcategory.id"
     )
@@ -88,16 +68,6 @@ public abstract class FinancialTransactionMapper {
     );
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    @Mapping(
-            target = "transactionType",
-            source = "transactionTypeId",
-            qualifiedByName = "referenceValue"
-    )
-    @Mapping(
-            target = "category",
-            source = "categoryId",
-            qualifiedByName = "userCategory"
-    )
     @Mapping(
             target = "subcategory",
             source = "subcategoryId",
@@ -130,18 +100,6 @@ public abstract class FinancialTransactionMapper {
 
         return entityManager.getReference(
                 ReferenceValue.class,
-                id
-        );
-    }
-
-    @Named("userCategory")
-    protected UserCategory mapUserCategory(Long id) {
-        if (id == null) {
-            return null;
-        }
-
-        return entityManager.getReference(
-                UserCategory.class,
                 id
         );
     }

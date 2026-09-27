@@ -172,6 +172,12 @@ public class SettingsService extends BaseService {
             return failure("No reference values selected for deletion.");
         }
         List<List<Long>> chunks = Lists.partition(ids, CHUNK_SIZE);
+        // Validate all selected reference values before deleting anything.
+        for (List<Long> chunk : chunks) {
+            if (systemConfigRepository.existsByConfigValueIdIn(chunk)) {
+                return failure("Reference values cannot be deleted because one or more are currently in use.");
+            }
+        }
         for (List<Long> chunk : chunks) {
             referenceValueRepository.deleteAllByIdInBatch(chunk);
         }

@@ -19,10 +19,6 @@ public class FinancialTransactionDto {
 
     private LocalDate transactionAt;
 
-    private Long transactionTypeId;
-
-    private Long categoryId;
-
     private Long subcategoryId;
 
     private Long locationId;
