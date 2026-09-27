@@ -27,7 +27,7 @@ public interface UserSubcategoryRepository extends JpaRepository<UserSubcategory
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("""
             UPDATE UserSubcategory usc
-            SET usc.active = true, usc.updatedBy = :updatedBy, usc.updatedAt = :updatedAt
+            SET usc.active = true, usc.updatedBy.id = :updatedBy, usc.updatedAt = :updatedAt
             WHERE usc.active = false
             AND usc.userCategory.id IN (:ids)
             """)
@@ -40,7 +40,7 @@ public interface UserSubcategoryRepository extends JpaRepository<UserSubcategory
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("""
             UPDATE UserSubcategory usc
-            SET usc.active = false, usc.updatedBy = :updatedBy, usc.updatedAt = :updatedAt
+            SET usc.active = false, usc.updatedBy.id = :updatedBy, usc.updatedAt = :updatedAt
             WHERE usc.active = true
             AND usc.userCategory.id IN (:ids)
             """)
@@ -79,7 +79,7 @@ public interface UserSubcategoryRepository extends JpaRepository<UserSubcategory
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("""
             UPDATE UserSubcategory usc
-            SET usc.active = true, usc.updatedBy = :updatedBy, usc.updatedAt = :updatedAt
+            SET usc.active = true, usc.updatedBy.id = :updatedBy, usc.updatedAt = :updatedAt
             WHERE usc.id IN (:ids)
             AND usc.active = false
             """)
@@ -92,7 +92,7 @@ public interface UserSubcategoryRepository extends JpaRepository<UserSubcategory
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("""
             UPDATE UserSubcategory usc
-            SET usc.active = false, usc.updatedBy = :updatedBy, usc.updatedAt = :updatedAt
+            SET usc.active = false, usc.updatedBy.id = :updatedBy, usc.updatedAt = :updatedAt
             WHERE usc.id IN (:ids)
             AND usc.active = true
             """)
@@ -102,7 +102,7 @@ public interface UserSubcategoryRepository extends JpaRepository<UserSubcategory
             @Param("updatedAt") LocalDateTime updatedAt
     );
 
-
+    @Transactional(readOnly = true)
     @Query("""
             SELECT new com.pf.common.dto.generic.SelectItem(
                         usc.id,
