@@ -89,3 +89,9 @@ export interface FinancialTransactionDto {
   locationId: number;
   remarks: string;
 }
+
+export interface SystemConfigValue {
+  currencyCode: string;
+  locale: string;
+  dateFormat: string;
+}

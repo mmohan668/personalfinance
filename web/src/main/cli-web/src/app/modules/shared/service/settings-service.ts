@@ -50,4 +50,17 @@ export class SettingsService {
       },
     );
   }
+
+  fetchCurrencies(): Observable<SelectItem[]> {
+    return this.http.get<SelectItem[]>(
+      `${this.config.configValue.apiUrl}/settings/fetchCurrencies`,
+    );
+  }
+
+  saveSystemConfig(systemConfigDto: any): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(
+      `${this.config.configValue.apiUrl}/settings/saveSystemConfig`,
+      systemConfigDto,
+    );
+  }
 }

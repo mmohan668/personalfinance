@@ -74,6 +74,7 @@ export enum GRID_NAMES {
   INVESTMENTS_GRID = 'INVESTMENTS_GRID',
   TRANSFERS_GRID = 'TRANSFERS_GRID',
   ALL_TRANSACTIONS_GRID = 'ALL_TRANSACTIONS_GRID',
+  SYSTEM_CONFIG = 'SYSTEM_CONFIG',
 }
 
 export enum GRID_EXPORT_FILE_NAMES {
@@ -86,6 +87,7 @@ export enum GRID_EXPORT_FILE_NAMES {
   INVESTMENTS_GRID_EFN = 'investment_transactions',
   TRANSFERS_GRID_EFN = 'transfer_transactions',
   ALL_TRANSACTIONS_GRID_EFN = 'all_transactions',
+  SYSTEM_CONFIG_EFN = 'system_config'
 }
 
 export enum DATA_FIELDS {

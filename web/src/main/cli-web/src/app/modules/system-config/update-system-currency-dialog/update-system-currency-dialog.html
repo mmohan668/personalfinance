@@ -1,0 +1,53 @@
+<div class="dialog-container" cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+  <!-- Title Bar -->
+  <div class="dialog-title-bar" cdkDragHandle>
+    <span class="dialog-title">
+      {{ title }}
+    </span>
+
+    <button mat-icon-button type="button" aria-label="Close" (click)="dialogRef.close()">
+      <span class="material-icons">close</span>
+    </button>
+  </div>
+
+  <!-- Content -->
+  <div class="dialog-content">
+    <form [formGroup]="form" class="dialog-form-1">
+      <mat-form-field appearance="fill" class="dialog-field">
+        <mat-label>Currency</mat-label>
+
+        <mat-select formControlName="currency" name="currency">
+          @for (item of currencies(); track item.value) {
+            <mat-option [value]="item.value">
+              {{ item.label }}
+            </mat-option>
+          }
+        </mat-select>
+
+        @if (_cs.isInvalid(form.get('currency'))) {
+          <mat-error>
+            {{ _cs.getValidationMessage(form.get('currency'), 'Currency') }}
+          </mat-error>
+        }
+      </mat-form-field>
+    </form>
+  </div>
+
+  <!-- Actions -->
+  <mat-dialog-actions class="dialog-actions">
+    <button mat-stroked-button type="button" (click)="form.reset()">Reset</button>
+
+    <span class="action-spacer"></span>
+
+    <button mat-stroked-button type="button" (click)="dialogRef.close()">Close</button>
+
+    <button
+      mat-raised-button
+      type="button"
+      [disabled]="form.invalid || form.pristine"
+      (click)="save()"
+    >
+      Save
+    </button>
+  </mat-dialog-actions>
+</div>

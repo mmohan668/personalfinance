@@ -54,7 +54,9 @@
             @for (col of visibleColumns; track col.field) {
               <th
                 [pSortableColumn]="col.sortable !== false ? col.field : undefined"
+                [style.width.px]="col.width || 120"
                 [style.minWidth.px]="col.width || 120"
+                [style.maxWidth.px]="500"
                 pReorderableColumn
               >
                 <div class="sort-header">
@@ -81,7 +83,11 @@
             <!-- Filter columns -->
             @for (col of visibleColumns; track col.field) {
               @if (col.filterable) {
-                <th>
+                <th
+                  [style.width.px]="col.width || 120"
+                  [style.minWidth.px]="col.width || 120"
+                  [style.maxWidth.px]="500"
+                >
                   <app-column-filter
                     [dateFormat]="getDateFormate()"
                     [column]="col"
@@ -125,17 +131,34 @@
 
             <!-- Data columns -->
             @for (column of visibleColumns; track column.field) {
-              <td [ngStyle]="{ 'text-align': column.align }">
+              <td
+                [ngStyle]="{
+                  'text-align': column.align,
+                  'width.px': column.width || 120,
+                  'min-width.px': column.width || 120,
+                  'max-width.px': 500,
+                  'white-space': 'normal',
+                  'overflow-wrap': 'anywhere',
+                  'word-break': 'break - word',
+                }"
+              >
                 @if (column.cellTemplate === 'cellValueTemplate') {
                   {{ calculateCellValue(row, column) }}
                 } @else if (column.cellTemplate === 'titleCellTemplate') {
                   <span [title]="fetchTitle(row, column)">{{ row[column.field] }}</span>
                 } @else if (column.cellTemplate === 'currencyCellTemplate') {
-                  {{ row[column.field] | currency: currencyCode }}
+                  {{
+                    row[column.field]
+                      | currency: getCurrencyCode() : 'symbol' : '1.2-2' : getLocale() ?? 'en-US'
+                  }}
                 } @else if (column.dataType === 'date') {
                   {{ row[column.field] | date: getDateFormate() }}
                 } @else if (column.dataType === 'datetime') {
                   {{ row[column.field] | date: getDateTimeFormate() }}
+                } @else if (column.cellTemplate === 'hyperlinkCellTemplate') {
+                  <a class="hyp-link" (click)="hyperlinkAction(row, column)">{{
+                    row[column.field]
+                  }}</a>
                 } @else {
                   {{ row[column.field] }}
                 }

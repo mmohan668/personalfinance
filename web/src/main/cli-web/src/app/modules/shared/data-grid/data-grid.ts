@@ -66,6 +66,8 @@ export class DataGrid implements OnInit {
   public fetchTitle!: (rowData: any, col: GridColumn) => any;
   @Input()
   public groupBy: string | null = null;
+  @Input()
+  public hyperlinkAction!: (rowData: any, col: GridColumn) => any;
 
   public config = inject(AppConfigService);
   public _cs = inject(CommonService);
@@ -541,6 +543,14 @@ export class DataGrid implements OnInit {
 
   getGroupColumnHeader(): string {
     return this.columns().find((col) => col.field === this.groupBy)?.header ?? '';
+  }
+
+  getCurrencyCode(): string {
+    return this._scs.currency();
+  }
+
+  getLocale(): string {
+    return this._scs.locale();
   }
 
   getDateFormate(): string {
