@@ -5,4 +5,5 @@ public interface EntityConstants {
     String CREATED_BY_USER = "createdBy";
     String UPDATED_BY_USER = "updatedBy";
     String REFERENCE_VALUE = "referenceValue";
+    String CONFIG_VALUE = "configValue";
 }

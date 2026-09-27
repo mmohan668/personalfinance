@@ -14,7 +14,6 @@ import com.pf.common.mapper.financialTransaction.FinancialTransactionMapper;
 import com.pf.common.mapper.financialTransaction.FinancialTransactionViewMapper;
 import com.pf.common.repository.financialTransaction.FinancialTransactionRepository;
 import com.pf.common.service.generic.BaseService;
-import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

@@ -8,14 +8,18 @@ import com.pf.common.dto.gp.GridSort;
 import com.pf.common.dto.gp.SearchCriteria;
 import com.pf.common.dto.settings.ReferenceObjectDto;
 import com.pf.common.dto.settings.ReferenceValueDto;
+import com.pf.common.dto.settings.SystemConfigDto;
 import com.pf.common.entity.generic.ApiResponse;
 import com.pf.common.entity.settings.ReferenceObject;
 import com.pf.common.entity.settings.ReferenceValue;
+import com.pf.common.entity.settings.SystemConfig;
 import com.pf.common.entity.userManagement.User;
 import com.pf.common.mapper.settings.ReferenceObjectMapper;
 import com.pf.common.mapper.settings.ReferenceValueMapper;
+import com.pf.common.mapper.settings.SystemConfigMapper;
 import com.pf.common.repository.setting.ReferenceObjectRepository;
 import com.pf.common.repository.setting.ReferenceValueRepository;
+import com.pf.common.repository.setting.SystemConfigRepository;
 import com.pf.common.service.generic.BaseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,11 +30,10 @@ import java.util.List;
 
 import static com.pf.common.constants.CommonConstants.*;
 import static com.pf.common.constants.EntityConstants.*;
-import static com.pf.common.constants.FieldConstants.CREATED_BY;
-import static com.pf.common.constants.FieldConstants.ID;
+import static com.pf.common.constants.FieldConstants.*;
+import static com.pf.common.enums.FilterOperator.EQUALS;
 import static com.pf.common.enums.FilterOperator.IN;
-import static com.pf.common.enums.RefObjectNames.TRANSACTION_TYPE;
-import static com.pf.common.enums.RefObjectNames.LOCATION;
+import static com.pf.common.enums.RefObjectNames.*;
 import static com.pf.common.enums.SortOrder.ASC;
 
 @Slf4j
@@ -39,8 +42,10 @@ import static com.pf.common.enums.SortOrder.ASC;
 public class SettingsService extends BaseService {
     private final ReferenceObjectMapper referenceObjectMapper;
     private final ReferenceValueMapper referenceValueMapper;
+    private final SystemConfigMapper systemConfigMapper;
     private final ReferenceObjectRepository referenceObjectRepository;
     private final ReferenceValueRepository referenceValueRepository;
+    private final SystemConfigRepository systemConfigRepository;
 
     public GridResult fetchReferenceObjectGridData(SearchCriteria searchCriteria) {
         log.debug("fetchReferenceObjectGridData: {}", searchCriteria);
@@ -74,6 +79,23 @@ public class SettingsService extends BaseService {
         List<ReferenceValue> referenceValues = getDataBySearchCriteria(ReferenceValue.class, searchCriteria);
         List<ReferenceValueDto> recordDetails = referenceValueMapper.toDtoList(referenceValues);
         log.debug("fetchReferenceValuesGridData: totalRecords: {}", totalRecords);
+        return gridResult(totalRecords, recordDetails);
+    }
+
+    public GridResult financialSystemConfigGridData(SearchCriteria searchCriteria) {
+        log.debug("financialSystemConfigGridData: {}", searchCriteria);
+        GridFilter gridFilter = GridFilter.builder()
+                .field(USER_ID)
+                .operator(EQUALS.getValue())
+                .value(String.valueOf(fetchLoginUser().getAdminUser().getId()))
+                .build();
+        searchCriteria.getFilterList().add(gridFilter);
+        searchCriteria.getSortList().add(new GridSort(ID, ASC.getValue()));
+        searchCriteria.setFetchPaths(List.of(CONFIG_VALUE, CREATED_BY_USER, UPDATED_BY_USER));
+        searchCriteria.setFIELD_MAPPINGS(SystemConfigDto.FIELD_MAPPINGS);
+        long totalRecords = getCountBySearchCriteria(SystemConfig.class, searchCriteria);
+        List<SystemConfigDto> recordDetails = systemConfigMapper.toDtoList(getDataBySearchCriteria(SystemConfig.class, searchCriteria));
+        log.debug("financialSystemConfigGridData: totalRecords: {}", totalRecords);
         return gridResult(totalRecords, recordDetails);
     }
 
@@ -168,7 +190,30 @@ public class SettingsService extends BaseService {
         return referenceValueRepository.fetchReferenceValuesByRefObjName(String.valueOf(LOCATION));
     }
 
+    public List<SelectItem> fetchCurrencies() {
+        return referenceValueRepository.fetchReferenceValuesByRefObjName(String.valueOf(CURRENCY_CODE));
+    }
+
     public Long fetchIdByReferenceCodeAndRefObjName(String referenceCode, String refObjName) {
         return referenceValueRepository.fetchIdByReferenceCodeAndRefObjName(referenceCode, refObjName);
+    }
+
+    @Transactional
+    public ApiResponse saveSystemConfig(SystemConfigDto systemConfigDto) {
+        log.debug("saveSystemConfig: {}", systemConfigDto);
+        if (systemConfigDto == null) {
+            return failure("System config object not found.");
+        }
+        SystemConfig systemConfig = systemConfigRepository.findById(systemConfigDto.getId()).orElse(null);
+        if (systemConfig == null) {
+            return failure("System config not found.");
+        }
+        ReferenceValue referenceValue = referenceValueRepository.findById(systemConfigDto.getReferenceId()).orElse(null);
+        if (referenceValue == null) {
+            return failure("Reference value not found.");
+        }
+        systemConfig.setConfigValue(referenceValue);
+        systemConfig.setUpdatedBy(fetchLoginUser());
+        return success("System config saved successfully.");
     }
 }

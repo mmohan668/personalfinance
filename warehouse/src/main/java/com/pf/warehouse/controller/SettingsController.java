@@ -4,6 +4,7 @@ import com.pf.common.dto.generic.SelectItem;
 import com.pf.common.dto.gp.GridResult;
 import com.pf.common.dto.gp.SearchCriteria;
 import com.pf.common.dto.settings.ReferenceValueDto;
+import com.pf.common.dto.settings.SystemConfigDto;
 import com.pf.common.entity.generic.ApiResponse;
 import com.pf.common.service.settings.SettingsService;
 import jakarta.validation.Valid;
@@ -26,6 +27,11 @@ public class SettingsController {
     @PostMapping("/fetchReferenceValueGridData")
     public GridResult fetchReferenceValueGridData(@RequestBody SearchCriteria searchCriteria) {
         return settingsService.fetchReferenceValueGridData(searchCriteria);
+    }
+
+    @PostMapping("/financialSystemConfigGridData")
+    public GridResult financialSystemConfigGridData(@RequestBody SearchCriteria searchCriteria) {
+        return settingsService.financialSystemConfigGridData(searchCriteria);
     }
 
     @PostMapping("/saveReferenceValue")
@@ -58,4 +64,15 @@ public class SettingsController {
     public Long fetchIdByReferenceCodeAndRefObjName(@RequestParam String referenceCode, @RequestParam String refObjName) {
         return settingsService.fetchIdByReferenceCodeAndRefObjName(referenceCode, refObjName);
     }
+
+    @GetMapping("/fetchCurrencies")
+    public List<SelectItem> fetchCurrencies() {
+        return settingsService.fetchCurrencies();
+    }
+
+    @PostMapping("/saveSystemConfig")
+    public ApiResponse saveSystemConfig(@RequestBody SystemConfigDto systemConfigDto) {
+        return settingsService.saveSystemConfig(systemConfigDto);
+    }
+
 }
