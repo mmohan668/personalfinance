@@ -1,8 +1,15 @@
-<app-data-grid
-  #dataGrid
-  [gridName]="gridName"
-  [gridExportFileName]="gridExportFileName"
-  [dataKey]="dataKey"
-  [toolbarConfig]="toolbarConfig"
-  [hyperlinkAction]="hyperlinkAction"
-></app-data-grid>
+<section class="grid-section">
+  <div class="section-header">
+    <h3>System Config</h3>
+  </div>
+  <div class="grid-container">
+    <app-data-grid
+      #dataGrid
+      [gridName]="gridName"
+      [gridExportFileName]="gridExportFileName"
+      [dataKey]="dataKey"
+      [toolbarConfig]="toolbarConfig"
+      [hyperlinkAction]="hyperlinkAction"
+    ></app-data-grid>
+  </div>
+</section>

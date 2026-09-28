@@ -29,9 +29,9 @@ public class SettingsController {
         return settingsService.fetchReferenceValueGridData(searchCriteria);
     }
 
-    @PostMapping("/financialSystemConfigGridData")
-    public GridResult financialSystemConfigGridData(@RequestBody SearchCriteria searchCriteria) {
-        return settingsService.financialSystemConfigGridData(searchCriteria);
+    @PostMapping("/fetchSystemConfigGridData")
+    public GridResult fetchSystemConfigGridData(@RequestBody SearchCriteria searchCriteria) {
+        return settingsService.fetchSystemConfigGridData(searchCriteria);
     }
 
     @PostMapping("/saveReferenceValue")

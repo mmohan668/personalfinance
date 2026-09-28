@@ -1,94 +1,94 @@
 <div class="bulk-upload-page">
   <h1>Bulk Upload</h1>
 
-  <!-- Section 1: File Upload -->
-  <section class="upload-section">
-    <div class="section-header">
-      <h2>File Upload</h2>
-      <p>Select the type of data and upload an Excel file.</p>
-    </div>
+  <mat-expansion-panel class="upload-panel" [expanded]="true">
+    <mat-expansion-panel-header>
+      <mat-panel-title> File Upload </mat-panel-title>
 
-    <div class="form-content">
-      <!-- Upload Type + Download Template -->
-      <div class="upload-type-row">
-        <div class="form-field">
-          <label for="uploadType"> Upload Type </label>
+      <mat-panel-description>
+        Select the type of data and upload an Excel file.
+      </mat-panel-description>
+    </mat-expansion-panel-header>
 
-          <div class="select-wrapper">
-            <select id="uploadType" [(ngModel)]="selectedUploadType">
-              <option value="" disabled>Select upload type</option>
+    <div class="upload-section">
+      <div class="form-content">
+        <div class="upload-type-row">
+          <div class="form-field">
+            <label for="uploadType">Upload Type</label>
 
-              @for (type of uploadTypes; track type.value) {
-                <option [value]="type.value">
-                  {{ type.label }}
-                </option>
-              }
-            </select>
+            <div class="select-wrapper">
+              <select id="uploadType" [(ngModel)]="selectedUploadType">
+                <option value="" disabled>Select upload type</option>
+
+                @for (type of uploadTypes; track type.value) {
+                  <option [value]="type.value">
+                    {{ type.label }}
+                  </option>
+                }
+              </select>
+            </div>
           </div>
+
+          <button
+            type="button"
+            class="secondary-button download-template-button"
+            [disabled]="!selectedUploadType"
+            (click)="downloadTemplate()"
+          >
+            Download Template
+          </button>
         </div>
 
-        <button
-          type="button"
-          class="secondary-button download-template-button"
-          [disabled]="!selectedUploadType"
-          (click)="downloadTemplate()"
-        >
-          Download Template
+        <div class="form-field">
+          <label for="bulkUploadFile">File</label>
+
+          <div class="file-upload">
+            <label for="bulkUploadFile" class="choose-file-button"> Choose File </label>
+
+            <input
+              id="bulkUploadFile"
+              type="file"
+              accept=".xlsx"
+              hidden
+              (change)="onFileSelected($event)"
+            />
+
+            <span class="file-name">
+              {{ selectedFile?.name || 'No file selected' }}
+            </span>
+          </div>
+
+          @if (fileError) {
+            <div class="file-error">
+              {{ fileError }}
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="secondary-button" (click)="reset()">Reset</button>
+
+        <button type="button" class="primary-button" [disabled]="!canSubmit" (click)="submit()">
+          Submit
         </button>
       </div>
-
-      <!-- File Upload -->
-      <div class="form-field">
-        <label for="bulkUploadFile"> File </label>
-
-        <div class="file-upload">
-          <label for="bulkUploadFile" class="choose-file-button"> Choose File </label>
-
-          <input
-            id="bulkUploadFile"
-            type="file"
-            accept=".xlsx"
-            hidden
-            (change)="onFileSelected($event)"
-          />
-
-          <span class="file-name">
-            {{ selectedFile?.name || 'No file selected' }}
-          </span>
-        </div>
-
-        @if (fileError) {
-          <div class="file-error">
-            {{ fileError }}
-          </div>
-        }
-      </div>
     </div>
+  </mat-expansion-panel>
 
-    <!-- Form Actions -->
-    <div class="actions">
-      <button type="button" class="secondary-button" (click)="reset()">Reset</button>
-
-      <button type="button" class="primary-button" [disabled]="!canSubmit" (click)="submit()">
-        Submit
-      </button>
-    </div>
-  </section>
-
-  <!-- Section 2: Bulk Upload Status -->
-  <section class="status-section">
+  <section class="grid-section">
     <div class="section-header">
       <h2>Bulk Upload Status</h2>
-      <p>View the status of submitted bulk uploads.</p>
     </div>
-
-    <!-- Grid Placeholder -->
-    <div class="grid-placeholder">
-      <div class="placeholder-icon">▦</div>
-
-      <div class="placeholder-title">Bulk Upload Status Grid</div>
-
-      <div class="placeholder-text">Upload status information will be displayed here.</div>
+    <div class="grid-container">
+      <app-data-grid
+        #dataGrid
+        [gridName]="gridName"
+        [additionalFilters]="additionalFilters"
+        [gridExportFileName]="gridExportFileName"
+        [dataKey]="dataKey"
+        [toolbarConfig]="toolbaConfig"
+      ></app-data-grid>
     </div>
   </section>
 </div>
