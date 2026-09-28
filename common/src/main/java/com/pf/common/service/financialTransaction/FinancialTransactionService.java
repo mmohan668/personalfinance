@@ -31,14 +31,14 @@ public class FinancialTransactionService extends BaseService {
     private final FinancialTransactionMapper financialTransactionMapper;
     private final FinancialTransactionViewMapper financialTransactionViewMapper;
 
-    public GridResult financialTransactionGridData(SearchCriteria searchCriteria) {
-        log.debug("financialTransactionGridData: searchCriteria: {}", searchCriteria);
+    public GridResult fetchFinancialTransactionGridData(SearchCriteria searchCriteria) {
+        log.debug("fetchFinancialTransactionGridData: searchCriteria: {}", searchCriteria);
         long totalRecords = 0;
         if (!searchCriteria.isLoadAllData()) {
             totalRecords = getCountBySearchCriteria(FinancialTransactionView.class, searchCriteria);
         }
         List<FinancialTransactionViewDto> recordDetails = financialTransactionViewMapper.toDtoList(getDataBySearchCriteria(FinancialTransactionView.class, searchCriteria));
-        log.debug("financialTransactionGridData: totalRecords: {}", totalRecords);
+        log.debug("fetchFinancialTransactionGridData: totalRecords: {}", totalRecords);
         return gridResult(totalRecords, recordDetails);
     }
 

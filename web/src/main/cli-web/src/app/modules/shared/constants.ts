@@ -5,12 +5,13 @@ export const GRID_URL_MAP = new Map<string, string>([
   [GRID_NAMES.SUBCATEGORIES_GRID, '/categoryManagement/fetchSubcategoriesGridData'],
   [GRID_NAMES.REFERENCE_OBJECTS_GRID, '/settings/fetchReferenceObjectGridData'],
   [GRID_NAMES.REFERENCE_VALUES_GRID, '/settings/fetchReferenceValueGridData'],
-  [GRID_NAMES.EXPENSES_GRID, '/financialTransaction/financialTransactionGridData'],
-  [GRID_NAMES.INCOMES_GRID, '/financialTransaction/financialTransactionGridData'],
-  [GRID_NAMES.INVESTMENTS_GRID, '/financialTransaction/financialTransactionGridData'],
-  [GRID_NAMES.TRANSFERS_GRID, '/financialTransaction/financialTransactionGridData'],
-  [GRID_NAMES.ALL_TRANSACTIONS_GRID, '/financialTransaction/financialTransactionGridData'],
-  [GRID_NAMES.SYSTEM_CONFIG, '/settings/financialSystemConfigGridData'],
+  [GRID_NAMES.EXPENSES_GRID, '/financialTransaction/fetchFinancialTransactionGridData'],
+  [GRID_NAMES.INCOMES_GRID, '/financialTransaction/fetchFinancialTransactionGridData'],
+  [GRID_NAMES.INVESTMENTS_GRID, '/financialTransaction/fetchFinancialTransactionGridData'],
+  [GRID_NAMES.TRANSFERS_GRID, '/financialTransaction/fetchFinancialTransactionGridData'],
+  [GRID_NAMES.ALL_TRANSACTIONS_GRID, '/financialTransaction/fetchFinancialTransactionGridData'],
+  [GRID_NAMES.SYSTEM_CONFIG, '/settings/fetchSystemConfigGridData'],
+  [GRID_NAMES.BULK_UPLOADS_STATUS, '/bulkupload/fetchBulkUploadStatusGridData'],
 ]);
 
 export const SYSTEM = 'PERSONALFINANCEAPP';

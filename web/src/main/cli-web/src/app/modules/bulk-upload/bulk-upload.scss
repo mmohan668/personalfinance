@@ -1,5 +1,8 @@
 .bulk-upload-page {
   padding: 24px;
+
+  box-sizing: border-box;
+  min-width: 0;
 }
 
 h1 {
@@ -10,18 +13,34 @@ h1 {
 }
 
 // --------------------------------------------------
-// Sections
+// File Upload Expansion Panel
 // --------------------------------------------------
 
-.upload-section,
-.status-section {
-  padding: 24px;
+.upload-panel {
   margin-bottom: 20px;
 
   border: 1px solid #e0e0e0;
   border-radius: 8px;
 
   background: #fff;
+
+  box-shadow: none;
+
+  box-sizing: border-box;
+  min-width: 0;
+
+  // Expansion panel body
+  ::ng-deep .mat-expansion-panel-body {
+    padding: 0 24px 24px;
+  }
+}
+
+// Content inside expansion panel
+.upload-section {
+  width: 100%;
+
+  box-sizing: border-box;
+  min-width: 0;
 }
 
 .section-header {
@@ -50,6 +69,8 @@ h1 {
   display: flex;
   flex-direction: column;
   gap: 18px;
+
+  min-width: 0;
 }
 
 .form-field {
@@ -65,11 +86,13 @@ h1 {
 
 .select-wrapper {
   position: relative;
+
   width: 400px;
   max-width: 100%;
 
   &::after {
     content: '';
+
     position: absolute;
 
     top: 50%;
@@ -90,7 +113,6 @@ h1 {
     width: 100%;
     height: 42px;
 
-    // Left/right spacing for the text
     padding: 8px 48px 8px 12px;
 
     border: 1px solid #bdbdbd;
@@ -101,6 +123,8 @@ h1 {
     font-size: 14px;
     cursor: pointer;
 
+    box-sizing: border-box;
+
     // Remove browser's native caret
     appearance: none;
     -webkit-appearance: none;
@@ -108,6 +132,7 @@ h1 {
 
     &:focus {
       outline: none;
+
       border-color: #4caf50;
     }
   }
@@ -121,6 +146,8 @@ h1 {
   display: flex;
   align-items: flex-end;
   gap: 16px;
+
+  min-width: 0;
 }
 
 .download-template-button {
@@ -140,6 +167,8 @@ h1 {
   display: flex;
   align-items: center;
   gap: 12px;
+
+  min-width: 0;
 }
 
 .choose-file-button {
@@ -159,14 +188,22 @@ h1 {
   font-size: 14px;
   font-weight: 500;
 
+  white-space: nowrap;
+
   &:hover {
     background: #4caf50;
   }
 }
 
 .file-name {
+  min-width: 0;
+
   color: #555;
   font-size: 14px;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .file-error {
@@ -185,10 +222,7 @@ h1 {
   justify-content: flex-end;
   gap: 12px;
 
-  // Reduced from 32px
   margin-top: 22px;
-
-  // Reduced from 20px
   padding-top: 16px;
 
   border-top: 1px solid #eee;
@@ -232,46 +266,8 @@ h1 {
 
 button:disabled {
   opacity: 0.5;
+
   cursor: not-allowed;
-}
-
-// --------------------------------------------------
-// Bulk Upload Status Grid Placeholder
-// --------------------------------------------------
-
-.grid-placeholder {
-  min-height: 220px;
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-
-  border: 1px dashed #bdbdbd;
-  border-radius: 6px;
-
-  background: #fafafa;
-
-  color: #888;
-}
-
-.placeholder-icon {
-  margin-bottom: 12px;
-
-  font-size: 40px;
-}
-
-.placeholder-title {
-  margin-bottom: 6px;
-
-  color: #dddd;
-
-  font-size: 16px;
-  font-weight: 500;
-}
-
-.placeholder-text {
-  font-size: 13px;
 }
 
 // --------------------------------------------------
@@ -283,9 +279,14 @@ button:disabled {
     padding: 16px;
   }
 
-  .upload-section,
   .status-section {
     padding: 16px;
+  }
+
+  .upload-panel {
+    ::ng-deep .mat-expansion-panel-body {
+      padding: 0 16px 16px;
+    }
   }
 
   .upload-type-row {
@@ -294,7 +295,7 @@ button:disabled {
     gap: 12px;
   }
 
-  .form-field select {
+  .select-wrapper {
     width: 100%;
   }
 
@@ -305,6 +306,10 @@ button:disabled {
   .file-upload {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .file-name {
+    max-width: 100%;
   }
 
   .actions {

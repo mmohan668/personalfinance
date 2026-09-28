@@ -82,8 +82,8 @@ public class SettingsService extends BaseService {
         return gridResult(totalRecords, recordDetails);
     }
 
-    public GridResult financialSystemConfigGridData(SearchCriteria searchCriteria) {
-        log.debug("financialSystemConfigGridData: {}", searchCriteria);
+    public GridResult fetchSystemConfigGridData(SearchCriteria searchCriteria) {
+        log.debug("fetchSystemConfigGridData: {}", searchCriteria);
         GridFilter gridFilter = GridFilter.builder()
                 .field(USER_ID)
                 .operator(EQUALS.getValue())
@@ -95,7 +95,7 @@ public class SettingsService extends BaseService {
         searchCriteria.setFIELD_MAPPINGS(SystemConfigDto.FIELD_MAPPINGS);
         long totalRecords = getCountBySearchCriteria(SystemConfig.class, searchCriteria);
         List<SystemConfigDto> recordDetails = systemConfigMapper.toDtoList(getDataBySearchCriteria(SystemConfig.class, searchCriteria));
-        log.debug("financialSystemConfigGridData: totalRecords: {}", totalRecords);
+        log.debug("fetchSystemConfigGridData: totalRecords: {}", totalRecords);
         return gridResult(totalRecords, recordDetails);
     }
 

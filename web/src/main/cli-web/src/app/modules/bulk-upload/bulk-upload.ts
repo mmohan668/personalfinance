@@ -1,30 +1,47 @@
-import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { Component, inject } from '@angular/core';
+import { CommonImportsModule } from '../shared/common-imports/common-imports-module';
+import { DataGrid } from '../shared/data-grid/data-grid';
+import { DATA_FIELDS, FILTER_OPERATORS, GRID_EXPORT_FILE_NAMES, GRID_NAMES } from '../shared/enums';
+import { GridFilter, ToolbarConfig } from '../shared/types/types';
+import { CommonService } from '../shared/service/common-service';
 
 @Component({
-  imports: [FormsModule],
+  imports: [CommonImportsModule, DataGrid],
   selector: 'app-bulk-upload',
   styleUrl: './bulk-upload.scss',
   templateUrl: './bulk-upload.html',
 })
 export class BulkUpload {
-  uploadTypes = [
+  protected readonly _cs = inject(CommonService);
+
+  protected readonly gridName = GRID_NAMES.BULK_UPLOADS_STATUS;
+  protected readonly gridExportFileName = GRID_EXPORT_FILE_NAMES.BULK_UPLOADS_STATUS;
+  protected readonly dataKey = DATA_FIELDS.ID;
+  protected readonly toolbaConfig!: ToolbarConfig;
+  protected readonly uploadTypes = [
     { value: 'reference-values', label: 'Reference Values' },
     { value: 'categories', label: 'Categories' },
     { value: 'subcategories', label: 'Subcategories' },
     { value: 'financial-transactions', label: 'Financial Transactions' },
   ];
-
-  selectedUploadType = '';
-  selectedFile: File | null = null;
-  fileError = '';
+  protected selectedUploadType = '';
+  protected selectedFile: File | null = null;
+  protected fileError = '';
+  protected readonly additionalFilters: GridFilter[] = [
+    {
+      field: DATA_FIELDS.USER_ID,
+      operator: FILTER_OPERATORS.EQUALS,
+      value: 2,
+    },
+  ];
+  constructor() {
+    this.toolbaConfig = this._cs.toolbarConfig();
+  }
 
   onFileSelected(event: Event): void {
     this.fileError = '';
-
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
-
     if (!file) {
       this.selectedFile = null;
       return;

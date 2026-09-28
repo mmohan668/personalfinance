@@ -1,12 +1,19 @@
-<app-data-grid
-  #dataGrid
-  [dataKey]="this.dataKey"
-  [gridName]="this.gridName"
-  [gridExportFileName]="this.gridExportFileName"
-  [toolbarConfig]="this.toolbarConfig"
-  [addRow]="this.addRow"
-  [deleteRow]="this.deleteRow"
-  [editRow]="this.editRow"
-  [copyRow]="this.copyRow"
-  [fetchTitle]="this.fetchTitle"
-/>
+<section class="grid-section">
+  <div class="section-header">
+    <h3>All Transactions</h3>
+  </div>
+  <div class="grid-container">
+    <app-data-grid
+      #dataGrid
+      [dataKey]="this.dataKey"
+      [gridName]="this.gridName"
+      [gridExportFileName]="this.gridExportFileName"
+      [toolbarConfig]="this.toolbarConfig"
+      [addRow]="this.addRow"
+      [deleteRow]="this.deleteRow"
+      [editRow]="this.editRow"
+      [copyRow]="this.copyRow"
+      [fetchTitle]="this.fetchTitle"
+    />
+  </div>
+</section>

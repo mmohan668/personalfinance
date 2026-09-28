@@ -697,3 +697,38 @@ body {
 .dialog-actions button[mat-raised-button]:disabled {
   cursor: not-allowed !important;
 }
+
+// --------------------------------------------------
+// Data Grid Sections
+// --------------------------------------------------
+
+.grid-section {
+  padding: 5px 10px !important;
+  margin-bottom: 20px !important;
+  border: 1px solid #e0e0e0 !important;
+  border-radius: 8px !important;
+  background: #fff !important;
+  box-sizing: border-box !important;
+  min-width: 0 !important;
+}
+
+// --------------------------------------------------
+// Data Grid Container
+// --------------------------------------------------
+
+.grid-container {
+  width: 100% !important;
+  min-width: 0 !important;
+  box-sizing: border-box !important;
+  border: 1px dashed #bdbdbd !important;
+  border-radius: 6px !important;
+  background: #fafafa !important;
+  overflow: hidden !important;
+  app-data-grid {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+  }
+}

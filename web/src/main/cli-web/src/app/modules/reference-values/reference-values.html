@@ -1,10 +1,17 @@
-<app-data-grid
-  #dataGrid
-  [gridName]="gridName"
-  [gridExportFileName]="gridExportFileName"
-  [dataKey]="dataKey"
-  [toolbarConfig]="toolbarConfig"
-  [addRow]="addRow"
-  [editRow]="editRow"
-  [deleteRow]="deleteRow"
-></app-data-grid>
+<section class="grid-section">
+  <div class="section-header">
+    <h3>Reference Values</h3>
+  </div>
+  <div class="grid-container">
+    <app-data-grid
+      #dataGrid
+      [gridName]="gridName"
+      [gridExportFileName]="gridExportFileName"
+      [dataKey]="dataKey"
+      [toolbarConfig]="toolbarConfig"
+      [addRow]="addRow"
+      [editRow]="editRow"
+      [deleteRow]="deleteRow"
+    ></app-data-grid>
+  </div>
+</section>
