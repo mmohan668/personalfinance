@@ -60,4 +60,13 @@ public interface ReferenceValueRepository extends JpaRepository<ReferenceValue, 
             @Param("referenceCode") String referenceCode,
             @Param("refObjName") String refObjName
     );
+
+    @Transactional(readOnly = true)
+    @Query("""
+            SELECT rv.referenceCode
+            FROM ReferenceValue rv
+            WHERE rv.referenceObject.refObjName = :refObjName
+            ORDER BY LOWER(rv.referenceCode)
+            """)
+    List<String> findReferenceCodeByRefObjName(@Param("refObjName") String refObjName);
 }
