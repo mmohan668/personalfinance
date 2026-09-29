@@ -51,6 +51,18 @@ public interface ReferenceValueRepository extends JpaRepository<ReferenceValue, 
 
     @Transactional(readOnly = true)
     @Query("""
+            SELECT new com.pf.common.dto.generic.SelectItem(
+                        rv.referenceCode,
+                        rv.referenceCodeDescription
+            )
+            FROM ReferenceValue rv
+            WHERE rv.referenceObject.refObjName = :refObjName
+            ORDER BY LOWER(rv.referenceCode)
+            """)
+    List<SelectItem> fetchReferenceCodeAndReferenceDescriptionByRefObjName(@Param("refObjName") String refObjName);
+
+    @Transactional(readOnly = true)
+    @Query("""
             SELECT rv.id
             FROM ReferenceValue rv
             WHERE rv.referenceCode = :referenceCode

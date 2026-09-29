@@ -1,6 +1,8 @@
 package com.pf.common.repository.bulkUpload;
 
 import com.pf.common.dto.generic.SelectItem;
+import com.pf.common.entity.categoryManagement.UserCategory;
+import com.pf.common.entity.categoryManagement.UserSubcategory;
 import com.pf.common.enums.RefObjectNames;
 import com.pf.common.repository.categoryManagement.UserCategoryRepository;
 import com.pf.common.repository.setting.ReferenceObjectRepository;
@@ -37,8 +39,10 @@ public class BulkUploadTemplateService extends BaseService {
     public static final String REFERENCE_VALUES = "Reference Values";
     private static final String CATEGORIES = "Categories";
     private static final String SUBCATEGORIES = "Subcategories";
+    private static final String FINANCIAL_TRANSACTIONS = "Financial Transactions";
     private static final String REFERENCE_OBJECTS = "Reference Objects";
     private static final String TRANSACTION_TYPES = "Transaction Types";
+    private static final String LOCATIONS = "Locations";
     private static final String DATA_DICTIONARY_SHEET = "Data Dictionary";
 
     /*
@@ -65,6 +69,17 @@ public class BulkUploadTemplateService extends BaseService {
             "Category Name *",
             "Subcategory Name *",
             "Subcategory Description *"
+    };
+
+    private static final String[] FINANCIAL_TRANSACTIONS_HEADERS = {
+            "Transaction Date *",
+            "Amount *",
+            "Transaction Type *",
+            "Category Name *",
+            "Subcategory Name *",
+            "Subcategory Description *",
+            "Location",
+            "Remarks"
     };
 
     private static final String[] DATA_DICTIONARY_HEADERS = {
@@ -486,6 +501,74 @@ public class BulkUploadTemplateService extends BaseService {
         log.debug(
                 "Transaction Types sheet created with {} values.",
                 transactionTypes.size()
+        );
+    }
+
+    /**
+     * Creates the visible Locations sheet.
+     */
+    private void createLocationsLookup(
+            XSSFSheet lookupSheet,
+            List<SelectItem> locations
+    ) {
+
+        // =========================================================
+        // Header
+        // =========================================================
+        Row headerRow = lookupSheet.createRow(0);
+
+        Cell locationHeaderCell = headerRow.createCell(0);
+        locationHeaderCell.setCellValue("Location");
+
+        Cell descriptionHeaderCell = headerRow.createCell(1);
+        descriptionHeaderCell.setCellValue("Description");
+
+        CellStyle headerStyle = createLookupHeaderStyle(
+                lookupSheet.getWorkbook()
+        );
+
+        locationHeaderCell.setCellStyle(headerStyle);
+        descriptionHeaderCell.setCellStyle(headerStyle);
+
+        headerRow.setHeightInPoints(25);
+
+        // =========================================================
+        // Locations
+        // =========================================================
+        for (int i = 0; i < locations.size(); i++) {
+
+            SelectItem item = locations.get(i);
+
+            Row row = lookupSheet.createRow(i + 1);
+
+            // Location -> SelectItem.value
+            Cell locationCell = row.createCell(0);
+            locationCell.setCellValue(
+                    item.value() != null
+                            ? item.value().toString()
+                            : ""
+            );
+
+            // Description -> SelectItem.label
+            Cell descriptionCell = row.createCell(1);
+            descriptionCell.setCellValue(
+                    item.label() != null
+                            ? item.label()
+                            : ""
+            );
+        }
+
+        // =========================================================
+        // Column widths
+        // =========================================================
+        lookupSheet.setColumnWidth(0, 40 * 256);
+        lookupSheet.setColumnWidth(1, 60 * 256);
+
+        lookupSheet.createFreezePane(0, 1);
+
+        log.debug(
+                "Locations sheet created with {} values.",
+                locations.size()
         );
     }
 
@@ -1256,7 +1339,169 @@ public class BulkUploadTemplateService extends BaseService {
     }
 
     public ByteArrayInputStream generateFinancialTransactionsTemplate() {
-        return null;
+
+        List<String> transactionTypes =
+                referenceValueRepository
+                        .findReferenceCodeByRefObjName(
+                                RefObjectNames.TRANSACTION_TYPE.name()
+                        )
+                        .stream()
+                        .filter(Objects::nonNull)
+                        .map(String::trim)
+                        .filter(name -> !name.isEmpty())
+                        .distinct()
+                        .toList();
+
+        List<SelectItem> locations =
+                referenceValueRepository
+                        .fetchReferenceCodeAndReferenceDescriptionByRefObjName(
+                                RefObjectNames.LOCATION.name()
+                        )
+                        .stream()
+                        .filter(Objects::nonNull)
+                        .distinct()
+                        .toList();
+
+        List<SelectItem> categories =
+                userCategoryRepository
+                        .findCategoriesByUserId(fetchLoginUser().getId());
+
+        List<UserCategory> allCategories =
+                userCategoryRepository
+                        .findAllCategoriesByUserId(fetchLoginUser().getId());
+
+        log.info("Generating Financial Transaction template.");
+
+        try (
+                XSSFWorkbook workbook = new XSSFWorkbook();
+                ByteArrayOutputStream outputStream =
+                        new ByteArrayOutputStream()
+        ) {
+
+            // =========================================================
+            // Main sheet
+            // =========================================================
+
+            XSSFSheet sheet =
+                    workbook.createSheet(FINANCIAL_TRANSACTIONS);
+
+            createHeader(
+                    sheet,
+                    workbook,
+                    FINANCIAL_TRANSACTIONS_HEADERS
+            );
+
+            sheet.createFreezePane(0, 1);
+
+            // =========================================================
+            // Transaction Types sheet
+            // =========================================================
+
+            XSSFSheet transactionTypesSheet =
+                    workbook.createSheet(TRANSACTION_TYPES);
+
+            createTransactionTypesLookup(
+                    transactionTypesSheet,
+                    transactionTypes
+            );
+
+
+            if (transactionTypes.isEmpty()) {
+                log.warn(
+                        "No transaction types found in reference_value table  ."
+                );
+            }
+
+            // =========================================================
+            // Categories sheet
+            // =========================================================
+
+            XSSFSheet categoriesSheet =
+                    workbook.createSheet(CATEGORIES);
+
+            createCategoryLookup(
+                    categoriesSheet,
+                    categories
+            );
+
+            if (categories.isEmpty()) {
+
+                log.warn(
+                        "No active categories found for userId ={}",
+                        fetchLoginUser().getId()
+                );
+            }
+
+            // =========================================================
+            // Subcategories sheet
+            // =========================================================
+
+            XSSFSheet subcategoriesSheet =
+                    workbook.createSheet(SUBCATEGORIES);
+
+            createSubcategoryLookup(
+                    subcategoriesSheet,
+                    allCategories
+            );
+
+            // =========================================================
+            // Locations
+            // =========================================================
+
+            XSSFSheet locationsSheet =
+                    workbook.createSheet(LOCATIONS);
+
+            createLocationsLookup(
+                    locationsSheet,
+                    locations
+            );
+
+            // =========================================================
+            // Main sheet column widths
+            // =========================================================
+
+            setFinancialTransactionsColumnWidths(sheet);
+
+            // =========================================================
+            // Data Dictionary
+            // =========================================================
+
+            createFinancialTransactionDataDictionarySheet(workbook);
+
+            // =========================================================
+            // Open Subcategories sheet by default
+            // =========================================================
+
+            workbook.setActiveSheet(
+                    workbook.getSheetIndex(FINANCIAL_TRANSACTIONS)
+            );
+
+            // =========================================================
+            // Write workbook
+            // =========================================================
+
+            workbook.write(outputStream);
+
+            log.info(
+                    "Financial Transactions template generated successfully."
+            );
+
+            return new ByteArrayInputStream(
+                    outputStream.toByteArray()
+            );
+
+        } catch (IOException e) {
+
+            log.error(
+                    "Failed to generate Financial Transactions template",
+                    e
+            );
+
+            throw new IllegalStateException(
+                    "Failed to generate Financial Transactions template",
+                    e
+            );
+        }
     }
 
     private void createCategoryLookup(
@@ -1394,6 +1639,121 @@ public class BulkUploadTemplateService extends BaseService {
         );
     }
 
+    private void createSubcategoryLookup(
+            XSSFSheet lookupSheet,
+            List<UserCategory> categories
+    ) {
+
+        /*
+         * Group categories by subcategory name.
+         */
+
+        Map<String, List<String>> categoriesMap =
+                categories.stream()
+                        .filter(Objects::nonNull)
+                        .collect(
+                                Collectors.toMap(
+                                        UserCategory::getCategoryName,
+                                        userCategory -> userCategory.getSubcategories().stream()
+                                                .map(UserSubcategory::getSubcategoryName)
+                                                .collect(Collectors.toList())
+                                )
+                        );
+
+        // =========================================================
+        // Header
+        // =========================================================
+
+        Row headerRow =
+                lookupSheet.createRow(0);
+
+        CellStyle headerStyle =
+                createLookupHeaderStyle(
+                        lookupSheet.getWorkbook()
+                );
+
+        int columnIndex = 0;
+
+        for (String value : categoriesMap.keySet()) {
+
+            Cell headerCell =
+                    headerRow.createCell(columnIndex);
+
+            headerCell.setCellValue(value);
+
+            headerCell.setCellStyle(headerStyle);
+
+            columnIndex++;
+        }
+
+        headerRow.setHeightInPoints(25);
+
+        // =========================================================
+        // Category values
+        // =========================================================
+
+        int maxRows =
+                categoriesMap.values()
+                        .stream()
+                        .mapToInt(List::size)
+                        .max()
+                        .orElse(0);
+
+        List<List<String>> subcategories =
+                new ArrayList<>(
+                        categoriesMap.values()
+                );
+
+        for (int rowIndex = 0; rowIndex < maxRows; rowIndex++) {
+
+            Row row =
+                    lookupSheet.createRow(rowIndex + 1);
+
+            for (
+                    int colIndex = 0;
+                    colIndex < subcategories.size();
+                    colIndex++
+            ) {
+
+                List<String> categoryNames =
+                        subcategories.get(colIndex);
+
+                if (rowIndex < categoryNames.size()) {
+
+                    Cell cell =
+                            row.createCell(colIndex);
+
+                    cell.setCellValue(
+                            categoryNames.get(rowIndex)
+                    );
+                }
+            }
+        }
+
+        // =========================================================
+        // Column widths
+        // =========================================================
+
+        for (
+                int i = 0;
+                i < categoriesMap.size();
+                i++
+        ) {
+
+            lookupSheet.setColumnWidth(
+                    i,
+                    40 * 256
+            );
+        }
+
+        lookupSheet.createFreezePane(0, 1);
+
+        log.debug(
+                "Subcategories sheet created with {} groups.",
+                categoriesMap.size()
+        );
+    }
+
     private void setSubcategoryColumnWidths(
             XSSFSheet sheet
     ) {
@@ -1419,6 +1779,53 @@ public class BulkUploadTemplateService extends BaseService {
         // Subcategory Description
         sheet.setColumnWidth(
                 3,
+                50 * 256
+        );
+    }
+
+    private void setFinancialTransactionsColumnWidths(
+            XSSFSheet sheet
+    ) {
+
+        // Transaction Date
+        sheet.setColumnWidth(
+                0,
+                30 * 256
+        );
+
+        // Amount
+        sheet.setColumnWidth(
+                1,
+                30 * 256
+        );
+
+        // Transaction Type
+        sheet.setColumnWidth(
+                2,
+                30 * 256
+        );
+
+        // Category Name
+        sheet.setColumnWidth(
+                3,
+                30 * 256
+        );
+
+        // Subcategory Name
+        sheet.setColumnWidth(
+                4,
+                35 * 256
+        );
+
+        // Location
+        sheet.setColumnWidth(
+                5,
+                35 * 256
+        );
+
+        // Remarks
+        sheet.setColumnWidth(
+                6,
                 50 * 256
         );
     }
@@ -1566,6 +1973,169 @@ public class BulkUploadTemplateService extends BaseService {
 
         log.debug(
                 "Subcategory Data Dictionary sheet created."
+        );
+    }
+
+    private void createFinancialTransactionDataDictionarySheet(
+            XSSFWorkbook workbook
+    ) {
+
+        XSSFSheet dictionarySheet =
+                workbook.createSheet(
+                        DATA_DICTIONARY_SHEET
+                );
+
+        CellStyle headerStyle =
+                createDictionaryHeaderStyle(
+                        workbook
+                );
+
+        CellStyle bodyStyle =
+                createDictionaryBodyStyle(
+                        workbook
+                );
+
+        // =========================================================
+        // Header
+        // =========================================================
+
+        Row headerRow =
+                dictionarySheet.createRow(0);
+
+        for (
+                int i = 0;
+                i < FINANCIAL_TRANSACTIONS_HEADERS.length;
+                i++
+        ) {
+
+            Cell cell =
+                    headerRow.createCell(i);
+
+            cell.setCellValue(
+                    FINANCIAL_TRANSACTIONS_HEADERS[i]
+            );
+
+            cell.setCellStyle(
+                    headerStyle
+            );
+        }
+
+        headerRow.setHeightInPoints(25);
+
+        // =========================================================
+        // Dictionary data
+        // =========================================================
+
+        String[][] dictionaryData = {
+
+                {
+                        "Transaction Date *",
+                        "transaction_at",
+                        "Yes",
+                        "Transaction date. Enter a valid transaction date in one of the following formats: yyyy-MM-dd, MM/dd/yyyy, or dd/MM/yyyy."
+                },
+
+                {
+                        "Amount *",
+                        "amount",
+                        "Yes",
+                        "Transaction amount. Enter a valid amount. Both positive and negative values are allowed."
+                },
+
+                {
+                        "Transaction Type *",
+                        "transaction_type",
+                        "Yes",
+                        "Transaction type. Enter a valid transaction type from the 'Transaction Types' sheet."
+                },
+
+                {
+                        "Category Name *",
+                        "user_category_id",
+                        "Yes",
+                        "Category associated with the transaction. Enter a valid category from the 'Categories' sheet."
+                },
+
+                {
+                        "Subcategory Name *",
+                        "user_subcategory_id",
+                        "Yes",
+                        "Subcategory associated with the transaction. Enter a valid subcategory from the 'Subcategories' sheet that belongs to the selected category."
+                },
+
+                {
+                        "Location",
+                        "location",
+                        "No",
+                        "Location where the financial transaction occurred. Enter a valid Location value from the 'Locations' sheet. Use the value from the 'Location' column; the 'Description' column is provided for reference only."
+                },
+
+                {
+                        "Remarks",
+                        "remarks",
+                        "No",
+                        "Additional remarks or notes about the financial transaction."
+                }
+        };
+
+        for (
+                int rowIndex = 0;
+                rowIndex < dictionaryData.length;
+                rowIndex++
+        ) {
+
+            Row row =
+                    dictionarySheet.createRow(
+                            rowIndex + 1
+                    );
+
+            row.setHeightInPoints(55);
+
+            for (
+                    int columnIndex = 0;
+                    columnIndex < dictionaryData[rowIndex].length;
+                    columnIndex++
+            ) {
+
+                Cell cell =
+                        row.createCell(columnIndex);
+
+                cell.setCellValue(
+                        dictionaryData[rowIndex][columnIndex]
+                );
+
+                cell.setCellStyle(bodyStyle);
+            }
+        }
+
+        // =========================================================
+        // Formatting
+        // =========================================================
+
+        dictionarySheet.createFreezePane(0, 1);
+
+        dictionarySheet.setColumnWidth(
+                0,
+                35 * 256
+        );
+
+        dictionarySheet.setColumnWidth(
+                1,
+                40 * 256
+        );
+
+        dictionarySheet.setColumnWidth(
+                2,
+                15 * 256
+        );
+
+        dictionarySheet.setColumnWidth(
+                3,
+                90 * 256
+        );
+
+        log.debug(
+                "Financial Transactions Data Dictionary sheet created."
         );
     }
 }
