@@ -4,6 +4,8 @@ import { DataGrid } from '../shared/data-grid/data-grid';
 import { DATA_FIELDS, FILTER_OPERATORS, GRID_EXPORT_FILE_NAMES, GRID_NAMES } from '../shared/enums';
 import { GridFilter, ToolbarConfig } from '../shared/types/types';
 import { CommonService } from '../shared/service/common-service';
+import { BulkUploadService } from '../shared/service/bulk-upload-service';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   imports: [CommonImportsModule, DataGrid],
@@ -13,6 +15,7 @@ import { CommonService } from '../shared/service/common-service';
 })
 export class BulkUpload {
   protected readonly _cs = inject(CommonService);
+  protected readonly _bus = inject(BulkUploadService);
 
   protected readonly gridName = GRID_NAMES.BULK_UPLOADS_STATUS;
   protected readonly gridExportFileName = GRID_EXPORT_FILE_NAMES.BULK_UPLOADS_STATUS;
@@ -61,9 +64,29 @@ export class BulkUpload {
     if (!this.selectedUploadType) {
       return;
     }
-
-    // TODO: Replace with API call to download
-    // the template for the selected upload type.
+    firstValueFrom(this._bus.downloadTemplate(this.selectedUploadType)).then((response) => {
+      const blob = response.body;
+      if (!blob) {
+        console.error('Empty response received while downloading template');
+        return;
+      }
+      const contentDisposition = response.headers.get('Content-Disposition');
+      let fileName = `${this.selectedUploadType}-template.xlsx`;
+      if (contentDisposition) {
+        const match = contentDisposition.match(/filename="?([^"]+)"?/);
+        if (match?.[1]) {
+          fileName = match[1];
+        }
+      }
+      const url = window.URL.createObjectURL(blob);
+      const anchor = document.createElement('a');
+      anchor.href = url;
+      anchor.download = fileName;
+      document.body.appendChild(anchor);
+      anchor.click();
+      document.body.removeChild(anchor);
+      window.URL.revokeObjectURL(url);
+    });
     console.log('Download template:', this.selectedUploadType);
   }
 

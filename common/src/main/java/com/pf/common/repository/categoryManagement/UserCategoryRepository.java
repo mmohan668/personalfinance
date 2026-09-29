@@ -104,4 +104,17 @@ public interface UserCategoryRepository extends JpaRepository<UserCategory, Long
             @Param("adminUserId") Long adminUserId,
             @Param("referenceCode") String referenceCode
     );
+
+    @Transactional(readOnly = true)
+    @Query("""
+            SELECT new com.pf.common.dto.generic.SelectItem(
+                        referenceValue.referenceCode,
+                        uc.categoryName
+            )
+            FROM UserCategory uc
+            WHERE uc.user.adminUser.id = :adminUserId
+            AND uc.active = true
+            ORDER BY LOWER(uc.categoryName)
+            """)
+    List<SelectItem> findCategoriesByUserId(@Param("adminUserId") Long adminUserId);
 }
