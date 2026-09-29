@@ -1,15 +1,8 @@
 .bulk-upload-page {
-  padding: 24px;
+  padding: 0px 10px;
 
   box-sizing: border-box;
   min-width: 0;
-}
-
-h1 {
-  margin: 0 0 20px;
-
-  font-size: 28px;
-  font-weight: 600;
 }
 
 // --------------------------------------------------
@@ -17,7 +10,7 @@ h1 {
 // --------------------------------------------------
 
 .upload-panel {
-  margin-bottom: 20px;
+  margin-bottom: 5px;
 
   border: 1px solid #e0e0e0;
   border-radius: 8px;
@@ -31,7 +24,7 @@ h1 {
 
   // Expansion panel body
   ::ng-deep .mat-expansion-panel-body {
-    padding: 0 24px 24px;
+    padding: 0 24px 10px;
   }
 }
 
@@ -175,7 +168,7 @@ h1 {
   display: inline-flex;
   align-items: center;
 
-  padding: 10px 16px;
+  padding: 3px 26px;
 
   border: 1px solid #4caf50;
   border-radius: 4px;
@@ -186,7 +179,7 @@ h1 {
   cursor: pointer;
 
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 700;
 
   white-space: nowrap;
 
@@ -222,8 +215,8 @@ h1 {
   justify-content: flex-end;
   gap: 12px;
 
-  margin-top: 22px;
-  padding-top: 16px;
+  margin-top: 5px;
+  padding-top: 10px;
 
   border-top: 1px solid #eee;
 }
@@ -276,16 +269,16 @@ button:disabled {
 
 @media (max-width: 600px) {
   .bulk-upload-page {
-    padding: 16px;
+    padding: 6px;
   }
 
   .status-section {
-    padding: 16px;
+    padding: 6px;
   }
 
   .upload-panel {
     ::ng-deep .mat-expansion-panel-body {
-      padding: 0 16px 16px;
+      padding: 0 6px 6px;
     }
   }
 
