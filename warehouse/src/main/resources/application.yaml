@@ -12,9 +12,13 @@ spring:
     hibernate:
       ddl-auto: none
     show-sql: true
-#    properties:
-#      hibernate:
-#        format_sql: true
+
+bulk-upload:
+  base-folder:
+    in-progress: E:/BulkUploads/in-progress
+    success: E:/BulkUploads/success
+    error: E:/BulkUploads/error
+
 
 #logging:
 #  level:

@@ -68,6 +68,10 @@ export class DataGrid implements OnInit {
   public groupBy: string | null = null;
   @Input()
   public hyperlinkAction!: (rowData: any, col: GridColumn) => any;
+  @Input()
+  public downloadFile!: (rowData: any, col: GridColumn) => any;
+  @Input()
+  public hasValue!: (rowData: any, col: GridColumn) => any;
 
   public config = inject(AppConfigService);
   public _cs = inject(CommonService);

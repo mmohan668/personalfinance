@@ -1,11 +1,13 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ViewChild } from '@angular/core';
 import { CommonImportsModule } from '../shared/common-imports/common-imports-module';
 import { DataGrid } from '../shared/data-grid/data-grid';
 import { DATA_FIELDS, FILTER_OPERATORS, GRID_EXPORT_FILE_NAMES, GRID_NAMES } from '../shared/enums';
-import { GridFilter, ToolbarConfig } from '../shared/types/types';
+import { ApiResponse, GridColumn, GridFilter, ToolbarConfig } from '../shared/types/types';
 import { CommonService } from '../shared/service/common-service';
 import { BulkUploadService } from '../shared/service/bulk-upload-service';
 import { firstValueFrom } from 'rxjs';
+import { NotificationService } from '../shared/service/notification-service';
+import { MessageService } from '../shared/service/message-service';
 
 @Component({
   imports: [CommonImportsModule, DataGrid],
@@ -14,8 +16,12 @@ import { firstValueFrom } from 'rxjs';
   templateUrl: './bulk-upload.html',
 })
 export class BulkUpload {
+  @ViewChild('dataGrid') dataGrid!: DataGrid;
+
   protected readonly _cs = inject(CommonService);
   protected readonly _bus = inject(BulkUploadService);
+  private readonly _ns = inject(NotificationService);
+  private readonly _ms = inject(MessageService);
 
   protected readonly gridName = GRID_NAMES.BULK_UPLOADS_STATUS;
   protected readonly gridExportFileName = GRID_EXPORT_FILE_NAMES.BULK_UPLOADS_STATUS;
@@ -94,23 +100,65 @@ export class BulkUpload {
     this.selectedUploadType = '';
     this.selectedFile = null;
     this.fileError = '';
+    return;
   }
 
   submit(): void {
     if (!this.selectedUploadType || !this.selectedFile) {
+      this._ns.error(this._ms.get('common.file.required'));
       return;
     }
-
-    // TODO: Replace with API call.
     const formData = new FormData();
-
+    const uploadTypeLabel = this.uploadTypes.find((u) => u.value === this.selectedUploadType)
+      ?.label as string;
     formData.append('uploadType', this.selectedUploadType);
-    formData.append('file', this.selectedFile);
-
+    formData.append('uploadTypeLabel', uploadTypeLabel);
+    formData.append('file', this.selectedFile, this.selectedFile.name);
     console.log('Submitting bulk upload', formData);
+    firstValueFrom(this._bus.uploadTemplate(formData)).then((resp: ApiResponse) => {
+      if (resp.success) {
+        this.reset();
+        this._ns.success(resp.message);
+        this.dataGrid.refreshGrid();
+      } else {
+        this._ns.error(resp.message);
+      }
+    });
   }
 
   get canSubmit(): boolean {
     return !!this.selectedUploadType && !!this.selectedFile;
+  }
+
+  hasValue = (rowData: any, col: GridColumn) => {
+    if (col.field === 'uploadedFile') {
+      return this._cs.isNotNull(rowData['uploadedFile']);
+    } else if (col.field === 'errorFile') {
+      return this._cs.isNotNull(rowData['errorFile']);
+    }
+    return false;
+  };
+
+  downloadFile = (rowData: any, col: GridColumn) => {
+    let filePath = '';
+    if (col.field === 'uploadedFile') {
+      filePath = rowData['uploadedFile'];
+    } else if (col.field === 'errorFile') {
+      filePath = rowData['errorFile'];
+    }
+    this._bus.downloadFile(filePath).subscribe({
+      next: (blob: Blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = this.getFileName(filePath);
+        a.click();
+        window.URL.revokeObjectURL(url);
+      },
+    });
+  };
+
+  getFileName(filePath: string): string {
+    return filePath.split('\\').pop() || 'download';
   }
 }
