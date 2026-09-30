@@ -156,9 +156,22 @@
                 } @else if (column.dataType === 'datetime') {
                   {{ row[column.field] | date: getDateTimeFormate() }}
                 } @else if (column.cellTemplate === 'hyperlinkCellTemplate') {
-                  <a class="hyp-link" (click)="hyperlinkAction(row, column)">{{
-                    row[column.field]
-                  }}</a>
+                  <a
+                    class="hyp-link"
+                    href="javascript:void(0)"
+                    (click)="hyperlinkAction(row, column)"
+                    >{{ row[column.field] }}</a
+                  >
+                } @else if (column.cellTemplate === 'downloadCellTemplate') {
+                  @if (hasValue(row, column)) {
+                    <a
+                      class="hyp-link"
+                      href="javascript:void(0)"
+                      (click)="downloadFile(row, column)"
+                    >
+                      <mat-icon class="download">download</mat-icon>
+                    </a>
+                  }
                 } @else {
                   {{ row[column.field] }}
                 }

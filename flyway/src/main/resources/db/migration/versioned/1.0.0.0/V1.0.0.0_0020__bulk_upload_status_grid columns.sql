@@ -39,6 +39,26 @@ VALUES ((SELECT id
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 
+-- Status
+INSERT INTO grid_column
+(grid_name_id,
+ field,
+ header,
+ data_type,
+ default_filter_operator,
+ width,
+ visible_index)
+VALUES ((SELECT id
+         FROM grid_name
+         WHERE LOWER(TRIM(name)) = LOWER(TRIM('BULK_UPLOADS_STATUS'))),
+        'status',
+        'Status',
+        'text',
+        'contains',
+        150,
+        1)
+ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
+    DO NOTHING;
 
 -- Upload File
 INSERT INTO grid_column
@@ -59,34 +79,11 @@ VALUES ((SELECT id
         'text',
         'contains',
         300,
-        1,
-        'hyperlinkCellTemplate',
+        2,
+        'downloadCellTemplate',
         'CENTER')
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
-
-
--- Status
-INSERT INTO grid_column
-(grid_name_id,
- field,
- header,
- data_type,
- default_filter_operator,
- width,
- visible_index)
-VALUES ((SELECT id
-         FROM grid_name
-         WHERE LOWER(TRIM(name)) = LOWER(TRIM('BULK_UPLOADS_STATUS'))),
-        'status',
-        'Status',
-        'text',
-        'contains',
-        150,
-        2)
-ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
-    DO NOTHING;
-
 
 -- Error File
 INSERT INTO grid_column
@@ -108,7 +105,7 @@ VALUES ((SELECT id
         'contains',
         300,
         3,
-        'hyperlinkCellTemplate',
+        'downloadCellTemplate',
         'CENTER')
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;

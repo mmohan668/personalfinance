@@ -2,28 +2,32 @@ package com.pf.warehouse.controller;
 
 import com.pf.common.dto.gp.GridResult;
 import com.pf.common.dto.gp.SearchCriteria;
-import com.pf.common.repository.bulkUpload.BulkUploadTemplateService;
-import com.pf.common.service.bulkUpload.BulkUploadsStatusService;
+import com.pf.common.entity.generic.ApiResponse;
+import com.pf.common.service.bulkUpload.BulkUploadTemplateService;
+import com.pf.common.service.bulkUpload.BulkUploadsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 
 @Slf4j
 @RestController
 @RequestMapping("/bulkupload")
 @RequiredArgsConstructor
-public class BulkUploadsStatusController {
-    private final BulkUploadsStatusService bulkUploadsStatusService;
+public class BulkUploadsController {
+    private final BulkUploadsService bulkUploadsService;
     private final BulkUploadTemplateService bulkUploadTemplateService;
 
     @PostMapping("/fetchBulkUploadStatusGridData")
     public GridResult fetchBulkUploadStatusGridData(@RequestBody SearchCriteria searchCriteria) {
-        return bulkUploadsStatusService.fetchBulkUploadStatusGridData(searchCriteria);
+        return bulkUploadsService.fetchBulkUploadStatusGridData(searchCriteria);
     }
 
     @GetMapping("/downloadTemplate")
@@ -74,5 +78,19 @@ public class BulkUploadsStatusController {
         return ResponseEntity.ok()
                 .headers(headers)
                 .body(new InputStreamResource(inputStream));
+    }
+
+    @PostMapping(value = "/uploadTemplate", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ApiResponse uploadBulkUploadTemplate(
+            @RequestParam("uploadType") String uploadType,
+            @RequestParam("uploadTypeLabel") String uploadTypeLabel,
+            @RequestParam("file") MultipartFile file
+    ) {
+        return bulkUploadsService.uploadBulkUploadTemplate(uploadType, uploadTypeLabel, file);
+    }
+
+    @GetMapping("/downloadFile")
+    public ResponseEntity<Resource> downloadFile(@RequestParam String filePath) throws IOException {
+        return bulkUploadsService.downloadFile(filePath);
     }
 }

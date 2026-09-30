@@ -17,6 +17,9 @@
     },
     "inactivate": {
       "noSelection": "Please select at least one record to inactivate."
+    },
+    "file": {
+      "required": "Please choose a file to upload."
     }
   },
   "referenceValue": {
