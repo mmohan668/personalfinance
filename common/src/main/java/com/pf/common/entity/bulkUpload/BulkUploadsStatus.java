@@ -26,14 +26,17 @@ public class BulkUploadsStatus {
     @Column(name = "upload_type", nullable = false, length = 100)
     private String uploadType;
 
-    @Column(name = "uploaded_file", nullable = false, length = 100)
+    @Column(name = "uploaded_file", nullable = false)
     private String uploadedFile;
 
     @Column(name = "status", nullable = false, length = 100)
     private String status;
 
-    @Column(name = "error_file", nullable = false, length = 120)
+    @Column(name = "error_file", nullable = false)
     private String errorFile;
+
+    @Column(name = "remarks")
+    private String remarks;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "created_by", nullable = false)
