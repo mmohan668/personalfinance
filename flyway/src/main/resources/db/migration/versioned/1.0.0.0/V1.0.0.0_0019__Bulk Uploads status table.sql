@@ -6,6 +6,7 @@ CREATE TABLE bulk_uploads_status
     uploaded_file TEXT         NOT NULL,
     status        VARCHAR(100) NOT NULL,
     error_file    TEXT,
+    remarks       TEXT,
     created_by    BIGINT       NOT NULL REFERENCES users (id),
     created_at    TIMESTAMPTZ  NOT NULL DEFAULT CURRENT_TIMESTAMP
 );

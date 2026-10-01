@@ -34,7 +34,7 @@ VALUES ((SELECT id
         'Upload Type',
         'text',
         'contains',
-        300,
+        250,
         0)
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
@@ -55,7 +55,7 @@ VALUES ((SELECT id
         'Status',
         'text',
         'contains',
-        150,
+        200,
         1)
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
@@ -70,7 +70,9 @@ INSERT INTO grid_column
  width,
  visible_index,
  cell_template,
- align)
+ align,
+ filterable,
+ sortable)
 VALUES ((SELECT id
          FROM grid_name
          WHERE LOWER(TRIM(name)) = LOWER(TRIM('BULK_UPLOADS_STATUS'))),
@@ -78,10 +80,12 @@ VALUES ((SELECT id
         'Uploaded File',
         'text',
         'contains',
-        300,
+        150,
         2,
         'downloadCellTemplate',
-        'CENTER')
+        'CENTER',
+        false,
+        false)
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 
@@ -95,7 +99,9 @@ INSERT INTO grid_column
  width,
  visible_index,
  cell_template,
- align)
+ align,
+ filterable,
+ sortable)
 VALUES ((SELECT id
          FROM grid_name
          WHERE LOWER(TRIM(name)) = LOWER(TRIM('BULK_UPLOADS_STATUS'))),
@@ -103,13 +109,35 @@ VALUES ((SELECT id
         'Error File',
         'text',
         'contains',
-        300,
+        150,
         3,
         'downloadCellTemplate',
-        'CENTER')
+        'CENTER',
+        false,
+        false)
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 
+-- Created By
+INSERT INTO grid_column
+(grid_name_id,
+ field,
+ header,
+ data_type,
+ default_filter_operator,
+ width,
+ visible_index)
+VALUES ((SELECT id
+         FROM grid_name
+         WHERE LOWER(TRIM(name)) = LOWER(TRIM('BULK_UPLOADS_STATUS'))),
+        'remarks',
+        'Remarks',
+        'text',
+        'contains',
+        300,
+        4)
+ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
+    DO NOTHING;
 
 -- Created By
 INSERT INTO grid_column
@@ -128,7 +156,7 @@ VALUES ((SELECT id
         'text',
         'contains',
         200,
-        4)
+        5)
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 
@@ -152,11 +180,10 @@ VALUES ((SELECT id
         'datetime',
         'equals',
         200,
-        5,
+        6,
         'desc',
         0)
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
-
 
 COMMIT;

@@ -19,6 +19,7 @@ public class BulkUploadsStatusDto {
     private String uploadedFile;
     private String status;
     private String errorFile;
+    private String remarks;
     private Long createdBy;
     private LocalDateTime createdAt;
 }

@@ -213,7 +213,19 @@ export class DataGrid implements OnInit {
     const eventData = event as SortEvent & {
       multisortmeta?: SortMeta[];
     };
-    const multiSortMeta = eventData.multisortmeta ?? eventData.multiSortMeta ?? [];
+    let multiSortMeta = eventData.multisortmeta ?? eventData.multiSortMeta ?? [];
+    multiSortMeta = multiSortMeta.filter((s) => s.field !== undefined);
+    if (
+      multiSortMeta.length === 0 ||
+      (multiSortMeta.length > 0 &&
+        multiSortMeta.every((sort) =>
+          this.visibleColumns().some(
+            (column) => column.field === sort.field && column.sortable === false,
+          ),
+        ))
+    ) {
+      return;
+    }
     if (multiSortMeta.length > 0) {
       this.sortMeta = multiSortMeta.map((sort) => ({
         field: sort.field,

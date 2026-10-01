@@ -9,8 +9,10 @@ import com.pf.common.mapper.bulkUpload.BulkUploadsStatusMapper;
 import com.pf.common.properties.BulkUploadProperties;
 import com.pf.common.repository.bulkUpload.BulkUploadsStatusRepository;
 import com.pf.common.service.generic.BaseService;
+import com.pf.common.util.FileUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NonNull;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
@@ -24,9 +26,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
+
+import static com.pf.common.enums.BulkUploadStatus.RECEIVED;
 
 @Slf4j
 @Service
@@ -50,40 +52,25 @@ public class BulkUploadsService extends BaseService {
 
     @Transactional
     public ApiResponse uploadBulkUploadTemplate(String uploadType, String uploadTypeLabel, MultipartFile file) {
-        System.out.println("Upload type: " + uploadType);
-        System.out.println("File name: " + file.getOriginalFilename());
-        System.out.println("File size: " + file.getSize());
-        String dateTimeFolder = LocalDateTime.now()
-                .format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss_SSS"));
-        Path uploadDirectory = Paths.get(
-                bulkUploadProperties.getInProgress(),
-                uploadType,
-                dateTimeFolder
-        );
         String originalFilename = file.getOriginalFilename();
         if (originalFilename == null || originalFilename.isBlank()) {
             throw new IllegalArgumentException("Uploaded file does not have a valid filename");
         }
         try {
-            Files.createDirectories(uploadDirectory);
+            Path uploadDirectory = FileUtils.getDateTimePath(bulkUploadProperties.getInProgress(), uploadType);
             String fileName = Paths.get(file.getOriginalFilename()).getFileName().toString();
             Path targetFile = uploadDirectory.resolve(fileName);
             file.transferTo(targetFile);
-            System.out.println(targetFile);
-            BulkUploadsStatus bulkUploadsStatus = new BulkUploadsStatus();
-            bulkUploadsStatus.setUploadType(uploadTypeLabel);
-            bulkUploadsStatus.setUploadedFile(targetFile.toString());
-            bulkUploadsStatus.setStatus("In Progress");
-            bulkUploadsStatus.setUser(fetchLoginUser().getAdminUser());
-            bulkUploadsStatus.setCreatedBy(fetchLoginUser());
-            bulkUploadsStatusRepository.save(bulkUploadsStatus);
+            bulkUploadsStatusRepository.save(createBulkUploadsStatus(uploadTypeLabel, targetFile));
         } catch (IOException e) {
+            log.error("Error while uploading file", e);
             throw new RuntimeException("Failed to save uploaded file", e);
         }
         return success(uploadTypeLabel + " Uploaded successfully");
     }
 
     public ResponseEntity<Resource> downloadFile(String filePath) throws IOException {
+        log.debug("Request for downloadFile: {}", filePath);
         Path path = Paths.get(filePath);
         if (!Files.exists(path)) {
             return ResponseEntity.notFound().build();
@@ -96,5 +83,16 @@ public class BulkUploadsService extends BaseService {
                         "attachment; filename=" + fileName)
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .body(resource);
+    }
+
+    private @NonNull BulkUploadsStatus createBulkUploadsStatus(String uploadTypeLabel, Path targetFile) {
+        BulkUploadsStatus bulkUploadsStatus = new BulkUploadsStatus();
+        bulkUploadsStatus.setUploadType(uploadTypeLabel);
+        bulkUploadsStatus.setUploadedFile(targetFile.toString());
+        bulkUploadsStatus.setStatus(RECEIVED.getValue());
+        bulkUploadsStatus.setUser(fetchLoginUser().getAdminUser());
+        bulkUploadsStatus.setRemarks(RECEIVED.getDescription());
+        bulkUploadsStatus.setCreatedBy(fetchLoginUser());
+        return bulkUploadsStatus;
     }
 }
