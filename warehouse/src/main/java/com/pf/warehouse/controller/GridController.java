@@ -2,7 +2,7 @@ package com.pf.warehouse.controller;
 
 import com.pf.common.dto.gp.GridColumnDto;
 import com.pf.common.dto.gp.GridPersonalizationDto;
-import com.pf.common.entity.generic.ApiResponse;
+import com.pf.common.dto.generic.ApiResponse;
 import com.pf.common.service.gp.GridService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;

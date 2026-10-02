@@ -1,4 +1,4 @@
-package com.pf.common.entity.generic;
+package com.pf.common.dto.generic;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

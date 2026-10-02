@@ -1,11 +1,11 @@
 package com.pf.warehouse.controller;
 
-import com.pf.common.dto.generic.SelectItem;
+import com.pf.common.record.generic.SelectItem;
 import com.pf.common.dto.gp.GridResult;
 import com.pf.common.dto.gp.SearchCriteria;
 import com.pf.common.dto.settings.ReferenceValueDto;
 import com.pf.common.dto.settings.SystemConfigDto;
-import com.pf.common.entity.generic.ApiResponse;
+import com.pf.common.dto.generic.ApiResponse;
 import com.pf.common.service.settings.SettingsService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

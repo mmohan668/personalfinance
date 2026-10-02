@@ -1,7 +1,7 @@
 package com.pf.common.service.gp;
 
 import com.pf.common.dto.gp.*;
-import com.pf.common.entity.generic.ApiResponse;
+import com.pf.common.dto.generic.ApiResponse;
 import com.pf.common.entity.gp.GridPersonalization;
 import com.pf.common.mapper.gp.GridColumnMapper;
 import com.pf.common.mapper.gp.GridPersonalizationMapper;

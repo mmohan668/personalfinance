@@ -66,6 +66,7 @@ export interface ToolbarConfig {
   editRow: boolean | false;
   activate: boolean | false;
   inactivate: boolean | false;
+  refresh: boolean | false;
 }
 
 export interface SelectItem {

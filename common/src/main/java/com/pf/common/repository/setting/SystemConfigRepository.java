@@ -18,4 +18,7 @@ public interface SystemConfigRepository extends JpaRepository<SystemConfig, Long
                 WHERE sc.configValue.id IN :ids
             """)
     boolean existsByConfigValueIdIn(@Param("ids") List<Long> ids);
+
+    @Transactional(readOnly = true)
+    SystemConfig findByConfigNameAndUserId(@Param("configName") String configName, @Param("userId") Long userId);
 }

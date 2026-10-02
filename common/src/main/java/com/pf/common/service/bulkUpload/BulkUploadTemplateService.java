@@ -1,6 +1,6 @@
 package com.pf.common.service.bulkUpload;
 
-import com.pf.common.dto.generic.SelectItem;
+import com.pf.common.record.generic.SelectItem;
 import com.pf.common.entity.categoryManagement.UserCategory;
 import com.pf.common.entity.categoryManagement.UserSubcategory;
 import com.pf.common.enums.RefObjectNames;
@@ -248,7 +248,7 @@ public class BulkUploadTemplateService extends BaseService {
             String header =
                     headers[i];
 
-            cell.setCellValue(header);
+            cell.setCellValue(header.replace("*", "").trim());
 
             if (header.endsWith("*")) {
 

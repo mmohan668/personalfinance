@@ -10,7 +10,7 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface BulkUploadsStatusMapper {
 
-    @Mapping(source = "createdBy.id", target = "createdBy")
+    @Mapping(source = "createdBy.username", target = "createdBy")
     BulkUploadsStatusDto toDto(BulkUploadsStatus entity);
 
     List<BulkUploadsStatusDto> toDtoList(List<BulkUploadsStatus> entityList);

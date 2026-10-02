@@ -45,6 +45,7 @@ export class BulkUpload {
   ];
   constructor() {
     this.toolbaConfig = this._cs.toolbarConfig();
+    this.toolbaConfig.refresh = true;
   }
 
   onFileSelected(event: Event): void {

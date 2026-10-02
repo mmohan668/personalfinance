@@ -1,6 +1,6 @@
 package com.pf.common.repository.setting;
 
-import com.pf.common.dto.generic.SelectItem;
+import com.pf.common.record.generic.SelectItem;
 import com.pf.common.entity.settings.ReferenceValue;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -39,7 +39,7 @@ public interface ReferenceValueRepository extends JpaRepository<ReferenceValue, 
 
     @Transactional(readOnly = true)
     @Query("""
-            SELECT new com.pf.common.dto.generic.SelectItem(
+            SELECT new com.pf.common.record.generic.SelectItem(
                         rv.id,
                         rv.referenceCode || ' ~ '|| rv.referenceCodeDescription
             )
@@ -51,7 +51,7 @@ public interface ReferenceValueRepository extends JpaRepository<ReferenceValue, 
 
     @Transactional(readOnly = true)
     @Query("""
-            SELECT new com.pf.common.dto.generic.SelectItem(
+            SELECT new com.pf.common.record.generic.SelectItem(
                         rv.referenceCode,
                         rv.referenceCodeDescription
             )

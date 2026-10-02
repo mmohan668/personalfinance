@@ -4,15 +4,17 @@ import com.pf.common.dto.bulkUpload.BulkUploadsStatusDto;
 import com.pf.common.dto.gp.GridResult;
 import com.pf.common.dto.gp.SearchCriteria;
 import com.pf.common.entity.bulkUpload.BulkUploadsStatus;
-import com.pf.common.entity.generic.ApiResponse;
+import com.pf.common.dto.generic.ApiResponse;
 import com.pf.common.mapper.bulkUpload.BulkUploadsStatusMapper;
 import com.pf.common.properties.BulkUploadProperties;
+import com.pf.common.record.bulkUpload.BulkUploadCreatedEvent;
 import com.pf.common.repository.bulkUpload.BulkUploadsStatusRepository;
 import com.pf.common.service.generic.BaseService;
 import com.pf.common.util.FileUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
@@ -37,6 +39,7 @@ public class BulkUploadsService extends BaseService {
     private final BulkUploadsStatusMapper bulkUploadsStatusMapper;
     private final BulkUploadProperties bulkUploadProperties;
     private final BulkUploadsStatusRepository bulkUploadsStatusRepository;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     public GridResult fetchBulkUploadStatusGridData(SearchCriteria searchCriteria) {
         log.debug("fetchBulkUploadStatusGridData: {}", searchCriteria);
@@ -52,6 +55,7 @@ public class BulkUploadsService extends BaseService {
 
     @Transactional
     public ApiResponse uploadBulkUploadTemplate(String uploadType, String uploadTypeLabel, MultipartFile file) {
+        log.info("Uploading Bulk Upload Template, Upload Type: {}", uploadType);
         String originalFilename = file.getOriginalFilename();
         if (originalFilename == null || originalFilename.isBlank()) {
             throw new IllegalArgumentException("Uploaded file does not have a valid filename");
@@ -61,7 +65,13 @@ public class BulkUploadsService extends BaseService {
             String fileName = Paths.get(file.getOriginalFilename()).getFileName().toString();
             Path targetFile = uploadDirectory.resolve(fileName);
             file.transferTo(targetFile);
-            bulkUploadsStatusRepository.save(createBulkUploadsStatus(uploadTypeLabel, targetFile));
+            BulkUploadsStatus bulkUploadsStatus =
+                    bulkUploadsStatusRepository.save(createBulkUploadsStatus(uploadTypeLabel, targetFile));
+            log.info("Sending Bulk Upload Status to Bulk Upload Processing Service");
+            applicationEventPublisher.publishEvent(new BulkUploadCreatedEvent(
+                    bulkUploadsStatus.getId(),
+                    fetchLoginUser().getId()
+            ));
         } catch (IOException e) {
             log.error("Error while uploading file", e);
             throw new RuntimeException("Failed to save uploaded file", e);

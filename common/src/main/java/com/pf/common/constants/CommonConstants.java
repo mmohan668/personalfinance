@@ -8,4 +8,9 @@ public interface CommonConstants {
     String PERSONAL_FINANCE_APP = "PERSONALFINANCEAPP";
     Long TEST_USER_ID = 2L;
     int CHUNK_SIZE = 900;
+    String COMMA = ",";
+    String COLON = ":";
+    String DD_MM_YYYY = "dd/MM/yyyy";
 }
+
+
