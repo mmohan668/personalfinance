@@ -1,4 +1,4 @@
-package com.pf.common.dto.generic;
+package com.pf.common.record.generic;
 
 public record SelectItem(
         Object value,

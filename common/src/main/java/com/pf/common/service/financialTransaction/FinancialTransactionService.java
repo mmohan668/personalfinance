@@ -7,7 +7,7 @@ import com.pf.common.dto.gp.GridResult;
 import com.pf.common.dto.gp.SearchCriteria;
 import com.pf.common.entity.financialTransaction.FinancialTransaction;
 import com.pf.common.entity.financialTransaction.FinancialTransactionView;
-import com.pf.common.entity.generic.ApiResponse;
+import com.pf.common.dto.generic.ApiResponse;
 import com.pf.common.entity.userManagement.User;
 import com.pf.common.exception.ResourceNotFoundException;
 import com.pf.common.mapper.financialTransaction.FinancialTransactionMapper;

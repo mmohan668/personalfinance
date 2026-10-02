@@ -17,12 +17,22 @@ public enum BulkUploadStatus {
 
     PARTIAL_SUCCESS(
             "Partial Success",
-            "Processing completed, but some records succeeded and some failed"
+            "Processing completed, but some records succeeded and some failed due to validation errors"
+    ),
+
+    ERRORS(
+            "Errors",
+            "Processing could not complete due to validation errors"
+    ),
+
+    NO_DATA(
+            "No Data",
+            "Processing could not complete due no data"
     ),
 
     FAILED(
             "Failed",
-            "Processing could not complete or no usable records were processed"
+            "Processing could not complete due to exceptions"
     ),
 
     SUCCESS(

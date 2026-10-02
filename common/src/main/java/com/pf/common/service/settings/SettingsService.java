@@ -1,7 +1,7 @@
 package com.pf.common.service.settings;
 
 import com.google.common.collect.Lists;
-import com.pf.common.dto.generic.SelectItem;
+import com.pf.common.record.generic.SelectItem;
 import com.pf.common.dto.gp.GridFilter;
 import com.pf.common.dto.gp.GridResult;
 import com.pf.common.dto.gp.GridSort;
@@ -9,7 +9,7 @@ import com.pf.common.dto.gp.SearchCriteria;
 import com.pf.common.dto.settings.ReferenceObjectDto;
 import com.pf.common.dto.settings.ReferenceValueDto;
 import com.pf.common.dto.settings.SystemConfigDto;
-import com.pf.common.entity.generic.ApiResponse;
+import com.pf.common.dto.generic.ApiResponse;
 import com.pf.common.entity.settings.ReferenceObject;
 import com.pf.common.entity.settings.ReferenceValue;
 import com.pf.common.entity.settings.SystemConfig;

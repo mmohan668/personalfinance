@@ -3,7 +3,7 @@ package com.pf.warehouse.controller;
 import com.pf.common.dto.financialTransaction.FinancialTransactionDto;
 import com.pf.common.dto.gp.GridResult;
 import com.pf.common.dto.gp.SearchCriteria;
-import com.pf.common.entity.generic.ApiResponse;
+import com.pf.common.dto.generic.ApiResponse;
 import com.pf.common.service.financialTransaction.FinancialTransactionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;

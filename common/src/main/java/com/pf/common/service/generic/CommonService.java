@@ -1,6 +1,6 @@
 package com.pf.common.service.generic;
 
-import com.pf.common.entity.generic.SystemConfigValue;
+import com.pf.common.dto.generic.SystemConfigValue;
 import com.pf.common.entity.settings.ReferenceValue;
 import com.pf.common.entity.settings.SystemConfig;
 import com.pf.common.repository.setting.SystemConfigRepository;

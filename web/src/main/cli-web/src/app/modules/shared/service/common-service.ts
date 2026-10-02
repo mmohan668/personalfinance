@@ -32,6 +32,7 @@ export class CommonService {
       editRow: value,
       activate: value,
       inactivate: value,
+      refresh: value,
     };
   }
 
@@ -43,6 +44,7 @@ export class CommonService {
       editRow: true,
       activate: false,
       inactivate: false,
+      refresh: false,
     };
   }
 

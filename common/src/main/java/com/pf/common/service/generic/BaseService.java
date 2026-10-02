@@ -2,7 +2,7 @@ package com.pf.common.service.generic;
 
 import com.pf.common.constants.CommonConstants;
 import com.pf.common.dto.gp.GridResult;
-import com.pf.common.entity.generic.ApiResponse;
+import com.pf.common.dto.generic.ApiResponse;
 import com.pf.common.entity.userManagement.User;
 import com.pf.common.repository.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;

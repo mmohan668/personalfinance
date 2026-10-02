@@ -2,7 +2,7 @@ package com.pf.warehouse.controller;
 
 import com.pf.common.dto.gp.GridResult;
 import com.pf.common.dto.gp.SearchCriteria;
-import com.pf.common.entity.generic.ApiResponse;
+import com.pf.common.dto.generic.ApiResponse;
 import com.pf.common.service.bulkUpload.BulkUploadTemplateService;
 import com.pf.common.service.bulkUpload.BulkUploadsService;
 import lombok.RequiredArgsConstructor;

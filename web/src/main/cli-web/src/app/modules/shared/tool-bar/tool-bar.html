@@ -1,4 +1,15 @@
 <div class="table-toolbar">
+  @if (toolbarConfig.refresh) {
+    <button
+      mat-icon-button
+      class="toolbar-border"
+      type="button"
+      title="Refresh"
+      (click)="refresh()"
+    >
+      <mat-icon>refresh</mat-icon>
+    </button>
+  }
   @if (toolbarConfig.addRow) {
     <button mat-icon-button class="toolbar-border" type="button" title="Add" (click)="addRow()">
       <mat-icon>add</mat-icon>

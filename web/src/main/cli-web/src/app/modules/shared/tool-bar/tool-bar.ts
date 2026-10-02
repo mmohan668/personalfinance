@@ -37,6 +37,8 @@ export class ToolBar {
   @Input()
   public toggleColumn!: (col: GridColumn, checked: boolean) => void;
   @Input()
+  public refresh!: () => void;
+  @Input()
   public addRow!: () => void;
   @Input()
   public copyRow!: () => void;
