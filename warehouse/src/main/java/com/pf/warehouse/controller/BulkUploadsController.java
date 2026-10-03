@@ -3,8 +3,8 @@ package com.pf.warehouse.controller;
 import com.pf.common.dto.gp.GridResult;
 import com.pf.common.dto.gp.SearchCriteria;
 import com.pf.common.dto.generic.ApiResponse;
-import com.pf.common.service.bulkUpload.BulkUploadTemplateService;
 import com.pf.common.service.bulkUpload.BulkUploadsService;
+import com.pf.common.service.generic.TemplateGenerationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.InputStreamResource;
@@ -23,7 +23,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class BulkUploadsController {
     private final BulkUploadsService bulkUploadsService;
-    private final BulkUploadTemplateService bulkUploadTemplateService;
+    private final TemplateGenerationService templateGenerationService;
 
     @PostMapping("/fetchBulkUploadStatusGridData")
     public GridResult fetchBulkUploadStatusGridData(@RequestBody SearchCriteria searchCriteria) {
@@ -32,38 +32,8 @@ public class BulkUploadsController {
 
     @GetMapping("/downloadTemplate")
     public ResponseEntity<InputStreamResource> downloadBulkUploadTemplate(@RequestParam String templateName) {
-        ByteArrayInputStream inputStream;
-        String fileName;
-        switch (templateName) {
-            case "reference-values" -> {
-                inputStream = bulkUploadTemplateService.generateReferenceValuesTemplate();
-                fileName = "reference-value-template.xlsx";
-            }
-            case "categories" -> {
-                inputStream = bulkUploadTemplateService.generateCategoriesTemplate();
-                fileName = "categories-template.xlsx";
-            }
-            case "subcategories" -> {
-                inputStream = bulkUploadTemplateService.generateSubcategoriesTemplate();
-                fileName = "subcategories-template.xlsx";
-            }
-            case "financial-transactions" -> {
-                inputStream = bulkUploadTemplateService.generateFinancialTransactionsTemplate();
-                fileName = "financial-transactions-template.xlsx";
-            }
-            default -> {
-                log.error("Template not found: {}", templateName);
-                return ResponseEntity
-                        .notFound()
-                        .build();
-            }
-        }
+        ByteArrayInputStream inputStream = templateGenerationService.generateTemplate(templateName);
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentDisposition(
-                ContentDisposition.attachment()
-                        .filename(fileName)
-                        .build()
-        );
         headers.setContentType(
                 MediaType.parseMediaType(
                         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"

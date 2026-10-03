@@ -5,11 +5,11 @@ import lombok.Getter;
 public class AppEnums {
 
     public enum DbValidationType {
-        DB_EXISTS, DB_DUPLICATE;
+        DB_EXISTS, DB_DUPLICATE
     }
 
     public enum DataType {
-        TEXT, P_NUMBER, NUMBER, DATE, AMOUNT;
+        TEXT, P_NUMBER, NUMBER, DATE, AMOUNT
     }
 
     @Getter
@@ -20,6 +20,10 @@ public class AppEnums {
         SystemConfigName(String value) {
             this.value = value;
         }
+    }
+
+    public enum DataReference {
+        REFERENCE_OBJECT, TRANSACTION_TYPE, CATEGORY, SUB_CATEGORY, LOCATION
     }
 
 }

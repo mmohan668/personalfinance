@@ -5,10 +5,12 @@ import com.pf.common.dto.gp.GridResult;
 import com.pf.common.dto.gp.SearchCriteria;
 import com.pf.common.entity.bulkUpload.BulkUploadsStatus;
 import com.pf.common.dto.generic.ApiResponse;
+import com.pf.common.entity.generic.TemplateName;
 import com.pf.common.mapper.bulkUpload.BulkUploadsStatusMapper;
 import com.pf.common.properties.BulkUploadProperties;
 import com.pf.common.record.bulkUpload.BulkUploadCreatedEvent;
 import com.pf.common.repository.bulkUpload.BulkUploadsStatusRepository;
+import com.pf.common.repository.generic.TemplateNameRepository;
 import com.pf.common.service.generic.BaseService;
 import com.pf.common.util.FileUtils;
 import lombok.RequiredArgsConstructor;
@@ -40,6 +42,7 @@ public class BulkUploadsService extends BaseService {
     private final BulkUploadProperties bulkUploadProperties;
     private final BulkUploadsStatusRepository bulkUploadsStatusRepository;
     private final ApplicationEventPublisher applicationEventPublisher;
+    private final TemplateNameRepository templateNameRepository;
 
     public GridResult fetchBulkUploadStatusGridData(SearchCriteria searchCriteria) {
         log.debug("fetchBulkUploadStatusGridData: {}", searchCriteria);
@@ -66,7 +69,7 @@ public class BulkUploadsService extends BaseService {
             Path targetFile = uploadDirectory.resolve(fileName);
             file.transferTo(targetFile);
             BulkUploadsStatus bulkUploadsStatus =
-                    bulkUploadsStatusRepository.save(createBulkUploadsStatus(uploadTypeLabel, targetFile));
+                    bulkUploadsStatusRepository.save(createBulkUploadsStatus(uploadTypeLabel, uploadType, targetFile));
             log.info("Sending Bulk Upload Status to Bulk Upload Processing Service");
             applicationEventPublisher.publishEvent(new BulkUploadCreatedEvent(
                     bulkUploadsStatus.getId(),
@@ -95,7 +98,8 @@ public class BulkUploadsService extends BaseService {
                 .body(resource);
     }
 
-    private @NonNull BulkUploadsStatus createBulkUploadsStatus(String uploadTypeLabel, Path targetFile) {
+    private @NonNull BulkUploadsStatus createBulkUploadsStatus(String uploadTypeLabel, String uploadType, Path targetFile) {
+        TemplateName templateName = templateNameRepository.findByTemplateName(uploadType);
         BulkUploadsStatus bulkUploadsStatus = new BulkUploadsStatus();
         bulkUploadsStatus.setUploadType(uploadTypeLabel);
         bulkUploadsStatus.setUploadedFile(targetFile.toString());
@@ -103,6 +107,7 @@ public class BulkUploadsService extends BaseService {
         bulkUploadsStatus.setUser(fetchLoginUser().getAdminUser());
         bulkUploadsStatus.setRemarks(RECEIVED.getDescription());
         bulkUploadsStatus.setCreatedBy(fetchLoginUser());
+        bulkUploadsStatus.setTemplateName(templateName);
         return bulkUploadsStatus;
     }
 }

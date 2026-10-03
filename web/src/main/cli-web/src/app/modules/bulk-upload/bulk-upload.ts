@@ -28,10 +28,10 @@ export class BulkUpload {
   protected readonly dataKey = DATA_FIELDS.ID;
   protected readonly toolbaConfig!: ToolbarConfig;
   protected readonly uploadTypes = [
-    { value: 'reference-values', label: 'Reference Values' },
-    { value: 'categories', label: 'Categories' },
-    { value: 'subcategories', label: 'Subcategories' },
-    { value: 'financial-transactions', label: 'Financial Transactions' },
+    { value: 'REFERENCE_VALUES', label: 'Reference Values' },
+    { value: 'CATEGORIES', label: 'Categories' },
+    { value: 'SUBCATEGORIES', label: 'Subcategories' },
+    { value: 'FINANCIAL_TRANSACTIONS', label: 'Financial Transactions' },
   ];
   protected selectedUploadType = '';
   protected selectedFile: File | null = null;
@@ -77,14 +77,7 @@ export class BulkUpload {
         console.error('Empty response received while downloading template');
         return;
       }
-      const contentDisposition = response.headers.get('Content-Disposition');
-      let fileName = `${this.selectedUploadType}-template.xlsx`;
-      if (contentDisposition) {
-        const match = contentDisposition.match(/filename="?([^"]+)"?/);
-        if (match?.[1]) {
-          fileName = match[1];
-        }
-      }
+      let fileName = `${this.selectedUploadType}_TEMPLATE.xlsx`;
       const url = window.URL.createObjectURL(blob);
       const anchor = document.createElement('a');
       anchor.href = url;
