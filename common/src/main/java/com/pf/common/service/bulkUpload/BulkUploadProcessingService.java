@@ -7,7 +7,7 @@ import com.pf.common.properties.BulkUploadProperties;
 import com.pf.common.record.generic.ExcelValidationResult;
 import com.pf.common.repository.bulkUpload.BulkUploadsStatusRepository;
 import com.pf.common.repository.user.UserRepository;
-import com.pf.common.service.ExcelValidatorMetadataService;
+import com.pf.common.service.generic.ExcelValidationService;
 import com.pf.common.util.FileUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +29,7 @@ import java.util.Map;
 public class BulkUploadProcessingService {
     private final UserRepository userRepository;
     private final BulkUploadsStatusRepository bulkUploadsStatusRepository;
-    private final ExcelValidatorMetadataService excelValidatorMetadataService;
+    private final ExcelValidationService excelValidationService;
     private final BulkUploadProperties bulkUploadProperties;
 
     @Transactional
@@ -53,7 +53,7 @@ public class BulkUploadProcessingService {
         try (FileInputStream fis = new FileInputStream(filePath);
              Workbook workbook = WorkbookFactory.create(fis)) {
             ExcelValidationResult validationResult =
-                    excelValidatorMetadataService.validateExcel(bulkUploadsStatus.getUploadType(), workbook, user);
+                    excelValidationService.validateExcel(bulkUploadsStatus.getTemplateName().getTemplateName(), workbook);
             if (validationResult.nonEmptyRowsCount() == 0) {
                 log.warn("Excel file contains no data rows for id = {}", id);
                 bulkUploadsStatus.setStatus(BulkUploadStatus.NO_DATA.getValue());
@@ -61,7 +61,7 @@ public class BulkUploadProcessingService {
                 bulkUploadsStatusRepository.saveAndFlush(bulkUploadsStatus);
                 log.info("Bulk Upload contains no data for id = {}", id);
             } else if (!validationResult.errors().isEmpty()) {
-                String errorFilePath = createErrorFile(bulkUploadsStatus.getUploadedFile(), bulkUploadsStatus.getUploadType(), validationResult.errors());
+                String errorFilePath = createErrorFile(bulkUploadsStatus.getUploadedFile(), bulkUploadsStatus.getTemplateName().getTemplateName(), validationResult.errors());
                 bulkUploadsStatus.setErrorFile(errorFilePath);
                 if (validationResult.errors().size() == validationResult.nonEmptyRowsCount()) {
                     log.debug("Validation failed for all rows");

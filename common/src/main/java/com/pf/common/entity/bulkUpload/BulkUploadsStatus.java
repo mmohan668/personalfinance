@@ -1,5 +1,6 @@
 package com.pf.common.entity.bulkUpload;
 
+import com.pf.common.entity.generic.TemplateName;
 import com.pf.common.entity.userManagement.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -28,6 +29,10 @@ public class BulkUploadsStatus {
 
     @Column(name = "uploaded_file", nullable = false)
     private String uploadedFile;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "template_name", nullable = false)
+    private TemplateName templateName;
 
     @Column(name = "status", nullable = false, length = 100)
     private String status;

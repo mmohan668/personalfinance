@@ -11,6 +11,9 @@ public interface CommonConstants {
     String COMMA = ",";
     String COLON = ":";
     String DD_MM_YYYY = "dd/MM/yyyy";
+    String YES = "Yes";
+    String NO = "No";
+    String BLANK_TEXT = "";
 }
 
 

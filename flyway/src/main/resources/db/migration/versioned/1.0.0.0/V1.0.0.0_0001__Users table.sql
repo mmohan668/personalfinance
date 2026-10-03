@@ -35,4 +35,8 @@ VALUES ('PERSONALFINANCEAPP',
         'PERSONAL FINANCE APP',
         'personalfinanceapp.support@gmail.com',
         'PASSWORD_HASH_TEMP',
-        'FLYWAY')
+        'FLYWAY');
+
+UPDATE users
+SET admin_user_id = (SELECT u.id FROM users u WHERE u.username = 'PERSONALFINANCEAPP')
+WHERE username = 'PERSONALFINANCEAPP';
