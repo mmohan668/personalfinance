@@ -1,7 +1,6 @@
 package com.pf.common.service.settings;
 
 import com.google.common.collect.Lists;
-import com.pf.common.dto.generic.TemplateRowData;
 import com.pf.common.record.generic.SelectItem;
 import com.pf.common.dto.gp.GridFilter;
 import com.pf.common.dto.gp.GridResult;
@@ -22,15 +21,12 @@ import com.pf.common.repository.setting.ReferenceObjectRepository;
 import com.pf.common.repository.setting.ReferenceValueRepository;
 import com.pf.common.repository.setting.SystemConfigRepository;
 import com.pf.common.service.generic.BaseService;
-import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import tools.jackson.databind.ObjectMapper;
 
 import java.util.List;
-import java.util.Set;
 
 import static com.pf.common.constants.CommonConstants.*;
 import static com.pf.common.constants.EntityConstants.*;
@@ -49,8 +45,6 @@ public class SettingsService extends BaseService {
     private final ReferenceObjectRepository referenceObjectRepository;
     private final ReferenceValueRepository referenceValueRepository;
     private final SystemConfigRepository systemConfigRepository;
-    private final EntityManager entityManager;
-    private final ObjectMapper objectMapper;
 
     public GridResult fetchReferenceObjectGridData(SearchCriteria searchCriteria) {
         log.debug("fetchReferenceObjectGridData: {}", searchCriteria);
@@ -193,21 +187,4 @@ public class SettingsService extends BaseService {
         return success("System config saved successfully.");
     }
 
-    @Transactional
-    public void saveReferenceValuesBulk(Set<TemplateRowData> templateRowData, User user) {
-        log.info("Saving reference values bulk thru bulk upload template");
-        if (templateRowData == null || templateRowData.isEmpty()) {
-            log.warn("saveReferenceValuesBulk: template row data is empty.");
-            return;
-        }
-        String json = objectMapper.writeValueAsString(templateRowData.stream().map(TemplateRowData::getValues).toList());
-        entityManager.createNativeQuery("""
-                CALL insert_reference_values_bulk(
-                    :userId,
-                    :createdBy,
-                    CAST(:rows AS jsonb)
-                )
-                """).setParameter("userId", user.getAdminUser().getId()).setParameter("createdBy", user.getId()).setParameter("rows", json).executeUpdate();
-        log.info("save reference values bulk finished successfully.");
-    }
 }

@@ -3,7 +3,7 @@ INSERT INTO template_name
  template_name,
  sheet_name,
  created_by)
-VALUES ('com.pf.common.entity.categoryManagement.UserCategory',
+VALUES ('user_categories',
         'CATEGORIES',
         'CATEGORIES',
         (SELECT u.id FROM users u WHERE u.username = 'PERSONALFINANCEAPP'));
@@ -20,7 +20,7 @@ INSERT INTO template_header
  db_validation_columns,
  description,
  created_by)
-VALUES ('referenceValue',
+VALUES ('transaction_type',
         (SELECT tn.id FROM template_name tn WHERE tn.template_name = 'CATEGORIES'),
         'Transaction Type',
         0,
@@ -46,7 +46,7 @@ INSERT INTO template_header
  db_validation_columns,
  description,
  created_by)
-VALUES ('categoryName',
+VALUES ('category_name',
         (SELECT tn.id FROM template_name tn WHERE tn.template_name = 'CATEGORIES'),
         'Category Name',
         1,
@@ -71,7 +71,7 @@ INSERT INTO template_header
  max_length,
  description,
  created_by)
-VALUES ('categoryDescription',
+VALUES ('category_description',
         (SELECT tn.id FROM template_name tn WHERE tn.template_name = 'CATEGORIES'),
         'Category Description',
         2,

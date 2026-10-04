@@ -3,7 +3,7 @@ INSERT INTO template_name
  template_name,
  sheet_name,
  created_by)
-VALUES ('com.pf.common.entity.settings.ReferenceValue',
+VALUES ('reference_value',
         'REFERENCE_VALUES',
         'REFERENCE_VALUES',
         (SELECT u.id FROM users u WHERE u.username = 'PERSONALFINANCEAPP'));
