@@ -1,6 +1,6 @@
 import { Component, inject, ViewChild } from '@angular/core';
 import { DATA_FIELDS, GRID_EXPORT_FILE_NAMES, GRID_NAMES, MODES } from '../shared/enums';
-import { ToolbarConfig } from '../shared/types/types';
+import { GridColumn, ToolbarConfig } from '../shared/types/types';
 import { CommonService } from '../shared/service/common-service';
 import { DataGrid } from '../shared/data-grid/data-grid';
 import { MatDialog } from '@angular/material/dialog';
@@ -33,11 +33,15 @@ export class ReferenceValues {
   protected readonly toolbarConfig!: ToolbarConfig;
 
   constructor() {
-    this.toolbarConfig = this._cs.toolbarConfig();
-    this.toolbarConfig.addRow = true;
-    this.toolbarConfig.deleteRow = true;
-    this.toolbarConfig.editRow = true;
+    this.toolbarConfig = this._cs.toolbarConfig(true);
   }
+
+  calculateCellValue = (rowData: any, col: GridColumn): any => {
+    if (col.field === 'active') {
+      return rowData[col.field] ? 'Active' : 'Inactive';
+    }
+    return rowData[col.field];
+  };
 
   addRow = (): void => {
     this.dialog

@@ -42,6 +42,31 @@ VALUES ((SELECT id
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 
+--Status Active/InActive
+INSERT INTO grid_column
+(grid_name_id,
+ field,
+ header,
+ data_type,
+ default_filter_operator,
+ width,
+ visible_index,
+ cell_template,
+ align)
+VALUES ((SELECT id
+         FROM grid_name
+         WHERE LOWER(TRIM(name)) = LOWER(TRIM('REFERENCE_OBJECTS_GRID'))),
+        'active',
+        'Active Status',
+        'boolean',
+        'equals',
+        200,
+        1,
+        'cellValueTemplate',
+        'CENTER')
+ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
+    DO NOTHING;
+
 -- Created By
 INSERT INTO grid_column
 (grid_name_id,
@@ -59,7 +84,7 @@ VALUES ((SELECT id
         'text',
         'contains',
         200,
-        1)
+        2)
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 
@@ -80,7 +105,7 @@ VALUES ((SELECT id
         'datetime',
         'equals',
         200,
-        2)
+        3)
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 
@@ -101,7 +126,7 @@ VALUES ((SELECT id
         'text',
         'contains',
         200,
-        3)
+        4)
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 
@@ -122,7 +147,7 @@ VALUES ((SELECT id
         'datetime',
         'equals',
         200,
-        4)
+        5)
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 

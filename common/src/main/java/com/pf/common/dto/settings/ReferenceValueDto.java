@@ -24,6 +24,7 @@ public class ReferenceValueDto {
     private String refObjName;
     private String referenceCode;
     private String referenceCodeDescription;
+    private boolean active;
     private String referenceCode2;
     private String referenceCode3;
     private String createdBy;

@@ -110,6 +110,7 @@ public interface UserSubcategoryRepository extends JpaRepository<UserSubcategory
             )
             FROM UserSubcategory usc
             WHERE usc.userCategory.id = :categoryId
+            AND usc.active = true
             ORDER BY LOWER(usc.subcategoryName)
             """)
     List<SelectItem> fetchSubcategoriesByCategory(Long categoryId);

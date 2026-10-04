@@ -28,6 +28,9 @@ public class ReferenceObject {
     @Column(name = "ref_obj_name", nullable = false, length = 100)
     private String refObjName;
 
+    @Column(name = "active", nullable = false)
+    private boolean active;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "created_by", nullable = false)
     private User createdBy;
@@ -44,6 +47,7 @@ public class ReferenceObject {
 
     @PrePersist
     protected void onCreate() {
+        active = true;
         createdAt = LocalDateTime.now();
     }
 
