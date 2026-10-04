@@ -3,6 +3,7 @@ CREATE TABLE template_name
     id            BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     template_name VARCHAR(100) NOT NULL CHECK ( TRIM(template_name) <> '' ),
     sheet_name    VARCHAR(100) NOT NULL CHECK ( TRIM(sheet_name) <> '' ),
+    db_table_name VARCHAR(200) NOT NULL,
     created_by    BIGINT       NOT NULL REFERENCES users (id),
     created_at    TIMESTAMPTZ  NOT NULL DEFAULT current_timestamp,
     updated_by    BIGINT REFERENCES users (id),
@@ -15,6 +16,7 @@ CREATE UNIQUE INDEX ux_template_name
 CREATE TABLE template_header
 (
     id                    BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    db_column_name        VARCHAR(100) NOT NULL,
     template_name_id      BIGINT       NOT NULL REFERENCES template_name (id),
     header_name           VARCHAR(100) NOT NULL CHECK ( TRIM(header_name) <> '' ),
     column_index          INTEGER      NOT NULL CHECK ( column_index >= 0 ),

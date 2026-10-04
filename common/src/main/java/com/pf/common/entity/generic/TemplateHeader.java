@@ -20,6 +20,9 @@ public class TemplateHeader {
     @Column(name = "id", nullable = false)
     private Long id;
 
+    @Column(name = "db_column_name", nullable = false)
+    private String dbColumnName;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "template_name_id", nullable = false)
     private TemplateName templateName;

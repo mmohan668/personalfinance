@@ -29,7 +29,6 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.pf.common.constants.CommonConstants.BLANK_TEXT;
 import static com.pf.common.constants.CommonConstants.NO;
 import static com.pf.common.constants.CommonConstants.YES;
 
@@ -122,11 +121,11 @@ public class TemplateGenerationService extends BaseService {
             Row row = sheet.createRow(rowIndex++);
             createDictionaryCell(row, 0, header.getHeaderName(), dictionaryBodyStyle);
             createDictionaryCell(row, 1, header.isRequired() ? YES : NO, dictionaryBodyStyle);
-            createDictionaryCell(row, 2, header.getMinLength() != null ? header.getMinLength().toString() : BLANK_TEXT, dictionaryBodyStyle);
-            createDictionaryCell(row, 3, header.getMaxLength() != null ? header.getMaxLength().toString() : BLANK_TEXT, dictionaryBodyStyle);
-            createDictionaryCell(row, 4, header.getDataType() != null ? header.getDataType() : BLANK_TEXT, dictionaryBodyStyle);
-            createDictionaryCell(row, 5, header.getRegexPattern() != null ? header.getRegexPattern() : BLANK_TEXT, dictionaryBodyStyle);
-            createDictionaryCell(row, 6, header.getDescription() != null ? header.getDescription() : BLANK_TEXT, dictionaryBodyStyle);
+            createDictionaryCell(row, 2, header.getMinLength() != null ? header.getMinLength().toString() : null, dictionaryBodyStyle);
+            createDictionaryCell(row, 3, header.getMaxLength() != null ? header.getMaxLength().toString() : null, dictionaryBodyStyle);
+            createDictionaryCell(row, 4, header.getDataType() != null ? header.getDataType() : null, dictionaryBodyStyle);
+            createDictionaryCell(row, 5, header.getRegexPattern() != null ? header.getRegexPattern() : null, dictionaryBodyStyle);
+            createDictionaryCell(row, 6, header.getDescription() != null ? header.getDescription() : null, dictionaryBodyStyle);
             row.setHeightInPoints(55);
         }
         for (int columnIndex = 0; columnIndex < DATA_DICTIONARY_HEADERS.size(); columnIndex++) {
@@ -136,7 +135,7 @@ public class TemplateGenerationService extends BaseService {
 
     private void createDictionaryCell(Row row, int columnIndex, String value, CellStyle style) {
         Cell cell = row.createCell(columnIndex);
-        cell.setCellValue(value != null ? value : BLANK_TEXT);
+        cell.setCellValue(value);
         cell.setCellStyle(style);
     }
 
@@ -166,7 +165,7 @@ public class TemplateGenerationService extends BaseService {
             for (List<String> columnData : additionalSheetData.values()) {
                 Cell cell = row.createCell(columnIndex);
                 String value = rowIndex < columnData.size() ? columnData.get(rowIndex) : null;
-                cell.setCellValue(value != null ? value : BLANK_TEXT);
+                cell.setCellValue(value);
                 columnIndex++;
             }
         }

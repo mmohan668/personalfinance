@@ -1,9 +1,16 @@
-INSERT INTO template_name(template_name, sheet_name, created_by)
-VALUES ('SUBCATEGORIES', 'SUBCATEGORIES',
+INSERT INTO template_name
+(db_table_name,
+ template_name,
+ sheet_name,
+ created_by)
+VALUES ('com.pf.common.entity.categoryManagement.UserSubcategory',
+        'SUBCATEGORIES',
+        'SUBCATEGORIES',
         (SELECT u.id FROM users u WHERE u.username = 'PERSONALFINANCEAPP'));
 
 INSERT INTO template_header
-(template_name_id,
+(db_column_name,
+ template_name_id,
  header_name,
  column_index,
  data_type,
@@ -13,7 +20,8 @@ INSERT INTO template_header
  db_validation_columns,
  description,
  created_by)
-VALUES ((SELECT tn.id FROM template_name tn WHERE tn.template_name = 'SUBCATEGORIES'),
+VALUES ('userCategory.referenceValue',
+        (SELECT tn.id FROM template_name tn WHERE tn.template_name = 'SUBCATEGORIES'),
         'Transaction Type',
         0,
         'TEXT',
@@ -25,7 +33,8 @@ VALUES ((SELECT tn.id FROM template_name tn WHERE tn.template_name = 'SUBCATEGOR
         (SELECT u.id FROM users u WHERE u.username = 'PERSONALFINANCEAPP'));
 
 INSERT INTO template_header
-(template_name_id,
+(db_column_name,
+ template_name_id,
  header_name,
  column_index,
  data_type,
@@ -35,7 +44,8 @@ INSERT INTO template_header
  db_validation_columns,
  description,
  created_by)
-VALUES ((SELECT tn.id FROM template_name tn WHERE tn.template_name = 'SUBCATEGORIES'),
+VALUES ('userCategory',
+        (SELECT tn.id FROM template_name tn WHERE tn.template_name = 'SUBCATEGORIES'),
         'Category Name',
         1,
         'TEXT',
@@ -47,7 +57,8 @@ VALUES ((SELECT tn.id FROM template_name tn WHERE tn.template_name = 'SUBCATEGOR
         (SELECT u.id FROM users u WHERE u.username = 'PERSONALFINANCEAPP'));
 
 INSERT INTO template_header
-(template_name_id,
+(db_column_name,
+ template_name_id,
  header_name,
  column_index,
  data_type,
@@ -59,7 +70,8 @@ INSERT INTO template_header
  db_validation_columns,
  description,
  created_by)
-VALUES ((SELECT tn.id FROM template_name tn WHERE tn.template_name = 'SUBCATEGORIES'),
+VALUES ('subcategoryName',
+        (SELECT tn.id FROM template_name tn WHERE tn.template_name = 'SUBCATEGORIES'),
         'Subcategory Name',
         2,
         'TEXT',
@@ -73,7 +85,8 @@ VALUES ((SELECT tn.id FROM template_name tn WHERE tn.template_name = 'SUBCATEGOR
         (SELECT u.id FROM users u WHERE u.username = 'PERSONALFINANCEAPP'));
 
 INSERT INTO template_header
-(template_name_id,
+(db_column_name,
+ template_name_id,
  header_name,
  column_index,
  data_type,
@@ -82,7 +95,8 @@ INSERT INTO template_header
  max_length,
  description,
  created_by)
-VALUES ((SELECT tn.id FROM template_name tn WHERE tn.template_name = 'SUBCATEGORIES'),
+VALUES ('subcategoryDescription',
+        (SELECT tn.id FROM template_name tn WHERE tn.template_name = 'SUBCATEGORIES'),
         'Subcategory Description',
         3,
         'TEXT',

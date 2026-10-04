@@ -1,9 +1,16 @@
-INSERT INTO template_name(template_name, sheet_name, created_by)
-VALUES ('REFERENCE_VALUES', 'REFERENCE_VALUES',
+INSERT INTO template_name
+(db_table_name,
+ template_name,
+ sheet_name,
+ created_by)
+VALUES ('com.pf.common.entity.settings.ReferenceValue',
+        'REFERENCE_VALUES',
+        'REFERENCE_VALUES',
         (SELECT u.id FROM users u WHERE u.username = 'PERSONALFINANCEAPP'));
 
 INSERT INTO template_header
-(template_name_id,
+(db_column_name,
+ template_name_id,
  header_name,
  column_index,
  data_type,
@@ -13,7 +20,8 @@ INSERT INTO template_header
  db_validation_columns,
  description,
  created_by)
-VALUES ((SELECT tn.id FROM template_name tn WHERE tn.template_name = 'REFERENCE_VALUES'),
+VALUES ('reference_object',
+        (SELECT tn.id FROM template_name tn WHERE tn.template_name = 'REFERENCE_VALUES'),
         'Reference Object',
         0,
         'TEXT',
@@ -25,7 +33,8 @@ VALUES ((SELECT tn.id FROM template_name tn WHERE tn.template_name = 'REFERENCE_
         (SELECT u.id FROM users u WHERE u.username = 'PERSONALFINANCEAPP'));
 
 INSERT INTO template_header
-(template_name_id,
+(db_column_name,
+ template_name_id,
  header_name,
  column_index,
  data_type,
@@ -37,7 +46,8 @@ INSERT INTO template_header
  db_validation_columns,
  description,
  created_by)
-VALUES ((SELECT tn.id FROM template_name tn WHERE tn.template_name = 'REFERENCE_VALUES'),
+VALUES ('reference_code',
+        (SELECT tn.id FROM template_name tn WHERE tn.template_name = 'REFERENCE_VALUES'),
         'Reference Code',
         1,
         'TEXT',
@@ -51,7 +61,8 @@ VALUES ((SELECT tn.id FROM template_name tn WHERE tn.template_name = 'REFERENCE_
         (SELECT u.id FROM users u WHERE u.username = 'PERSONALFINANCEAPP'));
 
 INSERT INTO template_header
-(template_name_id,
+(db_column_name,
+ template_name_id,
  header_name,
  column_index,
  data_type,
@@ -60,7 +71,8 @@ INSERT INTO template_header
  max_length,
  description,
  created_by)
-VALUES ((SELECT tn.id FROM template_name tn WHERE tn.template_name = 'REFERENCE_VALUES'),
+VALUES ('reference_code_description',
+        (SELECT tn.id FROM template_name tn WHERE tn.template_name = 'REFERENCE_VALUES'),
         'Reference Code Description',
         2,
         'TEXT',
@@ -71,14 +83,16 @@ VALUES ((SELECT tn.id FROM template_name tn WHERE tn.template_name = 'REFERENCE_
         (SELECT u.id FROM users u WHERE u.username = 'PERSONALFINANCEAPP'));
 
 INSERT INTO template_header
-(template_name_id,
+(db_column_name,
+ template_name_id,
  header_name,
  column_index,
  data_type,
  required,
  description,
  created_by)
-VALUES ((SELECT tn.id FROM template_name tn WHERE tn.template_name = 'REFERENCE_VALUES'),
+VALUES ('reference_code_2',
+        (SELECT tn.id FROM template_name tn WHERE tn.template_name = 'REFERENCE_VALUES'),
         'Reference Code 2',
         3,
         'TEXT',
@@ -87,14 +101,16 @@ VALUES ((SELECT tn.id FROM template_name tn WHERE tn.template_name = 'REFERENCE_
         (SELECT u.id FROM users u WHERE u.username = 'PERSONALFINANCEAPP'));
 
 INSERT INTO template_header
-(template_name_id,
+(db_column_name,
+ template_name_id,
  header_name,
  column_index,
  data_type,
  required,
  description,
  created_by)
-VALUES ((SELECT tn.id FROM template_name tn WHERE tn.template_name = 'REFERENCE_VALUES'),
+VALUES ('reference_code_3',
+        (SELECT tn.id FROM template_name tn WHERE tn.template_name = 'REFERENCE_VALUES'),
         'Reference Code 3',
         4,
         'TEXT',

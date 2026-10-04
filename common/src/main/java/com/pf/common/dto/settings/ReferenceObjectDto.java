@@ -19,7 +19,8 @@ public class ReferenceObjectDto implements Serializable {
 
     public static final Map<String, String> FIELD_MAPPINGS = Map.of(
             "createdBy", "createdBy.username",
-            "updatedBy", "updatedBy.username"
+            "updatedBy", "updatedBy.username",
+            "userId", "user.id"
     );
 
     private Long id;

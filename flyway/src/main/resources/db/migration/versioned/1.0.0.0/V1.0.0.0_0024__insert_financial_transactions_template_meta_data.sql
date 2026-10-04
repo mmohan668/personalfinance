@@ -1,16 +1,24 @@
-INSERT INTO template_name(template_name, sheet_name, created_by)
-VALUES ('FINANCIAL_TRANSACTIONS', 'FINANCIAL_TRANSACTIONS',
+INSERT INTO template_name
+(db_table_name,
+ template_name,
+ sheet_name,
+ created_by)
+VALUES ('com.pf.common.entity.financialTransaction.FinancialTransaction',
+        'FINANCIAL_TRANSACTIONS',
+        'FINANCIAL_TRANSACTIONS',
         (SELECT u.id FROM users u WHERE u.username = 'PERSONALFINANCEAPP'));
 
 INSERT INTO template_header
-(template_name_id,
+(db_column_name,
+ template_name_id,
  header_name,
  column_index,
  data_type,
  required,
  description,
  created_by)
-VALUES ((SELECT tn.id FROM template_name tn WHERE tn.template_name = 'FINANCIAL_TRANSACTIONS'),
+VALUES ('transactionAt',
+        (SELECT tn.id FROM template_name tn WHERE tn.template_name = 'FINANCIAL_TRANSACTIONS'),
         'Transaction Date',
         0,
         'DATE',
@@ -19,14 +27,16 @@ VALUES ((SELECT tn.id FROM template_name tn WHERE tn.template_name = 'FINANCIAL_
         (SELECT u.id FROM users u WHERE u.username = 'PERSONALFINANCEAPP'));
 
 INSERT INTO template_header
-(template_name_id,
+(db_column_name,
+ template_name_id,
  header_name,
  column_index,
  data_type,
  required,
  description,
  created_by)
-VALUES ((SELECT tn.id FROM template_name tn WHERE tn.template_name = 'FINANCIAL_TRANSACTIONS'),
+VALUES ('amount',
+        (SELECT tn.id FROM template_name tn WHERE tn.template_name = 'FINANCIAL_TRANSACTIONS'),
         'Amount',
         1,
         'AMOUNT',
@@ -35,7 +45,8 @@ VALUES ((SELECT tn.id FROM template_name tn WHERE tn.template_name = 'FINANCIAL_
         (SELECT u.id FROM users u WHERE u.username = 'PERSONALFINANCEAPP'));
 
 INSERT INTO template_header
-(template_name_id,
+(db_column_name,
+ template_name_id,
  header_name,
  column_index,
  data_type,
@@ -45,7 +56,8 @@ INSERT INTO template_header
  db_validation_columns,
  description,
  created_by)
-VALUES ((SELECT tn.id FROM template_name tn WHERE tn.template_name = 'FINANCIAL_TRANSACTIONS'),
+VALUES ('subcategory.userCategory.referenceValue',
+        (SELECT tn.id FROM template_name tn WHERE tn.template_name = 'FINANCIAL_TRANSACTIONS'),
         'Transaction Type',
         2,
         'TEXT',
@@ -57,7 +69,8 @@ VALUES ((SELECT tn.id FROM template_name tn WHERE tn.template_name = 'FINANCIAL_
         (SELECT u.id FROM users u WHERE u.username = 'PERSONALFINANCEAPP'));
 
 INSERT INTO template_header
-(template_name_id,
+(db_column_name,
+ template_name_id,
  header_name,
  column_index,
  data_type,
@@ -67,7 +80,8 @@ INSERT INTO template_header
  db_validation_columns,
  description,
  created_by)
-VALUES ((SELECT tn.id FROM template_name tn WHERE tn.template_name = 'FINANCIAL_TRANSACTIONS'),
+VALUES ('subcategory.userCategory',
+        (SELECT tn.id FROM template_name tn WHERE tn.template_name = 'FINANCIAL_TRANSACTIONS'),
         'Category Name',
         3,
         'TEXT',
@@ -79,7 +93,8 @@ VALUES ((SELECT tn.id FROM template_name tn WHERE tn.template_name = 'FINANCIAL_
         (SELECT u.id FROM users u WHERE u.username = 'PERSONALFINANCEAPP'));
 
 INSERT INTO template_header
-(template_name_id,
+(db_column_name,
+ template_name_id,
  header_name,
  column_index,
  data_type,
@@ -89,7 +104,8 @@ INSERT INTO template_header
  db_validation_columns,
  description,
  created_by)
-VALUES ((SELECT tn.id FROM template_name tn WHERE tn.template_name = 'FINANCIAL_TRANSACTIONS'),
+VALUES ('subcategoryName',
+        (SELECT tn.id FROM template_name tn WHERE tn.template_name = 'FINANCIAL_TRANSACTIONS'),
         'Subcategory Name',
         4,
         'TEXT',
@@ -101,7 +117,8 @@ VALUES ((SELECT tn.id FROM template_name tn WHERE tn.template_name = 'FINANCIAL_
         (SELECT u.id FROM users u WHERE u.username = 'PERSONALFINANCEAPP'));
 
 INSERT INTO template_header
-(template_name_id,
+(db_column_name,
+ template_name_id,
  header_name,
  column_index,
  data_type,
@@ -111,7 +128,8 @@ INSERT INTO template_header
  db_validation_columns,
  description,
  created_by)
-VALUES ((SELECT tn.id FROM template_name tn WHERE tn.template_name = 'FINANCIAL_TRANSACTIONS'),
+VALUES ('location',
+        (SELECT tn.id FROM template_name tn WHERE tn.template_name = 'FINANCIAL_TRANSACTIONS'),
         'Location',
         5,
         'TEXT',
@@ -123,14 +141,16 @@ VALUES ((SELECT tn.id FROM template_name tn WHERE tn.template_name = 'FINANCIAL_
         (SELECT u.id FROM users u WHERE u.username = 'PERSONALFINANCEAPP'));
 
 INSERT INTO template_header
-(template_name_id,
+(db_column_name,
+ template_name_id,
  header_name,
  column_index,
  data_type,
  required,
  description,
  created_by)
-VALUES ((SELECT tn.id FROM template_name tn WHERE tn.template_name = 'FINANCIAL_TRANSACTIONS'),
+VALUES ('remarks',
+        (SELECT tn.id FROM template_name tn WHERE tn.template_name = 'FINANCIAL_TRANSACTIONS'),
         'Remarks',
         6,
         'TEXT',

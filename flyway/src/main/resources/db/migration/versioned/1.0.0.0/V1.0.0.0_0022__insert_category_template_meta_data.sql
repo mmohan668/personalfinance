@@ -1,9 +1,16 @@
-INSERT INTO template_name(template_name, sheet_name, created_by)
-VALUES ('CATEGORIES', 'CATEGORIES',
+INSERT INTO template_name
+(db_table_name,
+ template_name,
+ sheet_name,
+ created_by)
+VALUES ('com.pf.common.entity.categoryManagement.UserCategory',
+        'CATEGORIES',
+        'CATEGORIES',
         (SELECT u.id FROM users u WHERE u.username = 'PERSONALFINANCEAPP'));
 
 INSERT INTO template_header
-(template_name_id,
+(db_column_name,
+ template_name_id,
  header_name,
  column_index,
  data_type,
@@ -13,7 +20,8 @@ INSERT INTO template_header
  db_validation_columns,
  description,
  created_by)
-VALUES ((SELECT tn.id FROM template_name tn WHERE tn.template_name = 'CATEGORIES'),
+VALUES ('referenceValue',
+        (SELECT tn.id FROM template_name tn WHERE tn.template_name = 'CATEGORIES'),
         'Transaction Type',
         0,
         'TEXT',
@@ -25,7 +33,8 @@ VALUES ((SELECT tn.id FROM template_name tn WHERE tn.template_name = 'CATEGORIES
         (SELECT u.id FROM users u WHERE u.username = 'PERSONALFINANCEAPP'));
 
 INSERT INTO template_header
-(template_name_id,
+(db_column_name,
+ template_name_id,
  header_name,
  column_index,
  data_type,
@@ -37,7 +46,8 @@ INSERT INTO template_header
  db_validation_columns,
  description,
  created_by)
-VALUES ((SELECT tn.id FROM template_name tn WHERE tn.template_name = 'CATEGORIES'),
+VALUES ('categoryName',
+        (SELECT tn.id FROM template_name tn WHERE tn.template_name = 'CATEGORIES'),
         'Category Name',
         1,
         'TEXT',
@@ -51,7 +61,8 @@ VALUES ((SELECT tn.id FROM template_name tn WHERE tn.template_name = 'CATEGORIES
         (SELECT u.id FROM users u WHERE u.username = 'PERSONALFINANCEAPP'));
 
 INSERT INTO template_header
-(template_name_id,
+(db_column_name,
+ template_name_id,
  header_name,
  column_index,
  data_type,
@@ -60,7 +71,8 @@ INSERT INTO template_header
  max_length,
  description,
  created_by)
-VALUES ((SELECT tn.id FROM template_name tn WHERE tn.template_name = 'CATEGORIES'),
+VALUES ('categoryDescription',
+        (SELECT tn.id FROM template_name tn WHERE tn.template_name = 'CATEGORIES'),
         'Category Description',
         2,
         'TEXT',
