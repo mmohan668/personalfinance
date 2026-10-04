@@ -3,7 +3,7 @@ INSERT INTO template_name
  template_name,
  sheet_name,
  created_by)
-VALUES ('com.pf.common.entity.categoryManagement.UserSubcategory',
+VALUES ('user_subcategories',
         'SUBCATEGORIES',
         'SUBCATEGORIES',
         (SELECT u.id FROM users u WHERE u.username = 'PERSONALFINANCEAPP'));
@@ -20,7 +20,7 @@ INSERT INTO template_header
  db_validation_columns,
  description,
  created_by)
-VALUES ('userCategory.referenceValue',
+VALUES ('transaction_type',
         (SELECT tn.id FROM template_name tn WHERE tn.template_name = 'SUBCATEGORIES'),
         'Transaction Type',
         0,
@@ -44,7 +44,7 @@ INSERT INTO template_header
  db_validation_columns,
  description,
  created_by)
-VALUES ('userCategory',
+VALUES ('category_name',
         (SELECT tn.id FROM template_name tn WHERE tn.template_name = 'SUBCATEGORIES'),
         'Category Name',
         1,
@@ -70,7 +70,7 @@ INSERT INTO template_header
  db_validation_columns,
  description,
  created_by)
-VALUES ('subcategoryName',
+VALUES ('subcategory_name',
         (SELECT tn.id FROM template_name tn WHERE tn.template_name = 'SUBCATEGORIES'),
         'Subcategory Name',
         2,
@@ -95,7 +95,7 @@ INSERT INTO template_header
  max_length,
  description,
  created_by)
-VALUES ('subcategoryDescription',
+VALUES ('subcategory_description',
         (SELECT tn.id FROM template_name tn WHERE tn.template_name = 'SUBCATEGORIES'),
         'Subcategory Description',
         3,

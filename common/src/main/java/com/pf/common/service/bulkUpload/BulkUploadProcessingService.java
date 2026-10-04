@@ -12,9 +12,10 @@ import com.pf.common.record.generic.ExcelValidationResult;
 import com.pf.common.repository.bulkUpload.BulkUploadsStatusRepository;
 import com.pf.common.repository.user.UserRepository;
 import com.pf.common.service.generic.ExcelValidationService;
-import com.pf.common.service.settings.SettingsService;
 import com.pf.common.util.DateUtils;
+import com.pf.common.util.ExcelUtils;
 import com.pf.common.util.FileUtils;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
@@ -23,6 +24,7 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tools.jackson.databind.ObjectMapper;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -43,7 +45,8 @@ public class BulkUploadProcessingService {
     private final BulkUploadsStatusRepository bulkUploadsStatusRepository;
     private final ExcelValidationService excelValidationService;
     private final BulkUploadProperties bulkUploadProperties;
-    private final SettingsService settingsService;
+    private final EntityManager entityManager;
+    private final ObjectMapper objectMapper;
 
     @Transactional
     public void processBulkUpload(Long id, Long userId) {
@@ -85,7 +88,6 @@ public class BulkUploadProcessingService {
                     bulkUploadsStatus.setStatus(BulkUploadStatus.PARTIAL_SUCCESS.getValue());
                     bulkUploadsStatus.setRemarks(BulkUploadStatus.PARTIAL_SUCCESS.getDescription());
                     bulkUploadsStatusRepository.saveAndFlush(bulkUploadsStatus);
-                    //TODO
                     processValidRows(workbook, bulkUploadsStatus, validationResult.errors().keySet());
                 }
             } else {
@@ -93,8 +95,7 @@ public class BulkUploadProcessingService {
                 bulkUploadsStatus.setStatus(BulkUploadStatus.SUCCESS.getValue());
                 bulkUploadsStatus.setRemarks(BulkUploadStatus.SUCCESS.getDescription());
                 bulkUploadsStatusRepository.saveAndFlush(bulkUploadsStatus);
-                //TODO
-                //Need to process all rows
+                processValidRows(workbook, bulkUploadsStatus, validationResult.errors().keySet());
             }
         } catch (Exception e) {
             log.error("Error while processing Bulk Upload Processing for id = {}", id, e);
@@ -108,14 +109,26 @@ public class BulkUploadProcessingService {
     public void processValidRows(XSSFWorkbook workbook, BulkUploadsStatus bulkUploadsStatus, Set<Integer> validRows) {
         String templateName = bulkUploadsStatus.getTemplateName().getTemplateName();
         AppEnums.TemplateName template = AppEnums.TemplateName.valueOf(templateName);
+        Set<TemplateRowData> templateRowData = buildValidRows(workbook, bulkUploadsStatus.getTemplateName(), validRows);
+        log.info("Saving reference values bulk thru bulk upload template");
+        if (templateRowData == null || templateRowData.isEmpty()) {
+            log.warn("saveReferenceValuesBulk: template row data is empty.");
+            return;
+        }
+        String json = objectMapper.writeValueAsString(templateRowData.stream().map(TemplateRowData::getValues).toList());
         switch (template) {
             case REFERENCE_VALUES: {
-                Set<TemplateRowData> templateRowData = buildValidRows(workbook, bulkUploadsStatus.getTemplateName(), validRows);
-                settingsService.saveReferenceValuesBulk(templateRowData, bulkUploadsStatus.getUser());
+                saveReferenceValuesBulk(json, bulkUploadsStatus.getUser());
             }
-            case CATEGORIES:
-            case SUBCATEGORIES:
-            case FINANCIAL_TRANSACTIONS:
+            case CATEGORIES: {
+                saveCategoriesBulk(json, bulkUploadsStatus.getUser());
+            }
+            case SUBCATEGORIES: {
+                saveSubcategoriesBulk(json, bulkUploadsStatus.getUser());
+            }
+            case FINANCIAL_TRANSACTIONS: {
+                saveFinancialTransactionsBulk(json, bulkUploadsStatus.getUser());
+            }
         }
     }
 
@@ -124,7 +137,7 @@ public class BulkUploadProcessingService {
         Set<TemplateHeader> templateHeaders = templateName.getTemplateHeaders();
         Set<TemplateRowData> templateRowDataList = new HashSet<>();
         Map<Integer, TemplateHeader> headersByColumn = templateHeaders.stream().collect(Collectors.toMap(TemplateHeader::getColumnIndex, Function.identity()));
-        for (int i = 1; i < sheet.getLastRowNum(); i++) {
+        for (int i = 1; i <= sheet.getLastRowNum(); i++) {
             if (invalidRows.contains(i)) {
                 continue;
             }
@@ -203,9 +216,9 @@ public class BulkUploadProcessingService {
     private String createErrorFile(String uploadedFilePath, String uploadedType, Map<Integer, List<String>> errors) throws IOException {
         Path inputPath = Paths.get(uploadedFilePath);
         String fileName = inputPath.getFileName().toString();
-        String errorFileName = "Error_" + fileName;
+        String errorFileName = "ERROR_" + fileName;
         Path errorFilePath = FileUtils.getDateTimePath(bulkUploadProperties.getError(), uploadedType).resolve(errorFileName);
-        try (FileInputStream fis = new FileInputStream(uploadedFilePath); Workbook workbook = WorkbookFactory.create(fis); FileOutputStream fos = new FileOutputStream(errorFilePath.toFile())) {
+        try (FileInputStream fis = new FileInputStream(uploadedFilePath); XSSFWorkbook workbook = (XSSFWorkbook) WorkbookFactory.create(fis); FileOutputStream fos = new FileOutputStream(errorFilePath.toFile())) {
             Sheet sheet = workbook.getSheet(uploadedType);
             if (sheet == null) {
                 throw new IOException("Sheet not found: " + uploadedType);
@@ -217,12 +230,9 @@ public class BulkUploadProcessingService {
             }
             remarksColumnIndex = headerRow.getLastCellNum();
             // Add Remarks header
-            CellStyle headerStyle = workbook.createCellStyle();
-            Font headerFont = workbook.createFont();
-            headerFont.setBold(true);
-            headerStyle.setFont(headerFont);
+            CellStyle headerStyle = ExcelUtils.createHeaderStyle(workbook, true);
             Cell remarksHeader = headerRow.createCell(remarksColumnIndex);
-            remarksHeader.setCellValue("Remarks");
+            remarksHeader.setCellValue("Error Messages");
             sheet.setColumnWidth(remarksColumnIndex, 80 * 256);
             remarksHeader.setCellStyle(headerStyle);
             CellStyle errorStyle = workbook.createCellStyle();
@@ -244,8 +254,77 @@ public class BulkUploadProcessingService {
                 // Increase row height so all error lines are visible
                 row.setHeightInPoints(rowErrors.size() * 15);
             }
+            /*
+             * Remove rows which don't have errors.
+             *
+             * Delete from bottom to top so that row indexes
+             * in the errors map remain valid while deleting.
+             */
+            for (int rowNumber = sheet.getLastRowNum(); rowNumber >= 1; rowNumber--) {
+                if (!errors.containsKey(rowNumber)) {
+                    Row row = sheet.getRow(rowNumber);
+                    if (row != null) {
+                        sheet.removeRow(row);
+                    }
+                    if (rowNumber < sheet.getLastRowNum()) {
+                        sheet.shiftRows(
+                                rowNumber + 1,
+                                sheet.getLastRowNum(),
+                                -1
+                        );
+                    }
+                }
+            }
             workbook.write(fos);
         }
         return errorFilePath.toString();
+    }
+
+    @Transactional
+    public void saveReferenceValuesBulk(String json, User user) {
+        entityManager.createNativeQuery("""
+                CALL insert_reference_values_bulk(
+                    :userId,
+                    :createdBy,
+                    CAST(:rows AS jsonb)
+                )
+                """).setParameter("userId", user.getAdminUser().getId()).setParameter("createdBy", user.getId()).setParameter("rows", json).executeUpdate();
+        log.info("save reference values bulk finished successfully.");
+    }
+
+    @Transactional
+    public void saveCategoriesBulk(String json, User user) {
+        entityManager.createNativeQuery("""
+                CALL insert_user_categories_bulk(
+                    :userId,
+                    :createdBy,
+                    CAST(:rows AS jsonb)
+                )
+                """).setParameter("userId", user.getAdminUser().getId()).setParameter("createdBy", user.getId()).setParameter("rows", json).executeUpdate();
+        log.info("save user categories bulk finished successfully.");
+    }
+
+    @Transactional
+    public void saveSubcategoriesBulk(String json, User user) {
+        entityManager.createNativeQuery("""
+                CALL insert_user_subcategories_bulk(
+                    :userId,
+                    :createdBy,
+                    CAST(:rows AS jsonb)
+                )
+                """).setParameter("userId", user.getAdminUser().getId()).setParameter("createdBy", user.getId()).setParameter("rows", json).executeUpdate();
+        log.info("save user subcategories bulk finished successfully.");
+    }
+
+    @Transactional
+    public void saveFinancialTransactionsBulk(String json, User user) {
+        entityManager.createNativeQuery("""
+                CALL insert_financial_transactions_bulk(
+                    :userId,
+                    :createdBy,
+                    CAST(:rows AS jsonb)
+                )
+                """).setParameter("userId", user.getAdminUser().getId()).setParameter("createdBy", user.getId()).setParameter("rows", json).executeUpdate();
+        log.info("save financial transactions bulk finished successfully.");
     }
 }

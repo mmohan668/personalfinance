@@ -3,7 +3,7 @@ INSERT INTO template_name
  template_name,
  sheet_name,
  created_by)
-VALUES ('com.pf.common.entity.financialTransaction.FinancialTransaction',
+VALUES ('financial_transactions',
         'FINANCIAL_TRANSACTIONS',
         'FINANCIAL_TRANSACTIONS',
         (SELECT u.id FROM users u WHERE u.username = 'PERSONALFINANCEAPP'));
@@ -17,7 +17,7 @@ INSERT INTO template_header
  required,
  description,
  created_by)
-VALUES ('transactionAt',
+VALUES ('transaction_at',
         (SELECT tn.id FROM template_name tn WHERE tn.template_name = 'FINANCIAL_TRANSACTIONS'),
         'Transaction Date',
         0,
@@ -56,7 +56,7 @@ INSERT INTO template_header
  db_validation_columns,
  description,
  created_by)
-VALUES ('subcategory.userCategory.referenceValue',
+VALUES ('transaction_type',
         (SELECT tn.id FROM template_name tn WHERE tn.template_name = 'FINANCIAL_TRANSACTIONS'),
         'Transaction Type',
         2,
@@ -80,7 +80,7 @@ INSERT INTO template_header
  db_validation_columns,
  description,
  created_by)
-VALUES ('subcategory.userCategory',
+VALUES ('category_name',
         (SELECT tn.id FROM template_name tn WHERE tn.template_name = 'FINANCIAL_TRANSACTIONS'),
         'Category Name',
         3,
@@ -104,7 +104,7 @@ INSERT INTO template_header
  db_validation_columns,
  description,
  created_by)
-VALUES ('subcategoryName',
+VALUES ('subcategory_name',
         (SELECT tn.id FROM template_name tn WHERE tn.template_name = 'FINANCIAL_TRANSACTIONS'),
         'Subcategory Name',
         4,
