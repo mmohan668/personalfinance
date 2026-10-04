@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { DataGrid } from '../shared/data-grid/data-grid';
 import { DATA_FIELDS, GRID_EXPORT_FILE_NAMES, GRID_NAMES } from '../shared/enums';
-import { ToolbarConfig } from '../shared/types/types';
+import { GridColumn, ToolbarConfig } from '../shared/types/types';
 import { CommonService } from '../shared/service/common-service';
 
 @Component({
@@ -18,6 +18,14 @@ export class ReferenceObjects {
   private readonly _cs = inject(CommonService);
 
   constructor() {
-    this.toolbarConfig = this._cs.toolbarConfig();
+    this.toolbarConfig = this._cs.toolbarConfig(true);
+    this.toolbarConfig.copyRow = false;
   }
+
+  calculateCellValue = (rowData: any, col: GridColumn): any => {
+    if (col.field === 'active') {
+      return rowData[col.field] ? 'Active' : 'Inactive';
+    }
+    return rowData[col.field];
+  };
 }

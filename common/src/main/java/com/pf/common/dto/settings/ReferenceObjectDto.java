@@ -26,6 +26,7 @@ public class ReferenceObjectDto implements Serializable {
     private Long id;
     @NotBlank(message = "Reference object name is required")
     private String refObjName;
+    private boolean active;
     private String createdBy;
     private LocalDateTime createdAt;
     private String updatedBy;

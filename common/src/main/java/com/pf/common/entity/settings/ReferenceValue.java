@@ -39,6 +39,9 @@ public class ReferenceValue {
     @Column(name = "reference_code_description", nullable = false, length = 200)
     private String referenceCodeDescription;
 
+    @Column(name = "active", nullable = false)
+    private boolean active;
+
     @Size(max = 100)
     @Column(name = "reference_code_2", length = 100)
     private String referenceCode2;
@@ -63,6 +66,7 @@ public class ReferenceValue {
 
     @PrePersist
     protected void onCreate() {
+        active = true;
         createdAt = LocalDateTime.now();
     }
 
