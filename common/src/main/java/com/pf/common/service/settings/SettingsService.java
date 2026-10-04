@@ -1,6 +1,7 @@
 package com.pf.common.service.settings;
 
 import com.google.common.collect.Lists;
+import com.pf.common.dto.generic.TemplateRowData;
 import com.pf.common.record.generic.SelectItem;
 import com.pf.common.dto.gp.GridFilter;
 import com.pf.common.dto.gp.GridResult;
@@ -21,18 +22,20 @@ import com.pf.common.repository.setting.ReferenceObjectRepository;
 import com.pf.common.repository.setting.ReferenceValueRepository;
 import com.pf.common.repository.setting.SystemConfigRepository;
 import com.pf.common.service.generic.BaseService;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tools.jackson.databind.ObjectMapper;
 
 import java.util.List;
+import java.util.Set;
 
 import static com.pf.common.constants.CommonConstants.*;
 import static com.pf.common.constants.EntityConstants.*;
 import static com.pf.common.constants.FieldConstants.*;
 import static com.pf.common.enums.FilterOperator.EQUALS;
-import static com.pf.common.enums.FilterOperator.IN;
 import static com.pf.common.enums.RefObjectNames.*;
 import static com.pf.common.enums.SortOrder.ASC;
 
@@ -46,17 +49,15 @@ public class SettingsService extends BaseService {
     private final ReferenceObjectRepository referenceObjectRepository;
     private final ReferenceValueRepository referenceValueRepository;
     private final SystemConfigRepository systemConfigRepository;
+    private final EntityManager entityManager;
+    private final ObjectMapper objectMapper;
 
     public GridResult fetchReferenceObjectGridData(SearchCriteria searchCriteria) {
         log.debug("fetchReferenceObjectGridData: {}", searchCriteria);
-        GridFilter gridFilter = GridFilter.builder()
-                .field(CREATED_BY)
-                .operator(IN.getValue())
-                .values(List.of(PERSONAL_FINANCE_APP, fetchLoginUser().getUsername()))
-                .build();
+        GridFilter gridFilter = GridFilter.builder().field(USER_ID).operator(EQUALS.getValue()).value(String.valueOf(fetchLoginUser().getAdminUser().getId())).build();
         searchCriteria.getFilterList().add(gridFilter);
         searchCriteria.getSortList().add(new GridSort(ID, ASC.getValue()));
-        searchCriteria.setFetchPaths(List.of(CREATED_BY_USER, UPDATED_BY_USER));
+        searchCriteria.setFetchPaths(List.of(CREATED_BY_USER, UPDATED_BY_USER, USER));
         searchCriteria.setFIELD_MAPPINGS(ReferenceObjectDto.FIELD_MAPPINGS);
         long totalRecords = getCountBySearchCriteria(ReferenceObject.class, searchCriteria);
         List<ReferenceObjectDto> recordDetails = referenceObjectMapper.toDtoList(getDataBySearchCriteria(ReferenceObject.class, searchCriteria));
@@ -66,14 +67,10 @@ public class SettingsService extends BaseService {
 
     public GridResult fetchReferenceValueGridData(SearchCriteria searchCriteria) {
         log.debug("fetchReferenceValuesGridData: {}", searchCriteria);
-        GridFilter gridFilter = GridFilter.builder()
-                .field(CREATED_BY)
-                .operator(IN.getValue())
-                .values(List.of(PERSONAL_FINANCE_APP, fetchLoginUser().getUsername()))
-                .build();
+        GridFilter gridFilter = GridFilter.builder().field(USER_ID).operator(EQUALS.getValue()).value(String.valueOf(fetchLoginUser().getAdminUser().getId())).build();
         searchCriteria.getFilterList().add(gridFilter);
         searchCriteria.getSortList().add(new GridSort(ID, ASC.getValue()));
-        searchCriteria.setFetchPaths(List.of(REFERENCE_OBJECT, CREATED_BY_USER, UPDATED_BY_USER));
+        searchCriteria.setFetchPaths(List.of(REFERENCE_OBJECT, USER, CREATED_BY_USER, UPDATED_BY_USER));
         searchCriteria.setFIELD_MAPPINGS(ReferenceValueDto.FIELD_MAPPINGS);
         long totalRecords = getCountBySearchCriteria(ReferenceValue.class, searchCriteria);
         List<ReferenceValue> referenceValues = getDataBySearchCriteria(ReferenceValue.class, searchCriteria);
@@ -84,11 +81,7 @@ public class SettingsService extends BaseService {
 
     public GridResult fetchSystemConfigGridData(SearchCriteria searchCriteria) {
         log.debug("fetchSystemConfigGridData: {}", searchCriteria);
-        GridFilter gridFilter = GridFilter.builder()
-                .field(USER_ID)
-                .operator(EQUALS.getValue())
-                .value(String.valueOf(fetchLoginUser().getAdminUser().getId()))
-                .build();
+        GridFilter gridFilter = GridFilter.builder().field(USER_ID).operator(EQUALS.getValue()).value(String.valueOf(fetchLoginUser().getAdminUser().getId())).build();
         searchCriteria.getFilterList().add(gridFilter);
         searchCriteria.getSortList().add(new GridSort(ID, ASC.getValue()));
         searchCriteria.setFetchPaths(List.of(CONFIG_VALUE, CREATED_BY_USER, UPDATED_BY_USER));
@@ -105,53 +98,29 @@ public class SettingsService extends BaseService {
         User user = fetchLoginUser();
         ReferenceObject referenceObject = referenceObjectRepository.findById(referenceValueDto.getRefObjNameId()).orElse(null);
         if (referenceObject == null) {
-            log.warn(
-                    "saveReferenceValue: Reference object not found. refObjNameId = {}",
-                    referenceValueDto.getRefObjNameId()
-            );
+            log.warn("saveReferenceValue: Reference object not found. refObjNameId = {}", referenceValueDto.getRefObjNameId());
             return failure("Reference object not found.");
         }
         ReferenceValue referenceValue;
         if (referenceValueDto.getId() == null) {
             //Create
-            referenceValue =
-                    referenceValueMapper.toEntity(referenceValueDto);
+            referenceValue = referenceValueMapper.toEntity(referenceValueDto);
             referenceValue.setReferenceObject(referenceObject);
-            if (referenceValueRepository
-                    .countByReferenceObjectIdAndReferenceCode(
-                            referenceObject.getId(),
-                            referenceValue.getReferenceCode()
-                    ) > 0
-            ) {
-                log.warn(
-                        "Reference code already exists for the selected reference object. refObjName = {}, referenceCode = {}",
-                        referenceObject.getRefObjName(),
-                        referenceValue.getReferenceCode()
-                );
+            if (referenceValueRepository.countByReferenceObjectIdAndReferenceCode(referenceObject.getId(), referenceValue.getReferenceCode()) > 0) {
+                log.warn("Reference code already exists for the selected reference object. refObjName = {}, referenceCode = {}", referenceObject.getRefObjName(), referenceValue.getReferenceCode());
                 return failure("Reference code already exists for the selected reference object.");
             }
+            referenceValue.setUser(user.getAdminUser());
             referenceValue.setCreatedBy(user);
         } else {
             //Update
             referenceValue = referenceValueRepository.findById(referenceValueDto.getId()).orElse(null);
             if (referenceValue == null) {
-                log.warn(
-                        "saveReferenceValue: Reference value not found. referenceValueId = {}",
-                        referenceValueDto.getId()
-                );
+                log.warn("saveReferenceValue: Reference value not found. referenceValueId = {}", referenceValueDto.getId());
                 return failure("Reference value not found.");
             }
-            if (referenceValueRepository
-                    .countByReferenceObjectIdAndReferenceCodeAndIdNot(
-                            referenceObject.getId(),
-                            referenceValueDto.getReferenceCode(),
-                            referenceValue.getId()) > 0
-            ) {
-                log.warn(
-                        "Reference code already exists for the selected reference object. referenceCode = {}, refObjName {}",
-                        referenceValueDto.getReferenceCode(),
-                        referenceObject.getRefObjName()
-                );
+            if (referenceValueRepository.countByReferenceObjectIdAndReferenceCodeAndIdNot(referenceObject.getId(), referenceValueDto.getReferenceCode(), referenceValue.getId()) > 0) {
+                log.warn("Reference code already exists for the selected reference object. referenceCode = {}, refObjName {}", referenceValueDto.getReferenceCode(), referenceObject.getRefObjName());
                 return failure("Reference code already exists for the selected reference object.");
             }
             referenceValue.setReferenceObject(referenceObject);
@@ -159,6 +128,7 @@ public class SettingsService extends BaseService {
             referenceValue.setReferenceCodeDescription(referenceValueDto.getReferenceCodeDescription());
             referenceValue.setReferenceCode2(referenceValueDto.getReferenceCode2());
             referenceValue.setReferenceCode3(referenceValueDto.getReferenceCode3());
+            referenceValue.setUser(user.getAdminUser());
             referenceValue.setUpdatedBy(user);
         }
         referenceValueRepository.save(referenceValue);
@@ -221,5 +191,23 @@ public class SettingsService extends BaseService {
         systemConfig.setConfigValue(referenceValue);
         systemConfig.setUpdatedBy(fetchLoginUser());
         return success("System config saved successfully.");
+    }
+
+    @Transactional
+    public void saveReferenceValuesBulk(Set<TemplateRowData> templateRowData, User user) {
+        log.info("Saving reference values bulk thru bulk upload template");
+        if (templateRowData == null || templateRowData.isEmpty()) {
+            log.warn("saveReferenceValuesBulk: template row data is empty.");
+            return;
+        }
+        String json = objectMapper.writeValueAsString(templateRowData.stream().map(TemplateRowData::getValues).toList());
+        entityManager.createNativeQuery("""
+                CALL insert_reference_values_bulk(
+                    :userId,
+                    :createdBy,
+                    CAST(:rows AS jsonb)
+                )
+                """).setParameter("userId", user.getAdminUser().getId()).setParameter("createdBy", user.getId()).setParameter("rows", json).executeUpdate();
+        log.info("save reference values bulk finished successfully.");
     }
 }

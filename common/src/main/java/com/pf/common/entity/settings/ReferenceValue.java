@@ -22,6 +22,10 @@ public class ReferenceValue {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "ref_obj_name_id", nullable = false)
     private ReferenceObject referenceObject;
 
