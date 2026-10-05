@@ -63,4 +63,25 @@ export class SettingsService {
       systemConfigDto,
     );
   }
+
+  activateReferenceObject(ids: any[]): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(
+      `${this.config.configValue.apiUrl}/settings/activateReferenceObject`,
+      ids,
+    );
+  }
+
+  inactivateReferenceObject(ids: any[]): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(
+      `${this.config.configValue.apiUrl}/settings/inactivateReferenceObject`,
+      ids,
+    );
+  }
+
+  deleteReferenceObject(ids: any[]): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(
+      `${this.config.configValue.apiUrl}/settings/deleteReferenceObject`,
+      ids,
+    );
+  }
 }

@@ -17,6 +17,8 @@ import com.pf.common.entity.userManagement.User;
 import com.pf.common.mapper.settings.ReferenceObjectMapper;
 import com.pf.common.mapper.settings.ReferenceValueMapper;
 import com.pf.common.mapper.settings.SystemConfigMapper;
+import com.pf.common.repository.categoryManagement.UserCategoryRepository;
+import com.pf.common.repository.financialTransaction.FinancialTransactionRepository;
 import com.pf.common.repository.setting.ReferenceObjectRepository;
 import com.pf.common.repository.setting.ReferenceValueRepository;
 import com.pf.common.repository.setting.SystemConfigRepository;
@@ -26,6 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.pf.common.constants.CommonConstants.*;
@@ -45,6 +48,8 @@ public class SettingsService extends BaseService {
     private final ReferenceObjectRepository referenceObjectRepository;
     private final ReferenceValueRepository referenceValueRepository;
     private final SystemConfigRepository systemConfigRepository;
+    private final UserCategoryRepository userCategoryRepository;
+    private final FinancialTransactionRepository financialTransactionRepository;
 
     public GridResult fetchReferenceObjectGridData(SearchCriteria searchCriteria) {
         log.debug("fetchReferenceObjectGridData: {}", searchCriteria);
@@ -185,6 +190,59 @@ public class SettingsService extends BaseService {
         systemConfig.setConfigValue(referenceValue);
         systemConfig.setUpdatedBy(fetchLoginUser());
         return success("System config saved successfully.");
+    }
+
+    @Transactional
+    public ApiResponse activateReferenceObject(List<Long> ids) {
+        log.debug("activateReferenceObject: {}", ids);
+        if (ids == null || ids.isEmpty()) {
+            return failure("No reference object(s) selected for activation.");
+        }
+        Long modifiedBy = fetchLoginUser().getId();
+        LocalDateTime modifiedAt = LocalDateTime.now();
+        int activated = 0;
+        List<List<Long>> chunks = Lists.partition(ids, CHUNK_SIZE);
+        for (List<Long> chunk : chunks) {
+            activated += referenceObjectRepository.activateReferenceObject(chunk, modifiedBy, modifiedAt);
+        }
+        log.debug("{} Reference object(s) activated", activated);
+        return success("Reference object(s) activated successfully.");
+    }
+
+    @Transactional
+    public ApiResponse inactivateReferenceObject(List<Long> ids) {
+        log.debug("inactivateReferenceObject: {}", ids);
+        if (ids == null || ids.isEmpty()) {
+            return failure("No reference object(s) selected for inactivation.");
+        }
+        Long modifiedBy = fetchLoginUser().getId();
+        LocalDateTime modifiedAt = LocalDateTime.now();
+        int inactivated = 0;
+        List<List<Long>> chunks = Lists.partition(ids, CHUNK_SIZE);
+        for (List<Long> chunk : chunks) {
+            inactivated += referenceObjectRepository.inactivateReferenceObject(chunk, modifiedBy, modifiedAt);
+        }
+        log.debug("{} Reference object(s) inactivated", inactivated);
+        return success("Reference object(s) inactivated successfully.");
+    }
+
+    @Transactional
+    public ApiResponse deleteReferenceObject(List<Long> ids) {
+        log.debug("deleteReferenceObject: {}", ids);
+        if (ids == null || ids.isEmpty()) {
+            return failure("No reference object(s) selected for deletion.");
+        }
+        List<List<Long>> chunks = Lists.partition(ids, CHUNK_SIZE);
+        for (List<Long> chunk : chunks) {
+            if (referenceValueRepository.existsByReferenceObject(chunk)) {
+                return failure("Reference object(s) cannot be deleted because one or more are currently in use.");
+            }
+        }
+        for (List<Long> chunk : chunks) {
+            referenceObjectRepository.deleteAllByIdInBatch(chunk);
+        }
+        log.debug("{} Reference object(s) deleted", ids.size());
+        return success("Reference object(s) deleted successfully.");
     }
 
 }
