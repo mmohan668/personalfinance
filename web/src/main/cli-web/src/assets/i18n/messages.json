@@ -13,13 +13,32 @@
       "singleSelection": "Please select only one record to copy."
     },
     "activate": {
+      "title": "Activate Confirmation",
       "noSelection": "Please select at least one record to activate."
     },
     "inactivate": {
+      "title": "Inactivate Confirmation",
       "noSelection": "Please select at least one record to inactivate."
     },
     "file": {
       "required": "Please choose a file to upload."
+    }
+  },
+  "referenceObject": {
+    "delete": {
+      "confirmation": "Are you sure you want to delete the selected reference objects?"
+    },
+    "activate": {
+      "title": "Activate Confirmation",
+      "alreadyActive": "Please select only inactive reference objects to activate.",
+      "mixedSelection": "Some of the selected reference objects are already active. Only the inactive reference objects will be activated. Do you want to continue?",
+      "confirmation": "Are you sure you want to activate the selected reference objects?"
+    },
+    "inactivate": {
+      "title": "Inactivate Confirmation",
+      "alreadyInactive": "Please select only active reference objects to inactivate.",
+      "mixedSelection": "Some of the selected reference objects are already inactive. Only the active reference objects will be inactivated. Do you want to continue?",
+      "confirmation": "Are you sure you want to inactivate the selected reference objects?"
     }
   },
   "referenceValue": {

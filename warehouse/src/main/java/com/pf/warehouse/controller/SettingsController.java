@@ -75,4 +75,19 @@ public class SettingsController {
         return settingsService.saveSystemConfig(systemConfigDto);
     }
 
+    @PostMapping("/activateReferenceObject")
+    public ApiResponse activateReferenceObject(@RequestBody List<Long> refObjIds) {
+        return settingsService.activateReferenceObject(refObjIds);
+    }
+
+    @PostMapping("/inactivateReferenceObject")
+    public ApiResponse inactivateReferenceObject(@RequestBody List<Long> refObjIds) {
+        return settingsService.inactivateReferenceObject(refObjIds);
+    }
+
+    @PostMapping("/deleteReferenceObject")
+    public ApiResponse deleteReferenceObject(@RequestBody List<Long> refObjIds) {
+        return settingsService.deleteReferenceObject(refObjIds);
+    }
+
 }

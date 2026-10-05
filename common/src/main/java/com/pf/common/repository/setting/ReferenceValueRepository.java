@@ -69,4 +69,11 @@ public interface ReferenceValueRepository extends JpaRepository<ReferenceValue, 
             ORDER BY LOWER(rv.referenceCode)
             """)
     List<String> findReferenceCodeByRefObjName(@Param("refObjName") String refObjName);
+
+    @Transactional(readOnly = true)
+    @Query("""
+                SELECT COUNT(rv) > 0 FROM ReferenceValue rv
+                WHERE rv.referenceObject.id IN (:refObjIds)
+            """)
+    boolean existsByReferenceObject(@Param("refObjIds") List<Long> refObjIds);
 }
