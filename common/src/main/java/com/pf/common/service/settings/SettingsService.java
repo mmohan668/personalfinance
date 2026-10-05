@@ -17,8 +17,6 @@ import com.pf.common.entity.userManagement.User;
 import com.pf.common.mapper.settings.ReferenceObjectMapper;
 import com.pf.common.mapper.settings.ReferenceValueMapper;
 import com.pf.common.mapper.settings.SystemConfigMapper;
-import com.pf.common.repository.categoryManagement.UserCategoryRepository;
-import com.pf.common.repository.financialTransaction.FinancialTransactionRepository;
 import com.pf.common.repository.setting.ReferenceObjectRepository;
 import com.pf.common.repository.setting.ReferenceValueRepository;
 import com.pf.common.repository.setting.SystemConfigRepository;
@@ -27,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -48,8 +47,6 @@ public class SettingsService extends BaseService {
     private final ReferenceObjectRepository referenceObjectRepository;
     private final ReferenceValueRepository referenceValueRepository;
     private final SystemConfigRepository systemConfigRepository;
-    private final UserCategoryRepository userCategoryRepository;
-    private final FinancialTransactionRepository financialTransactionRepository;
 
     public GridResult fetchReferenceObjectGridData(SearchCriteria searchCriteria) {
         log.debug("fetchReferenceObjectGridData: {}", searchCriteria);
@@ -243,6 +240,71 @@ public class SettingsService extends BaseService {
         }
         log.debug("{} Reference object(s) deleted", ids.size());
         return success("Reference object(s) deleted successfully.");
+    }
+
+    @Transactional
+    public ApiResponse saveReferenceObject(@RequestBody ReferenceObjectDto referenceObjectDto) {
+        log.debug("saveReferenceObject: {}", referenceObjectDto);
+        if (referenceObjectDto == null) {
+            return failure("Reference object object not found.");
+        }
+        if (referenceObjectDto.getId() == null) {
+            log.info("add reference object: {}", referenceObjectDto);
+            if (referenceObjectRepository.existsByRefObjName(referenceObjectDto.getRefObjName())) {
+                return failure("Reference object name already exists.");
+            }
+            ReferenceObject referenceObject = new ReferenceObject();
+            referenceObject.setRefObjName(referenceObjectDto.getRefObjName().toUpperCase());
+            referenceObject.setUser(fetchLoginUser().getAdminUser());
+            referenceObject.setCreatedBy(fetchLoginUser());
+            referenceObjectRepository.save(referenceObject);
+        } else {
+            log.info("update reference object: {}", referenceObjectDto);
+            if (referenceObjectRepository.existsByRefObjNameAndId(referenceObjectDto.getRefObjName(), referenceObjectDto.getId())) {
+                return failure("Reference object name already exists.");
+            }
+            ReferenceObject referenceObject = referenceObjectRepository.findById(referenceObjectDto.getId()).orElse(null);
+            if (referenceObject == null) {
+                return failure("Reference object not found.");
+            }
+            referenceObject.setRefObjName(referenceObjectDto.getRefObjName().toUpperCase());
+            referenceObject.setUpdatedBy(fetchLoginUser());
+        }
+        return success("Reference object saved successfully.");
+    }
+
+    @Transactional
+    public ApiResponse activateReferenceValue(List<Long> ids) {
+        log.debug("activateReferenceValue: {}", ids);
+        if (ids == null || ids.isEmpty()) {
+            return failure("No reference value(s) selected for activation.");
+        }
+        Long updatedBy = fetchLoginUser().getId();
+        LocalDateTime updatedAt = LocalDateTime.now();
+        int activated = 0;
+        List<List<Long>> chunks = Lists.partition(ids, CHUNK_SIZE);
+        for (List<Long> chunk : chunks) {
+            activated += referenceValueRepository.activateReferenceValues(chunk, updatedBy, updatedAt);
+        }
+        log.debug("{} Reference value(s) activated", activated);
+        return success("Reference value(s) activated successfully.");
+    }
+
+    @Transactional
+    public ApiResponse inactivateReferenceValue(List<Long> ids) {
+        log.debug("inactivateReferenceValue: {}", ids);
+        if (ids == null || ids.isEmpty()) {
+            return failure("No reference value(s) selected for inactivation.");
+        }
+        Long updatedBy = fetchLoginUser().getId();
+        LocalDateTime updatedAt = LocalDateTime.now();
+        int inactivated = 0;
+        List<List<Long>> chunks = Lists.partition(ids, CHUNK_SIZE);
+        for (List<Long> chunk : chunks) {
+            inactivated += referenceValueRepository.inactivateReferenceValues(chunk, updatedBy, updatedAt);
+        }
+        log.debug("{} Reference value(s) inactivated", inactivated);
+        return success("Reference value(s) inactivated successfully.");
     }
 
 }

@@ -1,5 +1,6 @@
 package com.pf.warehouse.controller;
 
+import com.pf.common.dto.settings.ReferenceObjectDto;
 import com.pf.common.record.generic.SelectItem;
 import com.pf.common.dto.gp.GridResult;
 import com.pf.common.dto.gp.SearchCriteria;
@@ -90,4 +91,18 @@ public class SettingsController {
         return settingsService.deleteReferenceObject(refObjIds);
     }
 
+    @PostMapping("/saveReferenceObject")
+    public ApiResponse saveReferenceObject(@RequestBody ReferenceObjectDto referenceObjectDto) {
+        return settingsService.saveReferenceObject(referenceObjectDto);
+    }
+
+    @PostMapping("activateReferenceValue")
+    public ApiResponse activateReferenceValue(@RequestBody List<Long> ids) {
+        return settingsService.activateReferenceValue(ids);
+    }
+
+    @PostMapping("/inactivateReferenceValue")
+    public ApiResponse inactivateReferenceValue(@RequestBody List<Long> ids) {
+        return settingsService.inactivateReferenceValue(ids);
+    }
 }

@@ -8,8 +8,6 @@ import java.util.Map;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class ReferenceValueDto {
 
     public static final Map<String, String> FIELD_MAPPINGS = Map.of(

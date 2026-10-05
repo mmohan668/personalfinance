@@ -84,4 +84,25 @@ export class SettingsService {
       ids,
     );
   }
+
+  saveReferenceObject(referenceObjectDto: any): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(
+      `${this.config.configValue.apiUrl}/settings/saveReferenceObject`,
+      referenceObjectDto,
+    );
+  }
+
+  activateReferenceValue(ids: any[]): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(
+      `${this.config.configValue.apiUrl}/settings/activateReferenceValue`,
+      ids,
+    );
+  }
+
+  inactivateReferenceValue(ids: any[]): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(
+      `${this.config.configValue.apiUrl}/settings/inactivateReferenceValue`,
+      ids,
+    );
+  }
 }

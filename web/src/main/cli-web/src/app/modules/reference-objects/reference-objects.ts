@@ -1,6 +1,6 @@
 import { Component, inject, ViewChild } from '@angular/core';
 import { DataGrid } from '../shared/data-grid/data-grid';
-import { DATA_FIELDS, GRID_EXPORT_FILE_NAMES, GRID_NAMES } from '../shared/enums';
+import { DATA_FIELDS, GRID_EXPORT_FILE_NAMES, GRID_NAMES, MODES } from '../shared/enums';
 import { ApiResponse, GridColumn, ToolbarConfig } from '../shared/types/types';
 import { CommonService } from '../shared/service/common-service';
 import { SettingsService } from '../shared/service/settings-service';
@@ -9,6 +9,7 @@ import { MessageService } from '../shared/service/message-service';
 import { firstValueFrom } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmationDialog } from '../shared/confirmation-dialog/confirmation-dialog';
+import { AddEditReferenceObjectDialog } from './add-edit-reference-object-dialog/add-edit-reference-object-dialog';
 
 @Component({
   imports: [DataGrid],
@@ -148,6 +149,51 @@ export class ReferenceObjects {
               this._ns.error(response.message);
             }
           });
+        }
+      });
+  };
+
+  addRow = () => {
+    this.dialog
+      .open(AddEditReferenceObjectDialog, {
+        width: 'auto',
+        data: {
+          mode: MODES.ADD,
+        },
+        disableClose: true,
+      })
+      .afterClosed()
+      .subscribe((message: string) => {
+        if (message) {
+          this._ns.success(message);
+          this.dataGrid.refreshGrid();
+        }
+      });
+  };
+
+  editRow = () => {
+    if (this.dataGrid.selectedRows.length === 0) {
+      this._ns.error(this._ms.get('common.edit.noSelection'));
+      return;
+    }
+    if (this.dataGrid.selectedRows.length > 1) {
+      this._ns.error(this._ms.get('common.edit.singleSelection'));
+      return;
+    }
+    this.dialog
+      .open(AddEditReferenceObjectDialog, {
+        width: 'auto',
+        data: {
+          mode: MODES.EDIT,
+          selectedRow: this.dataGrid.selectedRows[0],
+        },
+        disableClose: true,
+      })
+      .afterClosed()
+      .subscribe((message: string) => {
+        if (message) {
+          this._ns.success(message);
+          this.dataGrid.refreshGrid();
         }
       });
   };

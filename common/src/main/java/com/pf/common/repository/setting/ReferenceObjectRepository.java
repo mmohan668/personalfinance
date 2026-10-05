@@ -59,4 +59,21 @@ public interface ReferenceObjectRepository extends JpaRepository<ReferenceObject
             @Param("modifiedAt") LocalDateTime modifiedAt
     );
 
+    @Transactional(readOnly = true)
+    @Query("""
+            SELECT COUNT(ro) > 0 FROM ReferenceObject ro
+            WHERE LOWER(TRIM(ro.refObjName)) = LOWER(TRIM(:refObjName))
+            """)
+    boolean existsByRefObjName(@Param("refObjName") String refObjName);
+
+    @Transactional(readOnly = true)
+    @Query("""
+            SELECT COUNT(ro) > 0 FROM ReferenceObject ro
+            WHERE LOWER(TRIM(ro.refObjName)) = LOWER(TRIM(:refObjName))
+            AND ro.id <> :refObjId
+            """)
+    boolean existsByRefObjNameAndId(
+            @Param("refObjName") String refObjName,
+            @Param("refObjId") Long refObjId
+    );
 }
