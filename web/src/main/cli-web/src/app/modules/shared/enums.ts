@@ -102,6 +102,7 @@ export enum DATA_FIELDS {
   CATEGORY_NAME = 'categoryName',
   CATEGORY_DESCRIPTION = 'categoryDescription',
   REF_OBJ_NAME_ID = 'refObjNameId',
+  REF_OBJ_NAME = 'refObjName',
   REFERENCE_CODE = 'referenceCode',
   REFERENCE_CODE_2 = 'referenceCode2',
   REFERENCE_CODE_3 = 'referenceCode3',

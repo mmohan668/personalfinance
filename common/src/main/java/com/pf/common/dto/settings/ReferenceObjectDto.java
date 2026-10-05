@@ -12,7 +12,6 @@ import java.util.Map;
 
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 public class ReferenceObjectDto implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;

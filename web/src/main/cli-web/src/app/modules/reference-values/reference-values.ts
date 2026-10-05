@@ -132,4 +132,109 @@ export class ReferenceValues {
         }
       });
   };
+
+  copyRow = (): void => {
+    if (this.dataGrid.selectedRows.length === 0) {
+      this._ns.error(this._ms.get('common.copy.noSelection'));
+      return;
+    }
+    if (this.dataGrid.selectedRows.length > 1) {
+      this._ns.error(this._ms.get('common.copy.singleSelection'));
+      return;
+    }
+    this.dialog
+      .open(AdEditReferenceValueDialog, {
+        width: '70vw',
+        maxWidth: '70vw',
+        data: {
+          mode: MODES.COPY,
+          selectedRow: this.dataGrid.selectedRows[0],
+        },
+      })
+      .afterClosed()
+      .subscribe((message) => {
+        if (message) {
+          this._ns.success(message);
+          this.dataGrid.refreshGrid();
+        }
+      });
+  };
+
+  activate = (): void => {
+    if (this.dataGrid.selectedRows.length === 0) {
+      this._ns.error(this._ms.get('common.activate.noSelection'));
+      return;
+    }
+    if (this.dataGrid.selectedRows.every((row) => row.active === true)) {
+      this._ns.error(this._ms.get('referenceValue.activate.alreadyActive'));
+      return;
+    }
+    const someActive = this.dataGrid.selectedRows.some((row) => row.active === true);
+    const title = this._ms.get('common.activate.title');
+    const message = someActive
+      ? this._ms.get('referenceValue.activate.mixedSelection')
+      : this._ms.get('referenceValue.activate.confirmation');
+    this.dialog
+      .open(ConfirmationDialog, {
+        width: 'auto',
+        data: {
+          title: title,
+          message: message,
+          isNotification: false,
+        },
+      })
+      .afterClosed()
+      .subscribe((value: boolean) => {
+        if (value) {
+          const ids = this.dataGrid.selectedRows.map((row) => row.id);
+          firstValueFrom(this._ss.activateReferenceValue(ids)).then((response) => {
+            if (response.success) {
+              this._ns.success(response.message);
+              this.dataGrid.refreshGrid();
+            } else {
+              this._ns.error(response.message);
+            }
+          });
+        }
+      });
+  };
+
+  inactivate = (): void => {
+    if (this.dataGrid.selectedRows.length === 0) {
+      this._ns.error(this._ms.get('common.inactivate.noSelection'));
+      return;
+    }
+    if (this.dataGrid.selectedRows.every((row) => row.active === false)) {
+      this._ns.error(this._ms.get('referenceValue.inactivate.alreadyInactive'));
+      return;
+    }
+    const someInactive = this.dataGrid.selectedRows.some((row) => row.active === false);
+    const title = this._ms.get('common.inactivate.title');
+    const message = someInactive
+      ? this._ms.get('referenceValue.inactivate.mixedSelection')
+      : this._ms.get('referenceValue.inactivate.confirmation');
+    this.dialog
+      .open(ConfirmationDialog, {
+        width: 'auto',
+        data: {
+          title: title,
+          message: message,
+          isNotification: false,
+        },
+      })
+      .afterClosed()
+      .subscribe((value: boolean) => {
+        if (value) {
+          const ids = this.dataGrid.selectedRows.map((row) => row.id);
+          firstValueFrom(this._ss.inactivateReferenceValue(ids)).then((response) => {
+            if (response.success) {
+              this._ns.success(response.message);
+              this.dataGrid.refreshGrid();
+            } else {
+              this._ns.error(response.message);
+            }
+          });
+        }
+      });
+  };
 }

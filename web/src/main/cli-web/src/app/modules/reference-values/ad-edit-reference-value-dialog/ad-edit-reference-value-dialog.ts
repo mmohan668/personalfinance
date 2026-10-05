@@ -56,7 +56,12 @@ export class AdEditReferenceValueDialog implements OnInit {
   }
 
   getEditVlue(fieldName: string): any {
-    return this.data.mode === MODES.EDIT ? this.data.selectedRow[fieldName] : '';
+    return [MODES.EDIT, MODES.COPY].includes(this.data.mode) &&
+      DATA_FIELDS.REF_OBJ_NAME_ID === fieldName
+      ? this.data.selectedRow[fieldName]
+      : this.data.mode === MODES.EDIT
+        ? this.data.selectedRow[fieldName]
+        : null;
   }
 
   createForm(): void {
@@ -103,11 +108,10 @@ export class AdEditReferenceValueDialog implements OnInit {
       refObjNameId: this.form.value.referenceObjectName,
       referenceCode: this.form.value.referenceCode.trim(),
       referenceCodeDescription: this.form.value.referenceCodeDescription.trim(),
-      referenceCode2: this.form.value.referenceCode2.trim(),
-      referenceCode3: this.form.value.referenceCode3.trim(),
+      referenceCode2: this.form.value.referenceCode2?.trim(),
+      referenceCode3: this.form.value.referenceCode3?.trim(),
     };
     firstValueFrom(this._ss.saveReferenceValue(referenceValue)).then((response: ApiResponse) => {
-      console.log(response.success + ' : ' + response.message);
       if (response.success) {
         this.dialogRef.close(response.message);
       } else {

@@ -49,6 +49,18 @@
     },
     "edit": {
       "systemOnly": "System-generated reference values cannot be edited."
+    },
+    "activate": {
+      "title": "Activate Confirmation",
+      "alreadyActive": "Please select only inactive reference values to activate.",
+      "mixedSelection": "Some of the selected reference values are already active. Only the inactive reference values will be activated. Do you want to continue?",
+      "confirmation": "Are you sure you want to activate the selected reference values?"
+    },
+    "inactivate": {
+      "title": "Inactivate Confirmation",
+      "alreadyInactive": "Please select only active reference values to inactivate.",
+      "mixedSelection": "Some of the selected reference values are already inactive. Only the active reference values will be inactivated. Do you want to continue?",
+      "confirmation": "Are you sure you want to inactivate the selected reference values?"
     }
   },
   "category": {
