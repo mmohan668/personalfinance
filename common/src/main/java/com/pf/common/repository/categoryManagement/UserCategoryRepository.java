@@ -127,4 +127,12 @@ public interface UserCategoryRepository extends JpaRepository<UserCategory, Long
             ORDER BY LOWER(uc.categoryName)
             """)
     List<UserCategory> findAllCategoriesByUserId(@Param("adminUserId") Long adminUserId);
+
+    @Transactional(readOnly = true)
+    @Query("""
+            SELECT COUNT(uc) > 0
+            FROM UserCategory uc
+            WHERE uc.referenceValue.id IN (:ids)
+            """)
+    boolean existsByReferenceValueId(@Param("ids") List<Long> referenceValueIds);
 }

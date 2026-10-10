@@ -10,10 +10,11 @@ import { firstValueFrom } from 'rxjs';
 import { NotificationService } from '../shared/service/notification-service';
 import { ConfirmationDialog } from '../shared/confirmation-dialog/confirmation-dialog';
 import { MessageService } from '../shared/service/message-service';
-import { SYSTEM } from '../shared/constants';
+import { FormControl, FormGroup } from '@angular/forms';
+import { CommonImportsModule } from '../shared/common-imports/common-imports-module';
 
 @Component({
-  imports: [DataGrid],
+  imports: [DataGrid, CommonImportsModule],
   selector: 'app-reference-values',
   styleUrl: './reference-values.scss',
   templateUrl: './reference-values.html',
@@ -21,7 +22,7 @@ import { SYSTEM } from '../shared/constants';
 export class ReferenceValues {
   @ViewChild('dataGrid') private dataGrid!: DataGrid;
 
-  private readonly _cs = inject(CommonService);
+  public readonly _cs = inject(CommonService);
   private readonly dialog = inject(MatDialog);
   private readonly _ss = inject(SettingsService);
   private readonly _ns = inject(NotificationService);
@@ -31,9 +32,19 @@ export class ReferenceValues {
   protected readonly dataKey = DATA_FIELDS.ID;
   protected readonly gridExportFileName = GRID_EXPORT_FILE_NAMES.REFERENCE_VALUES_EFN;
   protected readonly toolbarConfig!: ToolbarConfig;
+  protected searchForm!: FormGroup;
 
   constructor() {
     this.toolbarConfig = this._cs.toolbarConfig(true);
+    this.createSearchForm();
+  }
+
+  createSearchForm(): void {
+    this.searchForm = new FormGroup({
+      refObjName: new FormControl(''),
+      referenceCode: new FormControl(''),
+      active: new FormControl(''),
+    });
   }
 
   calculateCellValue = (rowData: any, col: GridColumn): any => {
@@ -67,14 +78,8 @@ export class ReferenceValues {
       this._ns.error(this._ms.get('common.delete.noSelection'));
       return;
     }
-    if (this.dataGrid.selectedRows.every((row) => row.createdBy === SYSTEM)) {
-      this._ns.error(this._ms.get('referenceValue.delete.systemOnly'));
-      return;
-    }
     const title = this._ms.get('common.delete.title');
-    const message = this.dataGrid.selectedRows.some((row) => row.createdBy === SYSTEM)
-      ? this._ms.get('referenceValue.delete.mixedSelection')
-      : this._ms.get('referenceValue.delete.confirmation');
+    const message = this._ms.get('referenceValue.delete.confirmation');
     this.dialog
       .open(ConfirmationDialog, {
         width: 'auto',
@@ -87,9 +92,7 @@ export class ReferenceValues {
       .afterClosed()
       .subscribe((value: boolean) => {
         if (value) {
-          const ids = this.dataGrid.selectedRows
-            .filter((row) => row.createdBy !== SYSTEM)
-            .map((row) => row.id);
+          const ids = this.dataGrid.selectedRows.map((row) => row.id);
           firstValueFrom(this._ss.deleteReferenceValue(ids)).then((response) => {
             if (response.success) {
               this._ns.success(response.message);
@@ -109,10 +112,6 @@ export class ReferenceValues {
     }
     if (this.dataGrid.selectedRows.length > 1) {
       this._ns.error(this._ms.get('common.edit.singleSelection'));
-      return;
-    }
-    if (this.dataGrid.selectedRows.every((row) => row.createdBy === SYSTEM)) {
-      this._ns.error(this._ms.get('referenceValue.edit.systemOnly'));
       return;
     }
     this.dialog
@@ -237,4 +236,17 @@ export class ReferenceValues {
         }
       });
   };
+
+  onSearch(): void {
+    this.dataGrid.clearFilters();
+    this.dataGrid.refreshGrid(this._cs.prepareSearchCriteria(this.searchForm.value));
+  }
+
+  resetSearchForm(): void {
+    this.searchForm.reset({
+      active: '',
+    });
+    this.dataGrid.clearFilters();
+    this.dataGrid.refreshGrid();
+  }
 }

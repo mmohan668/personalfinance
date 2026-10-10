@@ -17,6 +17,7 @@ import com.pf.common.entity.userManagement.User;
 import com.pf.common.mapper.settings.ReferenceObjectMapper;
 import com.pf.common.mapper.settings.ReferenceValueMapper;
 import com.pf.common.mapper.settings.SystemConfigMapper;
+import com.pf.common.repository.categoryManagement.UserCategoryRepository;
 import com.pf.common.repository.setting.ReferenceObjectRepository;
 import com.pf.common.repository.setting.ReferenceValueRepository;
 import com.pf.common.repository.setting.SystemConfigRepository;
@@ -47,6 +48,7 @@ public class SettingsService extends BaseService {
     private final ReferenceObjectRepository referenceObjectRepository;
     private final ReferenceValueRepository referenceValueRepository;
     private final SystemConfigRepository systemConfigRepository;
+    private final UserCategoryRepository userCategoryRepository;
 
     public GridResult fetchReferenceObjectGridData(SearchCriteria searchCriteria) {
         log.debug("fetchReferenceObjectGridData: {}", searchCriteria);
@@ -141,6 +143,9 @@ public class SettingsService extends BaseService {
         // Validate all selected reference values before deleting anything.
         for (List<Long> chunk : chunks) {
             if (systemConfigRepository.existsByConfigValueIdIn(chunk)) {
+                return failure("Reference values cannot be deleted because one or more are currently in use.");
+            }
+            if (userCategoryRepository.existsByReferenceValueId(chunk)) {
                 return failure("Reference values cannot be deleted because one or more are currently in use.");
             }
         }

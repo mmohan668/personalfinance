@@ -1,5 +1,5 @@
 <div class="bulk-upload-page">
-  <mat-expansion-panel class="upload-panel" [expanded]="true">
+  <mat-expansion-panel class="search-panel" [expanded]="true">
     <mat-expansion-panel-header>
       <mat-panel-title> Bulk Upload </mat-panel-title>
 
@@ -11,21 +11,19 @@
     <div class="upload-section">
       <div class="form-content">
         <div class="upload-type-row">
-          <div class="form-field">
-            <label for="uploadType">Upload Type</label>
+          <fieldset class="upload-type-field">
+            <legend>Upload Type</legend>
 
-            <div class="select-wrapper">
-              <select id="uploadType" [(ngModel)]="selectedUploadType">
-                <option value="" disabled>Select upload type</option>
+            <select id="uploadType" [(ngModel)]="selectedUploadType">
+              <option value="" disabled>Select upload type</option>
 
-                @for (type of uploadTypes; track type.value) {
-                  <option [value]="type.value">
-                    {{ type.label }}
-                  </option>
-                }
-              </select>
-            </div>
-          </div>
+              @for (type of uploadTypes; track type.value) {
+                <option [value]="type.value">
+                  {{ type.label }}
+                </option>
+              }
+            </select>
+          </fieldset>
 
           <button
             type="button"
@@ -72,21 +70,16 @@
     </div>
   </mat-expansion-panel>
 
-  <section class="grid-section">
-    <div class="section-header">
-      <h3>Bulk Upload Status</h3>
-    </div>
-    <div class="grid-container">
-      <app-data-grid
-        #dataGrid
-        [gridName]="gridName"
-        [additionalFilters]="additionalFilters"
-        [gridExportFileName]="gridExportFileName"
-        [dataKey]="dataKey"
-        [toolbarConfig]="toolbaConfig"
-        [downloadFile]="downloadFile"
-        [hasValue]="hasValue"
-      ></app-data-grid>
-    </div>
-  </section>
+  <div class="grid-container">
+    <app-data-grid
+      #dataGrid
+      [gridName]="gridName"
+      [additionalFilters]="additionalFilters"
+      [gridExportFileName]="gridExportFileName"
+      [dataKey]="dataKey"
+      [toolbarConfig]="toolbaConfig"
+      [downloadFile]="downloadFile"
+      [hasValue]="hasValue"
+    ></app-data-grid>
+  </div>
 </div>

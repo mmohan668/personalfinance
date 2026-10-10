@@ -21,6 +21,10 @@
 :host ::ng-deep .p-datatable-tbody > tr > td {
   min-width: 120px; // adjust per column type
   white-space: nowrap; // prevent wrapping
+  font-size: 12px; // adjust per column type
+  padding: 4px 12px; // adjust per column type
+  height: 32px !important; // adjust per column type
+  min-height: 32px !important; // adjust per column type
 }
 
 /* =========================================================
@@ -31,6 +35,8 @@
   display: flex;
   align-items: center;
   gap: 0.35rem;
+  font-weight: 500 !important;
+  font-size: 14px !important;
 }
 
 .sort-icon {
@@ -55,7 +61,7 @@
   border-radius: 50%;
 
   font-size: 0.7rem;
-  font-weight: 700;
+  font-weight: 400;
 
   background-color: #ffffff;
   color: #4caf50;

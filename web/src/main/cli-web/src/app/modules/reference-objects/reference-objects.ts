@@ -20,7 +20,7 @@ import { AddEditReferenceObjectDialog } from './add-edit-reference-object-dialog
 export class ReferenceObjects {
   @ViewChild('dataGrid') dataGrid!: DataGrid;
 
-  private readonly _cs = inject(CommonService);
+  public readonly _cs = inject(CommonService);
   private readonly _ns = inject(NotificationService);
   private readonly _ss = inject(SettingsService);
   private readonly _ms = inject(MessageService);
