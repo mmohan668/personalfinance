@@ -1,20 +1,15 @@
-<section class="grid-section">
-  <div class="section-header">
-    <h3>Incomes</h3>
-  </div>
-  <div class="grid-container">
-    <app-data-grid
-      #dataGrid
-      [dataKey]="dataKey"
-      [gridName]="gridName"
-      [gridExportFileName]="gridExportFileName"
-      [toolbarConfig]="toolbarConfig"
-      [addRow]="addRow"
-      [deleteRow]="deleteRow"
-      [editRow]="editRow"
-      [copyRow]="copyRow"
-      [fetchTitle]="fetchTitle"
-      [additionalFilters]="additionalGridFilters"
-    />
-  </div>
-</section>
+<div class="grid-container">
+  <app-data-grid
+    #dataGrid
+    [dataKey]="dataKey"
+    [gridName]="gridName"
+    [gridExportFileName]="gridExportFileName"
+    [toolbarConfig]="toolbarConfig"
+    [addRow]="addRow"
+    [deleteRow]="deleteRow"
+    [editRow]="editRow"
+    [copyRow]="copyRow"
+    [fetchTitle]="fetchTitle"
+    [additionalFilters]="additionalGridFilters"
+  />
+</div>

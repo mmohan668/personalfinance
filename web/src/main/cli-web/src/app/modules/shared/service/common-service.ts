@@ -1,8 +1,9 @@
 import { inject, Service } from '@angular/core';
-import { ToolbarConfig } from '../types/types';
+import { GridFilter, ToolbarConfig } from '../types/types';
 import { AbstractControl, FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { NotificationService } from './notification-service';
+import { FILTER_OPERATORS } from '../enums';
 
 @Service()
 export class CommonService {
@@ -21,6 +22,9 @@ export class CommonService {
   }
 
   isNotNull(value: any) {
+    if (typeof value === 'string') {
+      return value !== undefined && value !== null && value.trim() !== '';
+    }
     return value !== undefined && value !== null && value !== '';
   }
 
@@ -166,5 +170,41 @@ export class CommonService {
     return this.isNotNull(value) && value.includes(' ~ ')
       ? value.substring(0, value.indexOf(' ~ '))
       : value;
+  }
+
+  prepareSearchCriteria(searchValues: any): GridFilter[] {
+    const filters: GridFilter[] = [];
+
+    for (const key in searchValues) {
+      const value = searchValues[key];
+
+      if (this.isNotNull(value)) {
+        let operator = FILTER_OPERATORS.EQUALS;
+        let filterValue = value;
+
+        if (typeof value === 'string' && value.includes('*')) {
+          const starCount = (value.match(/\*/g) || []).length;
+
+          if (starCount === 1 && value.startsWith('*')) {
+            operator = FILTER_OPERATORS.ENDS_WITH;
+            filterValue = value.slice(1);
+          } else if (starCount === 1 && value.endsWith('*')) {
+            operator = FILTER_OPERATORS.STARTS_WITH;
+            filterValue = value.slice(0, -1);
+          } else {
+            operator = FILTER_OPERATORS.CONTAINS;
+            filterValue = value.replace(/\*/g, '%');
+          }
+        }
+
+        filters.push({
+          field: key,
+          operator,
+          value: filterValue,
+        });
+      }
+    }
+
+    return filters;
   }
 }

@@ -142,9 +142,7 @@ export class DataGrid implements OnInit {
       })),
     );
     this.initializeDefaultSort(this.columns());
-    if (this.additionalFilters?.length) {
-      this.filters.push(...this.additionalFilters);
-    }
+    this.addFilters(this.additionalFilters);
     this.showGrid.set(true);
     this.loadGridData();
   }
@@ -269,6 +267,20 @@ export class DataGrid implements OnInit {
       this.filters.push(gridFilter);
     }
     this.loadGridData();
+  }
+
+  addFilters(gridFilters: GridFilter[]): void {
+    if (gridFilters && gridFilters.length > 0) {
+      this.filters = this.filters.filter(
+        (filter) => !gridFilters.some((newFilter) => newFilter.field === filter.field),
+      );
+      this.filters.push(...gridFilters);
+    }
+  }
+
+  clearFilters(): void {
+    this.filters = [];
+    this.addFilters(this.additionalFilters);
   }
 
   applyFilter(gridFilter: GridFilter): void {
@@ -645,8 +657,11 @@ export class DataGrid implements OnInit {
     this.selectedRows = [];
   };
 
-  refreshGrid = (): void => {
+  refreshGrid = (gridFilter?: GridFilter[]): void => {
     this.clearSelection();
+    if (gridFilter && gridFilter.length > 0) {
+      this.addFilters(gridFilter);
+    }
     this.loadGridData();
   };
 
