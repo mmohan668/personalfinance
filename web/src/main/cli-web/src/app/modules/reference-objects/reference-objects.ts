@@ -10,9 +10,11 @@ import { firstValueFrom } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmationDialog } from '../shared/confirmation-dialog/confirmation-dialog';
 import { AddEditReferenceObjectDialog } from './add-edit-reference-object-dialog/add-edit-reference-object-dialog';
+import { CommonImportsModule } from '../shared/common-imports/common-imports-module';
+import { FormControl, FormGroup } from '@angular/forms';
 
 @Component({
-  imports: [DataGrid],
+  imports: [DataGrid, CommonImportsModule],
   selector: 'app-reference-objects',
   styleUrl: './reference-objects.scss',
   templateUrl: './reference-objects.html',
@@ -30,11 +32,21 @@ export class ReferenceObjects {
   protected readonly dataKey = DATA_FIELDS.ID;
   protected readonly gridExportFileName = GRID_EXPORT_FILE_NAMES.REFERENCE_OBJECTS_EFN;
   protected readonly toolbarConfig!: ToolbarConfig;
+  protected searchForm!: FormGroup;
+  protected readonly fieldCount = 3;
 
   constructor() {
     this.toolbarConfig = this._cs.toolbarConfig(true);
     this.toolbarConfig.copyRow = false;
+    this.createSearchForm();
   }
+
+  createSearchForm = () => {
+    this.searchForm = new FormGroup({
+      refObjName: new FormControl(''),
+      active: new FormControl(''),
+    });
+  };
 
   calculateCellValue = (rowData: any, col: GridColumn): any => {
     if (col.field === 'active') {
@@ -197,4 +209,17 @@ export class ReferenceObjects {
         }
       });
   };
+
+  onSearch() {
+    this.dataGrid.clearFilters();
+    this.dataGrid.refreshGrid(this._cs.prepareSearchCriteria(this.searchForm.value));
+  }
+
+  resetSearchForm() {
+    this.searchForm.reset({
+      active: '',
+    });
+    this.dataGrid.resetAllFilters();
+    this.dataGrid.refreshGrid();
+  }
 }
