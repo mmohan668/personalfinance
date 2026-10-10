@@ -1,5 +1,15 @@
 import { CurrencyPipe, DatePipe } from '@angular/common';
-import { Component, computed, inject, Input, OnInit, signal, ViewChild } from '@angular/core';
+import {
+  Component,
+  computed,
+  inject,
+  Input,
+  OnInit,
+  QueryList,
+  signal,
+  ViewChild,
+  ViewChildren,
+} from '@angular/core';
 import { SelectItem, SortEvent, SortMeta } from 'primeng/api';
 import { Table } from 'primeng/table';
 import { Paginator } from 'primeng/paginator';
@@ -35,6 +45,7 @@ import { SystemConfigService } from '../service/system-config-service';
 export class DataGrid implements OnInit {
   @ViewChild('dataTable') private dataTable!: Table;
   @ViewChild('paginator') private paginator!: Paginator;
+  @ViewChildren(ColumnFilterComponent) columnFilters!: QueryList<ColumnFilterComponent>;
 
   @Input()
   public addRow!: () => void;
@@ -280,6 +291,14 @@ export class DataGrid implements OnInit {
 
   clearFilters(): void {
     this.filters = [];
+    this.columnFilters.forEach((filter: any) => {
+      if (
+        filter.filter &&
+        (this._cs.isNotNull(filter.filter.value) || this._cs.isNotNull(filter.filter.valueTo))
+      ) {
+        this.filters.push(filter.filter);
+      }
+    });
     this.addFilters(this.additionalFilters);
   }
 
@@ -681,5 +700,12 @@ export class DataGrid implements OnInit {
       default:
         return '';
     }
+  }
+
+  resetAllFilters(): void {
+    this.clearFilters();
+    this.columnFilters.forEach((filter) => {
+      filter.onReset();
+    });
   }
 }

@@ -246,7 +246,7 @@ export class ReferenceValues {
     this.searchForm.reset({
       active: '',
     });
-    this.dataGrid.clearFilters();
+    this.dataGrid.resetAllFilters();
     this.dataGrid.refreshGrid();
   }
 }
