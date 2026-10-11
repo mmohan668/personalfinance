@@ -41,6 +41,7 @@ public class CategoryManagementService extends BaseService {
     private final UserSubcategoryRepository userSubcategoryRepository;
     private final FinancialTransactionRepository financialTransactionRepository;
 
+    @Transactional
     public GridResult fetchCategoriesGridData(SearchCriteria searchCriteria) {
         log.debug("fetchCategoriesGridData: {}", searchCriteria);
         searchCriteria.setFetchPaths(List.of(REFERENCE_VALUE, CREATED_BY_USER, UPDATED_BY_USER));
@@ -54,6 +55,7 @@ public class CategoryManagementService extends BaseService {
         return gridResult(totalRecords, recordDetails);
     }
 
+    @Transactional
     public GridResult fetchSubcategoriesGridData(SearchCriteria searchCriteria) {
         log.debug("fetchSubcategoriesGridData: {}", searchCriteria);
         long totalRecords = 0;

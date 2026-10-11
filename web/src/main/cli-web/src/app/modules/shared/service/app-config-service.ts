@@ -5,6 +5,7 @@ export interface AppConfig {
   environment: string;
   pageSizeOptions: number[];
   defaultPageSize: number;
+  maxExportRows: number;
 }
 
 @Service()
@@ -22,6 +23,7 @@ export class AppConfigService {
         environment: 'Dev',
         pageSizeOptions: [25, 50, 100],
         defaultPageSize: 25,
+        maxExportRows: 2,
       };
     }
     return this.appConfig;

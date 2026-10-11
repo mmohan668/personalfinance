@@ -45,6 +45,8 @@ export interface SearchCriteria {
   take: number;
   loadAllData: boolean | false;
   gridName: string;
+  userId: any;
+  exportFileName: string;
 }
 
 export interface GridPersonalizationDto {
