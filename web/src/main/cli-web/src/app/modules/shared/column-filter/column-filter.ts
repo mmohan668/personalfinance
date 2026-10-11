@@ -627,7 +627,7 @@ export class ColumnFilterComponent implements OnInit, OnDestroy {
     return true;
   }
 
-  onReset(): void {
+  onReset(reloadData: boolean = true): void {
     this.betweenError = '';
     this.filter.value = '';
     this.filter.valueTo = undefined;
@@ -635,9 +635,11 @@ export class ColumnFilterComponent implements OnInit, OnDestroy {
     this.selectedOperator = this.filter.operator;
     this.filterDateValue = null;
     this.filterDateToValue = null;
-    this.valueChange.emit({
-      ...this.filter,
-    });
+    if (reloadData) {
+      this.valueChange.emit({
+        ...this.filter,
+      });
+    }
     this.valueChangeSubject.next({
       ...this.filter,
     });

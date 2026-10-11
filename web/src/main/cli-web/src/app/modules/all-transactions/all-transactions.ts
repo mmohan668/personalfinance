@@ -10,9 +10,11 @@ import { MessageService } from '../shared/service/message-service';
 import { FinancialTransactionsService } from '../shared/service/financial-transactions-service';
 import { firstValueFrom } from 'rxjs';
 import { ConfirmationDialog } from '../shared/confirmation-dialog/confirmation-dialog';
+import { FormControl, FormGroup } from '@angular/forms';
+import { CommonImportsModule } from '../shared/common-imports/common-imports-module';
 
 @Component({
-  imports: [DataGrid],
+  imports: [DataGrid, CommonImportsModule],
   selector: 'app-all-transactions',
   styleUrl: './all-transactions.scss',
   templateUrl: './all-transactions.html',
@@ -30,9 +32,25 @@ export class AllTransactions {
   protected readonly gridName = GRID_NAMES.ALL_TRANSACTIONS_GRID;
   protected readonly gridExportFileName = GRID_EXPORT_FILE_NAMES.ALL_TRANSACTIONS_GRID_EFN;
   protected readonly toolbarConfig!: ToolbarConfig;
+  protected searchForm!: FormGroup;
+  protected readonly fieldCount = 3;
+  protected readonly maxDate = new Date();
 
   constructor() {
     this.toolbarConfig = this._cs.toolbarConfigExcludeActivateInactivate();
+    this.toolbarConfig.refresh = true;
+    this.createSearchForm();
+  }
+
+  createSearchForm() {
+    this.searchForm = new FormGroup({
+      transactionType: new FormControl(''),
+      categoryName: new FormControl(''),
+      subcategoryName: new FormControl(''),
+      location: new FormControl(''),
+      transactionFromDate: new FormControl(''),
+      transactionThruDate: new FormControl(''),
+    });
   }
 
   fetchTitle = (rowData: any, col: GridColumn): any => {
@@ -149,4 +167,14 @@ export class AllTransactions {
         }
       });
   };
+
+  onSearch() {
+    this.dataGrid.clearFilters();
+    this.dataGrid.refreshGrid(this._cs.prepareSearchCriteria(this.searchForm.value));
+  }
+
+  resetSearchForm() {
+    this.searchForm.reset();
+    this.dataGrid.resetAllFilters();
+  }
 }
