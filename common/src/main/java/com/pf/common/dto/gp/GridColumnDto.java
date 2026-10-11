@@ -22,4 +22,5 @@ public class GridColumnDto {
     private Integer visibleIndex;
     private String cellTemplate;
     private Integer sortIndex;
+    private Boolean exportable;
 }

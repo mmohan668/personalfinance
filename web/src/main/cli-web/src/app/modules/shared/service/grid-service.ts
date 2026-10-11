@@ -31,6 +31,13 @@ export class GridService {
     );
   }
 
+  exportServer(request: SearchCriteria): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(
+      `${this.config.configValue.apiUrl}/export/exportServer`,
+      request,
+    );
+  }
+
   saveGridSetting(gridPersonalizationDto: GridPersonalizationDto): Observable<ApiResponse> {
     return this.http.post<ApiResponse>(
       `${this.config.configValue.apiUrl}/grid/saveGridSettings`,

@@ -12,12 +12,17 @@ spring:
     hibernate:
       ddl-auto: none
     show-sql: true
+  activemq:
+    broker-url: tcp://localhost:61616
 
 bulk-upload:
   base-folder:
     in-progress: E:/BulkUploads/in-progress
     success: E:/BulkUploads/success
     error: E:/BulkUploads/error
+
+export:
+  base-folder: E:/BulkExports
 
 
 #logging:

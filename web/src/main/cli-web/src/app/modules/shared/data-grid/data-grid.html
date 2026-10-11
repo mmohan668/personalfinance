@@ -76,33 +76,34 @@
               </th>
             }
           </tr>
+          @if (hasFilterables()) {
+            <tr class="filter-row">
+              <!-- Selection column spacer -->
+              <th class="selection-column"></th>
 
-          <tr class="filter-row">
-            <!-- Selection column spacer -->
-            <th class="selection-column"></th>
-
-            <!-- Filter columns -->
-            @for (col of visibleColumns; track col.field) {
-              @if (col.filterable) {
-                <th
-                  [style.width.px]="col.width || 120"
-                  [style.minWidth.px]="col.width || 120"
-                  [style.maxWidth.px]="500"
-                >
-                  <app-column-filter
-                    [dateFormat]="getDateFormate()"
-                    [column]="col"
-                    (valueChange)="applyFilter($event)"
-                    (operatorChange)="changeOperator($event)"
-                    [booleanOptions]="booleanOptions"
+              <!-- Filter columns -->
+              @for (col of visibleColumns; track col.field) {
+                @if (col.filterable) {
+                  <th
+                    [style.width.px]="col.width || 120"
+                    [style.minWidth.px]="col.width || 120"
+                    [style.maxWidth.px]="500"
                   >
-                  </app-column-filter>
-                </th>
-              } @else {
-                <th></th>
+                    <app-column-filter
+                      [dateFormat]="getDateFormate()"
+                      [column]="col"
+                      (valueChange)="applyFilter($event)"
+                      (operatorChange)="changeOperator($event)"
+                      [booleanOptions]="booleanOptions"
+                    >
+                    </app-column-filter>
+                  </th>
+                } @else {
+                  <th></th>
+                }
               }
-            }
-          </tr>
+            </tr>
+          }
         </ng-template>
 
         <ng-template #groupheader let-rowData>

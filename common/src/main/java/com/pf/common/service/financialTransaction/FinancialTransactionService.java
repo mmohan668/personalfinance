@@ -31,6 +31,7 @@ public class FinancialTransactionService extends BaseService {
     private final FinancialTransactionMapper financialTransactionMapper;
     private final FinancialTransactionViewMapper financialTransactionViewMapper;
 
+    @Transactional
     public GridResult fetchFinancialTransactionGridData(SearchCriteria searchCriteria) {
         log.debug("fetchFinancialTransactionGridData: searchCriteria: {}", searchCriteria);
         long totalRecords = 0;

@@ -28,7 +28,9 @@ INSERT INTO grid_column
  width,
  visible_index,
  default_sort_order,
- sort_index)
+ sort_index,
+ filterable,
+ sortable)
 VALUES ((SELECT id
          FROM grid_name
          WHERE LOWER(TRIM(name)) = LOWER(TRIM('SYSTEM_CONFIG'))),
@@ -39,7 +41,9 @@ VALUES ((SELECT id
         200,
         0,
         'asc',
-        0)
+        0,
+        false,
+        false)
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 
@@ -53,7 +57,9 @@ INSERT INTO grid_column
  width,
  visible_index,
  cell_template,
- align)
+ align,
+ sortable,
+ filterable)
 VALUES ((SELECT id
          FROM grid_name
          WHERE LOWER(TRIM(name)) = LOWER(TRIM('SYSTEM_CONFIG'))),
@@ -64,7 +70,9 @@ VALUES ((SELECT id
         200,
         1,
         'hyperlinkCellTemplate',
-        'CENTER')
+        'CENTER',
+        false,
+        false)
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 
@@ -76,7 +84,9 @@ INSERT INTO grid_column
  data_type,
  default_filter_operator,
  width,
- visible_index)
+ visible_index,
+ filterable,
+ sortable)
 VALUES ((SELECT id
          FROM grid_name
          WHERE LOWER(TRIM(name)) = LOWER(TRIM('SYSTEM_CONFIG'))),
@@ -85,7 +95,9 @@ VALUES ((SELECT id
         'text',
         'contains',
         500,
-        2)
+        2,
+        false,
+        false)
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 
@@ -97,7 +109,9 @@ INSERT INTO grid_column
  data_type,
  default_filter_operator,
  width,
- visible_index)
+ visible_index,
+ filterable,
+ sortable)
 VALUES ((SELECT id
          FROM grid_name
          WHERE LOWER(TRIM(name)) = LOWER(TRIM('SYSTEM_CONFIG'))),
@@ -106,7 +120,9 @@ VALUES ((SELECT id
         'text',
         'contains',
         200,
-        3)
+        3,
+        false,
+        false)
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 
@@ -119,7 +135,9 @@ INSERT INTO grid_column
  data_type,
  default_filter_operator,
  width,
- visible_index)
+ visible_index,
+ filterable,
+ sortable)
 VALUES ((SELECT id
          FROM grid_name
          WHERE LOWER(TRIM(name)) = LOWER(TRIM('SYSTEM_CONFIG'))),
@@ -128,7 +146,9 @@ VALUES ((SELECT id
         'datetime',
         'equals',
         200,
-        4)
+        4,
+        false,
+        false)
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 
@@ -140,7 +160,9 @@ INSERT INTO grid_column
  data_type,
  default_filter_operator,
  width,
- visible_index)
+ visible_index,
+ filterable,
+ sortable)
 VALUES ((SELECT id
          FROM grid_name
          WHERE LOWER(TRIM(name)) = LOWER(TRIM('SYSTEM_CONFIG'))),
@@ -149,7 +171,9 @@ VALUES ((SELECT id
         'text',
         'contains',
         200,
-        5)
+        5,
+        false,
+        false)
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 
@@ -161,7 +185,9 @@ INSERT INTO grid_column
  data_type,
  default_filter_operator,
  width,
- visible_index)
+ visible_index,
+ filterable,
+ sortable)
 VALUES ((SELECT id
          FROM grid_name
          WHERE LOWER(TRIM(name)) = LOWER(TRIM('SYSTEM_CONFIG'))),
@@ -170,7 +196,9 @@ VALUES ((SELECT id
         'datetime',
         'equals',
         200,
-        6)
+        6,
+        false,
+        false)
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 

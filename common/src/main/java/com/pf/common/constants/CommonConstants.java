@@ -14,6 +14,7 @@ public interface CommonConstants {
     String YES = "Yes";
     String NO = "No";
     String BLANK_TEXT = "";
+    String SERVER_SIDE_GRID_EXPORT = "SERVER_SIDE_GRID_EXPORT";
 }
 
 

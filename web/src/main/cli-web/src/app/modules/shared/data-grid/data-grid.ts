@@ -176,6 +176,8 @@ export class DataGrid implements OnInit {
       take: this.take,
       loadAllData: false,
       gridName: this.gridName,
+      userId: 2,
+      exportFileName: this.gridExportFileName,
     };
     this._gs.loadGridData(request).subscribe({
       next: (result) => {
@@ -443,7 +445,18 @@ export class DataGrid implements OnInit {
         take: this.take,
         loadAllData: true,
         gridName: this.gridName,
+        userId: 2,
+        exportFileName: this.gridExportFileName,
       };
+      if (this.totalRecords > this.config.configValue.maxExportRows) {
+        let apiResponse: ApiResponse = await firstValueFrom(this._gs.exportServer(request));
+        if (apiResponse.success) {
+          this._ns.success(apiResponse.message);
+        } else {
+          this._ns.error(apiResponse.message);
+        }
+        return;
+      }
       sourceRows = (await firstValueFrom(this._gs.loadGridData(request))).recordDetails;
     }
 
@@ -720,5 +733,9 @@ export class DataGrid implements OnInit {
       filter.onReset(false);
     });
     this.loadGridData();
+  }
+
+  hasFilterables() {
+    return this.visibleColumns().some((c) => c.filterable === true);
   }
 }
