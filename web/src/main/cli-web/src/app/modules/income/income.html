@@ -1,3 +1,88 @@
+<div>
+  <mat-expansion-panel class="search-panel" [expanded]="true">
+    <mat-expansion-panel-header>
+      <mat-panel-title>Search Criteria</mat-panel-title>
+    </mat-expansion-panel-header>
+
+    <form [formGroup]="searchForm" (ngSubmit)="onSearch()">
+      <div class="search-fields" [ngClass]="'fields-' + fieldCount">
+        <mat-form-field appearance="fill" subscriptSizing="dynamic">
+          <mat-label>Category Name</mat-label>
+          <input matInput type="text" formControlName="categoryName" />
+        </mat-form-field>
+
+        <mat-form-field appearance="fill" subscriptSizing="dynamic">
+          <mat-label>Subcategory Name</mat-label>
+          <input matInput type="text" formControlName="subcategoryName" />
+        </mat-form-field>
+
+        <mat-form-field appearance="fill" subscriptSizing="dynamic">
+          <mat-label>Location</mat-label>
+          <input matInput type="text" formControlName="location" />
+        </mat-form-field>
+
+        <mat-form-field appearance="fill" class="dialog-field">
+          <mat-label>Transaction From Date</mat-label>
+
+          <input
+            matInput
+            [matDatepicker]="transactionFromDP"
+            name="transactionFromDate"
+            [max]="maxDate"
+            formControlName="transactionFromDate"
+          />
+
+          <mat-datepicker-toggle matIconSuffix [for]="transactionFromDP"> </mat-datepicker-toggle>
+
+          <mat-datepicker #transactionFromDP></mat-datepicker>
+
+          @if (_cs.isInvalid(searchForm.get('transactionFromDate'))) {
+            <mat-error>
+              {{
+                _cs.getValidationMessage(
+                  searchForm.get('transactionFromDate'),
+                  'Transaction From Date'
+                )
+              }}
+            </mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="fill" class="dialog-field">
+          <mat-label>Transaction Thru Date</mat-label>
+
+          <input
+            matInput
+            [matDatepicker]="transactionThruDP"
+            name="transactionThruDate"
+            [max]="maxDate"
+            formControlName="transactionThruDate"
+          />
+
+          <mat-datepicker-toggle matIconSuffix [for]="transactionThruDP"> </mat-datepicker-toggle>
+
+          <mat-datepicker #transactionThruDP></mat-datepicker>
+
+          @if (_cs.isInvalid(searchForm.get('transactionThruDate'))) {
+            <mat-error>
+              {{
+                _cs.getValidationMessage(
+                  searchForm.get('transactionThruDate'),
+                  'Transaction Thru Date'
+                )
+              }}
+            </mat-error>
+          }
+        </mat-form-field>
+
+        <div class="search-actions">
+          <button mat-raised-button color="primary" type="submit">Search</button>
+          <button mat-stroked-button type="button" (click)="resetSearchForm()">Clear</button>
+        </div>
+      </div>
+    </form>
+  </mat-expansion-panel>
+</div>
 <div class="grid-container">
   <app-data-grid
     #dataGrid

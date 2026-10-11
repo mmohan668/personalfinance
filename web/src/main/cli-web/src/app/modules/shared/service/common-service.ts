@@ -181,8 +181,17 @@ export class CommonService {
       if (this.isNotNull(value)) {
         let operator = FILTER_OPERATORS.EQUALS;
         let filterValue = value;
+        let field = key;
 
-        if (typeof value === 'string' && value.includes('*')) {
+        if (key === 'transactionFromDate') {
+          field = 'transactionAt';
+          operator = FILTER_OPERATORS.GREATER_THAN_OR_EQUAL;
+          filterValue = typeof value === 'string' ? value : this.formatDateOnly(value);
+        } else if (key === 'transactionThruDate') {
+          field = 'transactionAt';
+          operator = FILTER_OPERATORS.LESS_THAN_OR_EQUAL;
+          filterValue = typeof value === 'string' ? value : this.formatDateOnly(value);
+        } else if (typeof value === 'string' && value.includes('*')) {
           const starCount = (value.match(/\*/g) || []).length;
 
           if (starCount === 1 && value.startsWith('*')) {
@@ -198,7 +207,7 @@ export class CommonService {
         }
 
         filters.push({
-          field: key,
+          field: field,
           operator,
           value: filterValue,
         });

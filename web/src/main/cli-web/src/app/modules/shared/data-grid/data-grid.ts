@@ -83,6 +83,8 @@ export class DataGrid implements OnInit {
   public downloadFile!: (rowData: any, col: GridColumn) => any;
   @Input()
   public hasValue!: (rowData: any, col: GridColumn) => any;
+  @Input()
+  public scrollHeight!: number;
 
   public config = inject(AppConfigService);
   public _cs = inject(CommonService);
@@ -124,6 +126,9 @@ export class DataGrid implements OnInit {
       this.toolbarConfig = this._cs.toolbarConfig();
     }
     this.loadGridColumns();
+    if (!this.scrollHeight) {
+      this.scrollHeight = 480;
+    }
   }
 
   private loadGridColumns(): void {
@@ -166,7 +171,7 @@ export class DataGrid implements OnInit {
     const sorts: GridSort[] = this.getSorts();
     const request: SearchCriteria = {
       sortList: sorts,
-      filterList: this.filters,
+      filterList: this.removeNullFilters(this.filters),
       skip: this.skip,
       take: this.take,
       loadAllData: false,
@@ -183,6 +188,13 @@ export class DataGrid implements OnInit {
         this.totalRecords = 0;
       },
     });
+  }
+
+  removeNullFilters(filters: GridFilter[]) {
+    if (!filters || filters === null) {
+      filters = [];
+    }
+    return filters.filter((gf) => this._cs.isNotNull(gf.value) || this._cs.isNotNull(gf.value));
   }
 
   private getSorts(): GridSort[] {
@@ -705,7 +717,8 @@ export class DataGrid implements OnInit {
   resetAllFilters(): void {
     this.clearFilters();
     this.columnFilters.forEach((filter) => {
-      filter.onReset();
+      filter.onReset(false);
     });
+    this.loadGridData();
   }
 }

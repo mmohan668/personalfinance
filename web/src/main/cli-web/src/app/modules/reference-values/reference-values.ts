@@ -247,6 +247,5 @@ export class ReferenceValues {
       active: '',
     });
     this.dataGrid.resetAllFilters();
-    this.dataGrid.refreshGrid();
   }
 }

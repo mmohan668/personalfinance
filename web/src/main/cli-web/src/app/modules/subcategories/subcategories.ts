@@ -17,9 +17,11 @@ import { MessageService } from '../shared/service/message-service';
 import { ConfirmationDialog } from '../shared/confirmation-dialog/confirmation-dialog';
 import { CategoryManagementService } from '../shared/service/category-management-service';
 import { firstValueFrom } from 'rxjs';
+import { FormControl, FormGroup } from '@angular/forms';
+import { CommonImportsModule } from '../shared/common-imports/common-imports-module';
 
 @Component({
-  imports: [DataGrid],
+  imports: [DataGrid, CommonImportsModule],
   selector: 'app-subcategories',
   styleUrl: './subcategories.scss',
   templateUrl: './subcategories.html',
@@ -40,9 +42,21 @@ export class Subcategories {
   protected readonly additionalFilters: GridFilter[] = [
     { field: DATA_FIELDS.USER_ID, operator: FILTER_OPERATORS.EQUALS, value: 1 },
   ];
+  protected searchForm!: FormGroup;
+  fieldCount = 4;
 
   constructor() {
     this.toolbarConfig = this._cs.toolbarConfig(true);
+    this.createSearchForm();
+  }
+
+  createSearchForm() {
+    this.searchForm = new FormGroup({
+      transactionType: new FormControl(''),
+      categoryName: new FormControl(''),
+      subcategoryName: new FormControl(''),
+      isActive: new FormControl(''),
+    });
   }
 
   calculateCellValue = (rowData: any, col: GridColumn) => {
@@ -227,4 +241,16 @@ export class Subcategories {
         }
       });
   };
+
+  onSearch() {
+    this.dataGrid.clearFilters();
+    this.dataGrid.refreshGrid(this._cs.prepareSearchCriteria(this.searchForm.value));
+  }
+
+  resetSearchForm() {
+    this.searchForm.reset({
+      isActive: '',
+    });
+    this.dataGrid.resetAllFilters();
+  }
 }

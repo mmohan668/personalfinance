@@ -220,6 +220,5 @@ export class ReferenceObjects {
       active: '',
     });
     this.dataGrid.resetAllFilters();
-    this.dataGrid.refreshGrid();
   }
 }

@@ -17,9 +17,11 @@ import { NotificationService } from '../shared/service/notification-service';
 import { MessageService } from '../shared/service/message-service';
 import { ConfirmationDialog } from '../shared/confirmation-dialog/confirmation-dialog';
 import { ChoiceDialog } from '../shared/choice-dialog/choice-dialog';
+import { CommonImportsModule } from '../shared/common-imports/common-imports-module';
+import { FormControl, FormGroup } from '@angular/forms';
 
 @Component({
-  imports: [DataGrid],
+  imports: [DataGrid, CommonImportsModule],
   selector: 'app-categories',
   styleUrl: './categories.scss',
   templateUrl: './categories.html',
@@ -41,10 +43,20 @@ export class Categories {
   protected readonly additionalFilters: GridFilter[] = [
     { field: DATA_FIELDS.USER_ID, operator: FILTER_OPERATORS.EQUALS, value: 2 },
   ];
+  protected searchForm!: FormGroup;
 
   constructor() {
     this.toolbaConfig = this._cs.toolbarConfig(true);
     this.toolbaConfig.copyRow = false;
+    this.createSearchForm();
+  }
+
+  createSearchForm() {
+    this.searchForm = new FormGroup({
+      transactionType: new FormControl(''),
+      categoryName: new FormControl(''),
+      active: new FormControl(''),
+    });
   }
 
   calculateCellValue = (rowData: any, col: GridColumn): any => {
@@ -219,4 +231,16 @@ export class Categories {
         }
       });
   };
+
+  onSearch() {
+    this.dataGrid.clearFilters();
+    this.dataGrid.refreshGrid(this._cs.prepareSearchCriteria(this.searchForm.value));
+  }
+
+  resetSearchForm() {
+    this.searchForm.reset({
+      active: '',
+    });
+    this.dataGrid.resetAllFilters();
+  }
 }

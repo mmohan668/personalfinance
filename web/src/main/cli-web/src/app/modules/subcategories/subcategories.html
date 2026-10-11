@@ -1,3 +1,43 @@
+<div>
+  <mat-expansion-panel class="search-panel" [expanded]="true">
+    <mat-expansion-panel-header>
+      <mat-panel-title>Search Criteria</mat-panel-title>
+    </mat-expansion-panel-header>
+
+    <form [formGroup]="searchForm" (ngSubmit)="onSearch()">
+      <div class="search-fields" [ngClass]="'fields-' + fieldCount">
+        <mat-form-field appearance="fill" subscriptSizing="dynamic">
+          <mat-label>Transaction Type</mat-label>
+          <input matInput type="text" formControlName="transactionType" />
+        </mat-form-field>
+
+        <mat-form-field appearance="fill" subscriptSizing="dynamic">
+          <mat-label>Category Name</mat-label>
+          <input matInput type="text" formControlName="categoryName" />
+        </mat-form-field>
+
+        <mat-form-field appearance="fill" subscriptSizing="dynamic">
+          <mat-label>Subcategory Name</mat-label>
+          <input matInput type="text" formControlName="subcategoryName" />
+        </mat-form-field>
+
+        <mat-form-field appearance="fill" subscriptSizing="dynamic">
+          <mat-label>Active Status</mat-label>
+          <mat-select formControlName="isActive">
+            <mat-option value="">All</mat-option>
+            <mat-option value="true">Active</mat-option>
+            <mat-option value="false">Inactive</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <div class="search-actions">
+          <button mat-raised-button color="primary" type="submit">Search</button>
+          <button mat-stroked-button type="button" (click)="resetSearchForm()">Clear</button>
+        </div>
+      </div>
+    </form>
+  </mat-expansion-panel>
+</div>
 <div class="grid-container">
   <app-data-grid
     #dataGrid
@@ -13,5 +53,6 @@
     [deleteRow]="deleteRow"
     [activate]="activate"
     [inactivate]="inactivate"
+    [scrollHeight]="440"
   ></app-data-grid>
 </div>

@@ -17,9 +17,11 @@ import { AddCopyEditFinancialTransactionDialog } from '../shared/add-copy-edit-f
 import { ConfirmationDialog } from '../shared/confirmation-dialog/confirmation-dialog';
 import { firstValueFrom } from 'rxjs';
 import { DataGrid } from '../shared/data-grid/data-grid';
+import { FormControl, FormGroup } from '@angular/forms';
+import { CommonImportsModule } from '../shared/common-imports/common-imports-module';
 
 @Component({
-  imports: [DataGrid],
+  imports: [DataGrid, CommonImportsModule],
   selector: 'app-transfers',
   styleUrl: './transfers.scss',
   templateUrl: './transfers.html',
@@ -44,11 +46,25 @@ export class Transfers {
       value: TRANSACTION_TYPES.TRANSFER,
     },
   ];
+  protected searchForm!: FormGroup;
+  protected readonly fieldCount = 2;
+  protected readonly maxDate = new Date();
 
   constructor() {
     this.toolbarConfig = this._cs.toolbarConfigExcludeActivateInactivate();
+    this.toolbarConfig.refresh = true;
+    this.createSearchForm();
   }
 
+  createSearchForm() {
+    this.searchForm = new FormGroup({
+      categoryName: new FormControl(''),
+      subcategoryName: new FormControl(''),
+      location: new FormControl(''),
+      transactionFromDate: new FormControl(''),
+      transactionThruDate: new FormControl(''),
+    });
+  }
   fetchTitle = (rowData: any, col: GridColumn): any => {
     if (col.field === DATA_FIELDS.LOCATION) {
       return rowData[DATA_FIELDS.LOCATION] + ' ~ ' + rowData[DATA_FIELDS.LOCATION_DESCRIPTION];
@@ -163,4 +179,14 @@ export class Transfers {
         }
       });
   };
+
+  onSearch() {
+    this.dataGrid.clearFilters();
+    this.dataGrid.refreshGrid(this._cs.prepareSearchCriteria(this.searchForm.value));
+  }
+
+  resetSearchForm() {
+    this.searchForm.reset();
+    this.dataGrid.resetAllFilters();
+  }
 }
