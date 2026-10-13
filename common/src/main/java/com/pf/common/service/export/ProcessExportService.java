@@ -1,5 +1,6 @@
 package com.pf.common.service.export;
 
+import com.pf.common.dto.export.ExportRequest;
 import com.pf.common.dto.gp.GridColumnDto;
 import com.pf.common.dto.gp.SearchCriteria;
 import com.pf.common.entity.userManagement.User;
@@ -29,26 +30,26 @@ public class ProcessExportService {
     private final ExportTemplateService exportTemplateService;
 
     @Transactional
-    public void processServerSideExport(SearchCriteria searchCriteria) throws IOException {
-        log.info("Processing Server Side Export Request for the grid {} for user id {}", searchCriteria.getGridName(), searchCriteria.getUserId());
-        User user = userRepository.findById(searchCriteria.getUserId()).orElse(null);
+    public void processServerSideExport(ExportRequest exportRequest) throws IOException {
+        log.info("Processing Server Side Export Request for the grid {} for user id {}", exportRequest.getSearchCriteria().getGridName(), exportRequest.getUserId());
+        User user = userRepository.findById(exportRequest.getUserId()).orElse(null);
         if (user == null) {
-            log.error("User not found for user id {}", searchCriteria.getUserId());
+            log.error("User not found for user id {}", exportRequest.getUserId());
             return;
         }
-        List<GridColumnDto> gridColumns = gridService.fetchGridColumns(searchCriteria.getGridName(), searchCriteria.getUserId());
+        List<GridColumnDto> gridColumns = gridService.fetchGridColumns(exportRequest.getSearchCriteria().getGridName(), exportRequest.getUserId());
         if (gridColumns == null || gridColumns.isEmpty()) {
-            log.error("No grid columns found for user id {}", searchCriteria.getUserId());
+            log.error("No grid columns found for user id {}", exportRequest.getUserId());
             return;
         }
-        log.info("Grid columns found for user id {}", searchCriteria.getUserId());
-        List<?> gridData = fetchGridData(searchCriteria);
+        log.info("Grid columns found for user id {}", exportRequest.getUserId());
+        List<?> gridData = fetchGridData(exportRequest.getSearchCriteria());
         if (gridData == null || gridData.isEmpty()) {
-            log.warn("Empty gridData for grid {} for user id {}", searchCriteria.getGridName(), searchCriteria.getUserId());
+            log.warn("Empty gridData for grid {} for user id {}", exportRequest.getSearchCriteria().getGridName(), exportRequest.getUserId());
             return;
         }
         log.info("Grid data fetched successfully. Creating Excel");
-        exportTemplateService.createExcel(gridColumns, gridData, user, searchCriteria.getGridName(), searchCriteria.getExportFileName());
+        exportTemplateService.createExcel(gridColumns, gridData, user, exportRequest.getSearchCriteria().getGridName(), exportRequest.getExportFileName());
     }
 
     private List<?> fetchGridData(SearchCriteria searchCriteria) {

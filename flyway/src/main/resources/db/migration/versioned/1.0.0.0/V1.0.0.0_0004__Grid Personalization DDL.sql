@@ -18,6 +18,7 @@ CREATE TABLE grid_column
     default_sort_order      VARCHAR(5) CHECK ( default_sort_order IS NULL OR default_sort_order IN ('asc', 'desc')),
     sort_index              INTEGER CHECK ( sort_index >= 0 ),
     filterable              BOOLEAN      NOT NULL DEFAULT TRUE,
+    exportable              BOOLEAN      NOT NULL DEFAULT TRUE,
     default_filter_operator VARCHAR(30) CHECK ( default_filter_operator IS NULL OR TRIM(default_filter_operator) <> '' ),
     width                   INTEGER CHECK (width IS NULL OR width >= 0 ),
     align                   VARCHAR(10)  NOT NULL DEFAULT 'LEFT' CHECK ( align IN ('LEFT', 'RIGHT', 'CENTER')),

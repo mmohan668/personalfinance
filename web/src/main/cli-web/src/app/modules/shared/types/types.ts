@@ -3,15 +3,23 @@ export interface GridColumn {
   header: string;
   dataType: string;
   sortable: boolean;
-  defaultSortOrder?: string | null; // optional since it can be null
+  defaultSortOrder?: string | null;
   filterable: boolean;
-  defaultFilterOperator?: string; // optional since it can be null
-  width?: number; // optional since it can be null
-  align?: 'LEFT' | 'CENTER' | 'RIGHT'; // optional since it can be null
+  defaultFilterOperator?: string;
+  width?: number;
+  align?: 'LEFT' | 'CENTER' | 'RIGHT';
   visible?: boolean;
   visibleIndex?: number;
   cellTemplate?: string;
   sortIndex?: number;
+  exportable: boolean;
+}
+
+export interface ExportRequest {
+  userId: any;
+  exportFileName: string;
+  searchCriteria: SearchCriteria;
+  columns: GridColumn[];
 }
 
 export interface GridFilter {
@@ -45,8 +53,6 @@ export interface SearchCriteria {
   take: number;
   loadAllData: boolean | false;
   gridName: string;
-  userId: any;
-  exportFileName: string;
 }
 
 export interface GridPersonalizationDto {

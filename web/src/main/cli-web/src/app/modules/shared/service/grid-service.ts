@@ -3,6 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import {
   ApiResponse,
+  ExportRequest,
   GridColumn,
   GridPersonalizationDto,
   GridResult,
@@ -31,10 +32,10 @@ export class GridService {
     );
   }
 
-  exportServer(request: SearchCriteria): Observable<ApiResponse> {
+  exportServer(exportRequest: ExportRequest): Observable<ApiResponse> {
     return this.http.post<ApiResponse>(
       `${this.config.configValue.apiUrl}/export/exportServer`,
-      request,
+      exportRequest,
     );
   }
 

@@ -13,8 +13,10 @@ public interface CommonConstants {
     String DD_MM_YYYY = "dd/MM/yyyy";
     String YES = "Yes";
     String NO = "No";
-    String BLANK_TEXT = "";
     String SERVER_SIDE_GRID_EXPORT = "SERVER_SIDE_GRID_EXPORT";
+    String CURRENCY_CELL_TEMPLATE = "currencyCellTemplate";
+    String HH_MM_SS = " HH:mm:ss";
+    String CELL_VALUE_TEMPLATE = "cellValueTemplate";
 }
 
 
