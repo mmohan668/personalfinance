@@ -16,6 +16,7 @@ import { Paginator } from 'primeng/paginator';
 import { firstValueFrom } from 'rxjs';
 import {
   ApiResponse,
+  ExportRequest,
   GridColumn,
   GridFilter,
   GridPersonalizationDto,
@@ -176,8 +177,6 @@ export class DataGrid implements OnInit {
       take: this.take,
       loadAllData: false,
       gridName: this.gridName,
-      userId: 2,
-      exportFileName: this.gridExportFileName,
     };
     this._gs.loadGridData(request).subscribe({
       next: (result) => {
@@ -445,11 +444,15 @@ export class DataGrid implements OnInit {
         take: this.take,
         loadAllData: true,
         gridName: this.gridName,
-        userId: 2,
-        exportFileName: this.gridExportFileName,
       };
       if (this.totalRecords > this.config.configValue.maxExportRows) {
-        let apiResponse: ApiResponse = await firstValueFrom(this._gs.exportServer(request));
+        const exportRequest: ExportRequest = {
+          userId: 2,
+          exportFileName: this.gridExportFileName,
+          columns: this.visibleColumns(),
+          searchCriteria: request,
+        };
+        let apiResponse: ApiResponse = await firstValueFrom(this._gs.exportServer(exportRequest));
         if (apiResponse.success) {
           this._ns.success(apiResponse.message);
         } else {
@@ -512,13 +515,12 @@ export class DataGrid implements OnInit {
           if (col.cellTemplate === 'currencyCellTemplate') {
             return this.getNumericCurrencyValue(row, col);
           }
-          if (col.dataType === 'date' || col.dataType === 'datetime') {
+          if (col.dataType === 'date') {
             const value = row[col.field];
-            if (!value) {
-              return null;
-            }
-            const formatted = new DatePipe('en-GB').transform(value, this._scs.dateTimeFormat());
-            return formatted ? formatted : null;
+            return value ? new Date(value) : null;
+          } else if (col.dataType === 'datetime') {
+            const value = row[col.field];
+            return value ? new Date(value) : null;
           }
           return row[col.field];
         }),

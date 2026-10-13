@@ -20,6 +20,4 @@ public class SearchCriteria implements Serializable {
     private String gridName;
     private List<String> fetchPaths = new ArrayList<>();
     private Map<String, String> FIELD_MAPPINGS;
-    private Long userId;
-    private String exportFileName;
 }

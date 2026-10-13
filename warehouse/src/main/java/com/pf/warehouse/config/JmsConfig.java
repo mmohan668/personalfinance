@@ -16,7 +16,7 @@ public class JmsConfig {
         converter.setTypeIdPropertyName("_type");
         converter.setTypeIdMappings(
                 java.util.Map.of(
-                        "SearchCriteria", com.pf.common.dto.gp.SearchCriteria.class
+                        "ExportRequest", com.pf.common.dto.export.ExportRequest.class
                 )
         );
 

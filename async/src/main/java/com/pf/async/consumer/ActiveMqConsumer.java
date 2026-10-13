@@ -1,5 +1,6 @@
 package com.pf.async.consumer;
 
+import com.pf.common.dto.export.ExportRequest;
 import com.pf.common.dto.gp.SearchCriteria;
 import com.pf.common.service.export.ProcessExportService;
 import jakarta.jms.JMSException;
@@ -28,9 +29,9 @@ public class ActiveMqConsumer {
     public void receiveMessage(Message message) throws JMSException, IOException {
         log.info("Receive message from {} ", message.getJMSMessageID());
         Object payload = messageConverter.fromMessage(message);
-        if (payload instanceof SearchCriteria searchCriteria) {
-            log.info("Received search criteria for server side export {} ", searchCriteria);
-            processExportService.processServerSideExport(searchCriteria);
+        if (payload instanceof ExportRequest exportRequest) {
+            log.info("Received search criteria for server side export {} ", exportRequest);
+            processExportService.processServerSideExport(exportRequest);
         } else {
             log.warn("Received message type: {}", message.getClass().getName());
         }

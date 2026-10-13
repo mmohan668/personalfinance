@@ -5,6 +5,7 @@ import com.pf.common.entity.settings.SystemConfig;
 import com.pf.common.entity.userManagement.User;
 import com.pf.common.enums.AppEnums;
 import com.pf.common.repository.setting.SystemConfigRepository;
+import com.pf.common.util.CurrencyUtil;
 import com.pf.common.util.ExcelUtils;
 import com.pf.common.util.FileUtils;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
+
+import static com.pf.common.constants.CommonConstants.*;
 
 @Slf4j
 @Service
@@ -111,8 +114,20 @@ public class ExportTemplateService {
             User user) {
         SystemConfig systemConfig = systemConfigRepository.findByConfigNameAndUserId(AppEnums.SystemConfigName.CURRENCY.getValue(), user.getId());
         String dateFormat = systemConfig.getConfigValue().getReferenceCode3();
+        if (dateFormat == null || dateFormat.isBlank()) {
+            dateFormat = DD_MM_YYYY;
+        }
+        String currencyCode = systemConfig.getConfigValue().getReferenceCode();
+        String localeTag = systemConfig.getConfigValue().getReferenceCode2();
+        String currencySymbol = CurrencyUtil.getCurrencySymbol(currencyCode, localeTag);
         String excelDateFormat = dateFormat.replace("/", "\\/");
-        String currency = systemConfig.getConfigValue().getReferenceCode2();
+        var dataFormat = workbook.getCreationHelper().createDataFormat();
+        CellStyle currencyStyle = workbook.createCellStyle();
+        currencyStyle.setDataFormat(dataFormat.getFormat("\"" + currencySymbol + "\"#,##0.00"));
+        CellStyle dateStyle = workbook.createCellStyle();
+        dateStyle.setDataFormat(dataFormat.getFormat(excelDateFormat));
+        CellStyle dateTimeStyle = workbook.createCellStyle();
+        dateTimeStyle.setDataFormat(dataFormat.getFormat(excelDateFormat + HH_MM_SS));
         int rowIndex = 1;
         for (Object item : data) {
             Row row = sheet.createRow(rowIndex++);
@@ -123,25 +138,26 @@ public class ExportTemplateService {
                     Object value = getPropertyValue(item, column.getField());
                     switch (value) {
                         case null -> cell.setBlank();
-                        case Number number -> cell.setCellValue(number.doubleValue());
-                        case Boolean bool -> cell.setCellValue(bool);
+                        case Number number -> {
+                            cell.setCellValue(number.doubleValue());
+                            if (CURRENCY_CELL_TEMPLATE.equalsIgnoreCase(column.getCellTemplate())) {
+                                cell.setCellStyle(currencyStyle);
+                            }
+                        }
+                        case Boolean bool -> {
+                            if (CELL_VALUE_TEMPLATE.equalsIgnoreCase(column.getCellTemplate())) {
+                                cell.setCellValue(fetchCalculatedValue(column, bool));
+                            } else {
+                                cell.setCellValue(bool);
+                            }
+                        }
                         case LocalDate date -> {
                             cell.setCellValue(date);
-                            CellStyle dateStyle = workbook.createCellStyle();
-                            dateStyle.setDataFormat(
-                                    workbook.getCreationHelper()
-                                            .createDataFormat()
-                                            .getFormat(excelDateFormat));
                             cell.setCellStyle(dateStyle);
                         }
                         case LocalDateTime date -> {
                             cell.setCellValue(date);
-                            CellStyle dateStyle = workbook.createCellStyle();
-                            dateStyle.setDataFormat(
-                                    workbook.getCreationHelper()
-                                            .createDataFormat()
-                                            .getFormat(excelDateFormat + " HH:mm:ss"));
-                            cell.setCellStyle(dateStyle);
+                            cell.setCellStyle(dateTimeStyle);
                         }
                         default -> cell.setCellValue(value.toString());
                     }
@@ -170,5 +186,12 @@ public class ExportTemplateService {
             }
         }
         throw new NoSuchFieldException(fieldName);
+    }
+
+    private String fetchCalculatedValue(GridColumnDto column, boolean bool) {
+        return switch (column.getField()) {
+            case "active", "isActive" -> bool ? "Active" : "Inactive";
+            default -> bool ? "True" : "False";
+        };
     }
 }

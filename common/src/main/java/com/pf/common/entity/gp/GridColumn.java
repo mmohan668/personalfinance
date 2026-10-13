@@ -36,6 +36,9 @@ public class GridColumn {
     @Column(name = "FILTERABLE", nullable = false)
     private Boolean filterable;
 
+    @Column(name = "EXPORTABLE", nullable = false)
+    private Boolean exportable;
+
     @Column(name = "DEFAULT_FILTER_OPERATOR", length = 30)
     private String defaultFilterOperator;
 
