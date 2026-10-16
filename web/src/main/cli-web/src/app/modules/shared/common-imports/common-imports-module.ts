@@ -19,6 +19,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { CdkDrag, CdkDragHandle } from '@angular/cdk/drag-drop';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 
 @NgModule({
   declarations: [],
@@ -48,6 +49,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
     MatRadioModule,
     MatDatepickerModule,
     MatExpansionModule,
+    MatAutocompleteModule,
   ],
   providers: [CurrencyPipe, DatePipe],
   exports: [
@@ -76,6 +78,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
     MatRadioModule,
     MatDatepickerModule,
     MatExpansionModule,
+    MatAutocompleteModule,
   ],
 })
 export class CommonImportsModule {}

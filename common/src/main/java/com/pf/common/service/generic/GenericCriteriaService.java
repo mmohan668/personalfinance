@@ -191,6 +191,43 @@ public class GenericCriteriaService {
         }
     }
 
+    @Transactional
+    public List<Object> getSuggestionBySearchCriteria(
+            Class<?> entity,
+            SearchCriteria searchCriteria,
+            String returnField
+    ) {
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+
+        CriteriaQuery<Object> cq = cb.createQuery(Object.class);
+
+        Root<?> root = cq.from(entity);
+
+        JoinRegistry joinRegistry = new JoinRegistry(root);
+
+        // Select only the requested field
+        cq.select(root.get(returnField));
+
+        applyFilters(
+                cb, cq, root, searchCriteria, joinRegistry
+        );
+
+        applySorting(
+                cb, cq, root, searchCriteria, joinRegistry
+        );
+
+        TypedQuery<Object> query = entityManager.createQuery(cq);
+
+        if (!searchCriteria.isLoadAllData()) {
+            query.setFirstResult(searchCriteria.getSkip());
+            query.setMaxResults(searchCriteria.getTake());
+        } else {
+            query.setHint(HibernateHints.HINT_FETCH_SIZE, 1000);
+        }
+
+        return query.getResultList();
+    }
+
     /**
      * Stream data matching search criteria.
      */

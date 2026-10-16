@@ -2,6 +2,7 @@ package com.pf.common.constants;
 
 public interface CommonConstants {
     String LIKE_STR = "%";
+    char LIKE_CHAR = '%';
     String TRUE_STR = "true";
     String FALSE_STR = "false";
     String DOT_SPLIT_STR = "\\.";
@@ -17,6 +18,8 @@ public interface CommonConstants {
     String CURRENCY_CELL_TEMPLATE = "currencyCellTemplate";
     String HH_MM_SS = " HH:mm:ss";
     String CELL_VALUE_TEMPLATE = "cellValueTemplate";
+    String ASTERISK_STR = "*";
+    char ASTERISK_CHAR = '*';
 }
 
 
