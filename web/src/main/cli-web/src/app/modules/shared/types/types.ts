@@ -104,3 +104,12 @@ export interface SystemConfigValue {
   locale: string;
   dateFormat: string;
 }
+
+export interface SuggestionRequest {
+  entity: string;
+  field: string;
+  value: string;
+  dependentField?: string;
+  dependentValue?: string;
+  limit?: number;
+}

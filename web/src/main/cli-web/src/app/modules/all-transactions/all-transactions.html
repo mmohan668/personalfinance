@@ -8,22 +8,59 @@
       <div class="search-fields" [ngClass]="'fields-' + fieldCount">
         <mat-form-field appearance="fill" subscriptSizing="dynamic">
           <mat-label>Transaction Type</mat-label>
-          <input matInput type="text" formControlName="transactionType" />
+          <input
+            matInput
+            type="text"
+            formControlName="transactionType"
+            [matAutocomplete]="transactionTypeAuto"
+          />
+          <mat-autocomplete #transactionTypeAuto="matAutocomplete">
+            @for (item of transactionTypes(); track $index) {
+              <mat-option [value]="item">
+                {{ item }}
+              </mat-option>
+            }
+          </mat-autocomplete>
         </mat-form-field>
 
         <mat-form-field appearance="fill" subscriptSizing="dynamic">
           <mat-label>Category Name</mat-label>
-          <input matInput type="text" formControlName="categoryName" />
+          <input
+            matInput
+            type="text"
+            formControlName="categoryName"
+            [matAutocomplete]="categoryNameAuto"
+          />
+          <mat-autocomplete #categoryNameAuto="matAutocomplete">
+            @for (item of categoryNames(); track $index) {
+              <mat-option [value]="item">{{ item }}</mat-option>
+            }
+          </mat-autocomplete>
         </mat-form-field>
 
         <mat-form-field appearance="fill" subscriptSizing="dynamic">
           <mat-label>Subcategory Name</mat-label>
-          <input matInput type="text" formControlName="subcategoryName" />
+          <input
+            matInput
+            type="text"
+            formControlName="subcategoryName"
+            [matAutocomplete]="subcategoryNameAuto"
+          />
+          <mat-autocomplete #subcategoryNameAuto="matAutocomplete">
+            @for (item of subcategoryNames(); track $index) {
+              <mat-option [value]="item">{{ item }}</mat-option>
+            }
+          </mat-autocomplete>
         </mat-form-field>
 
         <mat-form-field appearance="fill" subscriptSizing="dynamic">
           <mat-label>Location</mat-label>
-          <input matInput type="text" formControlName="location" />
+          <input matInput type="text" formControlName="location" [matAutocomplete]="locationAuto" />
+          <mat-autocomplete #locationAuto="matAutocomplete">
+            @for (item of locations(); track $index) {
+              <mat-option [value]="item">{{ item }}</mat-option>
+            }
+          </mat-autocomplete>
         </mat-form-field>
 
         <mat-form-field appearance="fill" class="dialog-field">

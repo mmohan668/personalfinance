@@ -1,17 +1,18 @@
-import { Component, inject, ViewChild } from '@angular/core';
+import { Component, inject, signal, ViewChild } from '@angular/core';
 import { DataGrid } from '../shared/data-grid/data-grid';
-import { DATA_FIELDS, GRID_EXPORT_FILE_NAMES, GRID_NAMES, MODES } from '../shared/enums';
+import { DATA_FIELDS, ENTITIES, GRID_EXPORT_FILE_NAMES, GRID_NAMES, MODES } from '../shared/enums';
 import { CommonService } from '../shared/service/common-service';
-import { ApiResponse, GridColumn, ToolbarConfig } from '../shared/types/types';
+import { ApiResponse, GridColumn, SuggestionRequest, ToolbarConfig } from '../shared/types/types';
 import { MatDialog } from '@angular/material/dialog';
 import { AddCopyEditFinancialTransactionDialog } from '../shared/add-copy-edit-financialtransaction-dialog/add-copy-edit-financialtransaction-dialog';
 import { NotificationService } from '../shared/service/notification-service';
 import { MessageService } from '../shared/service/message-service';
 import { FinancialTransactionsService } from '../shared/service/financial-transactions-service';
-import { firstValueFrom } from 'rxjs';
+import { debounceTime, firstValueFrom } from 'rxjs';
 import { ConfirmationDialog } from '../shared/confirmation-dialog/confirmation-dialog';
 import { FormControl, FormGroup } from '@angular/forms';
 import { CommonImportsModule } from '../shared/common-imports/common-imports-module';
+import { SuggestionService } from '../shared/service/suggestion-service';
 
 @Component({
   imports: [DataGrid, CommonImportsModule],
@@ -27,6 +28,7 @@ export class AllTransactions {
   private readonly _ns = inject(NotificationService);
   private readonly _ms = inject(MessageService);
   private readonly _fts = inject(FinancialTransactionsService);
+  private readonly _ss = inject(SuggestionService);
 
   protected readonly dataKey = DATA_FIELDS.ID;
   protected readonly gridName = GRID_NAMES.ALL_TRANSACTIONS_GRID;
@@ -36,10 +38,16 @@ export class AllTransactions {
   protected readonly fieldCount = 3;
   protected readonly maxDate = new Date();
 
+  transactionTypes = signal<string[]>([]);
+  locations = signal<string[]>([]);
+  categoryNames = signal<string[]>([]);
+  subcategoryNames = signal<string[]>([]);
+
   constructor() {
     this.toolbarConfig = this._cs.toolbarConfigExcludeActivateInactivate();
     this.toolbarConfig.refresh = true;
     this.createSearchForm();
+    this.fetchSuggestions();
   }
 
   createSearchForm() {
@@ -50,6 +58,74 @@ export class AllTransactions {
       location: new FormControl(''),
       transactionFromDate: new FormControl(''),
       transactionThruDate: new FormControl(''),
+    });
+  }
+
+  fetchSuggestions() {
+    this.searchForm.controls['transactionType'].valueChanges
+      .pipe(debounceTime(300))
+      .subscribe((val) => {
+        if (this._cs.isNotNull(val)) {
+          const suggestionRequest: SuggestionRequest = {
+            entity: ENTITIES.REFERENCE_VALUE,
+            field: DATA_FIELDS.REFERENCE_CODE,
+            value: val,
+            dependentField: DATA_FIELDS.REFERENCE_OBJECT_REF_OBJ_NAME,
+            dependentValue: 'TRANSACTION_TYPE',
+          };
+          firstValueFrom(this._ss.fetchSuggestion(suggestionRequest)).then((resp) => {
+            this.transactionTypes.set(resp);
+          });
+        }
+      });
+
+    this.searchForm.controls['categoryName'].valueChanges
+      .pipe(debounceTime(300))
+      .subscribe((val) => {
+        if (this._cs.isNotNull(val)) {
+          const suggestionRequest: SuggestionRequest = {
+            entity: ENTITIES.USER_CATEGORY,
+            field: DATA_FIELDS.CATEGORY_NAME,
+            value: val,
+            dependentField: DATA_FIELDS.USER_ID,
+            dependentValue: '2',
+          };
+          firstValueFrom(this._ss.fetchSuggestion(suggestionRequest)).then((resp) => {
+            this.categoryNames.set(resp);
+          });
+        }
+      });
+
+    this.searchForm.controls['subcategoryName'].valueChanges
+      .pipe(debounceTime(300))
+      .subscribe((val) => {
+        if (this._cs.isNotNull(val)) {
+          const suggestionRequest: SuggestionRequest = {
+            entity: ENTITIES.USER_SUBCATEGORY,
+            field: DATA_FIELDS.SUBCATEGORY_NAME,
+            value: val,
+            dependentField: DATA_FIELDS.USER_CATEGORY_USER_ID,
+            dependentValue: '2',
+          };
+          firstValueFrom(this._ss.fetchSuggestion(suggestionRequest)).then((resp) => {
+            this.subcategoryNames.set(resp);
+          });
+        }
+      });
+
+    this.searchForm.controls['location'].valueChanges.pipe(debounceTime(300)).subscribe((val) => {
+      if (this._cs.isNotNull(val)) {
+        const suggestionRequest: SuggestionRequest = {
+          entity: ENTITIES.REFERENCE_VALUE,
+          field: DATA_FIELDS.REFERENCE_CODE,
+          value: val,
+          dependentField: DATA_FIELDS.REFERENCE_OBJECT_REF_OBJ_NAME,
+          dependentValue: 'LOCATION',
+        };
+        firstValueFrom(this._ss.fetchSuggestion(suggestionRequest)).then((resp) => {
+          this.locations.set(resp);
+        });
+      }
     });
   }
 
@@ -174,7 +250,15 @@ export class AllTransactions {
   }
 
   resetSearchForm() {
+    this.resetSuggestions();
     this.searchForm.reset();
     this.dataGrid.resetAllFilters();
+  }
+
+  resetSuggestions() {
+    this.transactionTypes.set([]);
+    this.categoryNames.set([]);
+    this.subcategoryNames.set([]);
+    this.locations.set([]);
   }
 }

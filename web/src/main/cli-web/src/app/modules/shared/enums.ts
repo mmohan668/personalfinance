@@ -119,6 +119,14 @@ export enum DATA_FIELDS {
   SUBCATEGORY_NAME = 'subcategoryName',
   SUBCATEGORY_DESCRIPTION = 'subcategoryDescription',
   IS_ACTIVE = 'isActive',
+  REFERENCE_OBJECT_REF_OBJ_NAME = 'referenceObject.refObjName',
+  USER_CATEGORY_USER_ID = 'userCategory.user.id',
+}
+
+export enum ENTITIES {
+  REFERENCE_VALUE = 'referenceValue',
+  USER_CATEGORY = 'userCategory',
+  USER_SUBCATEGORY = 'userSubCategory',
 }
 
 export enum MODES {

@@ -6,6 +6,7 @@ export interface AppConfig {
   pageSizeOptions: number[];
   defaultPageSize: number;
   maxExportRows: number;
+  maxSuggestionRows: number;
 }
 
 @Service()
@@ -24,6 +25,7 @@ export class AppConfigService {
         pageSizeOptions: [25, 50, 100],
         defaultPageSize: 25,
         maxExportRows: 2,
+        maxSuggestionRows: 50,
       };
     }
     return this.appConfig;
