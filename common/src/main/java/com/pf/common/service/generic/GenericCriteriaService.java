@@ -206,7 +206,7 @@ public class GenericCriteriaService {
         JoinRegistry joinRegistry = new JoinRegistry(root);
 
         // Select only the requested field
-        cq.select(root.get(returnField));
+        cq.select(root.get(returnField)).distinct(true);
 
         applyFilters(
                 cb, cq, root, searchCriteria, joinRegistry
@@ -411,10 +411,10 @@ public class GenericCriteriaService {
                     path.getJavaType()
             )) {
 
-                sortExpression =
+                sortExpression = searchCriteria.isCaseInsensitive() ?
                         criteriaBuilder.lower(
                                 path.as(String.class)
-                        );
+                        ) : path.as(String.class);
             }
 
             orders.add(

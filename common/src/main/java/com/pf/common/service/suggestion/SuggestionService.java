@@ -32,6 +32,7 @@ public class SuggestionService extends BaseService {
 
     private static @NonNull SearchCriteria createSearchCriteria(SuggestionRequest suggestionRequest) {
         SearchCriteria searchCriteria = new SearchCriteria();
+        searchCriteria.setCaseInsensitive(false);
         addNonnullFilter(suggestionRequest, searchCriteria);
         addSuggestionFilter(searchCriteria, suggestionRequest.getField(), suggestionRequest.getValue());
         if (suggestionRequest.getDependentField() != null) {
