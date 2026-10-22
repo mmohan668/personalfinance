@@ -1,7 +1,6 @@
 package com.pf.common.service.settings;
 
-import com.google.common.collect.Lists;
-import com.pf.common.record.generic.SelectItem;
+import com.pf.common.dto.generic.ApiResponse;
 import com.pf.common.dto.gp.GridFilter;
 import com.pf.common.dto.gp.GridResult;
 import com.pf.common.dto.gp.GridSort;
@@ -9,7 +8,6 @@ import com.pf.common.dto.gp.SearchCriteria;
 import com.pf.common.dto.settings.ReferenceObjectDto;
 import com.pf.common.dto.settings.ReferenceValueDto;
 import com.pf.common.dto.settings.SystemConfigDto;
-import com.pf.common.dto.generic.ApiResponse;
 import com.pf.common.entity.settings.ReferenceObject;
 import com.pf.common.entity.settings.ReferenceValue;
 import com.pf.common.entity.settings.SystemConfig;
@@ -17,11 +15,13 @@ import com.pf.common.entity.userManagement.User;
 import com.pf.common.mapper.settings.ReferenceObjectMapper;
 import com.pf.common.mapper.settings.ReferenceValueMapper;
 import com.pf.common.mapper.settings.SystemConfigMapper;
+import com.pf.common.record.generic.SelectItem;
 import com.pf.common.repository.categoryManagement.UserCategoryRepository;
 import com.pf.common.repository.setting.ReferenceObjectRepository;
 import com.pf.common.repository.setting.ReferenceValueRepository;
 import com.pf.common.repository.setting.SystemConfigRepository;
 import com.pf.common.service.generic.BaseService;
+import com.pf.common.util.BatchUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -31,9 +31,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static com.pf.common.constants.CommonConstants.*;
 import static com.pf.common.constants.EntityConstants.*;
-import static com.pf.common.constants.FieldConstants.*;
+import static com.pf.common.constants.FieldConstants.ID;
+import static com.pf.common.constants.FieldConstants.USER_ID;
 import static com.pf.common.enums.FilterOperator.EQUALS;
 import static com.pf.common.enums.RefObjectNames.*;
 import static com.pf.common.enums.SortOrder.ASC;
@@ -139,19 +139,10 @@ public class SettingsService extends BaseService {
         if (ids == null || ids.isEmpty()) {
             return failure("No reference values selected for deletion.");
         }
-        List<List<Long>> chunks = Lists.partition(ids, CHUNK_SIZE);
-        // Validate all selected reference values before deleting anything.
-        for (List<Long> chunk : chunks) {
-            if (systemConfigRepository.existsByConfigValueIdIn(chunk)) {
-                return failure("Reference values cannot be deleted because one or more are currently in use.");
-            }
-            if (userCategoryRepository.existsByReferenceValueId(chunk)) {
-                return failure("Reference values cannot be deleted because one or more are currently in use.");
-            }
+        if (BatchUtils.allBatchesNotPassed(ids, chunk -> !systemConfigRepository.existsByConfigValueIdIn(chunk) && !userCategoryRepository.existsByReferenceValueIdIn(chunk))) {
+            return failure("Reference values cannot be deleted because one or more are currently in use.");
         }
-        for (List<Long> chunk : chunks) {
-            referenceValueRepository.deleteAllByIdInBatch(chunk);
-        }
+        BatchUtils.processInBatches(ids, referenceValueRepository::deleteAllByIdInBatch);
         return success("Reference value(s) deleted successfully.");
     }
 
@@ -202,11 +193,7 @@ public class SettingsService extends BaseService {
         }
         Long modifiedBy = fetchLoginUser().getId();
         LocalDateTime modifiedAt = LocalDateTime.now();
-        int activated = 0;
-        List<List<Long>> chunks = Lists.partition(ids, CHUNK_SIZE);
-        for (List<Long> chunk : chunks) {
-            activated += referenceObjectRepository.activateReferenceObject(chunk, modifiedBy, modifiedAt);
-        }
+        int activated = BatchUtils.processBatchesAndSum(ids, chunk -> referenceObjectRepository.activateReferenceObject(chunk, modifiedBy, modifiedAt));
         log.debug("{} Reference object(s) activated", activated);
         return success("Reference object(s) activated successfully.");
     }
@@ -219,11 +206,7 @@ public class SettingsService extends BaseService {
         }
         Long modifiedBy = fetchLoginUser().getId();
         LocalDateTime modifiedAt = LocalDateTime.now();
-        int inactivated = 0;
-        List<List<Long>> chunks = Lists.partition(ids, CHUNK_SIZE);
-        for (List<Long> chunk : chunks) {
-            inactivated += referenceObjectRepository.inactivateReferenceObject(chunk, modifiedBy, modifiedAt);
-        }
+        int inactivated = BatchUtils.processBatchesAndSum(ids, chunk -> referenceObjectRepository.inactivateReferenceObject(chunk, modifiedBy, modifiedAt));
         log.debug("{} Reference object(s) inactivated", inactivated);
         return success("Reference object(s) inactivated successfully.");
     }
@@ -234,15 +217,10 @@ public class SettingsService extends BaseService {
         if (ids == null || ids.isEmpty()) {
             return failure("No reference object(s) selected for deletion.");
         }
-        List<List<Long>> chunks = Lists.partition(ids, CHUNK_SIZE);
-        for (List<Long> chunk : chunks) {
-            if (referenceValueRepository.existsByReferenceObject(chunk)) {
-                return failure("Reference object(s) cannot be deleted because one or more are currently in use.");
-            }
+        if (BatchUtils.allBatchesNotPassed(ids, chunk -> !referenceValueRepository.existsByReferenceObject(chunk))) {
+            return failure("Reference object(s) cannot be deleted because one or more are currently in use.");
         }
-        for (List<Long> chunk : chunks) {
-            referenceObjectRepository.deleteAllByIdInBatch(chunk);
-        }
+        BatchUtils.processInBatches(ids, referenceObjectRepository::deleteAllByIdInBatch);
         log.debug("{} Reference object(s) deleted", ids.size());
         return success("Reference object(s) deleted successfully.");
     }
@@ -286,11 +264,7 @@ public class SettingsService extends BaseService {
         }
         Long updatedBy = fetchLoginUser().getId();
         LocalDateTime updatedAt = LocalDateTime.now();
-        int activated = 0;
-        List<List<Long>> chunks = Lists.partition(ids, CHUNK_SIZE);
-        for (List<Long> chunk : chunks) {
-            activated += referenceValueRepository.activateReferenceValues(chunk, updatedBy, updatedAt);
-        }
+        int activated = BatchUtils.processBatchesAndSum(ids, chunk -> referenceValueRepository.activateReferenceValues(chunk, updatedBy, updatedAt));
         log.debug("{} Reference value(s) activated", activated);
         return success("Reference value(s) activated successfully.");
     }
@@ -303,11 +277,7 @@ public class SettingsService extends BaseService {
         }
         Long updatedBy = fetchLoginUser().getId();
         LocalDateTime updatedAt = LocalDateTime.now();
-        int inactivated = 0;
-        List<List<Long>> chunks = Lists.partition(ids, CHUNK_SIZE);
-        for (List<Long> chunk : chunks) {
-            inactivated += referenceValueRepository.inactivateReferenceValues(chunk, updatedBy, updatedAt);
-        }
+        int inactivated = BatchUtils.processBatchesAndSum(ids, chunk -> referenceValueRepository.inactivateReferenceValues(chunk, updatedBy, updatedAt));
         log.debug("{} Reference value(s) inactivated", inactivated);
         return success("Reference value(s) inactivated successfully.");
     }

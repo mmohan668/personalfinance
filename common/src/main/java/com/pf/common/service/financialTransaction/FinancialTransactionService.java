@@ -1,25 +1,23 @@
 package com.pf.common.service.financialTransaction;
 
-import com.google.common.collect.Lists;
 import com.pf.common.dto.financialTransaction.FinancialTransactionDto;
 import com.pf.common.dto.financialTransaction.FinancialTransactionViewDto;
+import com.pf.common.dto.generic.ApiResponse;
 import com.pf.common.dto.gp.GridResult;
 import com.pf.common.dto.gp.SearchCriteria;
 import com.pf.common.entity.financialTransaction.FinancialTransaction;
 import com.pf.common.entity.financialTransaction.FinancialTransactionView;
-import com.pf.common.dto.generic.ApiResponse;
 import com.pf.common.entity.userManagement.User;
 import com.pf.common.exception.ResourceNotFoundException;
 import com.pf.common.mapper.financialTransaction.FinancialTransactionMapper;
 import com.pf.common.mapper.financialTransaction.FinancialTransactionViewMapper;
 import com.pf.common.repository.financialTransaction.FinancialTransactionRepository;
 import com.pf.common.service.generic.BaseService;
+import com.pf.common.util.BatchUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import static com.pf.common.constants.CommonConstants.CHUNK_SIZE;
 
 import java.util.List;
 
@@ -76,10 +74,7 @@ public class FinancialTransactionService extends BaseService {
             log.debug("deleteFinancialTransactions: financialTransactionIds is null or empty");
             return failure("No records found to delete");
         }
-        List<List<Long>> chunks = Lists.partition(financialTransactionIds, CHUNK_SIZE);
-        for (List<Long> chunk : chunks) {
-            financialTransactionRepository.deleteAllByIdInBatch(chunk);
-        }
+        BatchUtils.processInBatches(financialTransactionIds, financialTransactionRepository::deleteAllByIdInBatch);
         return success("Financial transaction deleted successfully");
     }
 }
