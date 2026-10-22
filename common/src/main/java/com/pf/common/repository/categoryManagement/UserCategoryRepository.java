@@ -52,7 +52,7 @@ public interface UserCategoryRepository extends JpaRepository<UserCategory, Long
             WHERE uc.active = false
             AND uc.id IN (:ids)
             """)
-    long activateUserCategory(
+    int activateUserCategory(
             @Param("ids") List<Long> ids,
             @Param("updatedBy") Long updatedBy,
             @Param("updatedAt") LocalDateTime updatedAt
@@ -65,7 +65,7 @@ public interface UserCategoryRepository extends JpaRepository<UserCategory, Long
             WHERE uc.active = true
             AND uc.id IN (:ids)
             """)
-    long inactivateUserCategory(
+    int inactivateUserCategory(
             @Param("ids") List<Long> ids,
             @Param("updatedBy") Long updatedBy,
             @Param("updatedAt") LocalDateTime updatedAt
@@ -134,5 +134,5 @@ public interface UserCategoryRepository extends JpaRepository<UserCategory, Long
             FROM UserCategory uc
             WHERE uc.referenceValue.id IN (:ids)
             """)
-    boolean existsByReferenceValueId(@Param("ids") List<Long> referenceValueIds);
+    boolean existsByReferenceValueIdIn(@Param("ids") List<Long> referenceValueIds);
 }
