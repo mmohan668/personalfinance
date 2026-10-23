@@ -47,9 +47,17 @@ public class CategoryManagementService extends BaseService {
         searchCriteria.setFIELD_MAPPINGS(UserCategoryDto.FIELD_MAPPINGS);
         long totalRecords = 0;
         if (!searchCriteria.isLoadAllData()) {
-            totalRecords = getCountBySearchCriteria(UserCategory.class, searchCriteria);
+            totalRecords = getCountBySearchCriteria(
+                    UserCategory.class,
+                    searchCriteria
+            );
+            if (totalRecords == 0) {
+                return gridResult(totalRecords, List.of());
+            }
         }
-        List<UserCategoryDto> recordDetails = userCategoryMapper.toDtoList(getDataBySearchCriteria(UserCategory.class, searchCriteria));
+        List<UserCategoryDto> recordDetails = userCategoryMapper.toDtoList(
+                getDataBySearchCriteria(UserCategory.class, searchCriteria)
+        );
         log.debug("fetchCategoriesGridData: totalRecords: {}", totalRecords);
         return gridResult(totalRecords, recordDetails);
     }
@@ -59,9 +67,17 @@ public class CategoryManagementService extends BaseService {
         log.debug("fetchSubcategoriesGridData: {}", searchCriteria);
         long totalRecords = 0;
         if (!searchCriteria.isLoadAllData()) {
-            totalRecords = getCountBySearchCriteria(SubcategoryView.class, searchCriteria);
+            totalRecords = getCountBySearchCriteria(
+                    SubcategoryView.class,
+                    searchCriteria
+            );
+            if (totalRecords == 0) {
+                return gridResult(totalRecords, List.of());
+            }
         }
-        List<SubcategoryViewDto> recordDetails = subcategoryViewMapper.toDtoList(getDataBySearchCriteria(SubcategoryView.class, searchCriteria));
+        List<SubcategoryViewDto> recordDetails = subcategoryViewMapper.toDtoList(
+                getDataBySearchCriteria(SubcategoryView.class, searchCriteria)
+        );
         log.debug("fetchSubcategoriesGridData: totalRecords: {}", totalRecords);
         return gridResult(totalRecords, recordDetails);
     }
@@ -69,7 +85,9 @@ public class CategoryManagementService extends BaseService {
     @Transactional
     public ApiResponse saveCategory(UserCategoryDto userCategoryDto) {
         log.debug("saveCategory: {}", userCategoryDto);
-        ReferenceValue referenceValue = referenceValueRepository.findById(userCategoryDto.getTransactionTypeId()).orElse(null);
+        ReferenceValue referenceValue =
+                referenceValueRepository.findById(userCategoryDto.getTransactionTypeId())
+                        .orElse(null);
         if (referenceValue == null) {
             log.warn("saveCategory: referenceValue is null");
             return failure("Selected Transaction Type not found");
@@ -79,8 +97,16 @@ public class CategoryManagementService extends BaseService {
             log.debug("addCategory: userCategoryDto = {}", userCategoryDto);
             UserCategory userCategory = userCategoryMapper.toEntity(userCategoryDto);
             userCategory.setCreatedBy(user);
-            if (userCategoryRepository.countByTransactionTypeAndNameAndUserId(userCategoryDto.getTransactionTypeId(), userCategoryDto.getCategoryName(), user.getAdminUser().getId()) > 0) {
-                log.warn("Category already exists for username = {} for Transaction Type = {}", user.getUsername(), userCategory.getCategoryName());
+            if (userCategoryRepository.existsByTransactionTypeAndNameAndUserId(
+                    userCategoryDto.getTransactionTypeId(),
+                    userCategoryDto.getCategoryName(),
+                    user.getAdminUser().getId())
+            ) {
+                log.warn(
+                        "Category already exists for username = {} for Transaction Type = {}",
+                        user.getUsername(),
+                        userCategory.getCategoryName()
+                );
                 return failure("Category already exists");
             }
             userCategory.setUser(user.getAdminUser());
@@ -88,13 +114,27 @@ public class CategoryManagementService extends BaseService {
             userCategoryRepository.save(userCategory);
         } else {
             log.warn("updateCategory: userCategoryDto = {}", userCategoryDto);
-            UserCategory userCategory = userCategoryRepository.findById(userCategoryDto.getId()).orElse(null);
+            UserCategory userCategory =
+                    userCategoryRepository.findById(userCategoryDto.getId())
+                            .orElse(null);
             if (userCategory == null) {
-                log.warn("updateCategory: userCategory not found for category name = {}", userCategoryDto.getCategoryName());
+                log.warn(
+                        "updateCategory: userCategory not found for category name = {}",
+                        userCategoryDto.getCategoryName()
+                );
                 return failure("Category not found to update");
             }
-            if (userCategoryRepository.countByTransactionTypeAndNameAndUserIdAndIdNot(userCategoryDto.getTransactionTypeId(), userCategoryDto.getCategoryName(), user.getAdminUser().getId(), userCategory.getId()) > 0) {
-                log.warn("Category already exists for username = {} for category name = {}", user.getUsername(), userCategoryDto.getCategoryName());
+            if (userCategoryRepository.existsByTransactionTypeAndNameAndUserIdAndIdNot(
+                    userCategoryDto.getTransactionTypeId(),
+                    userCategoryDto.getCategoryName(),
+                    user.getAdminUser().getId(),
+                    userCategory.getId())
+            ) {
+                log.warn(
+                        "Category already exists for username = {} for category name = {}",
+                        user.getUsername(),
+                        userCategoryDto.getCategoryName()
+                );
                 return failure("Category already exists");
             }
             userCategory.setReferenceValue(referenceValue);
@@ -114,7 +154,7 @@ public class CategoryManagementService extends BaseService {
             log.warn("deleteCategories: ids is empty");
             return failure("Ids is empty");
         }
-        if (userSubcategoryRepository.countByCategoryId(ids) > 0) {
+        if (userSubcategoryRepository.existsByCategoryId(ids)) {
             log.warn("Delete category failed, Subcategories associated with selected categories");
             return failure("Delete category failed. Subcategories associated with selected categories");
         }
@@ -131,10 +171,16 @@ public class CategoryManagementService extends BaseService {
         log.info("Activating {} categories", ids.size());
         LocalDateTime updatedTime = LocalDateTime.now();
         Long userId = fetchLoginUser().getId();
-        int categoryCount = BatchUtils.processBatchesAndSum(ids, chunk -> userCategoryRepository.activateUserCategory(chunk, userId, updatedTime));
+        int categoryCount = BatchUtils.processBatchesAndSum(
+                ids,
+                chunk -> userCategoryRepository.activateUserCategory(chunk, userId, updatedTime)
+        );
         log.info("Activated categories count: {}", categoryCount);
         if (activateSubcategories) {
-            int subcategoryCount = BatchUtils.processBatchesAndSum(ids, chunk -> userSubcategoryRepository.activateSubcategory(chunk, userId, updatedTime));
+            int subcategoryCount = BatchUtils.processBatchesAndSum(
+                    ids,
+                    chunk -> userSubcategoryRepository.activateSubcategory(chunk, userId, updatedTime)
+            );
             log.info("Activated subcategories count: {}", subcategoryCount);
         }
         return success("Categories have been activated successfully.");
@@ -149,8 +195,14 @@ public class CategoryManagementService extends BaseService {
         log.info("Inactivating {} categories", ids.size());
         Long userId = fetchLoginUser().getId();
         LocalDateTime updatedTime = LocalDateTime.now();
-        long categoryCount = BatchUtils.processBatchesAndSum(ids, chunk -> userCategoryRepository.inactivateUserCategory(chunk, userId, updatedTime));
-        long subcategoryCount = BatchUtils.processBatchesAndSum(ids, chunk -> userSubcategoryRepository.inactivateSubcategory(chunk, userId, updatedTime));
+        long categoryCount = BatchUtils.processBatchesAndSum(
+                ids,
+                chunk -> userCategoryRepository.inactivateUserCategory(chunk, userId, updatedTime)
+        );
+        long subcategoryCount = BatchUtils.processBatchesAndSum(
+                ids,
+                chunk -> userSubcategoryRepository.inactivateSubcategory(chunk, userId, updatedTime)
+        );
         log.info("Inactivated categories count: {}", categoryCount);
         log.info("Inactivated subcategories count: {}", subcategoryCount);
         return success("Categories and their associated subcategories have been inactivated successfully.");
@@ -174,13 +226,18 @@ public class CategoryManagementService extends BaseService {
     public ApiResponse saveSubcategory(SubcategoryViewDto subcategoryViewDto) {
         log.debug("saveSubcategory: {}", subcategoryViewDto);
         User user = fetchLoginUser();
-        UserCategory userCategory = userCategoryRepository.findById(subcategoryViewDto.getUserCategoryId()).orElse(null);
+        UserCategory userCategory =
+                userCategoryRepository.findById(subcategoryViewDto.getUserCategoryId())
+                        .orElse(null);
         if (userCategory == null) {
             log.warn("saveSubcategory: userCategory is null");
             return failure("Selected category not found");
         }
         if (subcategoryViewDto.getId() == null) {
-            if (userSubcategoryRepository.countByCategoryIdAndSubcategoryName(subcategoryViewDto.getUserCategoryId(), subcategoryViewDto.getSubcategoryName()) > 0) {
+            if (userSubcategoryRepository.existsByCategoryIdAndSubcategoryName(
+                    subcategoryViewDto.getUserCategoryId(),
+                    subcategoryViewDto.getSubcategoryName())
+            ) {
                 return failure("Subcategory already exists in the selected category");
             }
             UserSubcategory userSubcategory = new UserSubcategory();
@@ -190,12 +247,18 @@ public class CategoryManagementService extends BaseService {
             userSubcategory.setCreatedBy(user);
             userSubcategoryRepository.save(userSubcategory);
         } else {
-            UserSubcategory userSubcategory = userSubcategoryRepository.findById(subcategoryViewDto.getId()).orElse(null);
+            UserSubcategory userSubcategory =
+                    userSubcategoryRepository.findById(subcategoryViewDto.getId())
+                            .orElse(null);
             if (userSubcategory == null) {
                 log.warn("saveSubcategory: userSubcategory is null");
                 return failure("Subcategory not found");
             }
-            if (userSubcategoryRepository.countByCategoryIdAndSubcategoryNameAndIdNot(subcategoryViewDto.getUserCategoryId(), subcategoryViewDto.getSubcategoryName(), subcategoryViewDto.getId()) > 0) {
+            if (userSubcategoryRepository.existsByCategoryIdAndSubcategoryNameAndIdNot(
+                    subcategoryViewDto.getUserCategoryId(),
+                    subcategoryViewDto.getSubcategoryName(),
+                    subcategoryViewDto.getId())
+            ) {
                 return failure("Subcategory already exists in the selected category");
             }
             userSubcategory.setUserCategory(userCategory);
@@ -213,10 +276,16 @@ public class CategoryManagementService extends BaseService {
             log.warn("deleteSubcategories: ids is empty");
             return failure("Ids is empty");
         }
-        if (BatchUtils.allBatchesNotPassed(ids, chunk -> !financialTransactionRepository.existsBySubcategoryIds(chunk))) {
+        if (BatchUtils.hasFailingBatch(
+                ids,
+                chunk -> !financialTransactionRepository.existsBySubcategoryIds(chunk))
+        ) {
             return failure("Subcategories cannot be deleted because one or more are currently in use");
         }
-        BatchUtils.processInBatches(ids, userSubcategoryRepository::deleteAllByIdInBatch);
+        BatchUtils.processInBatches(
+                ids,
+                userSubcategoryRepository::deleteAllByIdInBatch
+        );
         return success("Categories deleted successfully");
     }
 
@@ -229,7 +298,10 @@ public class CategoryManagementService extends BaseService {
         }
         Long userId = fetchLoginUser().getId();
         LocalDateTime updatedTime = LocalDateTime.now();
-        long count = BatchUtils.processBatchesAndSum(ids, chunk -> userSubcategoryRepository.activateSubcategories(chunk, userId, updatedTime));
+        long count = BatchUtils.processBatchesAndSum(
+                ids,
+                chunk -> userSubcategoryRepository.activateSubcategories(chunk, userId, updatedTime)
+        );
         log.info("Activated {} subcategories", count);
         return success("Subcategories activated successfully");
     }
@@ -243,7 +315,10 @@ public class CategoryManagementService extends BaseService {
         }
         Long userId = fetchLoginUser().getId();
         LocalDateTime updatedTime = LocalDateTime.now();
-        int count = BatchUtils.processBatchesAndSum(ids, chunk -> userSubcategoryRepository.inactivateSubcategories(chunk, userId, updatedTime));
+        int count = BatchUtils.processBatchesAndSum(
+                ids,
+                chunk -> userSubcategoryRepository.inactivateSubcategories(chunk, userId, updatedTime)
+        );
         log.info("Inactivated {} subcategories", count);
         return success("Subcategories inactivated successfully");
     }

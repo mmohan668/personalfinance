@@ -17,23 +17,23 @@ public interface ReferenceValueRepository extends JpaRepository<ReferenceValue, 
 
     @Transactional(readOnly = true)
     @Query("""
-            SELECT count(rv) FROM ReferenceValue rv
+            SELECT count(rv) > 0 FROM ReferenceValue rv
             WHERE rv.referenceObject.id = :refObjId
             AND LOWER(TRIM(referenceCode)) = LOWER(TRIM(:refCode))
             """)
-    long countByReferenceObjectIdAndReferenceCode(
+    boolean existsByReferenceObjectIdAndReferenceCode(
             @Param("refObjId") Long refObjId,
             @Param("refCode") String refCode
     );
 
     @Transactional(readOnly = true)
     @Query("""
-            SELECT COUNT(rv)
+            SELECT COUNT(rv) > 0
             FROM ReferenceValue rv
             WHERE rv.referenceObject.id = :refObjId
             AND LOWER(TRIM(rv.referenceCode)) = LOWER(TRIM(:referenceCode)) AND rv.id <> :id
             """)
-    long countByReferenceObjectIdAndReferenceCodeAndIdNot(
+    boolean existsByReferenceObjectIdAndReferenceCodeAndIdNot(
             @Param("refObjId") Long refObjId,
             @Param("referenceCode") String referenceCode,
             @Param("id") Long id

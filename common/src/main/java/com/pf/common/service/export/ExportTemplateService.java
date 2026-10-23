@@ -1,4 +1,4 @@
-package com.pf.common.service.generic;
+package com.pf.common.service.export;
 
 import com.pf.common.dto.gp.GridColumnDto;
 import com.pf.common.entity.settings.SystemConfig;
@@ -44,7 +44,13 @@ public class ExportTemplateService {
 
     public static final String DATA = "data";
 
-    public void createExcel(List<GridColumnDto> columns, List<?> data, User user, String gridName, String exportFileName) throws IOException {
+    public void createExcel(
+            List<GridColumnDto> columns,
+            List<?> data,
+            User user,
+            String gridName,
+            String exportFileName
+    ) throws IOException {
         List<GridColumnDto> exportColumns = getExportEligibleColumns(columns);
         if (exportColumns.isEmpty()) {
             log.warn("All columns are non-exportable for the grid {} for the user {}", gridName, user);
@@ -67,8 +73,14 @@ public class ExportTemplateService {
         log.info("Excel file created at {}", outputPath);
     }
 
-    public ByteArrayInputStream createWorkBook(List<GridColumnDto> columns, List<?> data, String gridName, User user) {
-        try (XSSFWorkbook workbook = new XSSFWorkbook(); ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+    public ByteArrayInputStream createWorkBook(
+            List<GridColumnDto> columns,
+            List<?> data,
+            String gridName,
+            User user
+    ) {
+        try (XSSFWorkbook workbook = new XSSFWorkbook();
+             ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
             XSSFSheet sheet = workbook.createSheet(DATA);
             createHeader(workbook, sheet, columns);
             createBody(workbook, sheet, columns, data, user);
@@ -91,7 +103,11 @@ public class ExportTemplateService {
                 .toList();
     }
 
-    private void createHeader(XSSFWorkbook workbook, XSSFSheet sheet, List<GridColumnDto> columns) {
+    private void createHeader(
+            XSSFWorkbook workbook,
+            XSSFSheet sheet,
+            List<GridColumnDto> columns
+    ) {
         Row headerRow = sheet.createRow(0);
         CellStyle headerStyle = ExcelUtils.createHeaderStyle(workbook);
         int index = 0;
@@ -111,8 +127,12 @@ public class ExportTemplateService {
             XSSFSheet sheet,
             List<GridColumnDto> columns,
             List<?> data,
-            User user) {
-        SystemConfig systemConfig = systemConfigRepository.findByConfigNameAndUserId(AppEnums.SystemConfigName.CURRENCY.getValue(), user.getId());
+            User user
+    ) {
+        SystemConfig systemConfig = systemConfigRepository.findByConfigNameAndUserId(
+                AppEnums.SystemConfigName.CURRENCY.getValue(),
+                user.getId()
+        );
         String dateFormat = systemConfig.getConfigValue().getReferenceCode3();
         if (dateFormat == null || dateFormat.isBlank()) {
             dateFormat = DD_MM_YYYY;

@@ -50,8 +50,13 @@ public class BulkUploadsService extends BaseService {
         long totalRecords = 0;
         if (!searchCriteria.isLoadAllData()) {
             totalRecords = getCountBySearchCriteria(BulkUploadsStatus.class, searchCriteria);
+            if (totalRecords == 0) {
+                return gridResult(totalRecords, List.of());
+            }
         }
-        List<BulkUploadsStatusDto> recordDetails = bulkUploadsStatusMapper.toDtoList(getDataBySearchCriteria(BulkUploadsStatus.class, searchCriteria));
+        List<BulkUploadsStatusDto> recordDetails = bulkUploadsStatusMapper.toDtoList(
+                getDataBySearchCriteria(BulkUploadsStatus.class, searchCriteria)
+        );
         log.debug("fetchBulkUploadStatusGridData: totalRecords: {}", totalRecords);
         return gridResult(totalRecords, recordDetails);
     }
@@ -69,7 +74,9 @@ public class BulkUploadsService extends BaseService {
             Path targetFile = uploadDirectory.resolve(fileName);
             file.transferTo(targetFile);
             BulkUploadsStatus bulkUploadsStatus =
-                    bulkUploadsStatusRepository.save(createBulkUploadsStatus(uploadTypeLabel, uploadType, targetFile));
+                    bulkUploadsStatusRepository.save(
+                            createBulkUploadsStatus(uploadTypeLabel, uploadType, targetFile)
+                    );
             log.info("Sending Bulk Upload Status to Bulk Upload Processing Service");
             applicationEventPublisher.publishEvent(new BulkUploadCreatedEvent(
                     bulkUploadsStatus.getId(),
@@ -98,7 +105,11 @@ public class BulkUploadsService extends BaseService {
                 .body(resource);
     }
 
-    private @NonNull BulkUploadsStatus createBulkUploadsStatus(String uploadTypeLabel, String uploadType, Path targetFile) {
+    private @NonNull BulkUploadsStatus createBulkUploadsStatus(
+            String uploadTypeLabel,
+            String uploadType,
+            Path targetFile
+    ) {
         TemplateName templateName = templateNameRepository.findByTemplateName(uploadType);
         BulkUploadsStatus bulkUploadsStatus = new BulkUploadsStatus();
         bulkUploadsStatus.setUploadType(uploadTypeLabel);

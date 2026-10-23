@@ -34,9 +34,17 @@ public class FinancialTransactionService extends BaseService {
         log.debug("fetchFinancialTransactionGridData: searchCriteria: {}", searchCriteria);
         long totalRecords = 0;
         if (!searchCriteria.isLoadAllData()) {
-            totalRecords = getCountBySearchCriteria(FinancialTransactionView.class, searchCriteria);
+            totalRecords = getCountBySearchCriteria(
+                    FinancialTransactionView.class,
+                    searchCriteria
+            );
+            if (totalRecords == 0) {
+                gridResult(totalRecords, List.of());
+            }
         }
-        List<FinancialTransactionViewDto> recordDetails = financialTransactionViewMapper.toDtoList(getDataBySearchCriteria(FinancialTransactionView.class, searchCriteria));
+        List<FinancialTransactionViewDto> recordDetails = financialTransactionViewMapper.toDtoList(
+                getDataBySearchCriteria(FinancialTransactionView.class, searchCriteria)
+        );
         log.debug("fetchFinancialTransactionGridData: totalRecords: {}", totalRecords);
         return gridResult(totalRecords, recordDetails);
     }
@@ -58,7 +66,9 @@ public class FinancialTransactionService extends BaseService {
                                                 "Financial transaction not found for update: id={}",
                                                 financialTransactionDto.getId()
                                         );
-                                        return new ResourceNotFoundException("The financial transaction you are trying to update was not found");
+                                        return new ResourceNotFoundException(
+                                                "The financial transaction you are trying to update was not found"
+                                        );
                                     }
                             );
             financialTransactionMapper.updateEntity(financialTransactionDto, financialTransaction);
@@ -74,7 +84,10 @@ public class FinancialTransactionService extends BaseService {
             log.debug("deleteFinancialTransactions: financialTransactionIds is null or empty");
             return failure("No records found to delete");
         }
-        BatchUtils.processInBatches(financialTransactionIds, financialTransactionRepository::deleteAllByIdInBatch);
+        BatchUtils.processInBatches(
+                financialTransactionIds,
+                financialTransactionRepository::deleteAllByIdInBatch
+        );
         return success("Financial transaction deleted successfully");
     }
 }

@@ -30,7 +30,7 @@ public class BatchUtils {
         return result;
     }
 
-    public static <T> boolean allBatchesNotPassed(List<T> items, Predicate<List<T>> validator) {
+    public static <T> boolean hasFailingBatch(List<T> items, Predicate<List<T>> validator) {
         if (items == null || items.isEmpty()) return false;
         for (List<T> chunk : Lists.partition(items, CHUNK_SIZE)) {
             if (!validator.test(chunk)) return true;

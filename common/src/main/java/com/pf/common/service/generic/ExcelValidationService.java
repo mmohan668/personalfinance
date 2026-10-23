@@ -31,7 +31,10 @@ public class ExcelValidationService {
     @Transactional(readOnly = true)
     public ExcelValidationResult validateExcel(String uploadType, Workbook workbook) {
         TemplateName templateNames = templateNamesRepository.findByTemplateName(uploadType);
-        if (templateNames == null || templateNames.getTemplateHeaders() == null || templateNames.getTemplateHeaders().isEmpty()) {
+        if (templateNames == null
+                || templateNames.getTemplateHeaders() == null
+                || templateNames.getTemplateHeaders().isEmpty()
+        ) {
             log.error("No template header found for uploadType = {}", uploadType);
             throw new IllegalArgumentException(
                     "No template header found for upload Type: " + uploadType
@@ -72,14 +75,25 @@ public class ExcelValidationService {
         return true;
     }
 
-    private void validateRow(Row row, Set<TemplateHeader> templateHeaders, Map<Integer, List<String>> errors) {
-        for (TemplateHeader templateHeader : templateHeaders.stream().sorted(Comparator.comparing(TemplateHeader::getColumnIndex)).toList()) {
+    private void validateRow(
+            Row row,
+            Set<TemplateHeader> templateHeaders,
+            Map<Integer, List<String>> errors
+    ) {
+        for (TemplateHeader templateHeader : templateHeaders.stream()
+                .sorted(Comparator.comparing(TemplateHeader::getColumnIndex))
+                .toList()
+        ) {
             Cell cell = row.getCell(templateHeader.getColumnIndex());
             String cellValue = cell == null ? "" : dataFormatter.formatCellValue(cell).trim();
             boolean isBlank = cellValue.isEmpty();
             //Required validation
             if (templateHeader.isRequired() && isBlank) {
-                addError(row, errors, templateHeader.getHeaderName() + " should not be blank");
+                addError(
+                        row,
+                        errors,
+                        templateHeader.getHeaderName() + " should not be blank"
+                );
                 continue;
             }
             // Optional blank field - skip remaining validations
@@ -98,7 +112,13 @@ public class ExcelValidationService {
         }
     }
 
-    private void validateDatabase(Row row, Set<TemplateHeader> templateHeaders, Map<Integer, List<String>> errors, TemplateHeader templateHeader, String cellValue) {
+    private void validateDatabase(
+            Row row,
+            Set<TemplateHeader> templateHeaders,
+            Map<Integer, List<String>> errors,
+            TemplateHeader templateHeader,
+            String cellValue
+    ) {
         if (templateHeader.getDbValidationType() == null) {
             return;
         }
@@ -108,48 +128,83 @@ public class ExcelValidationService {
             dbValidationType = AppEnums.DbValidationType.valueOf(templateHeader.getDbValidationType());
         } catch (IllegalArgumentException e) {
             log.error("Invalid db validation type {}", templateHeader.getDbValidationType());
-            throw new IllegalArgumentException("Invalid db validation: " + templateHeader.getDbValidationType());
+            throw new IllegalArgumentException(
+                    "Invalid db validation: " + templateHeader.getDbValidationType()
+            );
         }
         boolean dbValidationResult = executeDBValidation(templateHeader.getDbValidationQuery(), params);
         if (dbValidationType == AppEnums.DbValidationType.DB_EXISTS && !dbValidationResult) {
-            addError(row, errors, templateHeader.getHeaderName() + " has invalid value: " + cellValue);
+            addError(
+                    row,
+                    errors,
+                    templateHeader.getHeaderName() + " has invalid value: " + cellValue
+            );
         } else if (dbValidationType == AppEnums.DbValidationType.DB_DUPLICATE && dbValidationResult) {
-            addError(row, errors, templateHeader.getHeaderName() + " already exists: " + cellValue);
+            addError(
+                    row,
+                    errors,
+                    templateHeader.getHeaderName() + " already exists: " + cellValue
+            );
         }
     }
 
-    private boolean validateDataType(Row row, Map<Integer, List<String>> errors, TemplateHeader templateHeader, String cellValue) {
+    private boolean validateDataType(
+            Row row,
+            Map<Integer, List<String>> errors,
+            TemplateHeader templateHeader,
+            String cellValue
+    ) {
         if (templateHeader.getDataType() != null) {
             AppEnums.DataType dataType = AppEnums.DataType.valueOf(templateHeader.getDataType());
             if (dataType == AppEnums.DataType.NUMBER) {
                 try {
                     Double.parseDouble(cellValue);
                 } catch (NumberFormatException e) {
-                    addError(row, errors, templateHeader.getHeaderName() + " should be a number");
+                    addError(
+                            row,
+                            errors,
+                            templateHeader.getHeaderName() + " should be a number"
+                    );
                     return false;
                 }
             } else if (dataType == AppEnums.DataType.P_NUMBER) {
                 try {
                     double value = Double.parseDouble(cellValue);
                     if (value < 0) {
-                        addError(row, errors, templateHeader.getHeaderName() + " should be zero or a positive number");
+                        addError(
+                                row,
+                                errors,
+                                templateHeader.getHeaderName() + " should be zero or a positive number"
+                        );
                         return false;
                     }
                 } catch (NumberFormatException e) {
-                    addError(row, errors, templateHeader.getHeaderName() + " should be zero or a positive number");
+                    addError(
+                            row,
+                            errors,
+                            templateHeader.getHeaderName() + " should be zero or a positive number"
+                    );
                     return false;
                 }
             } else if (dataType == AppEnums.DataType.AMOUNT) {
                 try {
                     new BigDecimal(cellValue);
                 } catch (NumberFormatException e) {
-                    addError(row, errors, templateHeader.getHeaderName() + " should be a valid amount");
+                    addError(
+                            row,
+                            errors,
+                            templateHeader.getHeaderName() + " should be a valid amount"
+                    );
                     return false;
                 }
             } else if (dataType == AppEnums.DataType.DATE) {
                 LocalDate date = DateUtils.toLocalDate(cellValue);
                 if (date == null) {
-                    addError(row, errors, templateHeader.getHeaderName() + " should be in dd-MM-yyyy format");
+                    addError(
+                            row,
+                            errors,
+                            templateHeader.getHeaderName() + " should be in dd-MM-yyyy format"
+                    );
                     return false;
                 }
             }
@@ -157,15 +212,28 @@ public class ExcelValidationService {
         return true;
     }
 
-    private boolean validateLength(Row row, Map<Integer, List<String>> errors, TemplateHeader templateHeader, String cellValue) {
+    private boolean validateLength(
+            Row row,
+            Map<Integer, List<String>> errors,
+            TemplateHeader templateHeader,
+            String cellValue
+    ) {
         //Min Length
         if (templateHeader.getMinLength() != null && cellValue.length() < templateHeader.getMinLength()) {
-            addError(row, errors, templateHeader.getHeaderName() + " should be at least " + templateHeader.getMinLength() + " characters");
+            addError(
+                    row,
+                    errors,
+                    templateHeader.getHeaderName() + " should be at least " + templateHeader.getMinLength() + " characters"
+            );
             return false;
         }
         //Max Length
         if (templateHeader.getMaxLength() != null && cellValue.length() > templateHeader.getMaxLength()) {
-            addError(row, errors, templateHeader.getHeaderName() + " should not exceed " + templateHeader.getMaxLength() + " characters");
+            addError(
+                    row,
+                    errors,
+                    templateHeader.getHeaderName() + " should not exceed " + templateHeader.getMaxLength() + " characters"
+            );
             return false;
         }
         return true;
