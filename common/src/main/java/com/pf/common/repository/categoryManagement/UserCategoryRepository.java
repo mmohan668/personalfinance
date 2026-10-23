@@ -17,13 +17,13 @@ public interface UserCategoryRepository extends JpaRepository<UserCategory, Long
 
     @Transactional(readOnly = true)
     @Query("""
-            SELECT COUNT(uc)
+            SELECT COUNT(uc) > 0
             FROM UserCategory uc
             WHERE uc.referenceValue.id = :transactionType
             AND LOWER(TRIM(uc.categoryName)) =LOWER(TRIM(:categoryName))
             AND uc.user.adminUser.id = :userId
             """)
-    long countByTransactionTypeAndNameAndUserId(
+    boolean existsByTransactionTypeAndNameAndUserId(
             @Param("transactionType") Long transactionType,
             @Param("categoryName") String categoryName,
             @Param("userId") Long userId
@@ -31,14 +31,14 @@ public interface UserCategoryRepository extends JpaRepository<UserCategory, Long
 
     @Transactional(readOnly = true)
     @Query("""
-            SELECT COUNT(uc)
+            SELECT COUNT(uc) > 0
             FROM UserCategory uc
             WHERE uc.referenceValue.id = :transactionType
             AND LOWER(TRIM(uc.categoryName)) =LOWER(TRIM(:categoryName))
             AND uc.user.adminUser.id = :userId
             AND uc.id <> :id
             """)
-    long countByTransactionTypeAndNameAndUserIdAndIdNot(
+    boolean existsByTransactionTypeAndNameAndUserIdAndIdNot(
             @Param("transactionType") Long transactionType,
             @Param("categoryName") String categoryName,
             @Param("userId") Long userId,

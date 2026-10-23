@@ -17,11 +17,11 @@ public interface UserSubcategoryRepository extends JpaRepository<UserSubcategory
 
     @Transactional(readOnly = true)
     @Query("""
-            SELECT COUNT(usc)
+            SELECT COUNT(usc) > 0
             FROM UserSubcategory usc
             WHERE usc.userCategory.id IN (:ids)
             """)
-    long countByCategoryId(@Param("ids") List<Long> ids);
+    boolean existsByCategoryId(@Param("ids") List<Long> ids);
 
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
@@ -52,25 +52,25 @@ public interface UserSubcategoryRepository extends JpaRepository<UserSubcategory
 
     @Transactional(readOnly = true)
     @Query("""
-            SELECT COUNT(usc)
+            SELECT COUNT(usc) > 0
             FROM UserSubcategory usc
             WHERE usc.userCategory.id = :categoryId
             AND LOWER(TRIM(usc.subcategoryName)) = LOWER(TRIM(:subcategoryName))
             """)
-    long countByCategoryIdAndSubcategoryName(
+    boolean existsByCategoryIdAndSubcategoryName(
             @Param("categoryId") Long categoryId,
             @Param("subcategoryName") String subcategoryName
     );
 
     @Transactional(readOnly = true)
     @Query("""
-            SELECT COUNT(usc)
+            SELECT COUNT(usc) > 0
             FROM UserSubcategory usc
             WHERE usc.userCategory.id = :categoryId
             AND LOWER(TRIM(usc.subcategoryName)) = LOWER(TRIM(:subcategoryName))
             AND usc.id <> :subcategoryId
             """)
-    long countByCategoryIdAndSubcategoryNameAndIdNot(
+    boolean existsByCategoryIdAndSubcategoryNameAndIdNot(
             @Param("categoryId") Long categoryId,
             @Param("subcategoryName") String subcategoryName,
             @Param("subcategoryId") Long subcategoryId

@@ -66,8 +66,12 @@ public class BulkUploadProcessingService {
         bulkUploadsStatus.setRemarks(BulkUploadStatus.IN_PROCESS.getDescription());
         bulkUploadsStatusRepository.saveAndFlush(bulkUploadsStatus);
         String filePath = bulkUploadsStatus.getUploadedFile();
-        try (FileInputStream fis = new FileInputStream(filePath); XSSFWorkbook workbook = (XSSFWorkbook) WorkbookFactory.create(fis)) {
-            ExcelValidationResult validationResult = excelValidationService.validateExcel(bulkUploadsStatus.getTemplateName().getTemplateName(), workbook);
+        try (FileInputStream fis = new FileInputStream(filePath);
+             XSSFWorkbook workbook = (XSSFWorkbook) WorkbookFactory.create(fis)) {
+            ExcelValidationResult validationResult = excelValidationService.validateExcel(
+                    bulkUploadsStatus.getTemplateName().getTemplateName(),
+                    workbook
+            );
             if (validationResult.nonEmptyRowsCount() == 0) {
                 log.warn("Excel file contains no data rows for id = {}", id);
                 bulkUploadsStatus.setStatus(BulkUploadStatus.NO_DATA.getValue());
@@ -75,7 +79,11 @@ public class BulkUploadProcessingService {
                 bulkUploadsStatusRepository.saveAndFlush(bulkUploadsStatus);
                 log.info("Bulk Upload contains no data for id = {}", id);
             } else if (!validationResult.errors().isEmpty()) {
-                String errorFilePath = createErrorFile(bulkUploadsStatus.getUploadedFile(), bulkUploadsStatus.getTemplateName().getTemplateName(), validationResult.errors());
+                String errorFilePath = createErrorFile(
+                        bulkUploadsStatus.getUploadedFile(),
+                        bulkUploadsStatus.getTemplateName().getTemplateName(),
+                        validationResult.errors()
+                );
                 bulkUploadsStatus.setErrorFile(errorFilePath);
                 if (validationResult.errors().size() == validationResult.nonEmptyRowsCount()) {
                     log.debug("Validation failed for all rows");
@@ -106,16 +114,26 @@ public class BulkUploadProcessingService {
         }
     }
 
-    public void processValidRows(XSSFWorkbook workbook, BulkUploadsStatus bulkUploadsStatus, Set<Integer> validRows) {
+    public void processValidRows(
+            XSSFWorkbook workbook,
+            BulkUploadsStatus bulkUploadsStatus,
+            Set<Integer> validRows
+    ) {
         String templateName = bulkUploadsStatus.getTemplateName().getTemplateName();
         AppEnums.TemplateName template = AppEnums.TemplateName.valueOf(templateName);
-        Set<TemplateRowData> templateRowData = buildValidRows(workbook, bulkUploadsStatus.getTemplateName(), validRows);
+        Set<TemplateRowData> templateRowData = buildValidRows(
+                workbook,
+                bulkUploadsStatus.getTemplateName(),
+                validRows
+        );
         log.info("Saving reference values bulk thru bulk upload template");
         if (templateRowData == null || templateRowData.isEmpty()) {
             log.warn("saveReferenceValuesBulk: template row data is empty.");
             return;
         }
-        String json = objectMapper.writeValueAsString(templateRowData.stream().map(TemplateRowData::getValues).toList());
+        String json = objectMapper.writeValueAsString(
+                templateRowData.stream().map(TemplateRowData::getValues).toList()
+        );
         switch (template) {
             case REFERENCE_VALUES: {
                 saveReferenceValuesBulk(json, bulkUploadsStatus.getUser());
@@ -132,11 +150,16 @@ public class BulkUploadProcessingService {
         }
     }
 
-    public Set<TemplateRowData> buildValidRows(XSSFWorkbook workbook, TemplateName templateName, Set<Integer> invalidRows) {
+    public Set<TemplateRowData> buildValidRows(
+            XSSFWorkbook workbook,
+            TemplateName templateName,
+            Set<Integer> invalidRows
+    ) {
         XSSFSheet sheet = workbook.getSheet(templateName.getSheetName());
         Set<TemplateHeader> templateHeaders = templateName.getTemplateHeaders();
         Set<TemplateRowData> templateRowDataList = new HashSet<>();
-        Map<Integer, TemplateHeader> headersByColumn = templateHeaders.stream().collect(Collectors.toMap(TemplateHeader::getColumnIndex, Function.identity()));
+        Map<Integer, TemplateHeader> headersByColumn = templateHeaders.stream()
+                .collect(Collectors.toMap(TemplateHeader::getColumnIndex, Function.identity()));
         for (int i = 1; i <= sheet.getLastRowNum(); i++) {
             if (invalidRows.contains(i)) {
                 continue;
@@ -213,12 +236,19 @@ public class BulkUploadProcessingService {
         );
     }
 
-    private String createErrorFile(String uploadedFilePath, String uploadedType, Map<Integer, List<String>> errors) throws IOException {
+    private String createErrorFile(
+            String uploadedFilePath,
+            String uploadedType,
+            Map<Integer, List<String>> errors
+    ) throws IOException {
         Path inputPath = Paths.get(uploadedFilePath);
         String fileName = inputPath.getFileName().toString();
         String errorFileName = "ERROR_" + fileName;
-        Path errorFilePath = FileUtils.getDateTimePath(bulkUploadProperties.getError(), uploadedType).resolve(errorFileName);
-        try (FileInputStream fis = new FileInputStream(uploadedFilePath); XSSFWorkbook workbook = (XSSFWorkbook) WorkbookFactory.create(fis); FileOutputStream fos = new FileOutputStream(errorFilePath.toFile())) {
+        Path errorFilePath = FileUtils.getDateTimePath(bulkUploadProperties.getError(), uploadedType)
+                .resolve(errorFileName);
+        try (FileInputStream fis = new FileInputStream(uploadedFilePath);
+             XSSFWorkbook workbook = (XSSFWorkbook) WorkbookFactory.create(fis);
+             FileOutputStream fos = new FileOutputStream(errorFilePath.toFile())) {
             Sheet sheet = workbook.getSheet(uploadedType);
             if (sheet == null) {
                 throw new IOException("Sheet not found: " + uploadedType);
@@ -283,48 +313,60 @@ public class BulkUploadProcessingService {
     @Transactional
     public void saveReferenceValuesBulk(String json, User user) {
         entityManager.createNativeQuery("""
-                CALL insert_reference_values_bulk(
-                    :userId,
-                    :createdBy,
-                    CAST(:rows AS jsonb)
-                )
-                """).setParameter("userId", user.getAdminUser().getId()).setParameter("createdBy", user.getId()).setParameter("rows", json).executeUpdate();
+                        CALL insert_reference_values_bulk(
+                            :userId,
+                            :createdBy,
+                            CAST(:rows AS jsonb)
+                        )
+                        """)
+                .setParameter("userId", user.getAdminUser().getId())
+                .setParameter("createdBy", user.getId())
+                .setParameter("rows", json).executeUpdate();
         log.info("save reference values bulk finished successfully.");
     }
 
     @Transactional
     public void saveCategoriesBulk(String json, User user) {
         entityManager.createNativeQuery("""
-                CALL insert_user_categories_bulk(
-                    :userId,
-                    :createdBy,
-                    CAST(:rows AS jsonb)
-                )
-                """).setParameter("userId", user.getAdminUser().getId()).setParameter("createdBy", user.getId()).setParameter("rows", json).executeUpdate();
+                        CALL insert_user_categories_bulk(
+                            :userId,
+                            :createdBy,
+                            CAST(:rows AS jsonb)
+                        )
+                        """)
+                .setParameter("userId", user.getAdminUser().getId())
+                .setParameter("createdBy", user.getId())
+                .setParameter("rows", json).executeUpdate();
         log.info("save user categories bulk finished successfully.");
     }
 
     @Transactional
     public void saveSubcategoriesBulk(String json, User user) {
         entityManager.createNativeQuery("""
-                CALL insert_user_subcategories_bulk(
-                    :userId,
-                    :createdBy,
-                    CAST(:rows AS jsonb)
-                )
-                """).setParameter("userId", user.getAdminUser().getId()).setParameter("createdBy", user.getId()).setParameter("rows", json).executeUpdate();
+                        CALL insert_user_subcategories_bulk(
+                            :userId,
+                            :createdBy,
+                            CAST(:rows AS jsonb)
+                        )
+                        """)
+                .setParameter("userId", user.getAdminUser().getId())
+                .setParameter("createdBy", user.getId())
+                .setParameter("rows", json).executeUpdate();
         log.info("save user subcategories bulk finished successfully.");
     }
 
     @Transactional
     public void saveFinancialTransactionsBulk(String json, User user) {
         entityManager.createNativeQuery("""
-                CALL insert_financial_transactions_bulk(
-                    :userId,
-                    :createdBy,
-                    CAST(:rows AS jsonb)
-                )
-                """).setParameter("userId", user.getAdminUser().getId()).setParameter("createdBy", user.getId()).setParameter("rows", json).executeUpdate();
+                        CALL insert_financial_transactions_bulk(
+                            :userId,
+                            :createdBy,
+                            CAST(:rows AS jsonb)
+                        )
+                        """)
+                .setParameter("userId", user.getAdminUser().getId())
+                .setParameter("createdBy", user.getId())
+                .setParameter("rows", json).executeUpdate();
         log.info("save financial transactions bulk finished successfully.");
     }
 }

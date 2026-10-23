@@ -46,7 +46,8 @@ public class TemplateGenerationService extends BaseService {
     public static final String DATA_PATTERN = "Data Pattern";
     public static final String DESCRIPTION = "Description";
 
-    private static final List<String> DATA_DICTIONARY_HEADERS = List.of(EXCEL_HEADER, REQUIRED, MIN_LENGTH, MAX_LENGTH, DATA_FORMAT, DATA_PATTERN, DESCRIPTION);
+    private static final List<String> DATA_DICTIONARY_HEADERS =
+            List.of(EXCEL_HEADER, REQUIRED, MIN_LENGTH, MAX_LENGTH, DATA_FORMAT, DATA_PATTERN, DESCRIPTION);
 
     private final TemplateNameRepository templateNamesRepository;
     private final ReferenceObjectRepository referenceObjectRepository;
@@ -78,11 +79,19 @@ public class TemplateGenerationService extends BaseService {
             return new ByteArrayInputStream(outputStream.toByteArray());
         } catch (IOException e) {
             log.error("Error creating Excel template for templateName={}", template.getTemplateName(), e);
-            throw new IllegalStateException("Unable to create Excel template for: " + template.getTemplateName(), e);
+            throw new IllegalStateException(
+                    "Unable to create Excel template for: " + template.getTemplateName(),
+                    e
+            );
         }
     }
 
-    private void createMainSheetAndHeaders(XSSFWorkbook workbook, TemplateName template, CellStyle requiredHeaderStyle, CellStyle optionalHeaderStyle) {
+    private void createMainSheetAndHeaders(
+            XSSFWorkbook workbook,
+            TemplateName template,
+            CellStyle requiredHeaderStyle,
+            CellStyle optionalHeaderStyle
+    ) {
         XSSFSheet sheet = workbook.createSheet(template.getSheetName());
         Row headerRow = sheet.createRow(0);
         Set<TemplateHeader> templateHeaders = template.getTemplateHeaders();
@@ -96,7 +105,11 @@ public class TemplateGenerationService extends BaseService {
         sheet.createFreezePane(0, 1);
     }
 
-    private void createDataDictionarySheet(XSSFWorkbook workbook, TemplateName template, CellStyle dictionaryBodyStyle) {
+    private void createDataDictionarySheet(
+            XSSFWorkbook workbook,
+            TemplateName template,
+            CellStyle dictionaryBodyStyle
+    ) {
         XSSFSheet sheet = createDataDictionarySheetHeaders(workbook);
         createDataDictionaryData(sheet, template, dictionaryBodyStyle);
     }
@@ -115,9 +128,16 @@ public class TemplateGenerationService extends BaseService {
         return sheet;
     }
 
-    private void createDataDictionaryData(XSSFSheet sheet, TemplateName template, CellStyle dictionaryBodyStyle) {
+    private void createDataDictionaryData(
+            XSSFSheet sheet,
+            TemplateName template,
+            CellStyle dictionaryBodyStyle
+    ) {
         int rowIndex = 1;
-        for (TemplateHeader header : template.getTemplateHeaders().stream().sorted(Comparator.comparing(TemplateHeader::getColumnIndex)).toList()) {
+        for (TemplateHeader header : template.getTemplateHeaders().stream()
+                .sorted(Comparator.comparing(TemplateHeader::getColumnIndex))
+                .toList()
+        ) {
             Row row = sheet.createRow(rowIndex++);
             createDictionaryCell(row, 0, header.getHeaderName(), dictionaryBodyStyle);
             createDictionaryCell(row, 1, header.isRequired() ? YES : NO, dictionaryBodyStyle);
@@ -140,13 +160,17 @@ public class TemplateGenerationService extends BaseService {
     }
 
     private void createAdditionalSheets(XSSFWorkbook workbook, TemplateName template) {
-        for (TemplateAdditionalSheet additionalSheets : template.getTemplateAdditionalSheets().stream().sorted(Comparator.comparing(TemplateAdditionalSheet::getId)).toList()) {
+        for (TemplateAdditionalSheet additionalSheets : template.getTemplateAdditionalSheets().stream()
+                .sorted(Comparator.comparing(TemplateAdditionalSheet::getId))
+                .toList()
+        ) {
             createAdditionalSheet(workbook, additionalSheets);
         }
     }
 
     private void createAdditionalSheet(XSSFWorkbook workbook, TemplateAdditionalSheet template) {
-        Map<String, List<String>> additionalSheetData = new TreeMap<>(fetchAdditionalSheetData(template.getDataReference()));
+        Map<String, List<String>> additionalSheetData =
+                new TreeMap<>(fetchAdditionalSheetData(template.getDataReference()));
         XSSFSheet sheet = workbook.createSheet(template.getSheetName());
         CellStyle headerStyle = ExcelUtils.createHeaderStyle(workbook, false);
         Row headerRow = sheet.createRow(0);

@@ -25,7 +25,11 @@ public class SuggestionService extends BaseService {
         SuggestionField suggestionField = SuggestionField.resolve(suggestionRequest.getEntity());
         SearchCriteria searchCriteria = createSearchCriteria(suggestionRequest);
         if (suggestionField.getQueryType() == QueryType.ENTITY) {
-            return getSuggestionBySearchCriteria(suggestionField.getEntityClass(), searchCriteria, suggestionRequest.getField());
+            return getSuggestionBySearchCriteria(
+                    suggestionField.getEntityClass(),
+                    searchCriteria,
+                    suggestionRequest.getField()
+            );
         }
         throw new UnsupportedOperationException("Query type not yet supported: " + suggestionField.getQueryType());
     }
@@ -36,7 +40,11 @@ public class SuggestionService extends BaseService {
         addNonnullFilter(suggestionRequest, searchCriteria);
         addSuggestionFilter(searchCriteria, suggestionRequest.getField(), suggestionRequest.getValue());
         if (suggestionRequest.getDependentField() != null) {
-            addSuggestionFilter(searchCriteria, suggestionRequest.getDependentField(), suggestionRequest.getDependentValue());
+            addSuggestionFilter(
+                    searchCriteria,
+                    suggestionRequest.getDependentField(),
+                    suggestionRequest.getDependentValue()
+            );
         }
         searchCriteria.addSort(suggestionRequest.getField(), SortOrder.ASC.getValue());
         searchCriteria.setTake(suggestionRequest.getLimit());

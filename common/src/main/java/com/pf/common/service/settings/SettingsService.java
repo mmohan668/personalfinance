@@ -52,40 +52,81 @@ public class SettingsService extends BaseService {
 
     public GridResult fetchReferenceObjectGridData(SearchCriteria searchCriteria) {
         log.debug("fetchReferenceObjectGridData: {}", searchCriteria);
-        GridFilter gridFilter = GridFilter.builder().field(USER_ID).operator(EQUALS.getValue()).value(String.valueOf(fetchLoginUser().getAdminUser().getId())).build();
+        GridFilter gridFilter = GridFilter.builder()
+                .field(USER_ID)
+                .operator(EQUALS.getValue())
+                .value(String.valueOf(fetchLoginUser().getAdminUser().getId()))
+                .build();
         searchCriteria.getFilterList().add(gridFilter);
         searchCriteria.getSortList().add(new GridSort(ID, ASC.getValue()));
         searchCriteria.setFetchPaths(List.of(CREATED_BY_USER, UPDATED_BY_USER, USER));
         searchCriteria.setFIELD_MAPPINGS(ReferenceObjectDto.FIELD_MAPPINGS);
-        long totalRecords = getCountBySearchCriteria(ReferenceObject.class, searchCriteria);
-        List<ReferenceObjectDto> recordDetails = referenceObjectMapper.toDtoList(getDataBySearchCriteria(ReferenceObject.class, searchCriteria));
+        long totalRecords = 0;
+        if (!searchCriteria.isLoadAllData()) {
+            totalRecords = getCountBySearchCriteria(
+                    ReferenceObject.class,
+                    searchCriteria
+            );
+            if (totalRecords == 0) {
+                return gridResult(totalRecords, List.of());
+            }
+        }
+        List<ReferenceObjectDto> recordDetails = referenceObjectMapper.toDtoList(
+                getDataBySearchCriteria(ReferenceObject.class, searchCriteria)
+        );
         log.debug("fetchReferenceObjectGridData: totalRecords: {}", totalRecords);
         return gridResult(totalRecords, recordDetails);
     }
 
     public GridResult fetchReferenceValueGridData(SearchCriteria searchCriteria) {
         log.debug("fetchReferenceValuesGridData: {}", searchCriteria);
-        GridFilter gridFilter = GridFilter.builder().field(USER_ID).operator(EQUALS.getValue()).value(String.valueOf(fetchLoginUser().getAdminUser().getId())).build();
+        GridFilter gridFilter = GridFilter.builder()
+                .field(USER_ID)
+                .operator(EQUALS.getValue())
+                .value(String.valueOf(fetchLoginUser().getAdminUser().getId()))
+                .build();
         searchCriteria.getFilterList().add(gridFilter);
         searchCriteria.getSortList().add(new GridSort(ID, ASC.getValue()));
         searchCriteria.setFetchPaths(List.of(REFERENCE_OBJECT, USER, CREATED_BY_USER, UPDATED_BY_USER));
         searchCriteria.setFIELD_MAPPINGS(ReferenceValueDto.FIELD_MAPPINGS);
-        long totalRecords = getCountBySearchCriteria(ReferenceValue.class, searchCriteria);
-        List<ReferenceValue> referenceValues = getDataBySearchCriteria(ReferenceValue.class, searchCriteria);
-        List<ReferenceValueDto> recordDetails = referenceValueMapper.toDtoList(referenceValues);
+        long totalRecords = 0;
+        if (!searchCriteria.isLoadAllData()) {
+            totalRecords = getCountBySearchCriteria(
+                    ReferenceValue.class,
+                    searchCriteria
+            );
+            if (totalRecords == 0) {
+                return gridResult(totalRecords, List.of());
+            }
+        }
+        List<ReferenceValueDto> recordDetails = referenceValueMapper.toDtoList(
+                getDataBySearchCriteria(ReferenceValue.class, searchCriteria)
+        );
         log.debug("fetchReferenceValuesGridData: totalRecords: {}", totalRecords);
         return gridResult(totalRecords, recordDetails);
     }
 
     public GridResult fetchSystemConfigGridData(SearchCriteria searchCriteria) {
         log.debug("fetchSystemConfigGridData: {}", searchCriteria);
-        GridFilter gridFilter = GridFilter.builder().field(USER_ID).operator(EQUALS.getValue()).value(String.valueOf(fetchLoginUser().getAdminUser().getId())).build();
+        GridFilter gridFilter = GridFilter.builder()
+                .field(USER_ID)
+                .operator(EQUALS.getValue())
+                .value(String.valueOf(fetchLoginUser().getAdminUser().getId()))
+                .build();
         searchCriteria.getFilterList().add(gridFilter);
         searchCriteria.getSortList().add(new GridSort(ID, ASC.getValue()));
         searchCriteria.setFetchPaths(List.of(CONFIG_VALUE, CREATED_BY_USER, UPDATED_BY_USER));
         searchCriteria.setFIELD_MAPPINGS(SystemConfigDto.FIELD_MAPPINGS);
-        long totalRecords = getCountBySearchCriteria(SystemConfig.class, searchCriteria);
-        List<SystemConfigDto> recordDetails = systemConfigMapper.toDtoList(getDataBySearchCriteria(SystemConfig.class, searchCriteria));
+        long totalRecords = 0;
+        if (!searchCriteria.isLoadAllData()) {
+            totalRecords = getCountBySearchCriteria(SystemConfig.class, searchCriteria);
+            if (totalRecords == 0) {
+                return gridResult(totalRecords, List.of());
+            }
+        }
+        List<SystemConfigDto> recordDetails = systemConfigMapper.toDtoList(
+                getDataBySearchCriteria(SystemConfig.class, searchCriteria)
+        );
         log.debug("fetchSystemConfigGridData: totalRecords: {}", totalRecords);
         return gridResult(totalRecords, recordDetails);
     }
@@ -94,9 +135,14 @@ public class SettingsService extends BaseService {
     public ApiResponse saveReferenceValue(ReferenceValueDto referenceValueDto) {
         log.debug("saveReferenceValue: {}", referenceValueDto);
         User user = fetchLoginUser();
-        ReferenceObject referenceObject = referenceObjectRepository.findById(referenceValueDto.getRefObjNameId()).orElse(null);
+        ReferenceObject referenceObject =
+                referenceObjectRepository.findById(referenceValueDto.getRefObjNameId())
+                        .orElse(null);
         if (referenceObject == null) {
-            log.warn("saveReferenceValue: Reference object not found. refObjNameId = {}", referenceValueDto.getRefObjNameId());
+            log.warn(
+                    "saveReferenceValue: Reference object not found. refObjNameId = {}",
+                    referenceValueDto.getRefObjNameId()
+            );
             return failure("Reference object not found.");
         }
         ReferenceValue referenceValue;
@@ -104,8 +150,15 @@ public class SettingsService extends BaseService {
             //Create
             referenceValue = referenceValueMapper.toEntity(referenceValueDto);
             referenceValue.setReferenceObject(referenceObject);
-            if (referenceValueRepository.countByReferenceObjectIdAndReferenceCode(referenceObject.getId(), referenceValue.getReferenceCode()) > 0) {
-                log.warn("Reference code already exists for the selected reference object. refObjName = {}, referenceCode = {}", referenceObject.getRefObjName(), referenceValue.getReferenceCode());
+            if (referenceValueRepository.existsByReferenceObjectIdAndReferenceCode(
+                    referenceObject.getId(),
+                    referenceValue.getReferenceCode())
+            ) {
+                log.warn(
+                        "Reference code already exists for the selected reference object. refObjName = {}, referenceCode = {}",
+                        referenceObject.getRefObjName(),
+                        referenceValue.getReferenceCode()
+                );
                 return failure("Reference code already exists for the selected reference object.");
             }
             referenceValue.setUser(user.getAdminUser());
@@ -114,11 +167,22 @@ public class SettingsService extends BaseService {
             //Update
             referenceValue = referenceValueRepository.findById(referenceValueDto.getId()).orElse(null);
             if (referenceValue == null) {
-                log.warn("saveReferenceValue: Reference value not found. referenceValueId = {}", referenceValueDto.getId());
+                log.warn(
+                        "saveReferenceValue: Reference value not found. referenceValueId = {}",
+                        referenceValueDto.getId()
+                );
                 return failure("Reference value not found.");
             }
-            if (referenceValueRepository.countByReferenceObjectIdAndReferenceCodeAndIdNot(referenceObject.getId(), referenceValueDto.getReferenceCode(), referenceValue.getId()) > 0) {
-                log.warn("Reference code already exists for the selected reference object. referenceCode = {}, refObjName {}", referenceValueDto.getReferenceCode(), referenceObject.getRefObjName());
+            if (referenceValueRepository.existsByReferenceObjectIdAndReferenceCodeAndIdNot(
+                    referenceObject.getId(),
+                    referenceValueDto.getReferenceCode(),
+                    referenceValue.getId())
+            ) {
+                log.warn(
+                        "Reference code already exists for the selected reference object. referenceCode = {}, refObjName {}",
+                        referenceValueDto.getReferenceCode(),
+                        referenceObject.getRefObjName()
+                );
                 return failure("Reference code already exists for the selected reference object.");
             }
             referenceValue.setReferenceObject(referenceObject);
@@ -139,10 +203,17 @@ public class SettingsService extends BaseService {
         if (ids == null || ids.isEmpty()) {
             return failure("No reference values selected for deletion.");
         }
-        if (BatchUtils.allBatchesNotPassed(ids, chunk -> !systemConfigRepository.existsByConfigValueIdIn(chunk) && !userCategoryRepository.existsByReferenceValueIdIn(chunk))) {
+        if (BatchUtils.hasFailingBatch(
+                ids,
+                chunk -> !systemConfigRepository.existsByConfigValueIdIn(chunk)
+                        && !userCategoryRepository.existsByReferenceValueIdIn(chunk))
+        ) {
             return failure("Reference values cannot be deleted because one or more are currently in use.");
         }
-        BatchUtils.processInBatches(ids, referenceValueRepository::deleteAllByIdInBatch);
+        BatchUtils.processInBatches(
+                ids,
+                referenceValueRepository::deleteAllByIdInBatch
+        );
         return success("Reference value(s) deleted successfully.");
     }
 
@@ -176,7 +247,9 @@ public class SettingsService extends BaseService {
         if (systemConfig == null) {
             return failure("System config not found.");
         }
-        ReferenceValue referenceValue = referenceValueRepository.findById(systemConfigDto.getReferenceId()).orElse(null);
+        ReferenceValue referenceValue =
+                referenceValueRepository.findById(systemConfigDto.getReferenceId())
+                        .orElse(null);
         if (referenceValue == null) {
             return failure("Reference value not found.");
         }
@@ -193,7 +266,10 @@ public class SettingsService extends BaseService {
         }
         Long modifiedBy = fetchLoginUser().getId();
         LocalDateTime modifiedAt = LocalDateTime.now();
-        int activated = BatchUtils.processBatchesAndSum(ids, chunk -> referenceObjectRepository.activateReferenceObject(chunk, modifiedBy, modifiedAt));
+        int activated = BatchUtils.processBatchesAndSum(
+                ids,
+                chunk -> referenceObjectRepository.activateReferenceObject(chunk, modifiedBy, modifiedAt)
+        );
         log.debug("{} Reference object(s) activated", activated);
         return success("Reference object(s) activated successfully.");
     }
@@ -206,7 +282,10 @@ public class SettingsService extends BaseService {
         }
         Long modifiedBy = fetchLoginUser().getId();
         LocalDateTime modifiedAt = LocalDateTime.now();
-        int inactivated = BatchUtils.processBatchesAndSum(ids, chunk -> referenceObjectRepository.inactivateReferenceObject(chunk, modifiedBy, modifiedAt));
+        int inactivated = BatchUtils.processBatchesAndSum(
+                ids,
+                chunk -> referenceObjectRepository.inactivateReferenceObject(chunk, modifiedBy, modifiedAt)
+        );
         log.debug("{} Reference object(s) inactivated", inactivated);
         return success("Reference object(s) inactivated successfully.");
     }
@@ -217,10 +296,16 @@ public class SettingsService extends BaseService {
         if (ids == null || ids.isEmpty()) {
             return failure("No reference object(s) selected for deletion.");
         }
-        if (BatchUtils.allBatchesNotPassed(ids, chunk -> !referenceValueRepository.existsByReferenceObject(chunk))) {
+        if (BatchUtils.hasFailingBatch(
+                ids,
+                chunk -> !referenceValueRepository.existsByReferenceObject(chunk))
+        ) {
             return failure("Reference object(s) cannot be deleted because one or more are currently in use.");
         }
-        BatchUtils.processInBatches(ids, referenceObjectRepository::deleteAllByIdInBatch);
+        BatchUtils.processInBatches(
+                ids,
+                referenceObjectRepository::deleteAllByIdInBatch
+        );
         log.debug("{} Reference object(s) deleted", ids.size());
         return success("Reference object(s) deleted successfully.");
     }
@@ -243,10 +328,15 @@ public class SettingsService extends BaseService {
             referenceObjectRepository.save(referenceObject);
         } else {
             log.info("update reference object: {}", referenceObjectDto);
-            if (referenceObjectRepository.existsByRefObjNameAndId(referenceObjectDto.getRefObjName(), referenceObjectDto.getId())) {
+            if (referenceObjectRepository.existsByRefObjNameAndId(
+                    referenceObjectDto.getRefObjName(),
+                    referenceObjectDto.getId())
+            ) {
                 return failure("Reference object name already exists.");
             }
-            ReferenceObject referenceObject = referenceObjectRepository.findById(referenceObjectDto.getId()).orElse(null);
+            ReferenceObject referenceObject =
+                    referenceObjectRepository.findById(referenceObjectDto.getId())
+                            .orElse(null);
             if (referenceObject == null) {
                 return failure("Reference object not found.");
             }
@@ -264,7 +354,10 @@ public class SettingsService extends BaseService {
         }
         Long updatedBy = fetchLoginUser().getId();
         LocalDateTime updatedAt = LocalDateTime.now();
-        int activated = BatchUtils.processBatchesAndSum(ids, chunk -> referenceValueRepository.activateReferenceValues(chunk, updatedBy, updatedAt));
+        int activated = BatchUtils.processBatchesAndSum(
+                ids,
+                chunk -> referenceValueRepository.activateReferenceValues(chunk, updatedBy, updatedAt)
+        );
         log.debug("{} Reference value(s) activated", activated);
         return success("Reference value(s) activated successfully.");
     }
@@ -277,7 +370,10 @@ public class SettingsService extends BaseService {
         }
         Long updatedBy = fetchLoginUser().getId();
         LocalDateTime updatedAt = LocalDateTime.now();
-        int inactivated = BatchUtils.processBatchesAndSum(ids, chunk -> referenceValueRepository.inactivateReferenceValues(chunk, updatedBy, updatedAt));
+        int inactivated = BatchUtils.processBatchesAndSum(
+                ids,
+                chunk -> referenceValueRepository.inactivateReferenceValues(chunk, updatedBy, updatedAt)
+        );
         log.debug("{} Reference value(s) inactivated", inactivated);
         return success("Reference value(s) inactivated successfully.");
     }
