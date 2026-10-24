@@ -41,7 +41,7 @@
         <ng-template #header>
           <tr>
             <!-- Selection header -->
-            <th class="selection-column selection-header">
+            <th>
               <mat-checkbox
                 aria-label="Select all rows"
                 [checked]="allRowsSelected()"
@@ -121,7 +121,7 @@
             (click)="onRowClick(row)"
           >
             <!-- Row selection -->
-            <td class="selection-column selection-cell">
+            <td>
               <mat-checkbox
                 aria-label="Select row"
                 [checked]="isRowSelected(row)"

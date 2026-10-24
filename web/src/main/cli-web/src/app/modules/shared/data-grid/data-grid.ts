@@ -426,6 +426,7 @@ export class DataGrid implements OnInit {
         console.log('No rows selected');
         return;
       }
+
       sourceRows = this.selectedRows;
     } else {
       const sorts: GridSort[] = this.sortMeta
@@ -437,6 +438,7 @@ export class DataGrid implements OnInit {
           field: sort.field,
           order: sort.order === 1 ? 'asc' : 'desc',
         }));
+
       const request: SearchCriteria = {
         sortList: sorts,
         filterList: this.filters,
@@ -445,27 +447,34 @@ export class DataGrid implements OnInit {
         loadAllData: true,
         gridName: this.gridName,
       };
+
       if (this.totalRecords > this.config.configValue.maxExportRows) {
         const exportRequest: ExportRequest = {
           userId: 2,
           exportFileName: this.gridExportFileName,
-          columns: this.visibleColumns(),
+          columns: visibleColumns,
           searchCriteria: request,
         };
-        let apiResponse: ApiResponse = await firstValueFrom(this._gs.exportServer(exportRequest));
+
+        const apiResponse: ApiResponse = await firstValueFrom(this._gs.exportServer(exportRequest));
+
         if (apiResponse.success) {
           this._ns.success(apiResponse.message);
         } else {
           this._ns.error(apiResponse.message);
         }
+
         return;
       }
+
       sourceRows = (await firstValueFrom(this._gs.loadGridData(request))).recordDetails;
     }
 
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('data');
     const currencySymbol = this.getCurrencySymbol();
+
+    // Header row
     const headerRow = worksheet.addRow(visibleColumns.map((col) => col.header));
 
     headerRow.eachCell((cell) => {
@@ -473,15 +482,31 @@ export class DataGrid implements OnInit {
         bold: true,
         size: 13,
       };
+
       cell.alignment = {
         vertical: 'middle',
       };
+
+      cell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FFD9D9D9' },
+      };
+
+      cell.border = {
+        right: {
+          style: 'thin',
+          color: { argb: 'FF000000' },
+        },
+      };
     });
 
+    // Data rows and grouping
     let previousGroup: any = Symbol('initial');
 
     for (const row of sourceRows) {
       const currentGroup = this.groupBy ? row[this.groupBy] : undefined;
+
       if (this.groupBy && currentGroup !== previousGroup) {
         const groupHeaderRow = worksheet.addRow([
           `${this.getGroupColumnHeader()}: ${currentGroup}`,
@@ -497,13 +522,16 @@ export class DataGrid implements OnInit {
         }
 
         const groupCell = groupHeaderRow.getCell(1);
+
         groupCell.font = {
           bold: true,
           size: 13,
         };
+
         groupCell.alignment = {
           vertical: 'middle',
         };
+
         previousGroup = currentGroup;
       }
 
@@ -512,45 +540,42 @@ export class DataGrid implements OnInit {
           if (col.cellTemplate === 'cellValueTemplate') {
             return this.calculateCellValue(row, col);
           }
+
           if (col.cellTemplate === 'currencyCellTemplate') {
             return this.getNumericCurrencyValue(row, col);
           }
-          if (col.dataType === 'date') {
-            const value = row[col.field];
-            return value ? new Date(value) : null;
-          } else if (col.dataType === 'datetime') {
+
+          if (col.dataType === 'date' || col.dataType === 'datetime') {
             const value = row[col.field];
             return value ? new Date(value) : null;
           }
+
           return row[col.field];
         }),
       );
 
+      // Apply cell formats
       visibleColumns.forEach((col, index) => {
         const cell = dataRow.getCell(index + 1);
+
         if (col.cellTemplate === 'currencyCellTemplate') {
           cell.value = this.getNumericCurrencyValue(row, col);
           cell.numFmt = `${currencySymbol}#,##0.00`;
         }
+
         if (col.dataType === 'date') {
           cell.numFmt = this.getDateFormateForExport();
         } else if (col.dataType === 'datetime') {
           cell.numFmt = this.getDateTimeFormateForExport();
         }
       });
+
       if (this.groupBy) {
         dataRow.outlineLevel = 1;
       }
     }
 
-    visibleColumns.forEach((col, index) => {
-      worksheet.getColumn(index + 1).width = this.getExcelColumnWidth(
-        worksheet,
-        index + 1,
-        col.header,
-      );
-    });
-
+    // Freeze header row
     worksheet.views = [
       {
         state: 'frozen',
@@ -558,6 +583,7 @@ export class DataGrid implements OnInit {
       },
     ];
 
+    // Grouping configuration
     if (this.groupBy) {
       worksheet.properties.outlineProperties = {
         summaryBelow: true,
@@ -565,9 +591,50 @@ export class DataGrid implements OnInit {
       };
     }
 
-    workbook.xlsx.writeBuffer().then((buffer) => {
-      this.saveAsExcelFile(buffer, this.gridExportFileName);
+    // Auto-fit columns
+    const MAX_COLUMN_WIDTH = 42;
+    const MIN_COLUMN_WIDTH = 10;
+    const CELL_PADDING = 2;
+    const HEADER_PADDING = 4;
+
+    visibleColumns.forEach((col, index) => {
+      const column = worksheet.getColumn(index + 1);
+      const headerLength = String(col.header ?? '').length;
+
+      let maxContentLength = 0;
+
+      for (let rowIndex = 1; rowIndex <= worksheet.rowCount; rowIndex++) {
+        const cell = worksheet.getRow(rowIndex).getCell(index + 1);
+        const value = cell.value;
+
+        let cellLength = 0;
+
+        if (value instanceof Date) {
+          // Use displayed date length, not Excel format-string length.
+          cellLength = col.dataType === 'datetime' ? 19 : 10;
+        } else if (value != null) {
+          cellLength = cell.text
+            ? cell.text.split('\n').reduce((max, line) => Math.max(max, line.length), 0)
+            : String(value).length;
+        }
+
+        maxContentLength = Math.max(maxContentLength, cellLength);
+      }
+
+      // Account for the larger, bold header font.
+      const contentWidth = maxContentLength + CELL_PADDING;
+      const headerWidth = headerLength + HEADER_PADDING;
+
+      column.width = Math.min(
+        Math.max(contentWidth, headerWidth, MIN_COLUMN_WIDTH),
+        MAX_COLUMN_WIDTH,
+      );
     });
+
+    // Generate and save workbook
+    const buffer = await workbook.xlsx.writeBuffer();
+
+    this.saveAsExcelFile(buffer, this.gridExportFileName);
   };
 
   saveAsExcelFile(buffer: any, fileName: string): void {

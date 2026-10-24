@@ -5,7 +5,6 @@
       type="button"
       class="operator-button"
       [class.active]="menuOpen"
-      (mouseenter)="menuOpen = true"
       (click)="toggleMenu()"
       aria-label="Filter operator"
     >
@@ -20,7 +19,7 @@
           @if (column.dataType === 'date' || column.dataType === 'datetime') {
             <div class="filter-control date-filter-control">
               <p-datepicker
-                [placeholder]="'From ' + column.header"
+                placeholder="From"
                 [dateFormat]="primeNgDateFormat"
                 [showIcon]="true"
                 iconDisplay="input"
@@ -35,7 +34,7 @@
               <input
                 pInputText
                 [type]="column.dataType"
-                [placeholder]="'From ' + column.header"
+                placeholder="From"
                 [value]="filter.value"
                 (input)="onBetweenInput('from', $any($event.target).value)"
                 (onFocus)="menuOpen = false"
@@ -46,7 +45,7 @@
           @if (column.dataType === 'date' || column.dataType === 'datetime') {
             <div class="filter-control date-filter-control">
               <p-datepicker
-                [placeholder]="'To ' + column.header"
+                placeholder="To"
                 [dateFormat]="primeNgDateFormat"
                 [showIcon]="true"
                 iconDisplay="input"
@@ -61,7 +60,7 @@
               <input
                 pInputText
                 [type]="column.dataType"
-                [placeholder]="'To ' + column.header"
+                placeholder="To"
                 [value]="filter.valueTo ?? ''"
                 (input)="onBetweenInput('to', $any($event.target).value)"
                 (onFocus)="menuOpen = false"
@@ -80,7 +79,6 @@
       @if (column.dataType === 'date' || column.dataType === 'datetime') {
         <div class="filter-control date-filter-control">
           <p-datepicker
-            [placeholder]="column.header"
             [dateFormat]="primeNgDateFormat"
             [showIcon]="true"
             iconDisplay="input"
@@ -96,7 +94,6 @@
             pInputText
             type="text"
             inputMode="decimal"
-            [placeholder]="column.header"
             [value]="filter.value"
             (keydown)="onNumberKeyDown($event)"
             (input)="onInput($any($event.target).value)"
@@ -109,7 +106,6 @@
             [options]="booleanOptions"
             optionLabel="label"
             optionValue="value"
-            [placeholder]="column.header"
             [(ngModel)]="filter.value"
             (ngModelChange)="onBooleanChange($event)"
             appendTo="body"
@@ -120,7 +116,6 @@
           <input
             pInputText
             [type]="column.dataType"
-            [placeholder]="column.header"
             [value]="filter.value"
             (input)="onInput($any($event.target).value)"
             (focus)="menuOpen = false"
