@@ -1,9 +1,3 @@
-// Include theming for Angular Material with `mat.theme()`.
-// This Sass mixin will define CSS variables that are used for styling Angular Material
-// components according to the Material 3 design spec.
-// Learn more about theming and how to use it for your application's
-// custom components at https://material.angular.dev/guide/theming
-
 @use '@angular/material' as mat;
 
 html {
@@ -22,97 +16,59 @@ html {
 }
 
 body {
-  // Default the application to a light color theme.
-  color-scheme: light;
-
-  // Angular Material system-level styles.
-  background-color: var(--mat-sys-surface);
-  color: var(--mat-sys-on-surface);
-  font: var(--mat-sys-body-medium);
-
-  // Reset browser default margin.
   margin: 0;
-  height: 100%;
 }
-
-/* =========================================================
-   Generic Dialog Container
-   ========================================================= */
 
 .dialog-container {
   display: flex;
   flex-direction: column;
-
   width: 100%;
   max-width: none;
-
   padding: 0;
   margin: 0;
-
   border-radius: 0px !important;
   overflow: hidden;
-
   box-sizing: border-box;
 }
-
-/* =========================================================
-   Dialog Title Bar
-   ========================================================= */
 
 .dialog-title-bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-
   width: 100%;
   min-height: 42px;
   height: 42px;
-
   padding: 0 0 0 16px;
   margin: 0;
-
   background-color: #4caf50 !important;
   color: #ffffff !important;
-
   cursor: move;
-
   box-sizing: border-box;
+  font-family: Arial, Helvetica, sans-serif !important;
 }
 
 .dialog-title {
   color: #ffffff !important;
-
   font-size: 18px;
   font-weight: 400;
   line-height: 1.2;
 }
 
-/* =========================================================
-   Dialog Close Button
-   ========================================================= */
-
 .dialog-title-bar button {
   display: flex;
   align-items: center;
   justify-content: center;
-
   width: 42px;
   height: 42px;
   min-width: 42px;
-
   margin: 0;
   padding: 0;
-
   background: transparent !important;
   color: #ffffff !important;
-
   border: none !important;
   border-radius: 0 !important;
-
   box-shadow: none !important;
-
   cursor: pointer;
-
   box-sizing: border-box;
 }
 
@@ -128,155 +84,82 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-
   width: 32px !important;
   height: 32px !important;
-
   color: #ffffff !important;
-
   font-size: 32px;
   line-height: 32px;
 }
 
-/* =========================================================
-   Dialog Content
-   ========================================================= */
-
 .dialog-content {
   width: 100%;
-
   padding: 24px 16px 8px;
   margin: 0;
-
   box-sizing: border-box;
 }
 
-/* =========================================================
-   GENERIC DIALOG FORM
-   =========================================================
-   All dialog forms use a 3-column grid by default.
-   ========================================================= */
-
 .dialog-form {
   display: grid;
-
   grid-template-columns: repeat(3, minmax(0, 1fr));
-
   width: 100%;
-
   column-gap: 16px;
   row-gap: 16px;
-
   box-sizing: border-box;
 }
 
 .dialog-form-1 {
   display: grid;
-
   grid-template-columns: repeat(1, minmax(0, 1fr));
-
   width: 100%;
-
   column-gap: 16px;
   row-gap: 16px;
-
   box-sizing: border-box;
 }
 
 .dialog-form-2 {
   display: grid;
-
   grid-template-columns: repeat(2, minmax(0, 1fr));
-
   width: 100%;
-
   column-gap: 16px;
   row-gap: 16px;
-
   box-sizing: border-box;
 }
-
-/* =========================================================
-   GENERIC DIALOG FIELD
-   ========================================================= */
 
 .dialog-field {
   display: block;
-
   width: 100%;
   min-width: 0;
-
   margin-bottom: 0;
-
   box-sizing: border-box;
 }
-
-/* =========================================================
-   Material MDC Text Field Wrapper
-   ========================================================= */
 
 .dialog-field .mat-mdc-text-field-wrapper {
   width: 100%;
-
   background-color: #ffffff !important;
-
   box-sizing: border-box;
 }
-
-/* =========================================================
-   Material Input
-   =========================================================
-   Do not apply generic input borders/padding here.
-   Angular Material MDC controls the input appearance.
-   ========================================================= */
 
 .dialog-field input.mat-mdc-input-element {
   width: 100%;
-
   background: transparent !important;
-
   border: none !important;
   outline: none !important;
   box-shadow: none !important;
-
   box-sizing: border-box;
-
   font-size: 18px;
 }
-
-/* =========================================================
-   Material Floating Label
-   ========================================================= */
 
 .dialog-field .mdc-floating-label {
   font-size: 18px;
 }
 
-/*
- * Make sure the Material label is visible
- * before the field receives focus.
- */
-
 .dialog-field .mdc-text-field:not(.mdc-text-field--disabled) .mdc-floating-label {
   visibility: visible;
 }
 
-/* =========================================================
-   Material Error Message
-   ========================================================= */
-
 .dialog-field .mat-mdc-form-field-error-wrapper {
   padding-left: 0;
 }
-
-/* =========================================================
-   Responsive Dialog Form
-   ========================================================= */
-
-/*
- * Desktop
- * 3 columns
- */
 
 @media (min-width: 901px) {
   .dialog-form {
@@ -284,21 +167,11 @@ body {
   }
 }
 
-/*
- * Tablet
- * 2 columns
- */
-
 @media (max-width: 900px) {
   .dialog-form {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
-
-/*
- * Mobile
- * 1 column
- */
 
 @media (max-width: 600px) {
   .dialog-form {
@@ -306,22 +179,14 @@ body {
   }
 }
 
-/* =========================================================
-   Dialog Actions
-   ========================================================= */
-
 .dialog-actions {
   display: flex;
   align-items: center;
-
   width: 100%;
   min-height: 72px;
-
   padding: 16px;
   margin: 0;
-
   border-top: 1px solid #ddd;
-
   box-sizing: border-box;
 }
 
@@ -329,24 +194,15 @@ body {
   flex: 1 1 auto;
 }
 
-/* =========================================================
-   ALL ACTION BUTTONS - BASE
-   ========================================================= */
-
 .dialog-actions button {
   min-width: 76px;
   height: 32px;
-
   margin: 0 0 0 8px;
-
   font-family: inherit;
   font-size: 12px;
-  font-weight: 500;
-
+  font-weight: 500 !important;
   border-radius: 0px !important;
-
   cursor: pointer;
-
   box-sizing: border-box;
 
   transition:
@@ -356,21 +212,14 @@ body {
     box-shadow 150ms ease;
 }
 
-/* =========================================================
-   STROKED BUTTON
-   Clear + Close
-   ========================================================= */
-
 .dialog-actions button[mat-stroked-button] {
   background-color: #ffffff !important;
-
   color: #4caf50 !important;
-
   border: 1px solid #4caf50 !important;
-
   box-shadow: none !important;
-
   border-radius: 3px !important;
+  font-weight: 700 !important;
+  font-family: Arial, Helvetica, sans-serif !important;
 }
 
 .dialog-actions button[mat-stroked-button] .mdc-button__label {
@@ -382,17 +231,10 @@ body {
   background-color: transparent !important;
 }
 
-/* =========================================================
-   STROKED BUTTON - HOVER
-   ========================================================= */
-
 .dialog-actions button[mat-stroked-button]:hover {
   background-color: #e8f5e9 !important;
-
   color: #388e3c !important;
-
   border-color: #388e3c !important;
-
   box-shadow: none !important;
 }
 
@@ -400,15 +242,9 @@ body {
   color: #388e3c !important;
 }
 
-/* =========================================================
-   STROKED BUTTON - ACTIVE
-   ========================================================= */
-
 .dialog-actions button[mat-stroked-button]:active {
   background-color: #c8e6c9 !important;
-
   color: #2e7d32 !important;
-
   border-color: #2e7d32 !important;
 }
 
@@ -416,21 +252,14 @@ body {
   color: #2e7d32 !important;
 }
 
-/* =========================================================
-   RAISED BUTTON
-   Save
-   ========================================================= */
-
 .dialog-actions button[mat-raised-button] {
   background-color: #4caf50 !important;
-
   color: #ffffff !important;
-
   border: 1px solid #4caf50 !important;
-
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
-
   border-radius: 3px !important;
+  font-weight: 700 !important;
+  font-family: Arial, Helvetica, sans-serif !important;
 }
 
 .dialog-actions button[mat-raised-button] .mdc-button__label {
@@ -441,17 +270,10 @@ body {
   background-color: transparent !important;
 }
 
-/* =========================================================
-   RAISED BUTTON - HOVER
-   ========================================================= */
-
 .dialog-actions button[mat-raised-button]:hover {
   background-color: #43a047 !important;
-
   color: #ffffff !important;
-
   border-color: #43a047 !important;
-
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.25) !important;
 }
 
@@ -459,17 +281,10 @@ body {
   color: #ffffff !important;
 }
 
-/* =========================================================
-   RAISED BUTTON - ACTIVE
-   ========================================================= */
-
 .dialog-actions button[mat-raised-button]:active {
   background-color: #388e3c !important;
-
   color: #ffffff !important;
-
   border-color: #388e3c !important;
-
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2) !important;
 }
 
@@ -477,22 +292,12 @@ body {
   color: #ffffff !important;
 }
 
-/* =========================================================
-   DISABLED STROKED BUTTON
-   Clear / Close
-   ========================================================= */
-
 .dialog-actions button[mat-stroked-button]:disabled {
   background-color: #ffffff !important;
-
   color: #9e9e9e !important;
-
   border: 1px solid #bdbdbd !important;
-
   box-shadow: none !important;
-
   opacity: 1 !important;
-
   cursor: default;
 }
 
@@ -500,22 +305,12 @@ body {
   color: #9e9e9e !important;
 }
 
-/* =========================================================
-   DISABLED RAISED BUTTON
-   Save
-   ========================================================= */
-
 .dialog-actions button[mat-raised-button]:disabled {
   background-color: #a5d6a7 !important;
-
   color: #ffffff !important;
-
   border: 1px solid #a5d6a7 !important;
-
   box-shadow: none !important;
-
   opacity: 1 !important;
-
   cursor: default;
 }
 
@@ -523,28 +318,16 @@ body {
   color: #ffffff !important;
 }
 
-/*
- * Prevent hover styles from changing
- * the disabled Save button.
- */
-
 .dialog-actions button[mat-raised-button]:disabled:hover {
   background-color: #a5d6a7 !important;
-
   color: #ffffff !important;
-
   border-color: #a5d6a7 !important;
-
   box-shadow: none !important;
 }
 
 .dialog-actions button[mat-raised-button]:disabled:hover .mdc-button__label {
   color: #ffffff !important;
 }
-
-/* =========================================================
-   Angular Material Dialog Container
-   ========================================================= */
 
 .mat-mdc-dialog-container {
   padding: 0 !important;
@@ -554,39 +337,24 @@ body {
 .mat-mdc-dialog-surface {
   padding: 0 !important;
   margin: 0 !important;
-
   border-radius: 0px !important;
-
   overflow: hidden !important;
 }
-
-/* =========================================================
-   Angular Material Dialog Content
-   ========================================================= */
 
 .mat-mdc-dialog-content {
   padding-left: 16px !important;
   padding-right: 16px !important;
 }
 
-/* =========================================================
-   Angular Material Dialog Actions
-   ========================================================= */
-
 .mat-mdc-dialog-actions {
   padding-left: 16px !important;
   padding-right: 16px !important;
 }
 
-/* =========================================================
-   MDC STROKED BUTTON VARIABLES
-   ========================================================= */
-
 .dialog-actions button[mat-stroked-button] {
   --mdc-outlined-button-container-color: #ffffff;
   --mdc-outlined-button-label-text-color: #4caf50;
   --mdc-outlined-button-outline-color: #4caf50;
-
   --mat-mdc-button-persistent-ripple-color: #4caf50;
   --mat-mdc-button-ripple-color: rgba(76, 175, 80, 0.12);
 
@@ -595,14 +363,9 @@ body {
   border-color: #4caf50 !important;
 }
 
-/* =========================================================
-   MDC RAISED BUTTON VARIABLES
-   ========================================================= */
-
 .dialog-actions button[mat-raised-button] {
   --mdc-protected-button-container-color: #4caf50;
   --mdc-protected-button-label-text-color: #ffffff;
-
   --mat-mdc-button-persistent-ripple-color: #ffffff;
   --mat-mdc-button-ripple-color: rgba(255, 255, 255, 0.15);
 
@@ -611,28 +374,18 @@ body {
   border-color: #4caf50 !important;
 }
 
-/* =========================================================
-   DISABLED RAISED BUTTON - MDC VARIABLES
-   ========================================================= */
-
 .dialog-actions button[mat-raised-button]:disabled {
   --mdc-protected-button-container-color: #a5d6a7;
   --mdc-protected-button-label-text-color: #ffffff;
-
   --mat-mdc-button-persistent-ripple-color: transparent;
   --mat-mdc-button-ripple-color: transparent;
 
   background-color: #a5d6a7 !important;
   color: #ffffff !important;
   border-color: #a5d6a7 !important;
-
   box-shadow: none !important;
   opacity: 1 !important;
 }
-
-/* =========================================================
-   DISABLED RAISED BUTTON - MDC INTERNAL ELEMENTS
-   ========================================================= */
 
 .dialog-actions button[mat-raised-button]:disabled .mdc-button__label {
   color: #ffffff !important;
@@ -645,10 +398,6 @@ body {
 .dialog-actions button[mat-raised-button]:disabled .mat-mdc-button-persistent-ripple {
   background-color: transparent !important;
 }
-
-/* =========================================================
-   General Button Cursor
-   ========================================================= */
 
 .dialog-container button {
   cursor: pointer;
@@ -701,10 +450,6 @@ body {
   cursor: not-allowed !important;
 }
 
-// --------------------------------------------------
-// Data Grid Sections
-// --------------------------------------------------
-
 .grid-section {
   margin-top: 0.5rem !important;
   padding: 5px 10px !important;
@@ -716,10 +461,6 @@ body {
   min-width: 0 !important;
 }
 
-// --------------------------------------------------
-// Data Grid Container
-// --------------------------------------------------
-
 .grid-container {
   margin-top: 8px !important;
   width: 100% !important;
@@ -729,6 +470,7 @@ body {
   border-radius: 0px !important;
   background: #fafafa !important;
   overflow: hidden !important;
+
   app-data-grid {
     display: block !important;
     width: 100% !important;
@@ -779,7 +521,6 @@ body {
   background-color: transparent;
 }
 
-/* Search fields layout */
 .search-fields {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -796,26 +537,22 @@ body {
   padding-top: 4px;
 }
 
-/* 4 fields: action buttons span the full row */
 .search-fields.fields-4 > .search-actions {
   grid-column: 1 / -1;
 }
 
-/* 3 fields: action buttons span 2 columns */
 .search-fields.fields-3 > .search-actions {
   grid-column: span 2;
 }
 
-/* 2 fields: action buttons span 3 columns */
 .search-fields.fields-2 > .search-actions {
   grid-column: span 3;
 }
 
-/* 1 field: action buttons span all 4 columns */
 .search-fields.fields-1 > .search-actions {
   grid-column: 1 / -1;
 }
-/* Compact Material fields */
+
 .search-fields mat-form-field {
   width: 100%;
   margin: 0;
@@ -824,7 +561,6 @@ body {
   --mat-form-field-container-vertical-padding: 8px;
 }
 
-/* Reduce gap between value and underline */
 .search-fields .mat-mdc-form-field-infix {
   min-height: 44px;
   padding-top: 12px !important;
@@ -832,7 +568,6 @@ body {
   box-sizing: border-box;
 }
 
-/* Remove filled background */
 .search-fields .mdc-text-field--filled {
   background-color: transparent !important;
   padding: 0 !important;
@@ -842,22 +577,18 @@ body {
   background: transparent;
 }
 
-/* Preserve underline */
 .search-fields .mdc-line-ripple {
   display: block;
 }
 
-/* Floating label */
 .search-fields .mat-mdc-floating-label {
   font-size: 14px;
 }
 
-/* Remove extra space below fields */
 .search-fields .mat-mdc-form-field-subscript-wrapper {
   display: none;
 }
 
-/* Search and Clear buttons */
 .search-actions {
   display: flex;
   align-items: center;
@@ -873,7 +604,6 @@ body {
   }
 }
 
-/* Responsive layout */
 @media (max-width: 992px) {
   .search-fields {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -893,13 +623,9 @@ body {
 
 .search-actions button[mat-stroked-button] {
   background-color: #ffffff !important;
-
   color: #4caf50 !important;
-
   border: 1px solid #4caf50 !important;
-
   box-shadow: none !important;
-
   border-radius: 3px !important;
 }
 
@@ -912,17 +638,10 @@ body {
   background-color: transparent !important;
 }
 
-/* =========================================================
-   STROKED BUTTON - HOVER
-   ========================================================= */
-
 .search-actions button[mat-stroked-button]:hover {
   background-color: #e8f5e9 !important;
-
   color: #388e3c !important;
-
   border-color: #388e3c !important;
-
   box-shadow: none !important;
 }
 
@@ -930,15 +649,9 @@ body {
   color: #388e3c !important;
 }
 
-/* =========================================================
-   STROKED BUTTON - ACTIVE
-   ========================================================= */
-
 .search-actions button[mat-stroked-button]:active {
   background-color: #c8e6c9 !important;
-
   color: #2e7d32 !important;
-
   border-color: #2e7d32 !important;
 }
 
@@ -948,13 +661,9 @@ body {
 
 .search-actions button[mat-raised-button] {
   background-color: #4caf50 !important;
-
   color: #ffffff !important;
-
   border: 1px solid #4caf50 !important;
-
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
-
   border-radius: 3px !important;
 }
 
@@ -966,17 +675,10 @@ body {
   background-color: transparent !important;
 }
 
-/* =========================================================
-   RAISED BUTTON - HOVER
-   ========================================================= */
-
 .search-actions button[mat-raised-button]:hover {
   background-color: #43a047 !important;
-
   color: #ffffff !important;
-
   border-color: #43a047 !important;
-
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.25) !important;
 }
 
@@ -984,17 +686,10 @@ body {
   color: #ffffff !important;
 }
 
-/* =========================================================
-   RAISED BUTTON - ACTIVE
-   ========================================================= */
-
 .search-actions button[mat-raised-button]:active {
   background-color: #388e3c !important;
-
   color: #ffffff !important;
-
   border-color: #388e3c !important;
-
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2) !important;
 }
 
@@ -1016,4 +711,1027 @@ body {
 
 .search-panel .mat-expansion-panel-body {
   padding: 4px 16px !important;
+}
+
+.row-expense > td {
+  color: rgb(206, 13, 13);
+  font-weight: 700 !important;
+}
+
+.row-income > td {
+  color: #1f7a3f;
+  font-weight: 700 !important;
+}
+
+.row-investment > td {
+  color: #1371eb;
+  font-weight: 700 !important;
+}
+
+.row-transfer > td {
+  color: #8a16ef;
+  font-weight: 700 !important;
+}
+
+.selected-row > td {
+  background-color: #e3f2fd !important;
+}
+
+.table-container {
+  width: 100%;
+  min-height: 0;
+  position: relative;
+  padding: 0px 5px 0px 5px;
+}
+
+.p-datatable-thead > tr > th {
+  min-width: 120px;
+  white-space: nowrap;
+  padding: 0px 12px !important;
+  height: 32px !important;
+  min-height: 32px !important;
+  font-family: Arial, Helvetica, sans-serif !important;
+}
+
+.p-datatable-tbody > tr > td {
+  padding: 0px 12px !important;
+  font-family: Arial, Helvetica, sans-serif !important;
+}
+
+.p-datatable-thead > tr > th:first-child,
+.p-datatable-tbody > tr > td:first-child {
+  min-width: unset !important;
+}
+
+.sort-header {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 14px !important;
+}
+
+.sort-icon {
+  font-size: 0.9rem;
+}
+
+.sort-priority {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 3px;
+  border-radius: 50%;
+  font-size: 0.7rem;
+  background-color: #ffffff;
+  color: #4caf50;
+}
+
+.p-datatable {
+  position: relative;
+}
+
+.p-datatable-thead {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.p-datatable-thead > tr {
+  position: relative;
+}
+
+.p-datatable-thead > tr:first-child > th {
+  position: relative;
+  background-color: #e3f0e3 !important;
+  color: #4caf50 !important;
+}
+
+.filter-row {
+  position: relative;
+  z-index: 10000;
+}
+
+.filter-row > th {
+  position: relative;
+  z-index: 10000;
+  overflow: visible !important;
+  padding: 1px 8px !important;
+}
+
+.filter-row app-column-filter {
+  display: block;
+  position: relative;
+  z-index: 100000;
+}
+
+.p-datatable-tbody {
+  position: relative;
+  z-index: 1;
+}
+
+.p-datatable-tbody > tr {
+  position: relative;
+  z-index: 1;
+}
+
+.p-datatable-tbody > tr > td {
+  position: relative;
+  z-index: 1;
+}
+
+.empty-message {
+  text-align: center;
+  vertical-align: middle;
+  padding: 2rem;
+}
+
+.grid-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-top: none;
+  background: #f9f9f9;
+}
+
+.table-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+}
+
+.table-toolbar mat-icon {
+  color: #4caf50 !important;
+}
+
+.toolbar-border {
+  border: 1px solid #4caf50 !important;
+}
+
+.export-menu,
+.settings-menu,
+.column-menu {
+  background-color: #ffffff !important;
+}
+
+.export-menu .mat-mdc-menu-panel,
+.settings-menu .mat-mdc-menu-panel,
+.column-menu .mat-mdc-menu-panel {
+  background-color: #ffffff !important;
+}
+
+.export-menu .mat-mdc-menu-item,
+.settings-menu .mat-mdc-menu-item,
+.column-menu .mat-mdc-menu-item {
+  background-color: #ffffff !important;
+}
+
+.export-menu .mat-mdc-menu-item:hover,
+.settings-menu .mat-mdc-menu-item:hover,
+.column-menu .mat-mdc-menu-item:hover {
+  background-color: #f5f7fa !important;
+}
+
+.export-menu .mat-mdc-menu-item {
+  min-height: 30px !important;
+  height: 30px !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+.menu-icon {
+  width: 22px;
+  height: 22px;
+  margin-right: 12px;
+  object-fit: contain;
+  vertical-align: middle;
+}
+
+.settings-menu .mat-mdc-menu-item {
+  min-height: 30px !important;
+  height: 30px !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+.column-menu {
+  max-height: 300px !important;
+  overflow-y: auto !important;
+}
+
+.column-menu .mat-mdc-menu-item {
+  min-height: 30px !important;
+  height: 30px !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+.column-menu .mat-mdc-checkbox {
+  margin: 0 !important;
+}
+
+.column-search {
+  padding: 2px 8px !important;
+  margin: 0 !important;
+  height: auto;
+}
+
+.column-search mat-form-field {
+  width: 100%;
+  background: #ffffff;
+  margin: 0 !important;
+}
+
+.column-search .mat-mdc-form-field.mat-focused .mdc-notched-outline__leading,
+.column-search .mat-mdc-form-field.mat-focused .mdc-notched-outline__notch,
+.column-search .mat-mdc-form-field.mat-focused .mdc-notched-outline__trailing {
+  border-color: #4caf50 !important;
+}
+
+.column-search .mat-mdc-form-field.mat-focused .mdc-floating-label {
+  color: #4caf50 !important;
+}
+
+.column-search .mat-mdc-input-element:focus {
+  caret-color: #4caf50 !important;
+}
+
+.clear-search {
+  margin-right: 5px !important;
+  color: #4caf50 !important;
+  border: 1px solid #4caf50 !important;
+  cursor: pointer !important;
+}
+
+.settings-menu .mat-icon {
+  color: #4caf50 !important;
+}
+
+.table-toolbar button {
+  cursor: pointer !important;
+}
+
+.between-date-filter {
+  min-width: 320px;
+  width: 320px;
+}
+
+.column-filter {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  padding: 0.05rem 0 !important;
+  overflow: visible;
+  box-sizing: border-box;
+}
+
+.filter-control {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  height: 2.4rem;
+  box-sizing: border-box;
+}
+
+.filter-control input {
+  width: 100%;
+  height: 2.4rem;
+  box-sizing: border-box;
+  padding-left: 1.8rem;
+  padding-right: 0.05rem;
+}
+
+.operator-button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 20;
+  width: 1.9rem;
+  height: 1.9rem;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  border-radius: 0.35rem;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.operator-button:hover {
+  background: rgba(105, 170, 92, 0.12);
+}
+
+.operator-button.active {
+  background: rgba(105, 170, 92, 0.18);
+}
+
+.operator-symbol {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  font-size: 0.95rem;
+  line-height: 1;
+  color: #69aa5c;
+}
+
+.date-filter-control {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  height: 2.4rem;
+  box-sizing: border-box;
+}
+
+.date-filter-control .p-datepicker {
+  width: 100%;
+  min-width: 0;
+  height: 2.4rem;
+  box-sizing: border-box;
+}
+
+.date-filter-control .p-datepicker-input {
+  width: 100%;
+  min-width: 0;
+  height: 2.4rem;
+  box-sizing: border-box;
+  padding-left: 2.4rem;
+}
+
+.date-filter-control .p-datepicker-input-icon-container {
+  position: absolute !important;
+  top: 50% !important;
+  right: 0.65rem !important;
+  transform: translateY(-50%) !important;
+  z-index: 10;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 1.25rem;
+  height: 1.25rem;
+  margin: 0 !important;
+  padding: 0 !important;
+  box-sizing: border-box;
+}
+
+.date-filter-control .p-datepicker-input-icon {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 1rem;
+  height: 1rem;
+  margin: 0 !important;
+  padding: 0 !important;
+  color: #69aa5c !important;
+  font-size: 1rem;
+  line-height: 1;
+  box-sizing: border-box;
+}
+
+.between-filter {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.between-inputs {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  gap: 6px;
+  box-sizing: border-box;
+}
+
+.between-inputs .filter-control {
+  flex: 1 1 150px;
+  width: 150px;
+  min-width: 150px;
+  box-sizing: border-box;
+}
+
+.between-inputs .date-filter-control {
+  flex: 1 1 150px;
+  width: 150px;
+  min-width: 150px;
+  box-sizing: border-box;
+}
+
+.between-inputs .date-filter-control .p-datepicker-input {
+  width: 100%;
+  min-width: 150px;
+  height: 2.4rem;
+  box-sizing: border-box;
+  white-space: nowrap;
+}
+
+.between-inputs .date-filter-control:first-child .p-datepicker-input {
+  padding-left: 2.4rem;
+}
+
+.between-inputs .date-filter-control:nth-child(2) .p-datepicker-input {
+  padding-left: 0.75rem;
+}
+
+.between-inputs .date-filter-control .p-datepicker-input-icon-container {
+  position: absolute !important;
+  top: 50% !important;
+  right: 0.65rem !important;
+  transform: translateY(-50%) !important;
+  z-index: 10;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 1.25rem;
+  height: 1.25rem;
+  margin: 0 !important;
+  padding: 0 !important;
+  box-sizing: border-box;
+}
+
+.between-inputs .date-filter-control .p-datepicker-input-icon {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 1rem;
+  height: 1rem;
+  margin: 0 !important;
+  padding: 0 !important;
+  color: #69aa5c !important;
+  font-size: 1rem;
+  line-height: 1;
+  box-sizing: border-box;
+}
+
+.between-error {
+  margin-top: 0.25rem;
+  color: #dc2626;
+  font-size: 0.75rem;
+  line-height: 1.2;
+}
+
+.operator-menu {
+  min-width: 12rem;
+  padding: 0.2rem;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.45rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  box-sizing: border-box;
+}
+
+.operator-option {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 1.65rem;
+  padding: 0.2rem 0.5rem;
+  border: 0;
+  border-radius: 0.3rem;
+  background: transparent;
+  color: #374151;
+  font-size: 0.8rem;
+  text-align: left;
+  cursor: pointer;
+  gap: 0.4rem;
+  box-sizing: border-box;
+}
+
+.operator-option:hover {
+  background: rgba(105, 170, 92, 0.1);
+}
+
+.operator-option.selected {
+  background: rgba(105, 170, 92, 0.16);
+  color: #4f9344;
+}
+
+.operator-option-symbol {
+  width: 1.1rem;
+  min-width: 1.1rem;
+  font-size: 0.85rem;
+  line-height: 1;
+  color: #4f9344;
+}
+
+.operator-separator {
+  height: 1px;
+  margin: 0.3rem 0;
+  background: #e5e7eb;
+}
+
+.reset-option {
+  color: #6b7280;
+}
+
+.reset-option:hover {
+  background: rgba(105, 170, 92, 0.1);
+  color: #4f9344;
+}
+
+.p-datepicker-panel {
+  z-index: 10000 !important;
+
+  --p-primary-color: #69aa5c;
+  --p-primary-contrast-color: #fff;
+}
+
+.p-datepicker-panel .p-datepicker-day-selected {
+  background: #69aa5c !important;
+  color: #fff !important;
+}
+
+.p-datepicker-panel .p-datepicker-day-selected:hover {
+  background: #5d9e51 !important;
+  color: #fff !important;
+}
+
+.p-datepicker-panel .p-datepicker-day-today {
+  border-color: #69aa5c !important;
+  color: #69aa5c !important;
+}
+
+.p-datepicker-panel .p-datepicker-day:not(.p-datepicker-day-selected):hover {
+  background: rgba(105, 170, 92, 0.12) !important;
+  color: #4f9344 !important;
+}
+
+.p-datepicker-panel .p-datepicker-prev-button:hover,
+.p-datepicker-panel .p-datepicker-next-button:hover {
+  background: rgba(105, 170, 92, 0.12) !important;
+  color: #4f9344 !important;
+}
+
+.p-datepicker-panel .p-datepicker-select-month:hover,
+.p-datepicker-panel .p-datepicker-select-year:hover {
+  background: rgba(105, 170, 92, 0.12) !important;
+  color: #4f9344 !important;
+}
+
+.date-filter-control .p-datepicker-input:focus {
+  border-color: #69aa5c !important;
+  box-shadow: 0 0 0 1px rgba(105, 170, 92, 0.25) !important;
+}
+
+@media (max-width: 600px) {
+  .between-date-filter {
+    min-width: 300px;
+    width: 300px;
+  }
+
+  .between-inputs {
+    gap: 4px;
+  }
+
+  .between-inputs .filter-control,
+  .between-inputs .date-filter-control {
+    min-width: 145px;
+    width: 145px;
+  }
+
+  .between-inputs .date-filter-control .p-datepicker,
+  .between-inputs .date-filter-control .p-datepicker-input {
+    min-width: 145px;
+  }
+}
+
+.boolean-filter-control {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  height: 2.4rem;
+  box-sizing: border-box;
+}
+
+.boolean-filter-control .p-select {
+  width: 100%;
+  min-width: 0;
+  height: 2.4rem;
+  box-sizing: border-box;
+}
+
+.boolean-filter-control .p-select-label {
+  min-width: 0;
+  padding-left: 2.4rem !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-sizing: border-box;
+}
+
+.boolean-filter-control .p-select-dropdown {
+  width: 2.5rem;
+  min-width: 2.5rem;
+}
+
+.boolean-filter-control .p-select:focus,
+.boolean-filter-control .p-select.p-focus {
+  border-color: #69aa5c !important;
+  box-shadow: 0 0 0 1px rgba(105, 170, 92, 0.25) !important;
+}
+
+.spinner-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 999999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.spinner {
+  width: 45px;
+  height: 45px;
+  border: 5px solid #ddd;
+  border-top-color: #333;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.menu {
+  --menu-width: 260px;
+  --menu-collapsed-width: 72px;
+
+  width: var(--menu-width);
+  min-width: var(--menu-width);
+  height: 100vh;
+  padding: 5px;
+  box-sizing: border-box;
+  background: #4caf50;
+  border-right: 1px solid #e5e7eb;
+  overflow-y: auto;
+  overflow-x: hidden;
+  font-family: Arial, Helvetica, sans-serif !important;
+
+  transition:
+    width 200ms ease,
+    min-width 200ms ease;
+
+  &--collapsed {
+    width: var(--menu-collapsed-width);
+    min-width: var(--menu-collapsed-width);
+    padding: 16px 10px;
+  }
+
+  &__nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  &__collapse {
+    width: 100%;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin-bottom: 8px;
+    padding: 0;
+    border: 0;
+    border-radius: 2px;
+    background: transparent;
+    color: #fff;
+    cursor: pointer;
+
+    transition:
+      background-color 150ms ease,
+      color 150ms ease;
+
+    &:hover {
+      background: #f8fafc;
+      color: #334155;
+    }
+
+    &:focus-visible {
+      outline: 2px solid #93c5fd;
+      outline-offset: 2px;
+    }
+
+    .menu--collapsed & {
+      justify-content: center;
+    }
+
+    .material-symbols-outlined {
+      font-size: 20px;
+    }
+  }
+
+  &__item {
+    width: 100%;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    padding: 5px 10px;
+    box-sizing: border-box;
+    border: 0;
+    border-radius: 4px;
+    background: transparent;
+    color: #fff;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700 !important;
+    line-height: 16px;
+    text-align: left;
+    text-decoration: none;
+    cursor: pointer;
+
+    transition:
+      background-color 150ms ease,
+      color 150ms ease;
+
+    &:hover {
+      background: #f8fafc;
+      color: #334155;
+    }
+
+    &:focus-visible {
+      outline: 2px solid #93c5fd;
+      outline-offset: 2px;
+    }
+
+    &--active {
+      background: #eff6ff;
+      color: #4caf50;
+
+      &:hover {
+        background: #eff6ff;
+        color: #334155;
+      }
+    }
+
+    .menu--collapsed & {
+      justify-content: center;
+      padding: 10px;
+    }
+  }
+
+  &__icon {
+    width: 20px;
+    height: 20px;
+    flex: 0 0 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    line-height: 1;
+  }
+
+  &__label {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__arrow {
+    width: 20px;
+    height: 20px;
+    flex: 0 0 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    transition: transform 200ms ease;
+
+    &--expanded {
+      transform: rotate(90deg);
+    }
+  }
+}
+
+.submenu {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin: 2px 0 6px 24px;
+  padding-left: 5px;
+  border-left: 1px solid #e2e8f0;
+  animation: submenu-open 150ms ease-out;
+}
+
+.submenu__item {
+  width: 100%;
+  min-height: 35px;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 5px 10px;
+  box-sizing: border-box;
+  border-radius: 2px;
+  background: transparent;
+  color: #fff;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700 !important;
+  text-decoration: none;
+  cursor: pointer;
+
+  transition:
+    background-color 150ms ease,
+    color 150ms ease;
+
+  &:hover {
+    background: #f8fafc;
+    color: #334155;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #93c5fd;
+    outline-offset: 2px;
+  }
+
+  &--active {
+    background: #eff6ff;
+    color: #4caf50;
+  }
+}
+
+.submenu__icon {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.submenu__label {
+  min-width: 0;
+  padding-left: 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@keyframes submenu-open {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.notification-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: fit-content;
+  max-width: calc(100vw - 40px);
+}
+
+.notification {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: fit-content;
+  max-width: calc(100vw - 40px);
+  padding: 16px 18px;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
+  animation: notification-in 0.25s ease-out;
+}
+
+.success {
+  color: #2e7d32;
+}
+
+.notification.success {
+  border-left: 4px solid #22c55e;
+}
+
+.notification.error {
+  border-left: 4px solid #ef4444;
+}
+
+.notification-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: auto;
+  min-width: 0;
+}
+
+.icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  font-size: 14px;
+  font-weight: 700 !important;
+}
+
+.success .icon {
+  color: #16a34a;
+  background: #dcfce7;
+}
+
+.error .icon {
+  color: #dc2626;
+  background: #fee2e2;
+}
+
+.error .message {
+  line-height: 1.4;
+  color: #ba1a1a;
+  overflow-wrap: anywhere;
+}
+
+.close-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-size: 22px;
+  line-height: 1;
+  color: #666666;
+  cursor: pointer;
+  border-radius: 4px;
+
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.close-button:hover {
+  color: #111111;
+  background-color: #f3f4f6;
+}
+
+.close-button:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+@keyframes notification-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Mobile */
+
+@media (max-width: 480px) {
+  .notification-container {
+    max-width: calc(100vw - 24px);
+  }
+
+  .notification {
+    max-width: calc(100vw - 24px);
+    padding: 14px 16px;
+  }
+}
+
+.mdc-checkbox {
+  width: 12px !important;
+  height: 12px !important;
+}
+
+.mdc-checkbox__background {
+  border: 1px solid grey !important;
+}
+
+.mdc-checkbox__native-control:enabled:checked ~ .mdc-checkbox__background,
+.mdc-checkbox__native-control:enabled:indeterminate ~ .mdc-checkbox__background {
+  background-color: #4caf50 !important;
+  border: 1px solid #4caf50 !important;
 }
