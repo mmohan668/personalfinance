@@ -127,7 +127,19 @@
             </mat-option>
           }
         </mat-select>
-
+        @if (_cs.isNotNull(form.get('location')?.value)) {
+          <button
+            mat-icon-button
+            matSuffix
+            type="button"
+            class="clear-button"
+            aria-label="Clear location"
+            (click)="clearLocation($event)"
+            (mousedown)="$event.stopPropagation()"
+          >
+            <mat-icon>close</mat-icon>
+          </button>
+        }
         @if (_cs.isInvalid(form.get('location'))) {
           <mat-error>
             {{ _cs.getValidationMessage(form.get('location'), 'location') }}

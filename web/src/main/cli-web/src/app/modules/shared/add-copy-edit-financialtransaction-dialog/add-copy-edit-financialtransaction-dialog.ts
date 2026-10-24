@@ -190,4 +190,14 @@ export class AddCopyEditFinancialTransactionDialog {
       },
     );
   }
+
+  clearLocation(event: MouseEvent): void {
+    event.stopPropagation();
+    const control = this.form.get('location');
+    if (control?.value != null) {
+      control.setValue(null);
+      control.markAsDirty();
+      control.markAsTouched();
+    }
+  }
 }

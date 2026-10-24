@@ -67,7 +67,7 @@ public abstract class FinancialTransactionMapper {
             FinancialTransaction entity
     );
 
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_NULL)
     @Mapping(
             target = "subcategory",
             source = "subcategoryId",
@@ -126,6 +126,11 @@ public abstract class FinancialTransactionMapper {
                 User.class,
                 id
         );
+    }
+
+    @Named("location")
+    public ReferenceValue location(Long locationId) {
+        return mapReferenceValue(locationId);
     }
 
     @PersistenceContext
