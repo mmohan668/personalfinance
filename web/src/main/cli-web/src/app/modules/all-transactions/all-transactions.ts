@@ -1,8 +1,21 @@
 import { Component, inject, signal, ViewChild } from '@angular/core';
 import { DataGrid } from '../shared/data-grid/data-grid';
-import { DATA_FIELDS, ENTITIES, GRID_EXPORT_FILE_NAMES, GRID_NAMES, MODES } from '../shared/enums';
+import {
+  DATA_FIELDS,
+  ENTITIES,
+  FILTER_OPERATORS,
+  GRID_EXPORT_FILE_NAMES,
+  GRID_NAMES,
+  MODES,
+} from '../shared/enums';
 import { CommonService } from '../shared/service/common-service';
-import { ApiResponse, GridColumn, SuggestionRequest, ToolbarConfig } from '../shared/types/types';
+import {
+  ApiResponse,
+  GridColumn,
+  GridFilter,
+  SuggestionRequest,
+  ToolbarConfig,
+} from '../shared/types/types';
 import { MatDialog } from '@angular/material/dialog';
 import { AddCopyEditFinancialTransactionDialog } from '../shared/add-copy-edit-financialtransaction-dialog/add-copy-edit-financialtransaction-dialog';
 import { NotificationService } from '../shared/service/notification-service';
@@ -42,6 +55,9 @@ export class AllTransactions {
   locations = signal<string[]>([]);
   categoryNames = signal<string[]>([]);
   subcategoryNames = signal<string[]>([]);
+  protected readonly additionalFilters: GridFilter[] = [
+    { field: DATA_FIELDS.ADMIN_USER_ID, operator: FILTER_OPERATORS.EQUALS, value: 2 },
+  ];
 
   constructor() {
     this.toolbarConfig = this._cs.toolbarConfigExcludeActivateInactivate();

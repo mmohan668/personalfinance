@@ -121,6 +121,7 @@ export enum DATA_FIELDS {
   IS_ACTIVE = 'isActive',
   REFERENCE_OBJECT_REF_OBJ_NAME = 'referenceObject.refObjName',
   USER_CATEGORY_USER_ID = 'userCategory.user.id',
+  ADMIN_USER_ID = 'adminUserId',
 }
 
 export enum ENTITIES {

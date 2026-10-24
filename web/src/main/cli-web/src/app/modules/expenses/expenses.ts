@@ -45,6 +45,7 @@ export class Expenses {
       operator: FILTER_OPERATORS.EQUALS,
       value: TRANSACTION_TYPES.EXPENSE,
     },
+    { field: DATA_FIELDS.ADMIN_USER_ID, operator: FILTER_OPERATORS.EQUALS, value: 2 },
   ];
   protected searchForm!: FormGroup;
   protected readonly fieldCount = 2;

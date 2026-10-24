@@ -1,5 +1,6 @@
 package com.pf.common.service.financialTransaction;
 
+import com.pf.common.constants.EntityConstants;
 import com.pf.common.dto.financialTransaction.FinancialTransactionDto;
 import com.pf.common.dto.financialTransaction.FinancialTransactionViewDto;
 import com.pf.common.dto.generic.ApiResponse;
@@ -18,8 +19,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Locale;
 
 @Slf4j
 @Service
@@ -53,6 +57,40 @@ public class FinancialTransactionService extends BaseService {
     public ApiResponse saveFinancialTransaction(FinancialTransactionDto financialTransactionDto) {
         log.debug("saveFinancialTransaction: {}", financialTransactionDto);
         User user = fetchLoginUser();
+        if (!StringUtils.hasText(financialTransactionDto.getRemarks())) {
+            financialTransactionDto.setRemarks(null);
+        }
+        FinancialTransaction sameFinancialTransaction = financialTransactionRepository.findIdBySameCombination(
+                financialTransactionDto.getSubcategoryId(),
+                financialTransactionDto.getTransactionAt(),
+                financialTransactionDto.getLocationId(),
+                financialTransactionDto.getRemarks() != null ? financialTransactionDto.getRemarks().toLowerCase(Locale.ROOT).trim() : null,
+                user.getAdminUser().getId()
+        );
+        if (sameFinancialTransaction != null
+                && (financialTransactionDto.getId() == null
+                || !financialTransactionDto.getId().equals(sameFinancialTransaction.getId()))) {
+            log.debug(
+                    "Same FinancialTransaction already exists!. So updating the same instead of creating new record."
+            );
+            BigDecimal amount = sameFinancialTransaction.getAmount();
+            amount = amount.add(financialTransactionDto.getAmount());
+            sameFinancialTransaction.setAmount(amount);
+            if (financialTransactionDto.getRemarks() != null) {
+                sameFinancialTransaction.setRemarks(financialTransactionDto.getRemarks());
+            }
+            if (financialTransactionDto.getLocationId() != null) {
+                sameFinancialTransaction.setLocation(financialTransactionMapper.location(financialTransactionDto.getLocationId()));
+            }
+            sameFinancialTransaction.setUpdatedBy(user);
+            financialTransactionRepository.save(sameFinancialTransaction);
+            if (financialTransactionDto.getId() != null) {
+                log.debug("Deleting updated FinancialTransaction with id: {}", financialTransactionDto.getId());
+                deleteFinancialTransactions(List.of(financialTransactionDto.getId()));
+                log.debug("Deleted FinancialTransaction with id: {}", financialTransactionDto.getId());
+            }
+            return success("Financial transaction saved successfully");
+        }
         if (financialTransactionDto.getId() == null) {
             FinancialTransaction financialTransaction = financialTransactionMapper.toEntity(financialTransactionDto);
             financialTransaction.setAdminUser(user.getAdminUser());
@@ -71,6 +109,7 @@ public class FinancialTransactionService extends BaseService {
                                         );
                                     }
                             );
+            financialTransactionDto.setAdminUserId(user.getAdminUser().getId());
             financialTransactionMapper.updateEntity(financialTransactionDto, financialTransaction);
             financialTransaction.setUpdatedBy(user);
         }

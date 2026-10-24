@@ -40,7 +40,7 @@ export class Subcategories {
   protected readonly dataKey = DATA_FIELDS.ID;
   protected readonly toolbarConfig: ToolbarConfig;
   protected readonly additionalFilters: GridFilter[] = [
-    { field: DATA_FIELDS.USER_ID, operator: FILTER_OPERATORS.EQUALS, value: 1 },
+    { field: DATA_FIELDS.ADMIN_USER_ID, operator: FILTER_OPERATORS.EQUALS, value: 2 },
   ];
   protected searchForm!: FormGroup;
   fieldCount = 4;
