@@ -22,6 +22,9 @@ export class Downloads {
   constructor() {
     this.toolbaConfig = this._cs.toolbarConfig();
     this.toolbaConfig.refresh = true;
+    this.toolbaConfig.gridSettings = false;
+    this.toolbaConfig.export = false;
+    this.toolbaConfig.columnChooser = false;
   }
 
   hasValue = (rowData: any, col: GridColumn) => {

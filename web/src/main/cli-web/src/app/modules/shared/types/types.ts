@@ -75,6 +75,9 @@ export interface ToolbarConfig {
   activate: boolean | false;
   inactivate: boolean | false;
   refresh: boolean | false;
+  gridSettings: boolean | true;
+  export: boolean | true;
+  columnChooser: boolean | true;
 }
 
 export interface SelectItem {

@@ -37,6 +37,9 @@ export class CommonService {
       activate: value,
       inactivate: value,
       refresh: value,
+      gridSettings: true,
+      export: true,
+      columnChooser: true,
     };
   }
 
@@ -49,6 +52,9 @@ export class CommonService {
       activate: false,
       inactivate: false,
       refresh: false,
+      gridSettings: true,
+      export: true,
+      columnChooser: true,
     };
   }
 

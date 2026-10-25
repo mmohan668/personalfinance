@@ -60,110 +60,116 @@
     </button>
   }
 
-  <button
-    mat-icon-button
-    class="toolbar-border"
-    type="button"
-    title="Grid Settings"
-    [matMenuTriggerFor]="settingsMenu"
-  >
-    <mat-icon>save</mat-icon>
-  </button>
-  <mat-menu #settingsMenu="matMenu" class="settings-menu">
-    <button mat-menu-item type="button" (click)="saveGridSetting()">
+  @if (toolbarConfig.gridSettings) {
+    <button
+      mat-icon-button
+      class="toolbar-border"
+      type="button"
+      title="Grid Settings"
+      [matMenuTriggerFor]="settingsMenu"
+    >
       <mat-icon>save</mat-icon>
-      <span>Save Grid Settings</span>
     </button>
-    <button mat-menu-item type="button" (click)="resetGridSettings()">
-      <mat-icon>restart_alt</mat-icon>
-      <span>Reset Grid Settings</span>
-    </button>
-  </mat-menu>
-
-  <button
-    mat-icon-button
-    class="toolbar-border"
-    type="button"
-    title="Export"
-    [matMenuTriggerFor]="exportMenu"
-  >
-    <mat-icon>ios_share</mat-icon>
-  </button>
-
-  <mat-menu #exportMenu="matMenu" class="export-menu">
-    <button mat-menu-item type="button" (click)="exportExcel('ALL')">
-      <img src="assets/icons/exportAll.png" class="menu-icon" alt="" />
-      <span>Export All Data</span>
-    </button>
-    <button mat-menu-item type="button" (click)="exportExcel('SELECTED')">
-      <img src="assets/icons/exportSelected.png" class="menu-icon" alt="" />
-      <span>Export Selected Rows Data</span>
-    </button>
-  </mat-menu>
-
-  <button
-    mat-icon-button
-    class="toolbar-border"
-    type="button"
-    title="Column Chooser"
-    [matMenuTriggerFor]="columnMenu"
-  >
-    <mat-icon>view_column</mat-icon>
-  </button>
-
-  <mat-menu #columnMenu="matMenu" class="column-menu">
-    <div class="column-search" (click)="$event.stopPropagation()">
-      <mat-form-field appearance="outline" subscriptSizing="dynamic">
-        <mat-label>Search columns</mat-label>
-
-        <input
-          #searchInput
-          matInput
-          [(ngModel)]="columnSearch"
-          (click)="$event.stopPropagation()"
-          (keydown)="$event.stopPropagation()"
-        />
-
-        @if (columnSearch) {
-          <button
-            mat-icon-button
-            matSuffix
-            class="clear-search"
-            type="button"
-            (click)="columnSearch = ''; $event.stopPropagation()"
-          >
-            <mat-icon>close</mat-icon>
-          </button>
-        }
-      </mat-form-field>
-    </div>
-
-    @if (getColumns(searchInput.value).length > 0) {
-      <div class="select-all" (click)="$event.stopPropagation()">
-        <mat-checkbox
-          [checked]="allColumnsSelected()"
-          [indeterminate]="someColumnsSelected()"
-          (change)="toggleAllColumns($event.checked)"
-        >
-          Select All
-        </mat-checkbox>
-      </div>
-    }
-
-    @for (col of getColumns(searchInput.value); track col.field) {
-      <button
-        mat-menu-item
-        type="button"
-        (click)="$event.stopPropagation(); toggleColumn(col, !(col.visible !== false))"
-      >
-        <mat-checkbox
-          [checked]="col.visible !== false"
-          (change)="toggleColumn(col, $event.checked)"
-          (click)="$event.stopPropagation()"
-        >
-          {{ col.header }}
-        </mat-checkbox>
+    <mat-menu #settingsMenu="matMenu" class="settings-menu">
+      <button mat-menu-item type="button" (click)="saveGridSetting()">
+        <mat-icon>save</mat-icon>
+        <span>Save Grid Settings</span>
       </button>
-    }
-  </mat-menu>
+      <button mat-menu-item type="button" (click)="resetGridSettings()">
+        <mat-icon>restart_alt</mat-icon>
+        <span>Reset Grid Settings</span>
+      </button>
+    </mat-menu>
+  }
+
+  @if (toolbarConfig.export) {
+    <button
+      mat-icon-button
+      class="toolbar-border"
+      type="button"
+      title="Export"
+      [matMenuTriggerFor]="exportMenu"
+    >
+      <mat-icon>ios_share</mat-icon>
+    </button>
+
+    <mat-menu #exportMenu="matMenu" class="export-menu">
+      <button mat-menu-item type="button" (click)="exportExcel('ALL')">
+        <img src="assets/icons/exportAll.png" class="menu-icon" alt="" />
+        <span>Export All Data</span>
+      </button>
+      <button mat-menu-item type="button" (click)="exportExcel('SELECTED')">
+        <img src="assets/icons/exportSelected.png" class="menu-icon" alt="" />
+        <span>Export Selected Rows Data</span>
+      </button>
+    </mat-menu>
+  }
+
+  @if (toolbarConfig.columnChooser) {
+    <button
+      mat-icon-button
+      class="toolbar-border"
+      type="button"
+      title="Column Chooser"
+      [matMenuTriggerFor]="columnMenu"
+    >
+      <mat-icon>view_column</mat-icon>
+    </button>
+
+    <mat-menu #columnMenu="matMenu" class="column-menu">
+      <div class="column-search" (click)="$event.stopPropagation()">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Search columns</mat-label>
+
+          <input
+            #searchInput
+            matInput
+            [(ngModel)]="columnSearch"
+            (click)="$event.stopPropagation()"
+            (keydown)="$event.stopPropagation()"
+          />
+
+          @if (columnSearch) {
+            <button
+              mat-icon-button
+              matSuffix
+              class="clear-search"
+              type="button"
+              (click)="columnSearch = ''; $event.stopPropagation()"
+            >
+              <mat-icon>close</mat-icon>
+            </button>
+          }
+        </mat-form-field>
+      </div>
+
+      @if (getColumns(searchInput.value).length > 0) {
+        <div class="select-all" (click)="$event.stopPropagation()">
+          <mat-checkbox
+            [checked]="allColumnsSelected()"
+            [indeterminate]="someColumnsSelected()"
+            (change)="toggleAllColumns($event.checked)"
+          >
+            Select All
+          </mat-checkbox>
+        </div>
+      }
+
+      @for (col of getColumns(searchInput.value); track col.field) {
+        <button
+          mat-menu-item
+          type="button"
+          (click)="$event.stopPropagation(); toggleColumn(col, !(col.visible !== false))"
+        >
+          <mat-checkbox
+            [checked]="col.visible !== false"
+            (change)="toggleColumn(col, $event.checked)"
+            (click)="$event.stopPropagation()"
+          >
+            {{ col.header }}
+          </mat-checkbox>
+        </button>
+      }
+    </mat-menu>
+  }
 </div>
