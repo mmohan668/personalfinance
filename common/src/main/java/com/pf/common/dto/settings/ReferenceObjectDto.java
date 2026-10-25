@@ -18,14 +18,12 @@ public class ReferenceObjectDto implements Serializable {
 
     public static final Map<String, String> FIELD_MAPPINGS = Map.of(
             "createdBy", "createdBy.username",
-            "updatedBy", "updatedBy.username",
-            "userId", "user.id"
+            "updatedBy", "updatedBy.username"
     );
 
     private Long id;
     @NotBlank(message = "Reference object name is required")
     private String refObjName;
-    private boolean active;
     private String createdBy;
     private LocalDateTime createdAt;
     private String updatedBy;

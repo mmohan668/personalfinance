@@ -1,12 +1,11 @@
 package com.pf.warehouse.controller;
 
-import com.pf.common.dto.settings.ReferenceObjectDto;
-import com.pf.common.record.generic.SelectItem;
+import com.pf.common.dto.generic.ApiResponse;
 import com.pf.common.dto.gp.GridResult;
 import com.pf.common.dto.gp.SearchCriteria;
 import com.pf.common.dto.settings.ReferenceValueDto;
 import com.pf.common.dto.settings.SystemConfigDto;
-import com.pf.common.dto.generic.ApiResponse;
+import com.pf.common.record.generic.SelectItem;
 import com.pf.common.service.settings.SettingsService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -74,26 +73,6 @@ public class SettingsController {
     @PostMapping("/saveSystemConfig")
     public ApiResponse saveSystemConfig(@RequestBody SystemConfigDto systemConfigDto) {
         return settingsService.saveSystemConfig(systemConfigDto);
-    }
-
-    @PostMapping("/activateReferenceObject")
-    public ApiResponse activateReferenceObject(@RequestBody List<Long> refObjIds) {
-        return settingsService.activateReferenceObject(refObjIds);
-    }
-
-    @PostMapping("/inactivateReferenceObject")
-    public ApiResponse inactivateReferenceObject(@RequestBody List<Long> refObjIds) {
-        return settingsService.inactivateReferenceObject(refObjIds);
-    }
-
-    @PostMapping("/deleteReferenceObject")
-    public ApiResponse deleteReferenceObject(@RequestBody List<Long> refObjIds) {
-        return settingsService.deleteReferenceObject(refObjIds);
-    }
-
-    @PostMapping("/saveReferenceObject")
-    public ApiResponse saveReferenceObject(@RequestBody ReferenceObjectDto referenceObjectDto) {
-        return settingsService.saveReferenceObject(referenceObjectDto);
     }
 
     @PostMapping("activateReferenceValue")

@@ -26,7 +26,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -52,14 +51,8 @@ public class SettingsService extends BaseService {
 
     public GridResult fetchReferenceObjectGridData(SearchCriteria searchCriteria) {
         log.debug("fetchReferenceObjectGridData: {}", searchCriteria);
-        GridFilter gridFilter = GridFilter.builder()
-                .field(USER_ID)
-                .operator(EQUALS.getValue())
-                .value(String.valueOf(fetchLoginUser().getAdminUser().getId()))
-                .build();
-        searchCriteria.getFilterList().add(gridFilter);
         searchCriteria.getSortList().add(new GridSort(ID, ASC.getValue()));
-        searchCriteria.setFetchPaths(List.of(CREATED_BY_USER, UPDATED_BY_USER, USER));
+        searchCriteria.setFetchPaths(List.of(CREATED_BY_USER, UPDATED_BY_USER));
         searchCriteria.setFIELD_MAPPINGS(ReferenceObjectDto.FIELD_MAPPINGS);
         long totalRecords = 0;
         if (!searchCriteria.isLoadAllData()) {
@@ -256,94 +249,6 @@ public class SettingsService extends BaseService {
         systemConfig.setConfigValue(referenceValue);
         systemConfig.setUpdatedBy(fetchLoginUser());
         return success("System config saved successfully.");
-    }
-
-    @Transactional
-    public ApiResponse activateReferenceObject(List<Long> ids) {
-        log.debug("activateReferenceObject: {}", ids);
-        if (ids == null || ids.isEmpty()) {
-            return failure("No reference object(s) selected for activation.");
-        }
-        Long modifiedBy = fetchLoginUser().getId();
-        LocalDateTime modifiedAt = LocalDateTime.now();
-        int activated = BatchUtils.processBatchesAndSum(
-                ids,
-                chunk -> referenceObjectRepository.activateReferenceObject(chunk, modifiedBy, modifiedAt)
-        );
-        log.debug("{} Reference object(s) activated", activated);
-        return success("Reference object(s) activated successfully.");
-    }
-
-    @Transactional
-    public ApiResponse inactivateReferenceObject(List<Long> ids) {
-        log.debug("inactivateReferenceObject: {}", ids);
-        if (ids == null || ids.isEmpty()) {
-            return failure("No reference object(s) selected for inactivation.");
-        }
-        Long modifiedBy = fetchLoginUser().getId();
-        LocalDateTime modifiedAt = LocalDateTime.now();
-        int inactivated = BatchUtils.processBatchesAndSum(
-                ids,
-                chunk -> referenceObjectRepository.inactivateReferenceObject(chunk, modifiedBy, modifiedAt)
-        );
-        log.debug("{} Reference object(s) inactivated", inactivated);
-        return success("Reference object(s) inactivated successfully.");
-    }
-
-    @Transactional
-    public ApiResponse deleteReferenceObject(List<Long> ids) {
-        log.debug("deleteReferenceObject: {}", ids);
-        if (ids == null || ids.isEmpty()) {
-            return failure("No reference object(s) selected for deletion.");
-        }
-        if (BatchUtils.hasFailingBatch(
-                ids,
-                chunk -> !referenceValueRepository.existsByReferenceObject(chunk))
-        ) {
-            return failure("Reference object(s) cannot be deleted because one or more are currently in use.");
-        }
-        BatchUtils.processInBatches(
-                ids,
-                referenceObjectRepository::deleteAllByIdInBatch
-        );
-        log.debug("{} Reference object(s) deleted", ids.size());
-        return success("Reference object(s) deleted successfully.");
-    }
-
-    @Transactional
-    public ApiResponse saveReferenceObject(@RequestBody ReferenceObjectDto referenceObjectDto) {
-        log.debug("saveReferenceObject: {}", referenceObjectDto);
-        if (referenceObjectDto == null) {
-            return failure("Reference object object not found.");
-        }
-        if (referenceObjectDto.getId() == null) {
-            log.info("add reference object: {}", referenceObjectDto);
-            if (referenceObjectRepository.existsByRefObjName(referenceObjectDto.getRefObjName())) {
-                return failure("Reference object name already exists.");
-            }
-            ReferenceObject referenceObject = new ReferenceObject();
-            referenceObject.setRefObjName(referenceObjectDto.getRefObjName().toUpperCase());
-            referenceObject.setUser(fetchLoginUser().getAdminUser());
-            referenceObject.setCreatedBy(fetchLoginUser());
-            referenceObjectRepository.save(referenceObject);
-        } else {
-            log.info("update reference object: {}", referenceObjectDto);
-            if (referenceObjectRepository.existsByRefObjNameAndId(
-                    referenceObjectDto.getRefObjName(),
-                    referenceObjectDto.getId())
-            ) {
-                return failure("Reference object name already exists.");
-            }
-            ReferenceObject referenceObject =
-                    referenceObjectRepository.findById(referenceObjectDto.getId())
-                            .orElse(null);
-            if (referenceObject == null) {
-                return failure("Reference object not found.");
-            }
-            referenceObject.setRefObjName(referenceObjectDto.getRefObjName().toUpperCase());
-            referenceObject.setUpdatedBy(fetchLoginUser());
-        }
-        return success("Reference object saved successfully.");
     }
 
     @Transactional
