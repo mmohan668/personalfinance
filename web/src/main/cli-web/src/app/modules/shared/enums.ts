@@ -77,6 +77,7 @@ export enum GRID_NAMES {
   SYSTEM_CONFIG = 'SYSTEM_CONFIG',
   BULK_UPLOADS_STATUS = 'BULK_UPLOADS_STATUS',
   DOWNLOADS = 'DOWNLOADS',
+  USERS_GRID = 'USERS_GRID',
 }
 
 export enum GRID_EXPORT_FILE_NAMES {
@@ -91,6 +92,7 @@ export enum GRID_EXPORT_FILE_NAMES {
   ALL_TRANSACTIONS_GRID_EFN = 'all_transactions',
   SYSTEM_CONFIG_EFN = 'system_config',
   BULK_UPLOADS_STATUS = 'bulk_uploads_status',
+  USERS_GRID_EFN = 'users',
 }
 
 export enum DATA_FIELDS {

@@ -1,1 +1,12 @@
-<p>users works!</p>
+<div class="grid-container">
+  <app-data-grid
+    #dataGrid
+    [gridName]="gridName"
+    [calculateCellValue]="calculateCellValue"
+    [fetchBooleanOptions]="fetchBooleanOptions"
+    [additionalFilters]="additionalFilters"
+    [gridExportFileName]="gridExportFileName"
+    [dataKey]="dataKey"
+    [toolbarConfig]="toolbaConfig"
+  ></app-data-grid>
+</div>

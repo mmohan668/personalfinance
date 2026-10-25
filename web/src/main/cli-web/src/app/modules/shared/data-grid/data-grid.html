@@ -95,7 +95,11 @@
                       [column]="col"
                       (valueChange)="applyFilter($event)"
                       (operatorChange)="changeOperator($event)"
-                      [booleanOptions]="booleanOptions"
+                      [booleanOptions]="
+                        this.fetchBooleanOptions != undefined
+                          ? fetchBooleanOptions(col)
+                          : fetchDefaultBooleanOptions()
+                      "
                     >
                     </app-column-filter>
                   </th>

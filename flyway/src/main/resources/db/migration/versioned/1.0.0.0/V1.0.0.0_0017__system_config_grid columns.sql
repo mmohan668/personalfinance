@@ -4,7 +4,6 @@
 
 BEGIN;
 
-
 -- ============================================================
 -- 1. GRID NAME
 -- ============================================================
@@ -18,7 +17,6 @@ ON CONFLICT (LOWER(TRIM(name)))
 -- 2. GRID COLUMNS
 -- ============================================================
 
--- Config Name
 INSERT INTO grid_column
 (grid_name_id,
  field,
@@ -47,7 +45,6 @@ VALUES ((SELECT id
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 
--- Config Value
 INSERT INTO grid_column
 (grid_name_id,
  field,
@@ -76,7 +73,6 @@ VALUES ((SELECT id
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 
--- Config Description
 INSERT INTO grid_column
 (grid_name_id,
  field,
@@ -101,7 +97,6 @@ VALUES ((SELECT id
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 
--- Created By
 INSERT INTO grid_column
 (grid_name_id,
  field,
@@ -126,8 +121,6 @@ VALUES ((SELECT id
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 
-
--- Created Date
 INSERT INTO grid_column
 (grid_name_id,
  field,
@@ -137,7 +130,8 @@ INSERT INTO grid_column
  width,
  visible_index,
  filterable,
- sortable)
+ sortable,
+ align)
 VALUES ((SELECT id
          FROM grid_name
          WHERE LOWER(TRIM(name)) = LOWER(TRIM('SYSTEM_CONFIG'))),
@@ -148,11 +142,11 @@ VALUES ((SELECT id
         200,
         4,
         false,
-        false)
+        false,
+        'RIGHT')
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 
--- Modified By
 INSERT INTO grid_column
 (grid_name_id,
  field,
@@ -177,7 +171,6 @@ VALUES ((SELECT id
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 
--- Modified Date
 INSERT INTO grid_column
 (grid_name_id,
  field,
@@ -187,7 +180,8 @@ INSERT INTO grid_column
  width,
  visible_index,
  filterable,
- sortable)
+ sortable,
+ align)
 VALUES ((SELECT id
          FROM grid_name
          WHERE LOWER(TRIM(name)) = LOWER(TRIM('SYSTEM_CONFIG'))),
@@ -198,7 +192,8 @@ VALUES ((SELECT id
         200,
         6,
         false,
-        false)
+        false,
+        'RIGHT')
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 
