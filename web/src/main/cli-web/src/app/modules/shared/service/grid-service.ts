@@ -52,4 +52,11 @@ export class GridService {
       gridPersonalizationDto,
     );
   }
+
+  downloadFile(filePath: any): Observable<Blob> {
+    return this.http.get(`${this.config.configValue.apiUrl}/export/download`, {
+      params: { filePath: filePath },
+      responseType: 'blob',
+    });
+  }
 }

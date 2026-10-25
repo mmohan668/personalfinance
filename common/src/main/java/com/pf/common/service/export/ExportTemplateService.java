@@ -4,6 +4,7 @@ import com.pf.common.dto.gp.GridColumnDto;
 import com.pf.common.entity.settings.SystemConfig;
 import com.pf.common.entity.userManagement.User;
 import com.pf.common.enums.AppEnums;
+import com.pf.common.enums.GridNames;
 import com.pf.common.repository.setting.SystemConfigRepository;
 import com.pf.common.util.CurrencyUtil;
 import com.pf.common.util.ExcelUtils;
@@ -57,8 +58,9 @@ public class ExportTemplateService {
             return;
         }
         Path basePath = Paths.get(exportPath).toAbsolutePath().normalize();
+        String gridNamePath = GridNames.valueOf(gridName).getValue();
         Path outputPath = basePath.resolve(FileUtils.safePathSegment(user.getUsername()))
-                .resolve(FileUtils.safePathSegment(gridName))
+                .resolve(FileUtils.safePathSegment(gridNamePath))
                 .resolve(FileUtils.safeFileName(FileUtils.addTimestamp(exportFileName)))
                 .normalize();
         // Ensure the final path stays inside the configured export directory.

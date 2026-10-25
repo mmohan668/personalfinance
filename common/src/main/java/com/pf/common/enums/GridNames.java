@@ -1,15 +1,23 @@
 package com.pf.common.enums;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@AllArgsConstructor
 public enum GridNames {
-    CATEGORIES_GRID,
-    SUBCATEGORIES_GRID,
-    REFERENCE_OBJECTS_GRID,
-    REFERENCE_VALUES_GRID,
-    EXPENSES_GRID,
-    INCOMES_GRID,
-    INVESTMENTS_GRID,
-    TRANSFERS_GRID,
-    ALL_TRANSACTIONS_GRID,
-    SYSTEM_CONFIG,
-    BULK_UPLOADS_STATUS
+    CATEGORIES_GRID("Categories"),
+    SUBCATEGORIES_GRID("Subcategories"),
+    REFERENCE_OBJECTS_GRID("Reference Objects"),
+    REFERENCE_VALUES_GRID("Reference Values"),
+    EXPENSES_GRID("Expense Transactions"),
+    INCOMES_GRID("Income Transactions"),
+    INVESTMENTS_GRID("Investment Transactions"),
+    TRANSFERS_GRID("Transfer Transactions"),
+    ALL_TRANSACTIONS_GRID("All Financial Transactions"),
+    SYSTEM_CONFIG("System Config"),
+    BULK_UPLOADS_STATUS("Bulk Uploads Status");
+
+    @Getter
+    private final String value;
+
 }

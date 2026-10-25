@@ -6,9 +6,11 @@ import com.pf.common.dto.gp.SearchCriteria;
 import com.pf.common.entity.userManagement.User;
 import com.pf.common.enums.GridNames;
 import com.pf.common.repository.user.UserRepository;
+import com.pf.common.service.bulkUpload.BulkUploadsService;
 import com.pf.common.service.categoryManagement.CategoryManagementService;
 import com.pf.common.service.financialTransaction.FinancialTransactionService;
 import com.pf.common.service.gp.GridService;
+import com.pf.common.service.settings.SettingsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -24,6 +26,8 @@ import java.util.List;
 public class ProcessExportService {
     private final FinancialTransactionService financialTransactionService;
     private final CategoryManagementService categoryManagementService;
+    private final BulkUploadsService bulkUploadsService;
+    private final SettingsService settingsService;
     private final UserRepository userRepository;
     private final GridService gridService;
     private final ExportTemplateService exportTemplateService;
@@ -72,13 +76,19 @@ public class ProcessExportService {
         GridNames gridName = GridNames.valueOf(searchCriteria.getGridName());
         try {
             return switch (gridName) {
-                case ALL_TRANSACTIONS_GRID ->
+                case ALL_TRANSACTIONS_GRID, INCOMES_GRID, EXPENSES_GRID, TRANSFERS_GRID, INVESTMENTS_GRID ->
                         financialTransactionService.fetchFinancialTransactionGridData(searchCriteria).getRecordDetails();
                 case CATEGORIES_GRID ->
                         categoryManagementService.fetchCategoriesGridData(searchCriteria).getRecordDetails();
                 case SUBCATEGORIES_GRID ->
                         categoryManagementService.fetchSubcategoriesGridData(searchCriteria).getRecordDetails();
-                default -> new ArrayList<>();
+                case REFERENCE_OBJECTS_GRID ->
+                        settingsService.fetchReferenceObjectGridData(searchCriteria).getRecordDetails();
+                case REFERENCE_VALUES_GRID ->
+                        settingsService.fetchReferenceValueGridData(searchCriteria).getRecordDetails();
+                case SYSTEM_CONFIG -> settingsService.fetchSystemConfigGridData(searchCriteria).getRecordDetails();
+                case BULK_UPLOADS_STATUS ->
+                        bulkUploadsService.fetchBulkUploadStatusGridData(searchCriteria).getRecordDetails();
             };
         } catch (Exception e) {
             log.error("Error getting grid data", e);
