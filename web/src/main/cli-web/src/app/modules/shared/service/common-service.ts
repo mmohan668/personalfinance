@@ -13,6 +13,12 @@ export class CommonService {
     { label: 'Inactive', value: false },
   ];
 
+  yesNoBooleanOptions = [
+    { label: 'All', value: null },
+    { label: 'Yes', value: true },
+    { label: 'No', value: false },
+  ];
+
   private dialog = inject(MatDialog);
   private _ns = inject(NotificationService);
 

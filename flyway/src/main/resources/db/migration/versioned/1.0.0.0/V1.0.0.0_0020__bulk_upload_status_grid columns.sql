@@ -13,12 +13,10 @@ VALUES ('BULK_UPLOADS_STATUS')
 ON CONFLICT (LOWER(TRIM(name)))
     DO NOTHING;
 
-
 -- ============================================================
 -- 2. GRID COLUMNS
 -- ============================================================
 
--- Upload Type
 INSERT INTO grid_column
 (grid_name_id,
  field,
@@ -39,7 +37,6 @@ VALUES ((SELECT id
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 
--- Status
 INSERT INTO grid_column
 (grid_name_id,
  field,
@@ -60,7 +57,6 @@ VALUES ((SELECT id
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 
--- Upload File
 INSERT INTO grid_column
 (grid_name_id,
  field,
@@ -118,7 +114,6 @@ VALUES ((SELECT id
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 
--- Created By
 INSERT INTO grid_column
 (grid_name_id,
  field,
@@ -139,7 +134,6 @@ VALUES ((SELECT id
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 
--- Created By
 INSERT INTO grid_column
 (grid_name_id,
  field,
@@ -160,8 +154,6 @@ VALUES ((SELECT id
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 
-
--- Created Date
 INSERT INTO grid_column
 (grid_name_id,
  field,
@@ -171,7 +163,8 @@ INSERT INTO grid_column
  width,
  visible_index,
  default_sort_order,
- sort_index)
+ sort_index,
+ align)
 VALUES ((SELECT id
          FROM grid_name
          WHERE LOWER(TRIM(name)) = LOWER(TRIM('BULK_UPLOADS_STATUS'))),
@@ -182,7 +175,8 @@ VALUES ((SELECT id
         200,
         6,
         'desc',
-        0)
+        0,
+        'RIGHT')
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 

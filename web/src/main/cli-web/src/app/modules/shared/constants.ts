@@ -13,6 +13,7 @@ export const GRID_URL_MAP = new Map<string, string>([
   [GRID_NAMES.SYSTEM_CONFIG, '/settings/fetchSystemConfigGridData'],
   [GRID_NAMES.BULK_UPLOADS_STATUS, '/bulkupload/fetchBulkUploadStatusGridData'],
   [GRID_NAMES.DOWNLOADS, '/export/fetchExports'],
+  [GRID_NAMES.USERS_GRID, '/users/fetchUsersGridData'],
 ]);
 
 export const SYSTEM = 'PERSONALFINANCEAPP';

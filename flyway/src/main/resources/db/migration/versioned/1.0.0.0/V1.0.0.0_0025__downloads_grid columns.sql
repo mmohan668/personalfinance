@@ -13,12 +13,10 @@ VALUES ('DOWNLOADS')
 ON CONFLICT (LOWER(TRIM(name)))
     DO NOTHING;
 
-
 -- ============================================================
 -- 2. GRID COLUMNS
 -- ============================================================
 
--- Upload Type
 INSERT INTO grid_column
 (grid_name_id,
  field,
@@ -41,7 +39,6 @@ VALUES ((SELECT id
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 
--- Upload File
 INSERT INTO grid_column
 (grid_name_id,
  field,
@@ -64,7 +61,6 @@ VALUES ((SELECT id
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 
--- Created Date
 INSERT INTO grid_column
 (grid_name_id,
  field,
@@ -72,7 +68,8 @@ INSERT INTO grid_column
  data_type,
  visible_index,
  filterable,
- sortable)
+ sortable,
+ align)
 VALUES ((SELECT id
          FROM grid_name
          WHERE LOWER(TRIM(name)) = LOWER(TRIM('DOWNLOADS'))),
@@ -81,7 +78,8 @@ VALUES ((SELECT id
         'datetime',
         2,
         false,
-        false)
+        false,
+        'RIGHT')
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 

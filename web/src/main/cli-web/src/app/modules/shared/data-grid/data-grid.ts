@@ -71,7 +71,7 @@ export class DataGrid implements OnInit {
   @Input()
   public additionalFilters!: GridFilter[];
   @Input()
-  public booleanOptions!: { label: string; value: boolean | null }[];
+  public fetchBooleanOptions!: (col: GridColumn) => { label: string; value: boolean | null }[];
   @Input()
   public calculateCellValue!: (rowData: any, col: GridColumn) => any;
   @Input()
@@ -816,5 +816,9 @@ export class DataGrid implements OnInit {
 
   hasFilterables() {
     return this.visibleColumns().some((c) => c.filterable === true);
+  }
+
+  fetchDefaultBooleanOptions() {
+    return this._cs.activeInactiveBooleanOptions;
   }
 }

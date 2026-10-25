@@ -4,7 +4,6 @@
 
 BEGIN;
 
-
 -- ============================================================
 -- 1. GRID NAME
 -- ============================================================
@@ -14,12 +13,10 @@ VALUES ('ALL_TRANSACTIONS_GRID')
 ON CONFLICT (LOWER(TRIM(name)))
     DO NOTHING;
 
-
 -- ============================================================
 -- 2. GRID COLUMNS
 -- ============================================================
 
--- Transaction Date
 INSERT INTO grid_column
 (grid_name_id,
  field,
@@ -29,7 +26,8 @@ INSERT INTO grid_column
  width,
  visible_index,
  default_sort_order,
- sort_index)
+ sort_index,
+ align)
 VALUES ((SELECT id
          FROM grid_name
          WHERE LOWER(TRIM(name)) = LOWER(TRIM('ALL_TRANSACTIONS_GRID'))),
@@ -40,12 +38,11 @@ VALUES ((SELECT id
         200,
         0,
         'desc',
-        0)
+        0,
+        'RIGHT')
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 
-
--- Amount
 INSERT INTO grid_column
 (grid_name_id,
  field,
@@ -54,7 +51,8 @@ INSERT INTO grid_column
  default_filter_operator,
  width,
  visible_index,
- cell_template)
+ cell_template,
+ align)
 VALUES ((SELECT id
          FROM grid_name
          WHERE LOWER(TRIM(name)) = LOWER(TRIM('ALL_TRANSACTIONS_GRID'))),
@@ -64,11 +62,11 @@ VALUES ((SELECT id
         'equals',
         200,
         1,
-        'currencyCellTemplate')
+        'currencyCellTemplate',
+        'RIGHT')
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 
--- Transaction Type
 INSERT INTO grid_column
 (grid_name_id,
  field,
@@ -89,7 +87,6 @@ VALUES ((SELECT id
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 
--- Category Name
 INSERT INTO grid_column
 (grid_name_id,
  field,
@@ -110,8 +107,6 @@ VALUES ((SELECT id
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 
-
--- Category Description
 INSERT INTO grid_column
 (grid_name_id,
  field,
@@ -134,8 +129,6 @@ VALUES ((SELECT id
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 
-
--- Subcategory Name
 INSERT INTO grid_column
 (grid_name_id,
  field,
@@ -156,8 +149,6 @@ VALUES ((SELECT id
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 
-
--- Subcategory Description
 INSERT INTO grid_column
 (grid_name_id,
  field,
@@ -180,8 +171,6 @@ VALUES ((SELECT id
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 
-
--- Remarks
 INSERT INTO grid_column
 (grid_name_id,
  field,
@@ -202,8 +191,6 @@ VALUES ((SELECT id
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 
-
--- Location
 INSERT INTO grid_column
 (grid_name_id,
  field,
@@ -226,7 +213,6 @@ VALUES ((SELECT id
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 
--- Created By
 INSERT INTO grid_column
 (grid_name_id,
  field,
@@ -247,8 +233,6 @@ VALUES ((SELECT id
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 
-
--- Created Date
 INSERT INTO grid_column
 (grid_name_id,
  field,
@@ -258,7 +242,8 @@ INSERT INTO grid_column
  width,
  visible_index,
  default_sort_order,
- sort_index)
+ sort_index,
+ align)
 VALUES ((SELECT id
          FROM grid_name
          WHERE LOWER(TRIM(name)) = LOWER(TRIM('ALL_TRANSACTIONS_GRID'))),
@@ -269,12 +254,11 @@ VALUES ((SELECT id
         200,
         10,
         'desc',
-        1)
+        1,
+        'RIGHT')
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 
-
--- Modified By
 INSERT INTO grid_column
 (grid_name_id,
  field,
@@ -295,8 +279,6 @@ VALUES ((SELECT id
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 
-
--- Modified Date
 INSERT INTO grid_column
 (grid_name_id,
  field,
@@ -304,7 +286,8 @@ INSERT INTO grid_column
  data_type,
  default_filter_operator,
  width,
- visible_index)
+ visible_index,
+ align)
 VALUES ((SELECT id
          FROM grid_name
          WHERE LOWER(TRIM(name)) = LOWER(TRIM('ALL_TRANSACTIONS_GRID'))),
@@ -313,9 +296,9 @@ VALUES ((SELECT id
         'datetime',
         'equals',
         200,
-        12)
+        12,
+        'RIGHT')
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
-
 
 COMMIT;

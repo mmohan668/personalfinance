@@ -2,6 +2,7 @@ package com.pf.common.entity.userManagement;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Formula;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -28,16 +29,15 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    /**
-     * Admin user who manages this user.
-     * Self-referencing relationship.
-     */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "admin_user_id")
     private User adminUser;
 
     @Column(name = "username", nullable = false, unique = true, length = 100)
     private String username;
+
+    @Column(name = "display_name", nullable = false, unique = true, length = 100)
+    private String displayName;
 
     @Column(name = "email", nullable = false)
     private String email;
@@ -46,8 +46,7 @@ public class User {
     private String passwordHash;
 
     @Column(name = "is_active", nullable = false)
-    @Builder.Default
-    private Boolean active = true;
+    private Boolean active;
 
     @Column(name = "created_by", nullable = false)
     private String createdBy;
@@ -61,13 +60,18 @@ public class User {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    /**
-     * Users managed by this admin.
-     * <p>
-     * Not strictly required, but useful if you need to navigate
-     * from an admin to their users.
-     */
-    @OneToMany(mappedBy = "adminUser", fetch = FetchType.LAZY)
-    @Builder.Default
-    private List<User> managedUsers = new ArrayList<>();
+    @Formula("CASE WHEN admin_user_id = id THEN true ELSE false END")
+    private Boolean isAdminUser;
+
+    @PrePersist
+    public void prePersist() {
+        this.active = true;
+        this.createdAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
+
 }

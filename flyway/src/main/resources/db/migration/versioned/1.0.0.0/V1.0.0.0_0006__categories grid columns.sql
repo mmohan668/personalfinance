@@ -4,7 +4,6 @@
 
 BEGIN;
 
-
 -- ============================================================
 -- 1. GRID NAME
 -- ============================================================
@@ -14,12 +13,10 @@ VALUES ('CATEGORIES_GRID')
 ON CONFLICT (LOWER(TRIM(name)))
     DO NOTHING;
 
-
 -- ============================================================
 -- 2. GRID COLUMNS
 -- ============================================================
 
--- Transaction Type
 INSERT INTO grid_column
 (grid_name_id,
  field,
@@ -44,8 +41,6 @@ VALUES ((SELECT id
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 
-
--- Category Name
 INSERT INTO grid_column
 (grid_name_id,
  field,
@@ -70,8 +65,6 @@ VALUES ((SELECT id
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 
-
--- Category Description
 INSERT INTO grid_column
 (grid_name_id,
  field,
@@ -92,8 +85,6 @@ VALUES ((SELECT id
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 
-
--- Active Status
 INSERT INTO grid_column
 (grid_name_id,
  field,
@@ -116,8 +107,6 @@ VALUES ((SELECT id
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 
-
--- Created By
 INSERT INTO grid_column
 (grid_name_id,
  field,
@@ -138,8 +127,6 @@ VALUES ((SELECT id
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 
-
--- Created Date
 INSERT INTO grid_column
 (grid_name_id,
  field,
@@ -147,7 +134,8 @@ INSERT INTO grid_column
  data_type,
  default_filter_operator,
  width,
- visible_index)
+ visible_index,
+ align)
 VALUES ((SELECT id
          FROM grid_name
          WHERE LOWER(TRIM(name)) = LOWER(TRIM('CATEGORIES_GRID'))),
@@ -156,12 +144,11 @@ VALUES ((SELECT id
         'datetime',
         'equals',
         200,
-        5)
+        5,
+        'RIGHT')
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 
-
--- Modified By
 INSERT INTO grid_column
 (grid_name_id,
  field,
@@ -182,8 +169,6 @@ VALUES ((SELECT id
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 
-
--- Modified Date
 INSERT INTO grid_column
 (grid_name_id,
  field,
@@ -191,7 +176,8 @@ INSERT INTO grid_column
  data_type,
  default_filter_operator,
  width,
- visible_index)
+ visible_index,
+ align)
 VALUES ((SELECT id
          FROM grid_name
          WHERE LOWER(TRIM(name)) = LOWER(TRIM('CATEGORIES_GRID'))),
@@ -200,7 +186,8 @@ VALUES ((SELECT id
         'datetime',
         'equals',
         200,
-        7)
+        7,
+        'RIGHT')
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 

@@ -17,7 +17,6 @@ ON CONFLICT (LOWER(TRIM(name)))
 -- 2. GRID COLUMNS
 -- ============================================================
 
--- Reference Object Name
 INSERT INTO grid_column
 (grid_name_id,
  field,
@@ -42,7 +41,6 @@ VALUES ((SELECT id
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 
--- Created By
 INSERT INTO grid_column
 (grid_name_id,
  field,
@@ -63,7 +61,6 @@ VALUES ((SELECT id
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 
--- Created Date
 INSERT INTO grid_column
 (grid_name_id,
  field,
@@ -71,7 +68,8 @@ INSERT INTO grid_column
  data_type,
  default_filter_operator,
  width,
- visible_index)
+ visible_index,
+ align)
 VALUES ((SELECT id
          FROM grid_name
          WHERE LOWER(TRIM(name)) = LOWER(TRIM('REFERENCE_OBJECTS_GRID'))),
@@ -80,11 +78,11 @@ VALUES ((SELECT id
         'datetime',
         'equals',
         200,
-        2)
+        2,
+        'RIGHT')
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 
--- Modified By
 INSERT INTO grid_column
 (grid_name_id,
  field,
@@ -105,7 +103,6 @@ VALUES ((SELECT id
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 
--- Modified Date
 INSERT INTO grid_column
 (grid_name_id,
  field,
@@ -113,7 +110,8 @@ INSERT INTO grid_column
  data_type,
  default_filter_operator,
  width,
- visible_index)
+ visible_index,
+ align)
 VALUES ((SELECT id
          FROM grid_name
          WHERE LOWER(TRIM(name)) = LOWER(TRIM('REFERENCE_OBJECTS_GRID'))),
@@ -122,7 +120,8 @@ VALUES ((SELECT id
         'datetime',
         'equals',
         200,
-        4)
+        4,
+        'RIGHT')
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 
