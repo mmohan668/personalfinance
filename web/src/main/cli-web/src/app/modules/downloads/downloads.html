@@ -1,1 +1,15 @@
-<p>downloads works!</p>
+<div class="grid-container">
+  <app-data-grid
+    #dataGrid
+    [gridName]="gridName"
+    [dataKey]="dataKey"
+    [toolbarConfig]="toolbaConfig"
+    [hasValue]="hasValue"
+    [downloadFile]="downloadFile"
+    [enableSelection]="false"
+    [formatSize]="formatSize"
+    groupBy="groupName"
+    [showPager]="false"
+    [getGroupColumnHeader]="getGroupColumnHeader"
+  ></app-data-grid>
+</div>

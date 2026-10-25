@@ -76,6 +76,7 @@ export enum GRID_NAMES {
   ALL_TRANSACTIONS_GRID = 'ALL_TRANSACTIONS_GRID',
   SYSTEM_CONFIG = 'SYSTEM_CONFIG',
   BULK_UPLOADS_STATUS = 'BULK_UPLOADS_STATUS',
+  DOWNLOADS = 'DOWNLOADS',
 }
 
 export enum GRID_EXPORT_FILE_NAMES {
@@ -122,6 +123,7 @@ export enum DATA_FIELDS {
   REFERENCE_OBJECT_REF_OBJ_NAME = 'referenceObject.refObjName',
   USER_CATEGORY_USER_ID = 'userCategory.user.id',
   ADMIN_USER_ID = 'adminUserId',
+  FILE_NAME = 'fileName',
 }
 
 export enum ENTITIES {

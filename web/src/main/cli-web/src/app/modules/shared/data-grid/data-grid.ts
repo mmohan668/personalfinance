@@ -1,4 +1,4 @@
-import { CurrencyPipe, DatePipe } from '@angular/common';
+import { CurrencyPipe } from '@angular/common';
 import {
   Component,
   computed,
@@ -64,7 +64,7 @@ export class DataGrid implements OnInit {
   public toolbarConfig!: ToolbarConfig;
   @Input({ required: true })
   public gridName!: string;
-  @Input({ required: true })
+  @Input()
   public gridExportFileName!: string;
   @Input({ required: true })
   public dataKey!: string;
@@ -86,6 +86,14 @@ export class DataGrid implements OnInit {
   public hasValue!: (rowData: any, col: GridColumn) => any;
   @Input()
   public scrollHeight!: number;
+  @Input()
+  public enableSelection: boolean = true;
+  @Input()
+  public formatSize!: (rowData: any) => any;
+  @Input()
+  public showPager: boolean = true;
+  @Input()
+  public getGroupColumnHeader!: () => any;
 
   public config = inject(AppConfigService);
   public _cs = inject(CommonService);
@@ -236,7 +244,13 @@ export class DataGrid implements OnInit {
       multisortmeta?: SortMeta[];
     };
     let multiSortMeta = eventData.multisortmeta ?? eventData.multiSortMeta ?? [];
-    multiSortMeta = multiSortMeta.filter((s) => s.field !== undefined);
+    multiSortMeta = multiSortMeta.filter(
+      (s) =>
+        s.field !== undefined &&
+        this.visibleColumns().some(
+          (column) => column.field === s.field && column.sortable !== false,
+        ),
+    );
     if (
       multiSortMeta.length === 0 ||
       (multiSortMeta.length > 0 &&
@@ -680,10 +694,6 @@ export class DataGrid implements OnInit {
       return next;
     });
     this.updateCachedColumns();
-  }
-
-  getGroupColumnHeader(): string {
-    return this.columns().find((col) => col.field === this.groupBy)?.header ?? '';
   }
 
   getCurrencyCode(): string {
