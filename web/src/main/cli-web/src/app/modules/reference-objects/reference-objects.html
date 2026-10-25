@@ -11,15 +11,6 @@
           <input matInput type="text" formControlName="refObjName" />
         </mat-form-field>
 
-        <mat-form-field appearance="fill" subscriptSizing="dynamic">
-          <mat-label>Active Status</mat-label>
-          <mat-select formControlName="active">
-            <mat-option value="">All</mat-option>
-            <mat-option value="true">Active</mat-option>
-            <mat-option value="false">Inactive</mat-option>
-          </mat-select>
-        </mat-form-field>
-
         <div class="search-actions">
           <button mat-raised-button color="primary" type="submit">Search</button>
           <button mat-stroked-button type="button" (click)="resetSearchForm()">Clear</button>
@@ -35,12 +26,5 @@
     [gridExportFileName]="gridExportFileName"
     [dataKey]="dataKey"
     [toolbarConfig]="toolbarConfig"
-    [calculateCellValue]="calculateCellValue"
-    [activate]="activate"
-    [inactivate]="inactivate"
-    [deleteRow]="deleteRow"
-    [addRow]="addRow"
-    [editRow]="editRow"
-    [booleanOptions]="_cs.activeInactiveBooleanOptions"
   ></app-data-grid>
 </div>

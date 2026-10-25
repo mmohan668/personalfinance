@@ -18,7 +18,6 @@ BEGIN
         RAISE EXCEPTION 'User with id % does not exist', p_user_id;
     END IF;
 
-
     /*
      * 2. Get system/admin user
      *
@@ -35,23 +34,12 @@ BEGIN
             'System user PERSONALFINANCEAPP does not exist';
     END IF;
 
-
     /*
      * 3. Associate the new user with the admin/system user
      */
     UPDATE users
     SET admin_user_id = p_user_id
     WHERE id = p_user_id;
-
-
-    INSERT INTO reference_object(ref_obj_name, user_id, created_by, created_at)
-    SELECT sro.ref_obj_name,
-           p_user_id,
-           v_created_by,
-           current_timestamp
-    FROM system_reference_object sro
-    ON CONFLICT (LOWER(TRIM(ref_obj_name)), user_id)
-        DO NOTHING;
 
     INSERT INTO reference_value (user_id,
                                  ref_obj_name_id,
@@ -62,7 +50,7 @@ BEGIN
                                  created_by,
                                  created_at)
     SELECT p_user_id,
-           ro.id,
+           srv.ref_obj_name_id,
            srv.reference_code,
            srv.reference_code_description,
            srv.reference_code_2,
@@ -70,12 +58,6 @@ BEGIN
            v_created_by,
            CURRENT_TIMESTAMP
     FROM system_reference_value srv
-             JOIN system_reference_object sro
-                  ON sro.id = srv.ref_obj_name_id
-             JOIN reference_object ro
-                  ON ro.user_id = p_user_id
-                      AND LOWER(TRIM(ro.ref_obj_name))
-                         = LOWER(TRIM(sro.ref_obj_name))
     ON CONFLICT (
         user_id,
         ref_obj_name_id,
@@ -111,7 +93,6 @@ BEGIN
         )
         DO NOTHING;
 
-
 /*
  * 8. Copy master categories to user categories
  */
@@ -134,7 +115,6 @@ BEGIN
         LOWER(TRIM(category_name))
         )
         DO NOTHING;
-
 
 /*
  * 9. Copy master subcategories to user subcategories
@@ -162,7 +142,6 @@ BEGIN
         LOWER(TRIM(subcategory_name))
         )
         DO NOTHING;
-
 
 /*
  * Everything succeeded.
