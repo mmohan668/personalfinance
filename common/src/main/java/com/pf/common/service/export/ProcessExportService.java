@@ -11,6 +11,7 @@ import com.pf.common.service.categoryManagement.CategoryManagementService;
 import com.pf.common.service.financialTransaction.FinancialTransactionService;
 import com.pf.common.service.gp.GridService;
 import com.pf.common.service.settings.SettingsService;
+import com.pf.common.service.userManagement.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,7 @@ public class ProcessExportService {
     private final CategoryManagementService categoryManagementService;
     private final BulkUploadsService bulkUploadsService;
     private final SettingsService settingsService;
+    private final UserService userService;
     private final UserRepository userRepository;
     private final GridService gridService;
     private final ExportTemplateService exportTemplateService;
@@ -89,6 +91,7 @@ public class ProcessExportService {
                 case SYSTEM_CONFIG -> settingsService.fetchSystemConfigGridData(searchCriteria).getRecordDetails();
                 case BULK_UPLOADS_STATUS ->
                         bulkUploadsService.fetchBulkUploadStatusGridData(searchCriteria).getRecordDetails();
+                case USERS_GRID -> userService.fetchUsersGridData(searchCriteria).getRecordDetails();
             };
         } catch (Exception e) {
             log.error("Error getting grid data", e);

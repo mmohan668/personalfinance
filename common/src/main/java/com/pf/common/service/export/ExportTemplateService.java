@@ -43,8 +43,6 @@ public class ExportTemplateService {
     private String exportPath;
     private final SystemConfigRepository systemConfigRepository;
 
-    public static final String DATA = "data";
-
     public void createExcel(
             List<GridColumnDto> columns,
             List<?> data,
@@ -69,7 +67,7 @@ public class ExportTemplateService {
         }
         Files.createDirectories(outputPath.getParent());
         try (ByteArrayInputStream inputStream =
-                     createWorkBook(exportColumns, data, gridName, user)) {
+                     createWorkBook(exportColumns, data, gridName, user, exportFileName)) {
             Files.copy(inputStream, outputPath, StandardCopyOption.REPLACE_EXISTING);
         }
         log.info("Excel file created at {}", outputPath);
@@ -79,11 +77,12 @@ public class ExportTemplateService {
             List<GridColumnDto> columns,
             List<?> data,
             String gridName,
-            User user
+            User user,
+            String exportFileName
     ) {
         try (XSSFWorkbook workbook = new XSSFWorkbook();
              ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
-            XSSFSheet sheet = workbook.createSheet(DATA);
+            XSSFSheet sheet = workbook.createSheet(exportFileName);
             createHeader(workbook, sheet, columns);
             createBody(workbook, sheet, columns, data, user);
             workbook.setActiveSheet(0);
@@ -213,6 +212,7 @@ public class ExportTemplateService {
     private String fetchCalculatedValue(GridColumnDto column, boolean bool) {
         return switch (column.getField()) {
             case "active", "isActive" -> bool ? "Active" : "Inactive";
+            case "isAdminUser" -> bool ? "Yes" : "No";
             default -> bool ? "True" : "False";
         };
     }

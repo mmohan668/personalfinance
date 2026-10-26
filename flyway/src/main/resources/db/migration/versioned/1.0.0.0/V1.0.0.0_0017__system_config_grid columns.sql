@@ -67,7 +67,7 @@ VALUES ((SELECT id
         200,
         1,
         'hyperlinkCellTemplate',
-        'CENTER',
+        'LEFT',
         false,
         false)
 ON CONFLICT (grid_name_id, LOWER(TRIM(field)))

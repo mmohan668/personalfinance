@@ -5,7 +5,6 @@ import com.pf.common.dto.gp.GridResult;
 import com.pf.common.dto.gp.GridSort;
 import com.pf.common.dto.gp.SearchCriteria;
 import com.pf.common.dto.userManagement.UserDto;
-import com.pf.common.entity.settings.ReferenceObject;
 import com.pf.common.entity.userManagement.User;
 import com.pf.common.mapper.userManagement.UserMapper;
 import com.pf.common.repository.user.UserRepository;
@@ -120,7 +119,7 @@ public class UserService extends BaseService {
             return success("User(s) have been deleted successfully");
         } catch (DataIntegrityViolationException e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            log.error("Failed to delete users due to a constraint violation", e.getMessage());
+            log.error("Failed to delete users due to a constraint violation {}", e.getMessage());
             return failure(
                     "Cannot delete selected users because one or more are referenced by other records."
             );
