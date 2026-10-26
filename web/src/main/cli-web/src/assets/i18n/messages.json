@@ -97,5 +97,28 @@
     "delete": {
       "confirmation": "Are you sure you want to delete the selected financial transactions?"
     }
+  },
+  "user": {
+    "delete": {
+      "isAdminUser": "The admin user cannot be deleted.",
+      "title": "Delete Confirmation",
+      "confirmation": "Are you sure you want to delete the selected user(s)?"
+    },
+    "edit": {
+      "isAdminUser": "The admin user cannot be edited."
+    },
+    "activate": {
+      "allactive": "All selected user(s) already active.",
+      "title": "Activate Confirmation",
+      "confirmation": "Are you sure you want to activate the selected user(s)?",
+      "mixedSelection": "Some of the selected user(s) are already active. Only the inactive user(s) will be activated. Do you want to continue?"
+    },
+    "inactivate": {
+      "isAdminUser": "The admin user cannot be inactivated.",
+      "allinactive": "All selected user(s) already inactive.",
+      "title": "Inactivate Confirmation",
+      "confirmation": "Are you sure you want to inactivate the selected user(s)?",
+      "mixedSelection": "Some of the selected user(s) are already inactive. Only the active user(s) will be inactivated. Do you want to continue?"
+    }
   }
 }

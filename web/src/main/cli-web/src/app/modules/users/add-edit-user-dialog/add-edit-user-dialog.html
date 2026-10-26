@@ -1,0 +1,146 @@
+<div class="dialog-container" cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+  <!-- Title Bar -->
+  <div class="dialog-title-bar" cdkDragHandle>
+    <span class="dialog-title">
+      @if (data.mode === MODES.ADD) {
+        Add User
+      } @else {
+        Edit User
+      }
+    </span>
+
+    <button mat-icon-button type="button" aria-label="Close" (click)="dialogRef.close()">
+      <span class="material-icons">close</span>
+    </button>
+  </div>
+
+  <!-- Content -->
+  <div class="dialog-content">
+    <form [formGroup]="form" class="dialog-form">
+      <mat-form-field appearance="fill" class="dialog-field">
+        <mat-label>Username</mat-label>
+
+        <input
+          matInput
+          type="text"
+          name="username"
+          formControlName="username"
+          (keydown)="restrictUsernameCharacters($event)"
+        />
+
+        @if (_cs.isInvalid(form.get('username'))) {
+          <mat-error>
+            {{ _cs.getValidationMessage(form.get('username'), 'Username') }}
+          </mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="dialog-field">
+        <mat-label>Display Name</mat-label>
+
+        <input matInput type="text" name="displayName" formControlName="displayName" />
+
+        @if (_cs.isInvalid(form.get('displayName'))) {
+          <mat-error>
+            {{ _cs.getValidationMessage(form.get('displayName'), 'Display Name') }}
+          </mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="dialog-field">
+        <mat-label>Email</mat-label>
+
+        <input matInput type="text" name="email" formControlName="email" />
+
+        @if (_cs.isInvalid(form.get('email'))) {
+          <mat-error>
+            {{ _cs.getValidationMessage(form.get('email'), 'Email') }}
+          </mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="dialog-field">
+        <mat-label>Password</mat-label>
+
+        <input matInput type="password" name="password" formControlName="password" />
+
+        @if (_cs.isInvalid(form.get('password'))) {
+          <mat-error>
+            {{ _cs.getValidationMessage(form.get('password'), 'Password') }}
+          </mat-error>
+        }
+      </mat-form-field>
+      @if (data.mode === MODES.ADD) {
+        <mat-form-field appearance="fill" class="dialog-field">
+          <mat-label>Confirm Password</mat-label>
+
+          <input
+            matInput
+            type="password"
+            name="confirmPassword"
+            formControlName="confirmPassword"
+            [errorStateMatcher]="confirmPasswordMatcher"
+          />
+          @if (_cs.isInvalid(form.get('confirmPassword'))) {
+            <mat-error>
+              {{ _cs.getValidationMessage(form.get('confirmPassword'), 'Confirm Password') }}
+            </mat-error>
+          }
+          @if (
+            form.hasError('passwordMismatch') &&
+            (form.get('confirmPassword')?.dirty || form.get('confirmPassword')?.touched)
+          ) {
+            <mat-error> Password and confirm password do not match. </mat-error>
+          }
+        </mat-form-field>
+        <div></div>
+        @let password = form.get('password')?.value ?? '';
+
+        <div class="password-requirements">
+          <div [class.valid]="/[A-Z]/.test(password)">
+            {{ /[A-Z]/.test(password) ? '✓' : '○' }}
+            At least one uppercase letter
+          </div>
+
+          <div [class.valid]="/[a-z]/.test(password)">
+            {{ /[a-z]/.test(password) ? '✓' : '○' }}
+            At least one lowercase letter
+          </div>
+
+          <div [class.valid]="/\d/.test(password)">
+            {{ /\d/.test(password) ? '✓' : '○' }}
+            At least one number
+          </div>
+
+          <div [class.valid]="/[^A-Za-z0-9]/.test(password)">
+            {{ /[^A-Za-z0-9]/.test(password) ? '✓' : '○' }}
+            At least one special character
+          </div>
+
+          <div [class.valid]="password.length >= 8 && password.length <= 16">
+            {{ password.length >= 8 && password.length <= 16 ? '✓' : '○' }}
+            Between 8 and 16 characters
+          </div>
+        </div>
+      }
+    </form>
+  </div>
+
+  <!-- Actions -->
+  <mat-dialog-actions class="dialog-actions">
+    <button mat-stroked-button type="button" (click)="form.reset()">Reset</button>
+
+    <span class="action-spacer"></span>
+
+    <button mat-stroked-button type="button" (click)="dialogRef.close()">Close</button>
+
+    <button
+      mat-raised-button
+      type="button"
+      [disabled]="form.invalid || form.pristine"
+      (click)="save()"
+    >
+      Save
+    </button>
+  </mat-dialog-actions>
+</div>

@@ -20,6 +20,7 @@ public class UserDto implements Serializable {
     private Long id;
     private String username;
     private String displayName;
+    private String password;
     private String email;
     private Boolean active;
     private Boolean isAdminUser;

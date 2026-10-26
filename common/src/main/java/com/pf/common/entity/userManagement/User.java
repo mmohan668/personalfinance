@@ -5,8 +5,6 @@ import lombok.*;
 import org.hibernate.annotations.Formula;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table(
@@ -65,7 +63,7 @@ public class User {
 
     @PrePersist
     public void prePersist() {
-        this.active = true;
+        this.active = false;
         this.createdAt = LocalDateTime.now();
     }
 

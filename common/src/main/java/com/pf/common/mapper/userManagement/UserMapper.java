@@ -8,10 +8,11 @@ import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {
-    
+
     UserDto toDto(User entity);
 
     @Mapping(target = "adminUser", ignore = true)
+    @Mapping(target = "passwordHash", source = "password")
     User toEntity(UserDto dto);
 
     List<UserDto> toDtoList(List<User> entities);
