@@ -15,8 +15,8 @@ public enum GridNames {
     TRANSFERS_GRID("Transfer Transactions"),
     ALL_TRANSACTIONS_GRID("All Financial Transactions"),
     SYSTEM_CONFIG("System Config"),
-    BULK_UPLOADS_STATUS("Bulk Uploads Status");
-
+    BULK_UPLOADS_STATUS("Bulk Uploads Status"),
+    USERS_GRID("Users");
     @Getter
     private final String value;
 
