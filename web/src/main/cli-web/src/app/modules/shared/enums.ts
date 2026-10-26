@@ -126,6 +126,10 @@ export enum DATA_FIELDS {
   USER_CATEGORY_USER_ID = 'userCategory.user.id',
   ADMIN_USER_ID = 'adminUserId',
   FILE_NAME = 'fileName',
+  USERNAME = 'username',
+  DISPLAY_NAME = 'displayName',
+  EMAIL = 'email',
+  PASSWORD = 'password',
 }
 
 export enum ENTITIES {

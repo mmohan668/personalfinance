@@ -1768,3 +1768,14 @@ body {
   --mdc-filled-text-field-active-indicator-color: #4caf50;
   --mdc-filled-text-field-hover-active-indicator-color: #4caf50;
 }
+
+.password-requirements {
+  margin-top: 12px !important;
+  font-size: 13px !important;
+  line-height: 20px !important;
+  color: #d32f2f !important;
+}
+
+.password-requirements .valid {
+  color: #2e7d32 !important;
+}
