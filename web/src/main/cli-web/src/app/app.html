@@ -1,9 +1,16 @@
 <app-loading-spinner />
 <app-notification />
-<div class="app-layout">
-  <app-menu />
 
-  <main class="app-content">
-    <router-outlet />
-  </main>
+<div class="app-shell">
+  <app-user-menu></app-user-menu>
+
+  <div class="app-layout">
+    <app-menu></app-menu>
+
+    <main class="app-content">
+      <div class="page-content">
+        <router-outlet></router-outlet>
+      </div>
+    </main>
+  </div>
 </div>
