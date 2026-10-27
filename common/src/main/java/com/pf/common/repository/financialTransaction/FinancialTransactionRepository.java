@@ -1,6 +1,8 @@
 package com.pf.common.repository.financialTransaction;
 
 import com.pf.common.entity.financialTransaction.FinancialTransaction;
+import com.pf.common.projection.ExpenseByCategoryProjection;
+import com.pf.common.projection.TransactionTotalProjection;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -39,6 +41,35 @@ public interface FinancialTransactionRepository extends JpaRepository<FinancialT
             @Param("location") Long location,
             @Param("remarks") String remarks,
             @Param("userId") Long userId
+    );
+
+    @Transactional(readOnly = true)
+    @Query("""
+                SELECT COALESCE(SUM(ftv.amount), 0) AS total,
+                       ftv.transactionType AS transactionType
+                FROM FinancialTransactionView ftv
+                WHERE ftv.transactionAt >= :from
+                AND ftv.transactionAt < :to
+                GROUP BY ftv.transactionType
+            """)
+    List<TransactionTotalProjection> fetchTotals(
+            @Param("from") LocalDate from,
+            @Param("to") LocalDate to
+    );
+
+    @Transactional(readOnly = true)
+    @Query("""
+                SELECT COALESCE(SUM(ftv.amount), 0) AS amount,
+                       ftv.categoryName AS categoryName
+                FROM FinancialTransactionView ftv
+                WHERE ftv.transactionAt >= :from
+                AND ftv.transactionAt < :to
+                AND ftv.transactionType = 'EXPENSE'
+                GROUP BY ftv.categoryName
+            """)
+    List<ExpenseByCategoryProjection> fetchExpenseByCategory(
+            @Param("from") LocalDate from,
+            @Param("to") LocalDate to
     );
 
 }

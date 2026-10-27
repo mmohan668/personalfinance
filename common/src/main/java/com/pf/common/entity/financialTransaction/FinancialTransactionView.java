@@ -9,6 +9,7 @@ import lombok.Setter;
 import org.hibernate.annotations.Immutable;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -23,7 +24,7 @@ public class FinancialTransactionView {
     private Long id;
 
     @Column(name = "transaction_at")
-    private LocalDateTime transactionAt;
+    private LocalDate transactionAt;
 
     @Column(name = "amount")
     private BigDecimal amount;

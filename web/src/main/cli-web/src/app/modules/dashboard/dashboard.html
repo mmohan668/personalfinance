@@ -1,1 +1,147 @@
-<p>dashboard works!</p>
+<div class="dashboard">
+  <header class="dashboard-header">
+    <div class="dashboard-title">
+      <h1>Financial Dashboard</h1>
+      <p>Your financial overview for {{ currentMonth }}</p>
+    </div>
+    <button
+      type="button"
+      class="refresh-button"
+      (click)="refreshData()"
+      title="Refresh dashboard data"
+      aria-label="Refresh dashboard data"
+    >
+      <span class="refresh-icon">⟳</span>
+      <span>Refresh</span>
+    </button>
+    <div class="month-controls">
+      <div class="filter-field">
+        <label for="selectedYear">Year</label>
+        <select
+          id="selectedYear"
+          [value]="selectedYear"
+          (change)="onYearChange($any($event.target).value)"
+        >
+          @for (year of yearOptions; track year) {
+            <option [value]="year">{{ year }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="filter-field">
+        <label for="selectedMonth">Month</label>
+        <select
+          id="selectedMonth"
+          [value]="selectedMonth"
+          (change)="onMonthChange($any($event.target).value)"
+        >
+          @for (month of monthOptions; track month.value) {
+            <option [value]="month.value">
+              {{ month.label }}
+            </option>
+          }
+        </select>
+      </div>
+    </div>
+
+    <span class="period-badge">{{ currentMonth }}</span>
+  </header>
+
+  <section class="summary-grid">
+    <article class="summary-card expense">
+      <div class="card-top">
+        <span class="card-label">Total Expenses</span>
+        <span class="card-icon">↗</span>
+      </div>
+      <h2>{{ totals().expense | currency: 'INR' : 'symbol' : '1.0-0' }}</h2>
+      <p>Spent in {{ currentMonth }}</p>
+    </article>
+
+    <article class="summary-card income">
+      <div class="card-top">
+        <span class="card-label">Total Income</span>
+        <span class="card-icon">↙</span>
+      </div>
+      <h2>{{ totals().income | currency: 'INR' : 'symbol' : '1.0-0' }}</h2>
+      <p>Received in {{ currentMonth }}</p>
+    </article>
+
+    <article class="summary-card investment">
+      <div class="card-top">
+        <span class="card-label">Investments</span>
+        <span class="card-icon">◈</span>
+      </div>
+      <h2>{{ totals().investment | currency: 'INR' : 'symbol' : '1.0-0' }}</h2>
+      <p>Invested in {{ currentMonth }}</p>
+    </article>
+
+    <article class="summary-card transfer">
+      <div class="card-top">
+        <span class="card-label">Transfers</span>
+        <span class="card-icon">⇄</span>
+      </div>
+      <h2>{{ totals().transfer | currency: 'INR' : 'symbol' : '1.0-0' }}</h2>
+      <p>Transferred in {{ currentMonth }}</p>
+    </article>
+  </section>
+
+  <section class="charts-grid">
+    <!-- Expense category pie chart -->
+    <article class="chart-card">
+      <div class="chart-header">
+        <h3>Expense Breakdown</h3>
+        <p>Expenses by category for {{ currentMonth }}</p>
+      </div>
+
+      <div class="chart-container">
+        @if (expenses().length > 0) {
+          <canvas baseChart [type]="'pie'" [data]="pieData" [options]="pieOptions"> </canvas>
+        } @else {
+          <div class="empty-state">
+            <p>No expense data for {{ currentMonth }}</p>
+          </div>
+        }
+      </div>
+    </article>
+
+    <!-- Income, expense, investment and transfer pie chart -->
+    <article class="chart-card">
+      <div class="chart-header">
+        <h3>Monthly Transaction Breakdown</h3>
+        <p>Income, expenses, investments and transfers</p>
+      </div>
+
+      <div class="chart-container">
+        @if (
+          totals().income > 0 ||
+          totals().expense > 0 ||
+          totals().investment > 0 ||
+          totals().transfer > 0
+        ) {
+          <canvas
+            baseChart
+            [type]="'pie'"
+            [data]="transactionBreakdownPieData"
+            [options]="transactionBreakdownPieOptions"
+          ></canvas>
+        } @else {
+          <div class="empty-state">
+            <p>No transaction data for {{ currentMonth }}</p>
+          </div>
+        }
+      </div>
+    </article>
+
+    <!-- Monthly cash flow bar chart -->
+    <article class="chart-card">
+      <div class="chart-header">
+        <h3>Monthly Cash Flow</h3>
+        <p>Income, expenses, investments and transfers for {{ currentMonth }}</p>
+      </div>
+
+      <div class="chart-container">
+        <canvas baseChart [type]="'bar'" [data]="barData" [options]="barOptions"></canvas>
+      </div>
+    </article>
+  </section>
+</div>

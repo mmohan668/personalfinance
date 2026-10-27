@@ -14,6 +14,7 @@ import { MessageService } from './modules/shared/service/message-service';
 import { errorInterceptor } from './modules/shared/interceptor/error-interceptor';
 import { DateAdapter, MAT_DATE_FORMATS } from '@angular/material/core';
 import { SystemDateAdapter } from './modules/shared/adapter/system-date-adapter';
+import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 
 export const APP_DATE_FORMATS = {
   parse: {
@@ -42,6 +43,7 @@ export const appConfig: ApplicationConfig = {
         preset: Aura,
       },
     }),
+    provideCharts(withDefaultRegisterables()),
     {
       provide: DateAdapter,
       useClass: SystemDateAdapter,

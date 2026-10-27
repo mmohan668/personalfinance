@@ -1,6 +1,5 @@
 package com.pf.common.service.financialTransaction;
 
-import com.pf.common.constants.EntityConstants;
 import com.pf.common.dto.financialTransaction.FinancialTransactionDto;
 import com.pf.common.dto.financialTransaction.FinancialTransactionViewDto;
 import com.pf.common.dto.generic.ApiResponse;
