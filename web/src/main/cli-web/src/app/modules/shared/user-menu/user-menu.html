@@ -1,0 +1,119 @@
+<header class="user-menu">
+  <!-- Application branding -->
+  <div class="brand">
+    <div class="brand-icon">₹</div>
+
+    <span class="brand-title"> Finance Manager </span>
+  </div>
+
+  <!-- Right-side actions -->
+  <div class="menu-actions">
+    <!-- Help -->
+    <button
+      type="button"
+      class="icon-button"
+      title="Help & Support"
+      aria-label="Help and Support"
+      (click)="openHelp()"
+    >
+      <i class="bi bi-question-circle"></i>
+    </button>
+
+    <!-- About -->
+    <button
+      type="button"
+      class="icon-button"
+      title="About"
+      aria-label="About"
+      (click)="openAbout()"
+    >
+      <i class="bi bi-info-circle"></i>
+    </button>
+
+    <!-- User profile -->
+    <div class="profile-container">
+      <button
+        type="button"
+        class="profile-button"
+        aria-label="User profile menu"
+        [attr.aria-expanded]="profileMenuOpen"
+        (click)="toggleProfileMenu()"
+      >
+        <img
+          class="user-avatar"
+          [src]="user?.imageUrl || 'assets/image.png'"
+          [alt]="user?.name || 'User profile'"
+        />
+
+        <span class="user-details">
+          <span class="user-name">
+            {{ user?.name || 'User' }}
+          </span>
+
+          <span class="user-email">
+            {{ user?.email || '' }}
+          </span>
+        </span>
+
+        <i
+          class="bi"
+          [class.bi-chevron-down]="!profileMenuOpen"
+          [class.bi-chevron-up]="profileMenuOpen"
+        >
+        </i>
+      </button>
+
+      <!-- Profile dropdown -->
+      @if (profileMenuOpen) {
+        <div class="profile-dropdown">
+          <!-- User information -->
+          <div class="dropdown-header">
+            <img
+              class="dropdown-avatar"
+              [src]="user?.imageUrl || 'assets/image.png'"
+              [alt]="user?.name || 'User profile'"
+            />
+
+            <div class="dropdown-user-details">
+              <strong>
+                {{ user?.name || 'User' }}
+              </strong>
+
+              <small>
+                {{ user?.email || '' }}
+              </small>
+            </div>
+          </div>
+
+          <div class="dropdown-divider"></div>
+
+          <!-- Change password -->
+          <button type="button" class="dropdown-item" (click)="changePassword()">
+            <i class="bi bi-shield-lock"></i>
+            <span>Change Password</span>
+          </button>
+
+          <!-- About -->
+          <button type="button" class="dropdown-item" (click)="openAbout()">
+            <i class="bi bi-info-circle"></i>
+            <span>About</span>
+          </button>
+
+          <!-- Help -->
+          <button type="button" class="dropdown-item" (click)="openHelp()">
+            <i class="bi bi-question-circle"></i>
+            <span>Help &amp; Support</span>
+          </button>
+
+          <div class="dropdown-divider"></div>
+
+          <!-- Logout -->
+          <button type="button" class="dropdown-item logout-item" (click)="logout()">
+            <i class="bi bi-box-arrow-right"></i>
+            <span>Logout</span>
+          </button>
+        </div>
+      }
+    </div>
+  </div>
+</header>

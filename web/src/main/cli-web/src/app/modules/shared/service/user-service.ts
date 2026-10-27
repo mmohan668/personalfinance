@@ -3,6 +3,7 @@ import { AppConfigService } from './app-config-service';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ApiResponse } from '../types/types';
+import { UserProfile } from '../user-menu/user-menu';
 
 @Service()
 export class UserService {
@@ -28,9 +29,12 @@ export class UserService {
   }
 
   deleteUsers(ids: any[]): Observable<ApiResponse> {
-    return this.http.post<ApiResponse>(
-      `${this.config.configValue.apiUrl}/users/deleteUsers`,
-      ids,
-    );
+    return this.http.post<ApiResponse>(`${this.config.configValue.apiUrl}/users/deleteUsers`, ids);
   }
+
+  getCurrentUser() {
+    return {} as UserProfile;
+  }
+
+  logout() {}
 }
