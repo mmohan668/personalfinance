@@ -116,3 +116,20 @@ export interface SuggestionRequest {
   dependentValue?: string;
   limit?: number;
 }
+
+export interface DashboardSummary {
+  transactions: TransactionTotals;
+  expenses: ExpenseByCategory[];
+}
+
+export interface TransactionTotals {
+  expense: number;
+  income: number;
+  investment: number;
+  transfer: number;
+}
+
+export interface ExpenseByCategory {
+  categoryName: string;
+  amount: number;
+}

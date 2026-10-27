@@ -15,9 +15,44 @@ html {
   );
 }
 
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
 body {
   margin: 0;
   font-family: Arial, Helvetica, sans-serif !important;
+}
+
+app-root {
+  display: block;
+  height: 100%;
+}
+
+.app-layout {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+app-menu {
+  flex: 0 0 300px; // Match your actual sidebar width
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.app-content {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .dialog-container {
@@ -715,22 +750,22 @@ body {
 }
 
 .row-expense > td {
-  color: rgb(206, 13, 13);
+  color: #dc3636 !important;
   font-weight: 700 !important;
 }
 
 .row-income > td {
-  color: #1f7a3f;
+  color: #16a34a;
   font-weight: 700 !important;
 }
 
 .row-investment > td {
-  color: #1371eb;
+  color: #8b5cf6;
   font-weight: 700 !important;
 }
 
 .row-transfer > td {
-  color: #8a16ef;
+  color: #0ea5e9;
   font-weight: 700 !important;
 }
 
