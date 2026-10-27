@@ -93,7 +93,7 @@ export class Dashboard {
   };
 
   constructor(private readonly dashboardService: DashboardService) {
-    this.yearOptions = Array.from({ length: 6 }, (_, index) => this.now.getFullYear() - index);
+    this.yearOptions = Array.from({ length: 10 }, (_, index) => this.now.getFullYear() - index);
 
     this.generateMonthOptions();
     this.refreshData();
@@ -153,10 +153,10 @@ export class Dashboard {
         });
 
         this.expenses.set(data.expenses ?? []);
-
         this.updateCharts();
         this.loading = false;
       },
+
       error: (error) => {
         console.error('Failed to fetch dashboard summary', error);
 
@@ -176,8 +176,81 @@ export class Dashboard {
     });
   }
 
+  resetToCurrentMonth(): void {
+    // Get the current date each time Refresh is clicked.
+    const currentDate = new Date();
+
+    this.selectedYear = currentDate.getFullYear();
+    this.selectedMonth = currentDate.getMonth() + 1;
+
+    // Rebuild dropdown options and update the displayed month.
+    this.generateMonthOptions();
+
+    // Load data for the current year and month.
+    this.refreshData();
+  }
+
+  // Absolute amount helper for display and calculations.
+  abs(amount: number): number {
+    return Math.abs(amount ?? 0);
+  }
+
+  // Percentage of total income.
+  // Returns zero if income is zero or negative.
+  getIncomePercentage(amount: number): number {
+    const income = this.totals().income;
+
+    if (income <= 0) {
+      return 0;
+    }
+
+    return (Math.abs(amount) / income) * 100;
+  }
+
+  // Keep progress bars within the valid 0-100% range.
+  getIncomeBarPercentage(amount: number): number {
+    return Math.min(100, Math.max(0, this.getIncomePercentage(amount)));
+  }
+
+  // Income remaining after expenses, investments and transfers.
+  getRemainingIncome(): number {
+    const totals = this.totals();
+
+    return (
+      totals.income -
+      Math.abs(totals.expense) -
+      Math.abs(totals.investment) -
+      Math.abs(totals.transfer)
+    );
+  }
+
+  // Remaining income as a percentage of income.
+  getRemainingPercentage(): number {
+    const income = this.totals().income;
+
+    if (income <= 0) {
+      return 0;
+    }
+
+    return (this.getRemainingIncome() / income) * 100;
+  }
+
+  // Remaining balance progress bar, capped between 0 and 100.
+  getRemainingBarPercentage(): number {
+    return Math.min(100, Math.max(0, this.getRemainingPercentage()));
+  }
+
+  // Combined percentage of expenses, investments and transfers.
+  getTotalAllocatedPercentage(): number {
+    const totals = this.totals();
+
+    return this.getIncomePercentage(
+      Math.abs(totals.expense) + Math.abs(totals.investment) + Math.abs(totals.transfer),
+    );
+  }
+
   private updateCharts(): void {
-    // Expense breakdown by category
+    // Expense breakdown by category.
     const sortedExpenses = [...this.expenses()]
       .map((item) => ({
         ...item,
@@ -206,16 +279,16 @@ export class Dashboard {
       ],
     };
 
-    // Monthly transaction breakdown
+    // Monthly transaction breakdown.
     this.transactionBreakdownPieData = {
       labels: ['Income', 'Expenses', 'Investments', 'Transfers'],
       datasets: [
         {
           data: [
             this.totals().income,
-            this.totals().expense,
-            this.totals().investment,
-            this.totals().transfer,
+            Math.abs(this.totals().expense),
+            Math.abs(this.totals().investment),
+            Math.abs(this.totals().transfer),
           ],
           backgroundColor: ['#16a34a', '#ef4444', '#8b5cf6', '#0ea5e9'],
           borderWidth: 2,
@@ -224,7 +297,7 @@ export class Dashboard {
       ],
     };
 
-    // Monthly cash flow
+    // Monthly cash flow.
     this.barData = {
       labels: ['Income', 'Expense', 'Investment', 'Transfer'],
       datasets: [
@@ -233,8 +306,8 @@ export class Dashboard {
           data: [
             this.totals().income,
             Math.abs(this.totals().expense),
-            this.totals().investment,
-            this.totals().transfer,
+            Math.abs(this.totals().investment),
+            Math.abs(this.totals().transfer),
           ],
           backgroundColor: ['#16a34a', '#ef4444', '#8b5cf6', '#0ea5e9'],
           borderRadius: 8,

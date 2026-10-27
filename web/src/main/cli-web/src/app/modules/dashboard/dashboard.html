@@ -4,16 +4,18 @@
       <h1>Financial Dashboard</h1>
       <p>Your financial overview for {{ currentMonth }}</p>
     </div>
+
     <button
       type="button"
       class="refresh-button"
-      (click)="refreshData()"
-      title="Refresh dashboard data"
-      aria-label="Refresh dashboard data"
+      (click)="resetToCurrentMonth()"
+      title="Reset to current month and refresh data"
+      aria-label="Reset to current month and refresh data"
     >
       <span class="refresh-icon">⟳</span>
       <span>Refresh</span>
     </button>
+
     <div class="month-controls">
       <div class="filter-field">
         <label for="selectedYear">Year</label>
@@ -36,9 +38,7 @@
           (change)="onMonthChange($any($event.target).value)"
         >
           @for (month of monthOptions; track month.value) {
-            <option [value]="month.value">
-              {{ month.label }}
-            </option>
+            <option [value]="month.value">{{ month.label }}</option>
           }
         </select>
       </div>
@@ -47,6 +47,14 @@
     <span class="period-badge">{{ currentMonth }}</span>
   </header>
 
+  @if (errorMessage) {
+    <div class="error-message" role="alert">
+      <span>{{ errorMessage }}</span>
+      <button type="button" (click)="refreshData()">Try again</button>
+    </div>
+  }
+
+  <!-- Summary cards -->
   <section class="summary-grid">
     <article class="summary-card expense">
       <div class="card-top">
@@ -85,8 +93,8 @@
     </article>
   </section>
 
+  <!-- Charts -->
   <section class="charts-grid">
-    <!-- Expense category pie chart -->
     <article class="chart-card">
       <div class="chart-header">
         <h3>Expense Breakdown</h3>
@@ -95,7 +103,7 @@
 
       <div class="chart-container">
         @if (expenses().length > 0) {
-          <canvas baseChart [type]="'pie'" [data]="pieData" [options]="pieOptions"> </canvas>
+          <canvas baseChart [type]="'pie'" [data]="pieData" [options]="pieOptions"></canvas>
         } @else {
           <div class="empty-state">
             <p>No expense data for {{ currentMonth }}</p>
@@ -104,7 +112,6 @@
       </div>
     </article>
 
-    <!-- Income, expense, investment and transfer pie chart -->
     <article class="chart-card">
       <div class="chart-header">
         <h3>Monthly Transaction Breakdown</h3>
@@ -132,16 +139,168 @@
       </div>
     </article>
 
-    <!-- Monthly cash flow bar chart -->
     <article class="chart-card">
       <div class="chart-header">
         <h3>Monthly Cash Flow</h3>
-        <p>Income, expenses, investments and transfers for {{ currentMonth }}</p>
+        <p>
+          Income, expenses, investments and transfers for
+          {{ currentMonth }}
+        </p>
       </div>
 
       <div class="chart-container">
-        <canvas baseChart [type]="'bar'" [data]="barData" [options]="barOptions"></canvas>
+        @if (
+          totals().income > 0 ||
+          totals().expense > 0 ||
+          totals().investment > 0 ||
+          totals().transfer > 0
+        ) {
+          <canvas baseChart [type]="'bar'" [data]="barData" [options]="barOptions"></canvas>
+        } @else {
+          <div class="empty-state">
+            <p>No transaction data for {{ currentMonth }}</p>
+          </div>
+        }
       </div>
     </article>
+  </section>
+
+  <!-- Income utilization: new section -->
+  <section class="utilization-section">
+    <div class="utilization-header">
+      <div>
+        <h3>Income Utilization</h3>
+        <p>How your income is distributed in {{ currentMonth }}</p>
+      </div>
+
+      <span class="utilization-badge">100% Income</span>
+    </div>
+
+    <div class="utilization-grid">
+      <!-- Expenses -->
+      <article class="utilization-card expense-util">
+        <div class="utilization-card-header">
+          <span class="utilization-icon">↗</span>
+          <span class="utilization-label">Expenses</span>
+        </div>
+
+        <h2>{{ getIncomePercentage(totals().expense) | number: '1.2-2' }}%</h2>
+
+        <p>
+          {{ abs(totals().expense) | currency: 'INR' : 'symbol' : '1.0-0' }}
+          <span>of your income</span>
+        </p>
+
+        <div
+          class="progress-track"
+          role="progressbar"
+          aria-label="Expense percentage of income"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          [attr.aria-valuenow]="getIncomeBarPercentage(totals().expense)"
+        >
+          <div
+            class="progress-fill"
+            [style.width.%]="getIncomeBarPercentage(totals().expense)"
+          ></div>
+        </div>
+      </article>
+
+      <!-- Investments -->
+      <article class="utilization-card investment-util">
+        <div class="utilization-card-header">
+          <span class="utilization-icon">◈</span>
+          <span class="utilization-label">Investments</span>
+        </div>
+
+        <h2>{{ getIncomePercentage(totals().investment) | number: '1.2-2' }}%</h2>
+
+        <p>
+          {{ abs(totals().investment) | currency: 'INR' : 'symbol' : '1.0-0' }}
+          <span>of your income</span>
+        </p>
+
+        <div
+          class="progress-track"
+          role="progressbar"
+          aria-label="Investment percentage of income"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          [attr.aria-valuenow]="getIncomeBarPercentage(totals().investment)"
+        >
+          <div
+            class="progress-fill"
+            [style.width.%]="getIncomeBarPercentage(totals().investment)"
+          ></div>
+        </div>
+      </article>
+
+      <!-- Transfers -->
+      <article class="utilization-card transfer-util">
+        <div class="utilization-card-header">
+          <span class="utilization-icon">⇄</span>
+          <span class="utilization-label">Transfers</span>
+        </div>
+
+        <h2>{{ getIncomePercentage(totals().transfer) | number: '1.2-2' }}%</h2>
+
+        <p>
+          {{ abs(totals().transfer) | currency: 'INR' : 'symbol' : '1.0-0' }}
+          <span>of your income</span>
+        </p>
+
+        <div
+          class="progress-track"
+          role="progressbar"
+          aria-label="Transfer percentage of income"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          [attr.aria-valuenow]="getIncomeBarPercentage(totals().transfer)"
+        >
+          <div
+            class="progress-fill"
+            [style.width.%]="getIncomeBarPercentage(totals().transfer)"
+          ></div>
+        </div>
+      </article>
+
+      <!-- Remaining income -->
+      <article class="utilization-card remaining-util">
+        <div class="utilization-card-header">
+          <span class="utilization-icon">✓</span>
+          <span class="utilization-label">Remaining Income</span>
+        </div>
+
+        <h2>{{ getRemainingPercentage() | number: '1.2-2' }}%</h2>
+
+        <p>
+          {{ getRemainingIncome() | currency: 'INR' : 'symbol' : '1.0-0' }}
+          <span>remaining balance</span>
+        </p>
+
+        <div
+          class="progress-track"
+          role="progressbar"
+          aria-label="Remaining income percentage"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          [attr.aria-valuenow]="getRemainingBarPercentage()"
+        >
+          <div class="progress-fill" [style.width.%]="getRemainingBarPercentage()"></div>
+        </div>
+      </article>
+    </div>
+
+    <div class="utilization-footer">
+      <div class="footer-income">
+        <span>Total income</span>
+        <strong>{{ totals().income | currency: 'INR' : 'symbol' : '1.0-0' }}</strong>
+      </div>
+
+      <div class="footer-allocation">
+        <span>Total allocated</span>
+        <strong> {{ getTotalAllocatedPercentage() | number: '1.2-2' }}% </strong>
+      </div>
+    </div>
   </section>
 </div>

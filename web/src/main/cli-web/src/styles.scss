@@ -41,7 +41,7 @@ app-root {
 }
 
 app-menu {
-  flex: 0 0 300px; // Match your actual sidebar width
+  flex: 0 0 260px;
   height: 100%;
   overflow-y: auto;
   overflow-x: hidden;
@@ -53,6 +53,7 @@ app-menu {
   height: 100%;
   overflow-y: auto;
   overflow-x: hidden;
+  background-color: #f6f8fc;
 }
 
 .dialog-container {

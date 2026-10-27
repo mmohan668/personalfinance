@@ -24,7 +24,7 @@ public class DashboardService extends BaseService {
             throw new IllegalArgumentException("Month must be between 1 and 12");
         }
         LocalDate from = LocalDate.of(year, month, 1);
-        LocalDate to = LocalDate.now().plusMonths(1);
+        LocalDate to = from.plusMonths(1);
         List<TransactionTotalProjection> totalProjections = financialTransactionRepository.fetchTotals(from, to);
         List<ExpenseByCategoryProjection> expenseProjections = financialTransactionRepository.fetchExpenseByCategory(from, to);
         log.info("Completed Fetching Dashboard Summary for year {} and month {}", year, month);
