@@ -43,4 +43,9 @@ public class UserController {
     public ApiResponse deleteUsers(@RequestBody List<Long> ids) {
         return userService.deleteUsers(ids);
     }
+
+    @PostMapping("/signUp")
+    public ApiResponse signUp(@RequestBody UserDto userDto) {
+        return userService.signUp(userDto);
+    }
 }

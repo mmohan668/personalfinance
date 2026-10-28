@@ -6,7 +6,7 @@ public interface CommonConstants {
     String TRUE_STR = "true";
     String FALSE_STR = "false";
     String DOT_SPLIT_STR = "\\.";
-    String PERSONAL_FINANCE_APP = "PERSONALFINANCEAPP";
+    String SYSTEM = "System";
     Long TEST_USER_ID = 2L;
     int CHUNK_SIZE = 900;
     String COMMA = ",";

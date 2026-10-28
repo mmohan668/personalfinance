@@ -1,0 +1,147 @@
+<div class="login-page">
+  <div class="login-card">
+    <!-- App branding -->
+    <div class="brand">
+      <div class="brand-icon">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="30"
+          height="30"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M3 3v18h18" />
+          <path d="M18 17V9" />
+          <path d="M13 17V5" />
+          <path d="M8 17v-3" />
+          <path d="M4 11c3-1 5-3 6-6" />
+        </svg>
+      </div>
+
+      <span> Expense<span class="brand-highlight">Track</span> </span>
+    </div>
+
+    <p class="brand-tagline">Track Today. Build a Brighter Tomorrow.</p>
+
+    <!-- Login heading -->
+    <div class="login-heading">
+      <h1>Take control of your money</h1>
+
+      <p class="subtitle">
+        Manage your expenses, stay on budget, and achieve your financial goals.
+      </p>
+    </div>
+
+    <!-- Login form -->
+    <form>
+      <div class="form-group">
+        <label for="email">Email address</label>
+
+        <div class="input-wrapper">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <rect x="3" y="5" width="18" height="14" rx="2" />
+            <path d="m3 7 9 6 9-6" />
+          </svg>
+
+          <input
+            id="email"
+            name="email"
+            type="email"
+            placeholder="you@example.com"
+            autocomplete="email"
+            required
+          />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <div class="password-label">
+          <label for="password">Password</label>
+
+          <a routerLink="/forgot-password"> Forgot password? </a>
+        </div>
+
+        <div class="input-wrapper">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <rect x="4" y="10" width="16" height="11" rx="2" />
+            <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+            <path d="M12 14v3" />
+          </svg>
+
+          <input
+            id="password"
+            name="password"
+            type="password"
+            placeholder="Enter your password"
+            autocomplete="current-password"
+            required
+          />
+        </div>
+      </div>
+
+      <button type="submit" class="sign-in-button">
+        <span>Sign in</span>
+
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M5 12h14" />
+          <path d="m12 5 7 7-7 7" />
+        </svg>
+      </button>
+    </form>
+
+    <!-- Sign-up link -->
+    <div class="divider">
+      <span></span>
+      <p>OR</p>
+      <span></span>
+    </div>
+
+    <p class="signup-text">
+      Don't have an account?
+      <a routerLink="/signup">Create an account</a>
+    </p>
+
+    <p class="security-note">Your financial journey starts here.</p>
+  </div>
+
+  <!-- Footer -->
+  <p class="footer-text">Spend wisely. Save consistently. Grow confidently.</p>
+</div>

@@ -32,6 +32,10 @@ export class UserService {
     return this.http.post<ApiResponse>(`${this.config.configValue.apiUrl}/users/deleteUsers`, ids);
   }
 
+  signUp(user: any): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(`${this.config.configValue.apiUrl}/users/signUp`, user);
+  }
+
   getCurrentUser() {
     return {} as UserProfile;
   }
