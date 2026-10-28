@@ -5,7 +5,6 @@ CREATE OR REPLACE PROCEDURE initialize_new_user(
 AS
 $$
 DECLARE
-    v_created_by       BIGINT;
     v_currency_code_id BIGINT;
 BEGIN
 
@@ -19,26 +18,11 @@ BEGIN
     END IF;
 
     /*
-     * 2. Get system/admin user
-     *
-     * This user is used as created_by for
-     * default/master data copied to the new user.
-     */
-    SELECT id
-    INTO v_created_by
-    FROM users
-    WHERE username = 'PERSONALFINANCEAPP';
-
-    IF v_created_by IS NULL THEN
-        RAISE EXCEPTION
-            'System user PERSONALFINANCEAPP does not exist';
-    END IF;
-
-    /*
      * 3. Associate the new user with the admin/system user
      */
     UPDATE users
-    SET admin_user_id = p_user_id
+    SET admin_user_id = p_user_id,
+        is_active     = true
     WHERE id = p_user_id;
 
     INSERT INTO reference_value (user_id,
@@ -55,7 +39,7 @@ BEGIN
            srv.reference_code_description,
            srv.reference_code_2,
            srv.reference_code_3,
-           v_created_by,
+           p_user_id,
            CURRENT_TIMESTAMP
     FROM system_reference_value srv
     ON CONFLICT (
@@ -81,7 +65,7 @@ BEGIN
            rv.id,
            'Default currency used to determine currency symbols and locale-specific date formatting for data displayed in grids.',
            p_user_id,
-           v_created_by
+           p_user_id
     FROM reference_value rv
     WHERE rv.user_id = p_user_id
       AND rv.ref_obj_name_id = v_currency_code_id
@@ -107,7 +91,7 @@ BEGIN
            c.category_name,
            c.category_description,
            c.is_active,
-           v_created_by
+           p_user_id
     FROM categories c
     ON CONFLICT (
         user_id,
@@ -128,7 +112,7 @@ BEGIN
            sc.subcategory_name,
            sc.subcategory_description,
            sc.is_active,
-           v_created_by
+           p_user_id
     FROM subcategories sc
              JOIN categories c
                   ON c.id = sc.category_id

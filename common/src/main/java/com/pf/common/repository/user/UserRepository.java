@@ -20,6 +20,14 @@ public interface UserRepository extends JpaRepository<User, Long> {
             """)
     boolean existsByUsername(@Param("username") String username);
 
+    @Transactional(readOnly = true)
+    @Query("""
+            SELECT COUNT(U) > 0
+            FROM User U
+            WHERE LOWER(TRIM(U.email)) = :email
+            """)
+    boolean existsByEmail(@Param("email") String email);
+
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("""
             UPDATE User u

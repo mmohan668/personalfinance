@@ -46,9 +46,9 @@ CREATE UNIQUE INDEX ux_reference_id_value
 
 
 INSERT INTO reference_object (ref_obj_name, created_by)
-VALUES ('TRANSACTION_TYPE', (SELECT id FROM users WHERE username = 'PERSONALFINANCEAPP')),
-       ('CURRENCY_CODE', (SELECT id FROM users WHERE username = 'PERSONALFINANCEAPP')),
-       ('LOCATION', (SELECT id FROM users WHERE username = 'PERSONALFINANCEAPP'));
+VALUES ('TRANSACTION_TYPE', (SELECT id FROM users WHERE username = 'System')),
+       ('CURRENCY_CODE', (SELECT id FROM users WHERE username = 'System')),
+       ('LOCATION', (SELECT id FROM users WHERE username = 'System'));
 COMMIT;
 
 INSERT INTO system_reference_value
@@ -63,35 +63,35 @@ VALUES ((SELECT id FROM reference_object WHERE ref_obj_name = 'TRANSACTION_TYPE'
         null,
         null,
         'EXPENSE - Transaction Type',
-        (SELECT id FROM users WHERE username = 'PERSONALFINANCEAPP')),
+        (SELECT id FROM users WHERE username = 'System')),
        ((SELECT id FROM reference_object WHERE ref_obj_name = 'TRANSACTION_TYPE'),
         'INCOME',
         null,
         null,
         'INCOME - Transaction Type',
-        (SELECT id FROM users WHERE username = 'PERSONALFINANCEAPP')),
+        (SELECT id FROM users WHERE username = 'System')),
        ((SELECT id FROM reference_object WHERE ref_obj_name = 'TRANSACTION_TYPE'),
         'INVESTMENT',
         null,
         null,
         'INVESTMENT - Transaction Type',
-        (SELECT id FROM users WHERE username = 'PERSONALFINANCEAPP')),
+        (SELECT id FROM users WHERE username = 'System')),
        ((SELECT id FROM reference_object WHERE ref_obj_name = 'TRANSACTION_TYPE'),
         'TRANSFER',
         null,
         null,
         'TRANSFER - Transaction Type',
-        (SELECT id FROM users WHERE username = 'PERSONALFINANCEAPP')),
+        (SELECT id FROM users WHERE username = 'System')),
        ((SELECT id FROM reference_object WHERE ref_obj_name = 'CURRENCY_CODE'),
         'INR',
         'en-IN',
         'dd/MM/yyyy',
         'Indian Currency Code',
-        (SELECT id FROM users WHERE username = 'PERSONALFINANCEAPP')),
+        (SELECT id FROM users WHERE username = 'System')),
        ((SELECT id FROM reference_object WHERE ref_obj_name = 'CURRENCY_CODE'),
         'USD',
         'en-US',
         'MM/dd/yyyy',
         'USA Currency Code',
-        (SELECT id FROM users WHERE username = 'PERSONALFINANCEAPP'));
+        (SELECT id FROM users WHERE username = 'System'));
 COMMIT;

@@ -16,7 +16,6 @@ export const GRID_URL_MAP = new Map<string, string>([
   [GRID_NAMES.USERS_GRID, '/users/fetchUsersGridData'],
 ]);
 
-export const SYSTEM = 'PERSONALFINANCEAPP';
 export const EMPTY = '';
 export const EXCEL_TYPE =
   'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
