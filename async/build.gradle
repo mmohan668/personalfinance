@@ -19,6 +19,7 @@ repositories {
 
 dependencies {
 	implementation project(':common')
+	implementation project(':common-dto')
 	implementation 'org.springframework.boot:spring-boot-starter'
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'org.postgresql:postgresql'

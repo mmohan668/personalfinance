@@ -54,4 +54,13 @@ public interface UserRepository extends JpaRepository<User, Long> {
             @Param("updatedBy") String updatedBy,
             @Param("updatedAt") LocalDateTime updatedAt
     );
+
+    @Transactional(readOnly = true)
+    @Query("""
+            SELECT COUNT(u) > 0
+            FROM User u
+            WHERE u.id = :id
+            AND u.active = true
+            """)
+    boolean alreadyActive(@Param("id") Long id);
 }

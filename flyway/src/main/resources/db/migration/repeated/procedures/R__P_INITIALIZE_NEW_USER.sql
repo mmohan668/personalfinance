@@ -22,7 +22,21 @@ BEGIN
      */
     UPDATE users
     SET admin_user_id = p_user_id,
-        is_active     = true
+        is_active     = true,
+        updated_at    = current_timestamp,
+        updated_by    = 'System'
+    WHERE id = p_user_id;
+
+    INSERT INTO users_password_history
+    (user_id,
+     password_hash,
+     action_type,
+     changed_by)
+    SELECT id,
+           password_hash,
+           'INITIAL',
+           created_by
+    from users
     WHERE id = p_user_id;
 
     INSERT INTO reference_value (user_id,

@@ -13,7 +13,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.pf.common.constants.CommonConstants.*;
+import static com.pf.common.constants.CommonConstants.ASTERISK_CHAR;
+import static com.pf.common.constants.CommonConstants.LIKE_STR;
+import static com.pf.common.constants.CommonConstants.LIKE_CHAR;
 import static com.pf.common.enums.FilterOperator.*;
 
 @Service

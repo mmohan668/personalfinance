@@ -45,7 +45,7 @@ INSERT INTO users
  password_hash,
  created_by)
 VALUES ('System',
-        'PERSONAL FINANCE APP',
+        'System',
         'personalfinanceapp.support@gmail.com',
         'PASSWORD_HASH_TEMP',
         'FLYWAY');
@@ -63,7 +63,7 @@ WHERE username = 'System';
 CREATE TABLE users_history
 (
     history_id    BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    user_id       BIGINT       NOT NULL,
+    user_id       BIGINT       NOT NULL REFERENCES users (id) on delete cascade,
     admin_user_id BIGINT,
     username      VARCHAR(100) NOT NULL,
     display_name  VARCHAR(100) NOT NULL,
@@ -201,3 +201,42 @@ CREATE TRIGGER trg_users_history
     ON users
     FOR EACH ROW
 EXECUTE FUNCTION fn_users_history();
+
+-- =========================================================
+-- 8. Create users password history table
+-- =========================================================
+
+CREATE TABLE users_password_history
+(
+    password_history_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+
+    user_id             BIGINT       NOT NULL,
+    password_hash       VARCHAR(255) NOT NULL
+        CHECK (TRIM(password_hash) <> ''),
+
+    action_type         VARCHAR(10)  NOT NULL DEFAULT 'CHANGE'
+        CHECK (action_type IN ('INITIAL', 'CHANGE', 'RESET')),
+
+    changed_by          VARCHAR(100) NOT NULL
+        CHECK (TRIM(changed_by) <> ''),
+
+    changed_at          TIMESTAMPTZ  NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_users_password_history_user
+        FOREIGN KEY (user_id)
+            REFERENCES users (id)
+            ON DELETE CASCADE
+);
+
+-- =========================================================
+-- 9. Create password history indexes
+-- =========================================================
+
+CREATE INDEX idx_users_password_history_user_id
+    ON users_password_history (user_id);
+
+CREATE INDEX idx_users_password_history_changed_at
+    ON users_password_history (changed_at DESC);
+
+CREATE INDEX idx_users_password_history_user_changed_at
+    ON users_password_history (user_id, changed_at DESC);

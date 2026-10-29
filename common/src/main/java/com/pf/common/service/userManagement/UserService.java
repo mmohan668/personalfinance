@@ -10,8 +10,6 @@ import com.pf.common.mapper.userManagement.UserMapper;
 import com.pf.common.repository.user.UserRepository;
 import com.pf.common.service.generic.BaseService;
 import com.pf.common.util.BatchUtils;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.ParameterMode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -23,7 +21,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Locale;
 
-import static com.pf.common.constants.CommonConstants.SYSTEM;
 import static com.pf.common.constants.EntityConstants.ADMIN_USER;
 import static com.pf.common.constants.FieldConstants.ID;
 import static com.pf.common.enums.SortOrder.ASC;
@@ -34,7 +31,6 @@ import static com.pf.common.enums.SortOrder.ASC;
 public class UserService extends BaseService {
     private final UserMapper userMapper;
     private final UserRepository userRepository;
-    private final EntityManager entityManager;
 
     @Transactional
     public GridResult fetchUsersGridData(SearchCriteria searchCriteria) {
@@ -130,57 +126,4 @@ public class UserService extends BaseService {
         }
     }
 
-    @Transactional
-    public ApiResponse signUp(UserDto dto) {
-        String username = dto.getUsername().trim();
-
-        log.debug("Signup request received for username: {}", username);
-
-        if (userRepository.existsByUsername(username.toLowerCase(Locale.ROOT).trim())) {
-            log.warn("Signup failed: username '{}' is already in use", username);
-            return failure("Username is already taken. Please choose another username.");
-        }
-
-        if (userRepository.existsByEmail(dto.getEmail().toLowerCase(Locale.ROOT).trim())) {
-            log.warn("Signup failed: email '{}' is already in use", dto.getEmail());
-            return failure("Email is already taken. Please choose another email.");
-        }
-
-        User user = userMapper.toEntity(dto);
-        user.setUsername(username);
-        user.setIsAdminUser(Boolean.TRUE);
-        user.setCreatedBy(SYSTEM);
-
-        User savedUser = userRepository.save(user);
-        activateAccount(savedUser.getId());
-        log.info("User account created successfully. Awaiting email activation for username: {}", username);
-
-        return success("Account created successfully! Please check your email to activate your account.");
-    }
-
-    private void activateAccount(Long id) {
-        log.info("Starting account activation and initialization for user ID: {}", id);
-
-        try {
-            entityManager
-                    .createStoredProcedureQuery("initialize_new_user")
-                    .registerStoredProcedureParameter(
-                            1, Long.class, ParameterMode.IN)
-                    .setParameter(1, id)
-                    .execute();
-
-            log.info(
-                    "Account activated and initialized successfully for user ID: {}",
-                    id
-            );
-        } catch (Exception ex) {
-            log.error(
-                    "Failed to activate and initialize account for user ID: {}",
-                    id,
-                    ex
-            );
-
-            throw ex;
-        }
-    }
 }
