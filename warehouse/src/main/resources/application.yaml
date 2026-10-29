@@ -24,6 +24,11 @@ bulk-upload:
 export:
   base-folder: E:/BulkExports
 
+app:
+  activation-token:
+    secret: 6X9uhRahHb/7YEUwZ297kXXC6Ec12xjg8KECVBadTCU=
+
+
 
 #logging:
 #  level:

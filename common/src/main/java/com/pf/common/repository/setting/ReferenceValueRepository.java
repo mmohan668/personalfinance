@@ -72,13 +72,6 @@ public interface ReferenceValueRepository extends JpaRepository<ReferenceValue, 
             """)
     List<String> findReferenceCodeByRefObjName(@Param("refObjName") String refObjName);
 
-    @Transactional(readOnly = true)
-    @Query("""
-                SELECT COUNT(rv) > 0 FROM ReferenceValue rv
-                WHERE rv.referenceObject.id IN (:refObjIds)
-            """)
-    boolean existsByReferenceObject(@Param("refObjIds") List<Long> refObjIds);
-
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("""
             UPDATE ReferenceValue rv

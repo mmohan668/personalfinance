@@ -1,0 +1,26 @@
+server:
+  port: 1005
+
+spring:
+  application:
+    name: emailer
+  mail:
+    host: ${MAIL_HOST:smtp.gmail.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+  activemq:
+    broker-url: tcp://localhost:61616
+
+# Application email settings
+app:
+  mail:
+    from: ${MAIL_FROM:${MAIL_USERNAME}}
+  frontend:
+    activation-url: ${FRONTEND_ACTIVATION_URL:http://localhost:1003/users/activateAccount}

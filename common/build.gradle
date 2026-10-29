@@ -18,6 +18,7 @@ repositories {
 }
 
 dependencies {
+    implementation project(':common-dto')
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -35,6 +36,10 @@ dependencies {
     implementation 'com.google.guava:guava:33.4.8-jre'
     implementation 'org.apache.poi:poi-ooxml:5.5.1'
     implementation 'org.springframework.boot:spring-boot-starter-activemq'
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+    testImplementation 'org.springframework.boot:spring-boot-starter-mail-test'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    testImplementation 'org.springframework.boot:spring-boot-starter-thymeleaf-test'
 }
 
 tasks.named('test') {
