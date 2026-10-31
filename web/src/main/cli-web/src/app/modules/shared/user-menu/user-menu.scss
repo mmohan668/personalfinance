@@ -49,25 +49,6 @@
   min-width: 0;
 }
 
-.brand-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  width: 32px;
-  height: 32px;
-
-  flex-shrink: 0;
-
-  border-radius: 9px;
-
-  background: #edf7ed;
-  color: #579b53;
-
-  font-size: 20px;
-  font-weight: 700;
-}
-
 .brand-title {
   color: #1e293b;
 
@@ -484,4 +465,12 @@
 .brand-highlight {
   color: #4caf50;
   font-weight: 900;
+}
+
+.hero-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  color: #fff;
+  background: linear-gradient(135deg, #66bb6a, #2e7d32);
 }
