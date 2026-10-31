@@ -252,7 +252,7 @@ public class TemplateGenerationService extends BaseService {
     private Map<String, List<String>> fetchUserCategories() {
         List<SelectItem> categories =
                 userCategoryRepository
-                        .findCategoriesByUserId(fetchLoginUser().getId());
+                        .findCategoriesByUserId(fetchAdminUserId());
         return categories.stream()
                 .filter(Objects::nonNull)
                 .filter(item -> item.value() != null)
@@ -273,7 +273,7 @@ public class TemplateGenerationService extends BaseService {
     private Map<String, List<String>> fetchUserSubcategories() {
         List<UserCategory> categories =
                 userCategoryRepository
-                        .findAllCategoriesByUserId(fetchLoginUser().getId());
+                        .findAllCategoriesByUserId(fetchAdminUserId());
         return categories.stream()
                 .filter(Objects::nonNull)
                 .collect(

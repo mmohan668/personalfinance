@@ -35,3 +35,6 @@ out/
 
 ### VS Code ###
 .vscode/
+.gradle/
+**/.gradle/
+/warehouse/src/main/resources/keys/private.pem

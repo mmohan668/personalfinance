@@ -87,7 +87,6 @@ export class BulkUpload {
       document.body.removeChild(anchor);
       window.URL.revokeObjectURL(url);
     });
-    console.log('Download template:', this.selectedUploadType);
   }
 
   reset(): void {
@@ -108,7 +107,6 @@ export class BulkUpload {
     formData.append('uploadType', this.selectedUploadType);
     formData.append('uploadTypeLabel', uploadTypeLabel);
     formData.append('file', this.selectedFile, this.selectedFile.name);
-    console.log('Submitting bulk upload', formData);
     firstValueFrom(this._bus.uploadTemplate(formData)).then((resp: ApiResponse) => {
       if (resp.success) {
         this.reset();

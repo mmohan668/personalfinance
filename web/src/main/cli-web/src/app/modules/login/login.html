@@ -23,7 +23,7 @@
         </svg>
       </div>
 
-      <span> Expense<span class="brand-highlight">Track</span> </span>
+      <span>Expense<span class="brand-highlight">Track</span></span>
     </div>
 
     <p class="brand-tagline">Track Today. Build a Brighter Tomorrow.</p>
@@ -31,16 +31,16 @@
     <!-- Login heading -->
     <div class="login-heading">
       <h1>Take control of your money</h1>
-
       <p class="subtitle">
         Manage your expenses, stay on budget, and achieve your financial goals.
       </p>
     </div>
 
     <!-- Login form -->
-    <form>
+    <form #loginForm="ngForm" (ngSubmit)="onLogin()">
+      <!-- Username -->
       <div class="form-group">
-        <label for="email">Email address</label>
+        <label for="username">Username</label>
 
         <div class="input-wrapper">
           <svg
@@ -55,26 +55,38 @@
             stroke-linejoin="round"
             aria-hidden="true"
           >
-            <rect x="3" y="5" width="18" height="14" rx="2" />
-            <path d="m3 7 9 6 9-6" />
+            <circle cx="12" cy="8" r="4" />
+            <path d="M5 21v-2a7 7 0 0 1 14 0v2" />
           </svg>
 
           <input
-            id="email"
-            name="email"
-            type="email"
-            placeholder="you@example.com"
-            autocomplete="email"
+            id="username"
+            name="username"
+            type="text"
+            [(ngModel)]="username"
+            #usernameField="ngModel"
+            placeholder="Enter your username"
+            autocomplete="username"
             required
+            [class.invalid-input]="
+              usernameField.invalid && (usernameField.touched || loginForm.submitted)
+            "
+            [attr.aria-invalid]="
+              usernameField.invalid && (usernameField.touched || loginForm.submitted)
+            "
           />
         </div>
+
+        @if (usernameField.invalid && (usernameField.touched || loginForm.submitted)) {
+          <p class="login-error" role="alert">Username is required.</p>
+        }
       </div>
 
+      <!-- Password -->
       <div class="form-group">
         <div class="password-label">
           <label for="password">Password</label>
-
-          <a routerLink="/forgot-password"> Forgot password? </a>
+          <a routerLink="/forgot-password">Forgot password?</a>
         </div>
 
         <div class="input-wrapper">
@@ -99,15 +111,35 @@
             id="password"
             name="password"
             type="password"
+            [(ngModel)]="password"
+            #passwordField="ngModel"
             placeholder="Enter your password"
             autocomplete="current-password"
             required
+            [class.invalid-input]="
+              passwordField.invalid && (passwordField.touched || loginForm.submitted)
+            "
+            [attr.aria-invalid]="
+              passwordField.invalid && (passwordField.touched || loginForm.submitted)
+            "
           />
         </div>
+
+        @if (passwordField.invalid && (passwordField.touched || loginForm.submitted)) {
+          <p class="login-error" role="alert">Password is required.</p>
+        }
       </div>
 
-      <button type="submit" class="sign-in-button">
-        <span>Sign in</span>
+      <!-- Login error -->
+      @if (errorMessage) {
+        <p class="login-error" role="alert">
+          {{ errorMessage }}
+        </p>
+      }
+
+      <!-- Submit button -->
+      <button type="submit" class="sign-in-button" [disabled]="loginForm.invalid || isLoading()">
+        <span>{{ isLoading() ? 'Signing in...' : 'Sign in' }}</span>
 
         <svg
           xmlns="http://www.w3.org/2000/svg"

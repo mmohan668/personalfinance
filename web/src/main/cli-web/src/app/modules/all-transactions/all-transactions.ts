@@ -56,7 +56,11 @@ export class AllTransactions {
   categoryNames = signal<string[]>([]);
   subcategoryNames = signal<string[]>([]);
   protected readonly additionalFilters: GridFilter[] = [
-    { field: DATA_FIELDS.ADMIN_USER_ID, operator: FILTER_OPERATORS.EQUALS, value: 2 },
+    {
+      field: DATA_FIELDS.ADMIN_USER_ID,
+      operator: FILTER_OPERATORS.EQUALS,
+      value: this._cs.getUserProfile.adminUserId,
+    },
   ];
 
   constructor() {

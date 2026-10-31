@@ -68,10 +68,13 @@ export class AddEditSubCategoryDialog {
 
   createForm() {
     this.form = new FormGroup({
-      transactionType: new FormControl<number | string>(this.getValue(DATA_FIELDS.transaction_type_ID), {
-        nonNullable: true,
-        validators: [Validators.required],
-      }),
+      transactionType: new FormControl<number | string>(
+        this.getValue(DATA_FIELDS.transaction_type_ID),
+        {
+          nonNullable: true,
+          validators: [Validators.required],
+        },
+      ),
       category: new FormControl<number | string>(this.getValue(DATA_FIELDS.USER_CATEGORY_ID), {
         nonNullable: true,
         validators: [Validators.required],
@@ -88,7 +91,6 @@ export class AddEditSubCategoryDialog {
         },
       ),
     });
-    console.log(this.form);
   }
 
   save() {

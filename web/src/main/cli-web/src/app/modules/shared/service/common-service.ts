@@ -1,5 +1,5 @@
-import { inject, Service } from '@angular/core';
-import { GridFilter, ToolbarConfig } from '../types/types';
+import { inject, Service, signal } from '@angular/core';
+import { GridFilter, ToolbarConfig, UserProfile } from '../types/types';
 import { AbstractControl, FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { NotificationService } from './notification-service';
@@ -22,9 +22,19 @@ export class CommonService {
   private dialog = inject(MatDialog);
   private _ns = inject(NotificationService);
 
+  private userProfile = signal<UserProfile>({} as UserProfile);
+
   constructor() {
     this.dialog.afterOpened.subscribe(() => this._ns.close());
     this.dialog.afterAllClosed.subscribe(() => this._ns.close());
+  }
+
+  setUserProfile(userProfile: UserProfile) {
+    this.userProfile.set(userProfile);
+  }
+
+  get getUserProfile() {
+    return this.userProfile();
   }
 
   isNotNull(value: any) {

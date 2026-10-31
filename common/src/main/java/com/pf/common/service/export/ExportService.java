@@ -8,6 +8,7 @@ import com.pf.common.service.activeMQ.ActiveMqProducer;
 import com.pf.common.service.generic.BaseService;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
@@ -27,6 +28,7 @@ import java.util.stream.Stream;
 
 import static com.pf.common.constants.CommonConstants.SERVER_SIDE_GRID_EXPORT;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ExportService extends BaseService {
@@ -47,18 +49,19 @@ public class ExportService extends BaseService {
 
     public GridResult getFilesByUsername()
             throws IOException {
-        String username = fetchLoginUser().getUsername();
+        String username = fetchLoginUsername();
         // Validate the username before using it in a filesystem path.
         if (username == null || username.isBlank()) {
             throw new IllegalArgumentException("Invalid username");
         }
         Path userDirectory = basePath.resolve(username).normalize();
         if (!userDirectory.startsWith(basePath)) {
-            throw new SecurityException("Invalid directory");
+            log.debug("Invalid user directory {}", userDirectory);
+            return gridResult(0, new ArrayList<>());
         }
         if (!Files.isDirectory(userDirectory)) {
-            throw new IllegalArgumentException(
-                    "User export directory not found");
+            log.debug("User export directory not found {}", userDirectory);
+            return gridResult(0, new ArrayList<>());
         }
         List<ExportFileDto> files = new ArrayList<>();
         try (Stream<Path> paths = Files.walk(userDirectory)) {
@@ -104,7 +107,7 @@ public class ExportService extends BaseService {
 
     public Resource downloadFile(String filePath)
             throws IOException {
-        String username = fetchLoginUser().getUsername();
+        String username = fetchLoginUsername();
         if (username == null || username.isBlank()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid username");
         }

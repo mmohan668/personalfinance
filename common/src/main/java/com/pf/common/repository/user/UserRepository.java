@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
 
@@ -63,4 +64,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
             AND u.active = true
             """)
     boolean alreadyActive(@Param("id") Long id);
+
+    @Transactional(readOnly = true)
+    Optional<User> findByUsername(String username);
 }

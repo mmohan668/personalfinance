@@ -1,6 +1,7 @@
 package com.pf.common.dto.dashboard;
 
 import com.pf.common.projection.ExpenseByCategoryProjection;
+import com.pf.common.projection.MonthlyTransactionTotalProjection;
 import com.pf.common.projection.TransactionTotalProjection;
 import lombok.*;
 
@@ -15,9 +16,10 @@ import java.util.List;
 @NoArgsConstructor
 public class DashboardSummary {
     TotalByTransactionType transactions = new TotalByTransactionType();
+    List<MonthlyTransactionTotalProjection> monthlyTransactions = new ArrayList<>();
     List<ExpenseByCategory> expenses = new ArrayList<>();
 
-    public DashboardSummary(List<TransactionTotalProjection> transactions, List<ExpenseByCategoryProjection> expenses) {
+    public DashboardSummary(List<TransactionTotalProjection> transactions, List<ExpenseByCategoryProjection> expenses, List<MonthlyTransactionTotalProjection> monthlyTransactions) {
         for (TransactionTotalProjection transaction : transactions) {
             BigDecimal amount = transaction.getTotal() != null
                     ? transaction.getTotal()
@@ -37,5 +39,6 @@ public class DashboardSummary {
             expenseByCategory.setCategoryName(expenseByCategoryProjection.getCategoryName());
             this.expenses.add(expenseByCategory);
         }
+        this.monthlyTransactions.addAll(monthlyTransactions);
     }
 }

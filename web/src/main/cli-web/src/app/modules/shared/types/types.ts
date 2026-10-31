@@ -120,6 +120,7 @@ export interface SuggestionRequest {
 export interface DashboardSummary {
   transactions: TransactionTotals;
   expenses: ExpenseByCategory[];
+  monthlyTransactions: any[];
 }
 
 export interface TransactionTotals {
@@ -132,4 +133,13 @@ export interface TransactionTotals {
 export interface ExpenseByCategory {
   categoryName: string;
   amount: number;
+}
+
+export interface UserProfile {
+  username: string;
+  email: string;
+  displayName: string;
+  id: number | null;
+  adminUserId: number | null;
+  imageUrl: string;
 }
