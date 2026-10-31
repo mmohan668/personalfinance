@@ -1,0 +1,90 @@
+<div class="profile-picture-dialog">
+  <!-- Green dialog header -->
+  <div class="dialog-header">
+    <h2>Update Profile Picture</h2>
+
+    <button
+      type="button"
+      class="close-button"
+      aria-label="Close dialog"
+      title="Close"
+      (click)="closeDialog()"
+    >
+      <i class="bi bi-x-lg"></i>
+    </button>
+  </div>
+
+  <!-- Dialog content -->
+  <div class="dialog-content">
+    <!-- Image preview -->
+    <div class="picture-preview">
+      @if (previewUrl) {
+        <img [src]="previewUrl" alt="Profile picture preview" />
+      } @else {
+        <div class="placeholder">
+          <i class="bi bi-person-circle placeholder-icon"></i>
+          <span>No image selected</span>
+        </div>
+      }
+    </div>
+
+    <!-- File input -->
+    <input
+      #fileInput
+      type="file"
+      accept="image/jpeg,image/png,image/webp"
+      (change)="onFileSelected($event)"
+      hidden
+    />
+
+    <!-- Choose image -->
+    <button type="button" class="choose-image-button" (click)="fileInput.click()">
+      <i class="bi bi-image"></i>
+      <span>Choose Image</span>
+    </button>
+
+    <!-- Selected file name -->
+    @if (selectedFile) {
+      <p class="file-name">
+        <i class="bi bi-file-earmark-image"></i>
+        {{ selectedFile.name }}
+      </p>
+    }
+
+    <!-- Error message -->
+    @if (errorMessage) {
+      <p class="error-message" role="alert">
+        <i class="bi bi-exclamation-circle"></i>
+        {{ errorMessage }}
+      </p>
+    }
+
+    <!-- Success message -->
+    @if (successMessage) {
+      <p class="success-message" role="status">
+        <i class="bi bi-check-circle"></i>
+        {{ successMessage }}
+      </p>
+    }
+
+    <div class="dialog-divider"></div>
+
+    <!-- Upload action -->
+    <div class="dialog-actions">
+      <button
+        type="button"
+        class="upload-button"
+        (click)="uploadPicture()"
+        [disabled]="!selectedFile || uploading"
+      >
+        @if (uploading) {
+          <span class="loading-spinner"></span>
+          <span>Uploading...</span>
+        } @else {
+          <i class="bi bi-cloud-arrow-up"></i>
+          <span>Upload Picture</span>
+        }
+      </button>
+    </div>
+  </div>
+</div>

@@ -1926,3 +1926,9 @@ app-user-menu {
   border-radius: 11px;
   box-shadow: 0 4px 10px rgba(46, 125, 50, 0.18);
 }
+
+.profile-picture-dialog-panel .mat-mdc-dialog-surface {
+  padding: 0;
+  overflow: hidden;
+  border-radius: 0;
+}

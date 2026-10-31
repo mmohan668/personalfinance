@@ -4,9 +4,12 @@ import com.pf.common.dto.generic.ApiResponse;
 import com.pf.common.dto.userManagement.LoginRequest;
 import com.pf.common.dto.userManagement.LoginResponse;
 import com.pf.common.dto.userManagement.UserDto;
+import com.pf.common.dto.userManagement.UserProfile;
+import com.pf.common.entity.userManagement.ProfilePicture;
 import com.pf.common.entity.userManagement.User;
 import com.pf.common.mapper.userManagement.UserMapper;
 import com.pf.common.record.jwt.GeneratedJwt;
+import com.pf.common.repository.user.ProfilePictureRepository;
 import com.pf.common.service.redis.RedisSessionService;
 import com.pf.common.service.userManagement.AccountRegistrationService;
 import com.pf.common.service.userManagement.AuthenticationService;
@@ -30,6 +33,7 @@ public class AuthController {
     private final JwtService jwtService;
     private final UserMapper userMapper;
     private final RedisSessionService redisSessionService;
+    private final ProfilePictureRepository profilePictureRepository;
 
     @PostMapping("/signUp")
     public ApiResponse signUp(@RequestBody UserDto userDto) {
@@ -53,13 +57,24 @@ public class AuthController {
         String sessionId = UUID.randomUUID().toString();
         GeneratedJwt generatedJwt = jwtService.generateToken(user, sessionId);
         redisSessionService.setCurrentTokenId(sessionId, generatedJwt.tokenId());
+        UserProfile userProfile = userMapper.toUserProfile(user);
+        ProfilePicture profilePicture = profilePictureRepository
+                .findByUserId(user.getId())
+                .orElse(null);
 
+        if (profilePicture != null) {
+            userProfile.setProfilePictureUrl(
+                    "/users/" + user.getUsername() + "/profile-picture"
+            );
+        } else {
+            userProfile.setProfilePictureUrl(null);
+        }
         return ResponseEntity.ok(
                 new LoginResponse(
                         generatedJwt.token(),
                         "Bearer",
                         900,
-                        userMapper.toUserProfile(user)
+                        userProfile
                 )
         );
     }

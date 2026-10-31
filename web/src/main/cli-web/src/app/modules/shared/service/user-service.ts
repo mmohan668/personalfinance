@@ -30,4 +30,17 @@ export class UserService {
   deleteUsers(ids: any[]): Observable<ApiResponse> {
     return this.http.post<ApiResponse>(`${this.config.configValue.apiUrl}/users/deleteUsers`, ids);
   }
+
+  saveProfilePicture(formData: FormData): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(
+      `${this.config.configValue.apiUrl}/users/saveProfilePicture`,
+      formData,
+    );
+  }
+
+  loadProfilePicture(username: string): Observable<Blob> {
+    return this.http.get(`${this.config.configValue.apiUrl}/users/${username}/profile-picture`, {
+      responseType: 'blob',
+    });
+  }
 }

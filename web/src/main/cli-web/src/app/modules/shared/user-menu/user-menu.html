@@ -1,15 +1,15 @@
 <header class="user-menu">
-  <!-- Application branding -->
+  <!-- Brand -->
   <div class="brand">
     <span class="brand-icon">
-      <img src="../../../assets/expense-track.png" width="28" />
+      <img src="../../../assets/expense-track.png" width="28" alt="ExpenseTrack" />
     </span>
-    <span class="brand-expense">Expense<span class="brand-highlight">Track</span></span>
+
+    <span class="brand-expense"> Expense<span class="brand-highlight">Track</span> </span>
   </div>
 
   <!-- Right-side actions -->
   <div class="menu-actions">
-    <!-- Help -->
     <button
       type="button"
       class="icon-button"
@@ -20,7 +20,6 @@
       <i class="bi bi-question-circle"></i>
     </button>
 
-    <!-- About -->
     <button
       type="button"
       class="icon-button"
@@ -31,7 +30,7 @@
       <i class="bi bi-info-circle"></i>
     </button>
 
-    <!-- User profile -->
+    <!-- Profile -->
     <div class="profile-container">
       <button
         type="button"
@@ -42,7 +41,7 @@
       >
         <img
           class="user-avatar"
-          [src]="_cs?.getUserProfile?.imageUrl || 'assets/image.png'"
+          [src]="profilePictureUrl() || 'assets/image.png'"
           [alt]="_cs?.getUserProfile?.username || 'User profile'"
         />
 
@@ -60,19 +59,18 @@
           class="bi"
           [class.bi-chevron-down]="!profileMenuOpen"
           [class.bi-chevron-up]="profileMenuOpen"
-        >
-        </i>
+        ></i>
       </button>
 
       <!-- Profile dropdown -->
       @if (profileMenuOpen) {
         <div class="profile-dropdown">
-          <!-- User information -->
+          <!-- Dropdown profile header -->
           <div class="dropdown-header">
             <img
               class="dropdown-avatar"
-              [src]="_cs?.getUserProfile?.imageUrl || 'assets/image.png'"
-              [alt]="_cs?.getUserProfile?.displayName || 'User profile'"
+              [src]="profilePictureUrl() || 'assets/image.png'"
+              [alt]="_cs?.getUserProfile?.username || 'User profile'"
             />
 
             <div class="dropdown-user-details">
@@ -83,24 +81,32 @@
               <small>
                 {{ _cs?.getUserProfile?.email || '' }}
               </small>
+
+              <!-- Edit profile picture -->
+              <button
+                type="button"
+                class="edit-profile-picture"
+                (click)="openProfilePictureDialog($event)"
+              >
+                <i class="bi bi-camera-fill"></i>
+                <span>Edit profile picture</span>
+              </button>
             </div>
           </div>
 
           <div class="dropdown-divider"></div>
 
-          <!-- Change password -->
+          <!-- Existing menu items -->
           <button type="button" class="dropdown-item" (click)="changePassword()">
             <i class="bi bi-shield-lock"></i>
             <span>Change Password</span>
           </button>
 
-          <!-- About -->
           <button type="button" class="dropdown-item" (click)="openAbout()">
             <i class="bi bi-info-circle"></i>
             <span>About</span>
           </button>
 
-          <!-- Help -->
           <button type="button" class="dropdown-item" (click)="openHelp()">
             <i class="bi bi-question-circle"></i>
             <span>Help &amp; Support</span>
@@ -108,7 +114,6 @@
 
           <div class="dropdown-divider"></div>
 
-          <!-- Logout -->
           <button type="button" class="dropdown-item logout-item" (click)="logout()">
             <i class="bi bi-box-arrow-right"></i>
             <span>Logout</span>

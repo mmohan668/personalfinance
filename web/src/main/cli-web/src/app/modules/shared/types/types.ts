@@ -141,5 +141,5 @@ export interface UserProfile {
   displayName: string;
   id: number | null;
   adminUserId: number | null;
-  imageUrl: string;
+  profilePictureUrl: string | null;
 }

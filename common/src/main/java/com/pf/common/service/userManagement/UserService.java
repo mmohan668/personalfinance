@@ -5,8 +5,10 @@ import com.pf.common.dto.gp.GridResult;
 import com.pf.common.dto.gp.GridSort;
 import com.pf.common.dto.gp.SearchCriteria;
 import com.pf.common.dto.userManagement.UserDto;
+import com.pf.common.entity.userManagement.ProfilePicture;
 import com.pf.common.entity.userManagement.User;
 import com.pf.common.mapper.userManagement.UserMapper;
+import com.pf.common.repository.user.ProfilePictureRepository;
 import com.pf.common.repository.user.UserRepository;
 import com.pf.common.service.generic.BaseService;
 import com.pf.common.util.BatchUtils;
@@ -16,7 +18,9 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Locale;
@@ -31,6 +35,8 @@ import static com.pf.common.enums.SortOrder.ASC;
 public class UserService extends BaseService {
     private final UserMapper userMapper;
     private final UserRepository userRepository;
+    private final ProfilePictureRepository profilePictureRepository;
+    private final ProfilePictureStorageService profilePictureStorageService;
 
     @Transactional
     public GridResult fetchUsersGridData(SearchCriteria searchCriteria) {
@@ -124,6 +130,42 @@ public class UserService extends BaseService {
                     "Cannot delete selected users because one or more are referenced by other records."
             );
         }
+    }
+
+    @Transactional
+    public ApiResponse saveProfilePicture(MultipartFile file) {
+        String username = fetchLoginUsername();
+
+        User user = userRepository.findByUsername(username)
+                .orElse(null);
+
+        if (user == null) {
+            return failure("User not found");
+        }
+
+        String filename;
+
+        try {
+            filename = profilePictureStorageService.saveImage(fetchLoginUsername(), file);
+        } catch (IllegalArgumentException e) {
+            return failure(e.getMessage());
+        } catch (IOException e) {
+            log.error("Failed to save profile picture for user {}", username, e);
+            return failure("Failed to save profile picture");
+        }
+
+        ProfilePicture picture = profilePictureRepository
+                .findByUserId(user.getId())
+                .orElseGet(ProfilePicture::new);
+
+        picture.setUser(user);
+        picture.setImagePath(filename);
+        picture.setContentType(file.getContentType());
+        picture.setFileSize(file.getSize());
+
+        profilePictureRepository.save(picture);
+
+        return success("Profile picture saved successfully");
     }
 
 }

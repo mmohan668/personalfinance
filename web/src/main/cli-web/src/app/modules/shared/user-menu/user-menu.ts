@@ -1,8 +1,12 @@
-import { Component, HostListener, inject, OnInit } from '@angular/core';
+import { Component, HostListener, inject, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../service/auth-service';
 import { CommonService } from '../service/common-service';
 import { SystemConfigService } from '../service/system-config-service';
+import { MatDialog } from '@angular/material/dialog';
+import { ProfilePictureDialog } from '../../users/profile-picture-dialog/profile-picture-dialog';
+import { UserService } from '../service/user-service';
+import { NotificationService } from '../service/notification-service';
 
 @Component({
   selector: 'app-user-menu',
@@ -15,12 +19,38 @@ export class UserMenu implements OnInit {
   public _scs = inject(SystemConfigService);
   private router = inject(Router);
   public _cs = inject(CommonService);
+  public _us = inject(UserService);
+  public _ns = inject(NotificationService);
+  private readonly dialog = inject(MatDialog);
 
   profileMenuOpen = false;
+  profilePictureUrl = signal<any>('');
 
   constructor() {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.loadProfilePicture();
+  }
+
+  openProfilePictureDialog(event: MouseEvent): void {
+    event.stopPropagation();
+    this.profileMenuOpen = false;
+    this.dialog
+      .open(ProfilePictureDialog, {
+        width: '450px',
+        maxWidth: '95vw',
+        disableClose: true,
+        autoFocus: false,
+        panelClass: 'profile-picture-dialog-panel',
+      })
+      .afterClosed()
+      .subscribe((success) => {
+        if (success) {
+          this._ns.success('Profile picture uploaded successfully.');
+          this.loadProfilePicture();
+        }
+      });
+  }
 
   displayCurrencySymbol(): string {
     const currencyCode = this._scs.currency();
@@ -77,5 +107,21 @@ export class UserMenu implements OnInit {
   @HostListener('document:keydown.escape')
   onEscapeKey(): void {
     this.closeProfileMenu();
+  }
+
+  loadProfilePicture() {
+    this._us.loadProfilePicture(this._cs.getUserProfile.username).subscribe({
+      next: (blob: Blob) => {
+        if (this.profilePictureUrl()) {
+          URL.revokeObjectURL(this.profilePictureUrl());
+        }
+
+        this.profilePictureUrl.set(URL.createObjectURL(blob));
+      },
+      error: (error) => {
+        console.error('Failed to load profile picture:', error);
+        this.profilePictureUrl.set('');
+      },
+    });
   }
 }
