@@ -1001,3 +1001,81 @@
     padding-bottom: 7px;
   }
 }
+
+/* =========================================
+   LAST 12 MONTHS OVERVIEW
+   ========================================= */
+
+.history-section {
+  width: 100%;
+  min-width: 0;
+  margin-top: 20px;
+}
+
+.history-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+
+  h3 {
+    margin: 0;
+    color: #172033;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+  }
+
+  p {
+    margin: 5px 0 0;
+    color: #8a94a8;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+}
+
+.history-chart-card {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  padding: 18px;
+  border: 1px solid #e9edf5;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 4px 18px rgb(27 39 70 / 4%);
+}
+
+.history-chart-container {
+  position: relative;
+  width: 100%;
+  height: 340px;
+  min-width: 0;
+}
+
+.history-chart-container canvas {
+  display: block;
+  max-width: 100%;
+}
+
+@media (max-width: 600px) {
+  .history-section {
+    margin-top: 18px;
+  }
+
+  .history-chart-card {
+    padding: 12px;
+  }
+
+  .history-chart-container {
+    height: 300px;
+  }
+
+  .history-header h3 {
+    font-size: 17px;
+  }
+
+  .history-header p {
+    font-size: 12px;
+  }
+}

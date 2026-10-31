@@ -2,6 +2,7 @@ package com.pf.common.repository.financialTransaction;
 
 import com.pf.common.entity.financialTransaction.FinancialTransaction;
 import com.pf.common.projection.ExpenseByCategoryProjection;
+import com.pf.common.projection.MonthlyTransactionTotalProjection;
 import com.pf.common.projection.TransactionTotalProjection;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -50,11 +51,38 @@ public interface FinancialTransactionRepository extends JpaRepository<FinancialT
                 FROM FinancialTransactionView ftv
                 WHERE ftv.transactionAt >= :from
                 AND ftv.transactionAt < :to
+                AND ftv.adminUserId = :adminUserId
                 GROUP BY ftv.transactionType
             """)
-    List<TransactionTotalProjection> fetchTotals(
+    List<TransactionTotalProjection> fetchTransactionTotalProjection(
             @Param("from") LocalDate from,
-            @Param("to") LocalDate to
+            @Param("to") LocalDate to,
+            @Param("adminUserId") Long adminUserId
+    );
+
+    @Transactional(readOnly = true)
+    @Query("""
+            SELECT
+                YEAR(ftv.transactionAt) AS transactionYear,
+                MONTH(ftv.transactionAt) AS transactionMonth,
+                ftv.transactionType AS transactionType,
+                COALESCE(SUM(ftv.amount), 0) AS total
+            FROM FinancialTransactionView ftv
+            WHERE ftv.transactionAt >= :from
+              AND ftv.transactionAt < :to
+              AND ftv.adminUserId = :adminUserId
+            GROUP BY
+                YEAR(ftv.transactionAt),
+                MONTH(ftv.transactionAt),
+                ftv.transactionType
+            ORDER BY
+                transactionYear,
+                transactionMonth
+            """)
+    List<MonthlyTransactionTotalProjection> fetchMonthlyTransactionTotalProjection(
+            @Param("from") LocalDate from,
+            @Param("to") LocalDate to,
+            @Param("adminUserId") Long adminUserId
     );
 
     @Transactional(readOnly = true)
@@ -65,11 +93,13 @@ public interface FinancialTransactionRepository extends JpaRepository<FinancialT
                 WHERE ftv.transactionAt >= :from
                 AND ftv.transactionAt < :to
                 AND ftv.transactionType = 'EXPENSE'
+                AND ftv.adminUserId = :adminUserId
                 GROUP BY ftv.categoryName
             """)
     List<ExpenseByCategoryProjection> fetchExpenseByCategory(
             @Param("from") LocalDate from,
-            @Param("to") LocalDate to
+            @Param("to") LocalDate to,
+            @Param("adminUserId") Long adminUserId
     );
 
 }

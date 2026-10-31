@@ -15,6 +15,7 @@ import { errorInterceptor } from './modules/shared/interceptor/error-interceptor
 import { DateAdapter, MAT_DATE_FORMATS } from '@angular/material/core';
 import { SystemDateAdapter } from './modules/shared/adapter/system-date-adapter';
 import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
+import { authInterceptor } from './modules/shared/interceptor/auth-interceptor';
 
 export const APP_DATE_FORMATS = {
   parse: {
@@ -33,7 +34,7 @@ export const appConfig: ApplicationConfig = {
     provideAppInitializer(() => {
       return inject(MessageService).load();
     }),
-    provideHttpClient(withInterceptors([loadingInterceptor, errorInterceptor])),
+    provideHttpClient(withInterceptors([loadingInterceptor, errorInterceptor, authInterceptor])),
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
     providePrimeNG({

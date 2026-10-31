@@ -75,7 +75,6 @@ export class AddEditCategoryDialog {
       categoryDescription: this.form.value.categoryDescription.trim(),
     };
     firstValueFrom(this._cms.saveCategory(category)).then((response: ApiResponse) => {
-      console.log(response.success + ' : ' + response.message);
       if (response.success) {
         this.dialogRef.close(response.message);
       } else {

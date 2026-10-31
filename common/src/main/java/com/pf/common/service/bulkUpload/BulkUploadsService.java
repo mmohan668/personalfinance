@@ -80,7 +80,7 @@ public class BulkUploadsService extends BaseService {
             log.info("Sending Bulk Upload Status to Bulk Upload Processing Service");
             applicationEventPublisher.publishEvent(new BulkUploadCreatedEvent(
                     bulkUploadsStatus.getId(),
-                    fetchLoginUser().getId()
+                    fetchLoginUserId()
             ));
         } catch (IOException e) {
             log.error("Error while uploading file", e);
@@ -115,7 +115,7 @@ public class BulkUploadsService extends BaseService {
         bulkUploadsStatus.setUploadType(uploadTypeLabel);
         bulkUploadsStatus.setUploadedFile(targetFile.toString());
         bulkUploadsStatus.setStatus(RECEIVED.getValue());
-        bulkUploadsStatus.setUser(fetchLoginUser().getAdminUser());
+        bulkUploadsStatus.setUser(fetchAdminUser());
         bulkUploadsStatus.setRemarks(RECEIVED.getDescription());
         bulkUploadsStatus.setCreatedBy(fetchLoginUser());
         bulkUploadsStatus.setTemplateName(templateName);

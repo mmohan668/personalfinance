@@ -64,9 +64,9 @@ public class UserService extends BaseService {
                 return failure("Username is already in use");
             }
             User user = userMapper.toEntity(dto);
-            user.setAdminUser(fetchLoginUser().getAdminUser());
+            user.setAdminUser(fetchAdminUser());
             user.setIsAdminUser(Boolean.FALSE);
-            user.setCreatedBy(fetchLoginUser().getUsername());
+            user.setCreatedBy(fetchLoginUsername());
             userRepository.save(user);
             log.debug("New user created {}", user.getUsername());
         } else {
@@ -77,7 +77,7 @@ public class UserService extends BaseService {
             log.debug("Updating user {}", user.getUsername());
             user.setDisplayName(dto.getDisplayName());
             user.setEmail(dto.getEmail());
-            user.setUpdatedBy(fetchLoginUser().getUsername());
+            user.setUpdatedBy(fetchLoginUsername());
             userRepository.save(user);
             log.debug("Updated user {}", user.getUsername());
         }
@@ -88,7 +88,7 @@ public class UserService extends BaseService {
     public ApiResponse activateUsers(List<Long> ids) {
         log.debug("activateUsers: ids {}", ids);
         LocalDateTime updatedTime = LocalDateTime.now();
-        String updatedBy = fetchLoginUser().getUsername();
+        String updatedBy = fetchLoginUsername();
         int count = BatchUtils.processBatchesAndSum(
                 ids,
                 chunk -> userRepository.activateUsers(chunk, updatedBy, updatedTime)
@@ -101,7 +101,7 @@ public class UserService extends BaseService {
     public ApiResponse inactivateUsers(List<Long> ids) {
         log.debug("inactivateUsers: ids {}", ids);
         LocalDateTime updatedTime = LocalDateTime.now();
-        String updatedBy = fetchLoginUser().getUsername();
+        String updatedBy = fetchLoginUsername();
         int count = BatchUtils.processBatchesAndSum(
                 ids,
                 chunk -> userRepository.inactivateUsers(chunk, updatedBy, updatedTime)

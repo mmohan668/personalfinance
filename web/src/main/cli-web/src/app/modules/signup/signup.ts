@@ -3,7 +3,7 @@ import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ApiResponse } from '../shared/types/types';
 import { firstValueFrom } from 'rxjs';
-import { UserService } from '../shared/service/user-service';
+import { AuthService } from '../shared/service/auth-service';
 
 @Component({
   selector: 'app-signup',
@@ -13,7 +13,7 @@ import { UserService } from '../shared/service/user-service';
   styleUrl: './signup.scss',
 })
 export class Signup {
-  private readonly _us = inject(UserService);
+  private readonly _as = inject(AuthService);
 
   // Form fields
   username = '';
@@ -94,7 +94,7 @@ export class Signup {
       email: this.email,
       password: this.password,
     };
-    firstValueFrom(this._us.signUp(user)).then((response: ApiResponse) => {
+    firstValueFrom(this._as.signUp(user)).then((response: ApiResponse) => {
       if (response.success) {
         this.successMessage.set(response.message);
         this.username = '';

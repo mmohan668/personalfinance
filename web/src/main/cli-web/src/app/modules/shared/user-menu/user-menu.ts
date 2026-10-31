@@ -1,12 +1,8 @@
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component, HostListener, inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { UserService } from '../service/user-service';
-
-export interface UserProfile {
-  name: string;
-  email: string;
-  imageUrl?: string;
-}
+import { AuthService } from '../service/auth-service';
+import { CommonService } from '../service/common-service';
 
 @Component({
   selector: 'app-user-menu',
@@ -15,18 +11,16 @@ export interface UserProfile {
   styleUrls: ['./user-menu.scss'],
 })
 export class UserMenu implements OnInit {
+  private _as = inject(AuthService);
+  private _us = inject(UserService);
+  private router = inject(Router);
+  public _cs = inject(CommonService);
+
   profileMenuOpen = false;
-  user: UserProfile | null = null;
 
-  constructor(
-    private _us: UserService,
-    private router: Router,
-  ) {}
+  constructor() {}
 
-  ngOnInit(): void {
-    // Replace with the method provided by your AuthService.
-    this.user = this._us.getCurrentUser();
-  }
+  ngOnInit(): void {}
 
   toggleProfileMenu(): void {
     this.profileMenuOpen = !this.profileMenuOpen;
@@ -51,7 +45,7 @@ export class UserMenu implements OnInit {
     this.closeProfileMenu();
 
     // Use your existing authentication service's logout method.
-    this._us.logout();
+    this._as.logout();
   }
 
   private closeProfileMenu(): void {

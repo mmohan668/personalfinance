@@ -209,19 +209,14 @@ EXECUTE FUNCTION fn_users_history();
 CREATE TABLE users_password_history
 (
     password_history_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-
-    user_id             BIGINT       NOT NULL,
+    user_id             BIGINT       NOT NULL REFERENCES users(id),
     password_hash       VARCHAR(255) NOT NULL
         CHECK (TRIM(password_hash) <> ''),
-
     action_type         VARCHAR(10)  NOT NULL DEFAULT 'CHANGE'
         CHECK (action_type IN ('INITIAL', 'CHANGE', 'RESET')),
-
     changed_by          VARCHAR(100) NOT NULL
         CHECK (TRIM(changed_by) <> ''),
-
     changed_at          TIMESTAMPTZ  NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
     CONSTRAINT fk_users_password_history_user
         FOREIGN KEY (user_id)
             REFERENCES users (id)

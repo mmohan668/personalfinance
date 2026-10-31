@@ -172,7 +172,7 @@ public class CategoryManagementService extends BaseService {
         }
         log.info("Activating {} categories", ids.size());
         LocalDateTime updatedTime = LocalDateTime.now();
-        Long userId = fetchLoginUser().getId();
+        Long userId = fetchLoginUserId();
         int categoryCount = BatchUtils.processBatchesAndSum(
                 ids,
                 chunk -> userCategoryRepository.activateUserCategory(chunk, userId, updatedTime)
@@ -195,7 +195,7 @@ public class CategoryManagementService extends BaseService {
             return failure("IDs are empty");
         }
         log.info("Inactivating {} categories", ids.size());
-        Long userId = fetchLoginUser().getId();
+        Long userId = fetchLoginUserId();
         LocalDateTime updatedTime = LocalDateTime.now();
         long categoryCount = BatchUtils.processBatchesAndSum(
                 ids,
@@ -211,8 +211,7 @@ public class CategoryManagementService extends BaseService {
     }
 
     public List<SelectItem> fetchCategories(Long referenceValueId) {
-        Long adminUserId = fetchLoginUser().getAdminUser().getId();
-        return userCategoryRepository.fetchCategoriesByUserId(adminUserId, referenceValueId);
+        return userCategoryRepository.fetchCategoriesByUserId(fetchLoginUserId(), referenceValueId);
     }
 
     public List<SelectItem> fetchSubcategoriesByCategory(Long categoryId) {
@@ -220,8 +219,7 @@ public class CategoryManagementService extends BaseService {
     }
 
     public List<SelectItem> fetchCategoriesByReferenceCode(String referenceCode) {
-        Long adminUserId = fetchLoginUser().getAdminUser().getId();
-        return userCategoryRepository.fetchCategoriesByReferenceCode(adminUserId, referenceCode);
+        return userCategoryRepository.fetchCategoriesByReferenceCode(fetchAdminUserId(), referenceCode);
     }
 
     @Transactional
@@ -298,7 +296,7 @@ public class CategoryManagementService extends BaseService {
             log.warn("activateSubcategories: ids is empty");
             return failure("Ids are empty");
         }
-        Long userId = fetchLoginUser().getId();
+        Long userId = fetchLoginUserId();
         LocalDateTime updatedTime = LocalDateTime.now();
         long count = BatchUtils.processBatchesAndSum(
                 ids,
@@ -315,7 +313,7 @@ public class CategoryManagementService extends BaseService {
             log.warn("deactivateSubcategories: ids is empty");
             return failure("Ids are empty");
         }
-        Long userId = fetchLoginUser().getId();
+        Long userId = fetchLoginUserId();
         LocalDateTime updatedTime = LocalDateTime.now();
         int count = BatchUtils.processBatchesAndSum(
                 ids,

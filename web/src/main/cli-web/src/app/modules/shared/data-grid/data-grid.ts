@@ -437,7 +437,7 @@ export class DataGrid implements OnInit {
 
     if (selectionType === 'SELECTED') {
       if (this.selectedRows.length === 0) {
-        console.log('No rows selected');
+        this._ns.error('No rows selected');
         return;
       }
 

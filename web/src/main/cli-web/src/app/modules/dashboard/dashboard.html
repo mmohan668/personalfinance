@@ -93,7 +93,7 @@
     </article>
   </section>
 
-  <!-- Charts -->
+  <!-- Existing charts -->
   <section class="charts-grid">
     <article class="chart-card">
       <div class="chart-header">
@@ -165,7 +165,7 @@
     </article>
   </section>
 
-  <!-- Income utilization: new section -->
+  <!-- Existing Income Utilization section -->
   <section class="utilization-section">
     <div class="utilization-header">
       <div>
@@ -294,7 +294,9 @@
     <div class="utilization-footer">
       <div class="footer-income">
         <span>Total income</span>
-        <strong>{{ totals().income | currency: 'INR' : 'symbol' : '1.0-0' }}</strong>
+        <strong>
+          {{ totals().income | currency: 'INR' : 'symbol' : '1.0-0' }}
+        </strong>
       </div>
 
       <div class="footer-allocation">
@@ -302,5 +304,26 @@
         <strong> {{ getTotalAllocatedPercentage() | number: '1.2-2' }}% </strong>
       </div>
     </div>
+  </section>
+
+  <!-- Last 12 months line graph -->
+  <section class="history-section">
+    <div class="history-header">
+      <div>
+        <h3>Last 12 Months Overview</h3>
+        <p>Monthly trends for income, expenses, investments and transfers</p>
+      </div>
+    </div>
+
+    <article class="history-chart-card">
+      <div class="history-chart-container">
+        <canvas
+          baseChart
+          [type]="'line'"
+          [data]="last12MonthsData"
+          [options]="last12MonthsOptions"
+        ></canvas>
+      </div>
+    </article>
   </section>
 </div>

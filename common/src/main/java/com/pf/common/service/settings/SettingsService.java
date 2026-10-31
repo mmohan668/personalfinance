@@ -82,7 +82,7 @@ public class SettingsService extends BaseService {
         GridFilter gridFilter = GridFilter.builder()
                 .field(USER_ID)
                 .operator(EQUALS.getValue())
-                .value(String.valueOf(fetchLoginUser().getAdminUser().getId()))
+                .value(String.valueOf(fetchAdminUserId()))
                 .build();
         searchCriteria.getFilterList().add(gridFilter);
         searchCriteria.getSortList().add(new GridSort(ID, ASC.getValue()));
@@ -110,7 +110,7 @@ public class SettingsService extends BaseService {
         GridFilter gridFilter = GridFilter.builder()
                 .field(USER_ID)
                 .operator(EQUALS.getValue())
-                .value(String.valueOf(fetchLoginUser().getAdminUser().getId()))
+                .value(String.valueOf(fetchAdminUserId()))
                 .build();
         searchCriteria.getFilterList().add(gridFilter);
         searchCriteria.getSortList().add(new GridSort(ID, ASC.getValue()));
@@ -263,7 +263,7 @@ public class SettingsService extends BaseService {
         if (ids == null || ids.isEmpty()) {
             return failure("No reference value(s) selected for activation.");
         }
-        Long updatedBy = fetchLoginUser().getId();
+        Long updatedBy = fetchLoginUserId();
         LocalDateTime updatedAt = LocalDateTime.now();
         int activated = BatchUtils.processBatchesAndSum(
                 ids,
@@ -279,7 +279,7 @@ public class SettingsService extends BaseService {
         if (ids == null || ids.isEmpty()) {
             return failure("No reference value(s) selected for inactivation.");
         }
-        Long updatedBy = fetchLoginUser().getId();
+        Long updatedBy = fetchLoginUserId();
         LocalDateTime updatedAt = LocalDateTime.now();
         int inactivated = BatchUtils.processBatchesAndSum(
                 ids,
