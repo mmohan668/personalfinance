@@ -1,9 +1,11 @@
 <header class="user-menu">
   <!-- Application branding -->
   <div class="brand">
-    <div class="brand-icon">₹</div>
+    <div class="brand-icon">
+      {{ displayCurrencySymbol() }}
+    </div>
 
-    <span class="brand-title"> ExpenseTrack </span>
+    <span class="brand-expense">Expense<span class="brand-highlight">Track</span></span>
   </div>
 
   <!-- Right-side actions -->

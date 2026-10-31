@@ -1,8 +1,8 @@
 import { Component, HostListener, inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { UserService } from '../service/user-service';
 import { AuthService } from '../service/auth-service';
 import { CommonService } from '../service/common-service';
+import { SystemConfigService } from '../service/system-config-service';
 
 @Component({
   selector: 'app-user-menu',
@@ -12,7 +12,7 @@ import { CommonService } from '../service/common-service';
 })
 export class UserMenu implements OnInit {
   private _as = inject(AuthService);
-  private _us = inject(UserService);
+  public _scs = inject(SystemConfigService);
   private router = inject(Router);
   public _cs = inject(CommonService);
 
@@ -21,6 +21,21 @@ export class UserMenu implements OnInit {
   constructor() {}
 
   ngOnInit(): void {}
+
+  displayCurrencySymbol(): string {
+    const currencyCode = this._scs.currency();
+    const locale = this._scs.locale() ?? 'en-US';
+
+    return (
+      new Intl.NumberFormat(locale, {
+        style: 'currency',
+        currency: currencyCode,
+        currencyDisplay: 'narrowSymbol',
+      })
+        .formatToParts(0)
+        .find((part) => part.type === 'currency')?.value ?? currencyCode
+    );
+  }
 
   toggleProfileMenu(): void {
     this.profileMenuOpen = !this.profileMenuOpen;
@@ -43,8 +58,6 @@ export class UserMenu implements OnInit {
 
   logout(): void {
     this.closeProfileMenu();
-
-    // Use your existing authentication service's logout method.
     this._as.logout();
   }
 
