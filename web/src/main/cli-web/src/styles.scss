@@ -1913,3 +1913,16 @@ app-user-menu {
 .logout-item {
   color: #dc3545;
 }
+
+.brand-icon {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+
+  color: #fff;
+  background: linear-gradient(135deg, #66bb6a, #2e7d32);
+  border-radius: 11px;
+  box-shadow: 0 4px 10px rgba(46, 125, 50, 0.18);
+}

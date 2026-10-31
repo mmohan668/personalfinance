@@ -1,0 +1,280 @@
+:host {
+  display: block;
+  color: var(--text-color, #1f2937);
+}
+
+.about-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 24px 48px;
+}
+
+.about-hero {
+  text-align: center;
+  padding: 56px 20px 64px;
+  border-radius: 24px;
+  background: var(--surface-ground, #f9fafb);
+}
+
+.hero-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 76px;
+  height: 76px;
+  margin-bottom: 24px;
+  border-radius: 22px;
+  color: #fff;
+  background: linear-gradient(135deg, #66bb6a, #2e7d32);
+}
+
+.eyebrow {
+  margin: 0 0 12px;
+  color: #ef4444;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+}
+
+.about-hero h1 {
+  max-width: 760px;
+  margin: 0 auto 20px;
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  line-height: 1.15;
+  letter-spacing: -0.045em;
+}
+
+.highlight {
+  display: block;
+  color: #ef4444;
+}
+
+.hero-description {
+  max-width: 700px;
+  margin: 0 auto;
+  color: var(--text-color-secondary, #6b7280);
+  font-size: 1.05rem;
+  line-height: 1.85;
+}
+
+.mission-section,
+.transactions-section,
+.benefits-section {
+  padding: 64px 0;
+}
+
+.section-heading {
+  margin-bottom: 28px;
+}
+
+.section-heading h2,
+.mission-section h2 {
+  margin: 0 0 14px;
+  font-size: clamp(1.6rem, 3vw, 2.25rem);
+  letter-spacing: -0.035em;
+}
+
+.mission-description,
+.section-description {
+  max-width: 800px;
+  color: var(--text-color-secondary, #6b7280);
+  font-size: 1rem;
+  line-height: 1.85;
+}
+
+.mission-description {
+  margin: 0;
+}
+
+.section-description {
+  margin: 0;
+}
+
+.transaction-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.transaction-card {
+  padding: 26px 22px;
+  border: 1px solid var(--surface-border, #e5e7eb);
+  border-radius: 18px;
+  background: var(--surface-card, #ffffff);
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    border-color 180ms ease;
+}
+
+.transaction-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.06);
+  border-color: #d1d5db;
+}
+
+.transaction-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  margin-bottom: 22px;
+  border-radius: 14px;
+}
+
+.income-card .transaction-icon {
+  color: #16a34a;
+  background: #dcfce7;
+}
+
+.expense-card .transaction-icon {
+  color: #ef4444;
+  background: #fee2e2;
+}
+
+.investment-card .transaction-icon {
+  color: #7c3aed;
+  background: #ede9fe;
+}
+
+.transfer-card .transaction-icon {
+  color: #2563eb;
+  background: #dbeafe;
+}
+
+.transaction-card h3 {
+  margin: 0 0 12px;
+  font-size: 1.15rem;
+}
+
+.transaction-card p {
+  margin: 0;
+  color: var(--text-color-secondary, #6b7280);
+  font-size: 0.93rem;
+  line-height: 1.75;
+}
+
+.benefits-section {
+  border-top: 1px solid var(--surface-border, #e5e7eb);
+}
+
+.benefits-list {
+  display: grid;
+  gap: 24px;
+  max-width: 800px;
+}
+
+.benefit-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.benefit-check {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  color: #15803d;
+  background: #dcfce7;
+  font-weight: 700;
+}
+
+.benefit-item h3 {
+  margin: 2px 0 8px;
+  font-size: 1.05rem;
+}
+
+.benefit-item p {
+  margin: 0;
+  color: var(--text-color-secondary, #6b7280);
+  line-height: 1.7;
+}
+
+.about-footer {
+  padding: 44px 24px;
+  border-radius: 22px;
+  background: var(--surface-ground, #f9fafb);
+  text-align: center;
+}
+
+.about-footer h2 {
+  margin: 0 0 12px;
+  font-size: clamp(1.4rem, 3vw, 2rem);
+}
+
+.about-footer > p:not(.copyright) {
+  max-width: 600px;
+  margin: 0 auto 24px;
+  color: var(--text-color-secondary, #6b7280);
+  line-height: 1.8;
+}
+
+.footer-brand {
+  font-size: 1.2rem;
+  font-weight: 800;
+}
+
+.footer-brand span {
+  color: #ef4444;
+}
+
+.copyright {
+  margin: 20px 0 0;
+  color: var(--text-color-secondary, #6b7280);
+  font-size: 0.82rem;
+}
+
+@media (max-width: 1000px) {
+  .transaction-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .about-page {
+    padding: 16px 14px 32px;
+  }
+
+  .about-hero {
+    padding: 40px 18px;
+    border-radius: 18px;
+  }
+
+  .hero-description {
+    font-size: 0.96rem;
+  }
+
+  .mission-section,
+  .transactions-section,
+  .benefits-section {
+    padding: 42px 0;
+  }
+
+  .transaction-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .transaction-card {
+    padding: 22px;
+  }
+
+  .about-footer {
+    padding: 34px 18px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .transaction-card {
+    transition: none;
+  }
+
+  .transaction-card:hover {
+    transform: none;
+  }
+}

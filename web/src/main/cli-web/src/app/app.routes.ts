@@ -86,6 +86,10 @@ export const routes: Routes = [
         path: 'bulkupload',
         loadComponent: () => import('./modules/bulk-upload/bulk-upload').then((m) => m.BulkUpload),
       },
+      {
+        path: 'about',
+        loadComponent: () => import('./modules/about/about').then((m) => m.About),
+      },
     ],
   },
 
