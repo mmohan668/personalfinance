@@ -19,7 +19,7 @@ public interface UserMapper {
 
     @Mapping(target = "displayName", source = "username")
     @Mapping(target = "adminUserId", source = "adminUser.id")
-    @Mapping(target = "imageUrl", ignore = true)
+    @Mapping(target = "profilePictureUrl", ignore = true)
     UserProfile toUserProfile(User user);
 
     List<UserDto> toDtoList(List<User> entities);

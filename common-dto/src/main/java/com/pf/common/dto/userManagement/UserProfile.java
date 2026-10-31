@@ -14,5 +14,5 @@ public class UserProfile {
     private String displayName;
     private Long id;
     private Long adminUserId;
-    private String imageUrl;
+    private String profilePictureUrl;
 }

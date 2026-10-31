@@ -19,6 +19,11 @@ spring:
   activemq:
     broker-url: tcp://localhost:61616
 
+files:
+  images:
+    user-profiles-path: E:/Files/profile-images/users
+    max-file-size: 10MB
+
 bulk-upload:
   base-folder:
     in-progress: E:/BulkUploads/in-progress

@@ -34,8 +34,22 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         message = 'An unexpected server error occurred. Please contact system administrator.';
       }
 
+      const isMissingProfilePicture =
+        error.status === 404 &&
+        req.method === 'GET' &&
+        /\/users\/[^/]+\/profile-picture(?:\?.*)?$/.test(req.url);
+
+      if (!isMissingProfilePicture) {
+        console.error(error);
+        ns.error(message);
+      } else {
+        message = '';
+      }
+
       console.error(error);
-      ns.error(message);
+      if (message !== undefined && message !== null && message !== '') {
+        ns.error(message);
+      }
 
       return throwError(() => error);
     }),
