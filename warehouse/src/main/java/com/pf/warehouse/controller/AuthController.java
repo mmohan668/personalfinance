@@ -6,13 +6,19 @@ import com.pf.common.dto.userManagement.LoginResponse;
 import com.pf.common.dto.userManagement.UserDto;
 import com.pf.common.entity.userManagement.User;
 import com.pf.common.mapper.userManagement.UserMapper;
+import com.pf.common.record.jwt.GeneratedJwt;
+import com.pf.common.service.redis.RedisSessionService;
 import com.pf.common.service.userManagement.AccountRegistrationService;
 import com.pf.common.service.userManagement.AuthenticationService;
 import com.pf.warehouse.service.JwtService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -23,6 +29,7 @@ public class AuthController {
     private final AuthenticationService authenticationService;
     private final JwtService jwtService;
     private final UserMapper userMapper;
+    private final RedisSessionService redisSessionService;
 
     @PostMapping("/signUp")
     public ApiResponse signUp(@RequestBody UserDto userDto) {
@@ -43,16 +50,31 @@ public class AuthController {
                 request.getPassword()
         );
 
-        String token = jwtService.generateToken(user);
+        String sessionId = UUID.randomUUID().toString();
+        GeneratedJwt generatedJwt = jwtService.generateToken(user, sessionId);
+        redisSessionService.setCurrentTokenId(sessionId, generatedJwt.tokenId());
 
         return ResponseEntity.ok(
                 new LoginResponse(
-                        token,
+                        generatedJwt.token(),
                         "Bearer",
                         900,
                         userMapper.toUserProfile(user)
                 )
         );
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(
+            @AuthenticationPrincipal Jwt jwt) {
+
+        String sessionId = jwt.getClaimAsString("sid");
+
+        if (sessionId != null) {
+            redisSessionService.deleteSession(sessionId);
+        }
+
+        return ResponseEntity.noContent().build();
     }
 }
 

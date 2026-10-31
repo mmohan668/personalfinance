@@ -1,10 +1,12 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartData, ChartOptions } from 'chart.js';
 import { CommonImportsModule } from '../shared/common-imports/common-imports-module';
 import { DashboardSummary } from '../shared/types/types';
 import { DashboardService } from '../shared/service/dashboard-service';
 import { TRANSACTION_TYPES } from '../shared/enums';
+import { SystemConfigService } from '../shared/service/system-config-service';
+import { CurrencyPipe } from '@angular/common';
 
 interface MonthOption {
   label: string;
@@ -31,12 +33,13 @@ interface MonthlyHistoryPoint {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonImportsModule, BaseChartDirective],
+  imports: [CommonImportsModule, BaseChartDirective, CurrencyPipe],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
 })
 export class Dashboard {
   private readonly now = new Date();
+  public _scs = inject(SystemConfigService);
 
   selectedYear = this.now.getFullYear();
   selectedMonth = this.now.getMonth() + 1;
@@ -74,6 +77,17 @@ export class Dashboard {
       legend: {
         position: 'bottom',
       },
+      tooltip: {
+        callbacks: {
+          label: (context) =>
+            `${context.label}: ${new Intl.NumberFormat(this._scs.locale() ?? 'en-US', {
+              style: 'currency',
+              currency: this._scs.currency(),
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            }).format(Number(context.parsed ?? 0))}`,
+        },
+      },
     },
   };
 
@@ -89,6 +103,17 @@ export class Dashboard {
       legend: {
         position: 'bottom',
       },
+      tooltip: {
+        callbacks: {
+          label: (context) =>
+            `${context.label}: ${new Intl.NumberFormat(this._scs.locale() ?? 'en-US', {
+              style: 'currency',
+              currency: this._scs.currency(),
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            }).format(Number(context.parsed ?? 0))}`,
+        },
+      },
     },
   };
 
@@ -99,12 +124,29 @@ export class Dashboard {
       legend: {
         display: false,
       },
+      tooltip: {
+        callbacks: {
+          label: (context) =>
+            `${context.dataset.label}: ${new Intl.NumberFormat(this._scs.locale() ?? 'en-US', {
+              style: 'currency',
+              currency: this._scs.currency(),
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            }).format(Number(context.parsed.y ?? 0))}`,
+        },
+      },
     },
     scales: {
       y: {
         beginAtZero: true,
         ticks: {
-          callback: (value) => `₹${Number(value).toLocaleString('en-IN')}`,
+          callback: (value) =>
+            `${new Intl.NumberFormat(this._scs.locale() ?? 'en-US', {
+              style: 'currency',
+              currency: this._scs.currency(),
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            }).format(Number(value ?? 0))}`,
         },
       },
     },
@@ -192,7 +234,12 @@ export class Dashboard {
       tooltip: {
         callbacks: {
           label: (context) =>
-            `${context.dataset.label}: ₹${Number(context.parsed.y ?? 0).toLocaleString('en-IN')}`,
+            `${context.dataset.label}: ${new Intl.NumberFormat(this._scs.locale() ?? 'en-US', {
+              style: 'currency',
+              currency: this._scs.currency(),
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            }).format(Number(context.parsed.y ?? 0))}`,
         },
       },
     },
@@ -209,7 +256,13 @@ export class Dashboard {
       y: {
         beginAtZero: true,
         ticks: {
-          callback: (value) => `₹${Number(value).toLocaleString('en-IN')}`,
+          callback: (value) =>
+            `${new Intl.NumberFormat(this._scs.locale() ?? 'en-US', {
+              style: 'currency',
+              currency: this._scs.currency(),
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            }).format(Number(value ?? 0))}`,
         },
       },
     },

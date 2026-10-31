@@ -61,7 +61,12 @@
         <span class="card-label">Total Expenses</span>
         <span class="card-icon">↗</span>
       </div>
-      <h2>{{ totals().expense | currency: 'INR' : 'symbol' : '1.0-0' }}</h2>
+      <h2>
+        {{
+          totals().expense
+            | currency: _scs.currency() : 'symbol' : '1.2-2' : _scs.locale() ?? 'en-US'
+        }}
+      </h2>
       <p>Spent in {{ currentMonth }}</p>
     </article>
 
@@ -70,7 +75,12 @@
         <span class="card-label">Total Income</span>
         <span class="card-icon">↙</span>
       </div>
-      <h2>{{ totals().income | currency: 'INR' : 'symbol' : '1.0-0' }}</h2>
+      <h2>
+        {{
+          totals().income
+            | currency: _scs.currency() : 'symbol' : '1.2-2' : _scs.locale() ?? 'en-US'
+        }}
+      </h2>
       <p>Received in {{ currentMonth }}</p>
     </article>
 
@@ -79,7 +89,12 @@
         <span class="card-label">Investments</span>
         <span class="card-icon">◈</span>
       </div>
-      <h2>{{ totals().investment | currency: 'INR' : 'symbol' : '1.0-0' }}</h2>
+      <h2>
+        {{
+          totals().investment
+            | currency: _scs.currency() : 'symbol' : '1.2-2' : _scs.locale() ?? 'en-US'
+        }}
+      </h2>
       <p>Invested in {{ currentMonth }}</p>
     </article>
 
@@ -88,7 +103,12 @@
         <span class="card-label">Transfers</span>
         <span class="card-icon">⇄</span>
       </div>
-      <h2>{{ totals().transfer | currency: 'INR' : 'symbol' : '1.0-0' }}</h2>
+      <h2>
+        {{
+          totals().transfer
+            | currency: _scs.currency() : 'symbol' : '1.2-2' : _scs.locale() ?? 'en-US'
+        }}
+      </h2>
       <p>Transferred in {{ currentMonth }}</p>
     </article>
   </section>
@@ -187,7 +207,10 @@
         <h2>{{ getIncomePercentage(totals().expense) | number: '1.2-2' }}%</h2>
 
         <p>
-          {{ abs(totals().expense) | currency: 'INR' : 'symbol' : '1.0-0' }}
+          {{
+            abs(totals().expense)
+              | currency: _scs.currency() : 'symbol' : '1.2-2' : _scs.locale() ?? 'en-US'
+          }}
           <span>of your income</span>
         </p>
 
@@ -216,7 +239,10 @@
         <h2>{{ getIncomePercentage(totals().investment) | number: '1.2-2' }}%</h2>
 
         <p>
-          {{ abs(totals().investment) | currency: 'INR' : 'symbol' : '1.0-0' }}
+          {{
+            abs(totals().investment)
+              | currency: _scs.currency() : 'symbol' : '1.2-2' : _scs.locale() ?? 'en-US'
+          }}
           <span>of your income</span>
         </p>
 
@@ -245,7 +271,10 @@
         <h2>{{ getIncomePercentage(totals().transfer) | number: '1.2-2' }}%</h2>
 
         <p>
-          {{ abs(totals().transfer) | currency: 'INR' : 'symbol' : '1.0-0' }}
+          {{
+            abs(totals().transfer)
+              | currency: _scs.currency() : 'symbol' : '1.2-2' : _scs.locale() ?? 'en-US'
+          }}
           <span>of your income</span>
         </p>
 
@@ -274,7 +303,10 @@
         <h2>{{ getRemainingPercentage() | number: '1.2-2' }}%</h2>
 
         <p>
-          {{ getRemainingIncome() | currency: 'INR' : 'symbol' : '1.0-0' }}
+          {{
+            getRemainingIncome()
+              | currency: _scs.currency() : 'symbol' : '1.2-2' : _scs.locale() ?? 'en-US'
+          }}
           <span>remaining balance</span>
         </p>
 
@@ -295,7 +327,10 @@
       <div class="footer-income">
         <span>Total income</span>
         <strong>
-          {{ totals().income | currency: 'INR' : 'symbol' : '1.0-0' }}
+          {{
+            totals().income
+              | currency: _scs.currency() : 'symbol' : '1.2-2' : _scs.locale() ?? 'en-US'
+          }}
         </strong>
       </div>
 

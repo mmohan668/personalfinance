@@ -23,6 +23,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
 
         if (!req.url.includes('/api/auth/login')) {
           localStorage.removeItem('authToken');
+          localStorage.removeItem('userProfile');
           void router.navigate(['/login']);
         }
       } else if (error.status === 403) {

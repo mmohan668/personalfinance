@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Locale;
 
 @Slf4j
 @Service
@@ -30,18 +29,12 @@ public class AuthenticationService {
     @Transactional(readOnly = true)
     public User authenticate(String username, String rawPassword) {
 
-        String normalizedUsername =
-                username.trim().toLowerCase(Locale.ROOT);
-
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() ->
                         new IllegalArgumentException("Invalid username or password"));
 
         log.info("Password matches stored hash: {}",
                 passwordEncoder.matches(rawPassword, user.getPasswordHash()));
-
-        System.out.println("Password matches stored hash: "
-                + passwordEncoder.matches(rawPassword, user.getPasswordHash()));
 
         if (!passwordEncoder.matches(rawPassword, user.getPasswordHash())) {
             throw new IllegalArgumentException("Invalid username or password");

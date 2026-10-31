@@ -22,11 +22,20 @@ export class CommonService {
   private dialog = inject(MatDialog);
   private _ns = inject(NotificationService);
 
-  private userProfile = signal<UserProfile>({} as UserProfile);
+  private userProfile = signal<UserProfile>(this.loadUserProfile());
 
   constructor() {
     this.dialog.afterOpened.subscribe(() => this._ns.close());
     this.dialog.afterAllClosed.subscribe(() => this._ns.close());
+  }
+
+  private loadUserProfile(): UserProfile {
+    try {
+      const profile = localStorage.getItem('userProfile');
+      return profile ? (JSON.parse(profile) as UserProfile) : ({} as UserProfile);
+    } catch {
+      return {} as UserProfile;
+    }
   }
 
   setUserProfile(userProfile: UserProfile) {

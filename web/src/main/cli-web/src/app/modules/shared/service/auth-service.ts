@@ -1,6 +1,6 @@
 import { inject, Service } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { firstValueFrom, Observable } from 'rxjs';
 
 import { ApiResponse, UserProfile } from '../types/types';
 import { AppConfigService } from './app-config-service';
@@ -37,14 +37,23 @@ export class AuthService {
   }
 
   storeUserInfo(userProfile: UserProfile): void {
-    localStorage.setItem('userInfo ', JSON.stringify(userProfile));
+    localStorage.setItem('userProfile', JSON.stringify(userProfile));
     this._cs.setUserProfile(userProfile);
   }
 
   logout(): void {
-    localStorage.removeItem('authToken');
-    this._ns.success('You have been logged out successfully.');
-    this.router.navigate(['/login']);
+    firstValueFrom(this.http.post<void>(`${this.config.configValue.apiUrl}/api/auth/logout`, {}))
+      .then(() => {
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('userProfile');
+
+        this._ns.success('You have been logged out successfully.');
+        this.router.navigate(['/login']);
+      })
+      .catch((error) => {
+        console.error('Logout failed:', error);
+        this._ns.error('Logout failed. Please try again.');
+      });
   }
 
   authenticate(request: LoginRequest): Observable<LoginResponse> {
