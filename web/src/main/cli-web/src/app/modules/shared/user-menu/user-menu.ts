@@ -83,7 +83,7 @@ export class UserMenu implements OnInit {
 
   openHelp(): void {
     this.closeProfileMenu();
-    this.router.navigate(['/help']);
+    this.router.navigate(['/help-support']);
   }
 
   logout(): void {

@@ -43,23 +43,23 @@ export class Menu {
         },
         {
           label: 'Expense',
-          icon: 'arrow_downward',
+          icon: 'account_balance_wallet',
           route: '/expenses',
         },
         {
           label: 'Income',
-          icon: 'arrow_upward',
+          icon: 'payments',
           route: '/income',
+        },
+        {
+          label: 'Investment',
+          icon: 'account_balance',
+          route: '/investments',
         },
         {
           label: 'Transfer',
           icon: 'swap_horiz',
           route: '/transfers',
-        },
-        {
-          label: 'Investment',
-          icon: 'trending_up',
-          route: '/investments',
         },
       ],
     },
@@ -69,7 +69,7 @@ export class Menu {
       children: [
         {
           label: 'Category',
-          icon: 'label',
+          icon: 'category',
           route: '/categories',
         },
         {
@@ -95,7 +95,7 @@ export class Menu {
         },
         {
           label: 'Reference Values',
-          icon: 'list_alt',
+          icon: 'fact_check',
           route: '/reference-values',
         },
       ],

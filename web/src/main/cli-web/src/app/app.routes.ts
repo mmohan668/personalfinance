@@ -90,6 +90,11 @@ export const routes: Routes = [
         path: 'about',
         loadComponent: () => import('./modules/about/about').then((m) => m.About),
       },
+      {
+        path: 'help-support',
+        loadComponent: () =>
+          import('./modules/help-support/help-support').then((m) => m.HelpSupport),
+      },
     ],
   },
 
