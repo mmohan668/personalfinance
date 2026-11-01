@@ -4,29 +4,23 @@ import com.pf.common.dto.generic.ApiResponse;
 import com.pf.common.dto.gp.GridResult;
 import com.pf.common.dto.gp.GridSort;
 import com.pf.common.dto.gp.SearchCriteria;
-import com.pf.common.dto.userManagement.ChangePassword;
 import com.pf.common.dto.userManagement.UserDto;
 import com.pf.common.entity.userManagement.ProfilePicture;
 import com.pf.common.entity.userManagement.User;
-import com.pf.common.entity.userManagement.UserPasswordHistory;
 import com.pf.common.mapper.userManagement.UserMapper;
 import com.pf.common.repository.user.ProfilePictureRepository;
-import com.pf.common.repository.user.UserPasswordHistoryRepository;
 import com.pf.common.repository.user.UserRepository;
 import com.pf.common.service.generic.BaseService;
 import com.pf.common.util.BatchUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Locale;
@@ -43,9 +37,6 @@ public class UserService extends BaseService {
     private final UserRepository userRepository;
     private final ProfilePictureRepository profilePictureRepository;
     private final ProfilePictureStorageService profilePictureStorageService;
-    private final UserPasswordHistoryRepository userPasswordHistoryRepository;
-    private final static int passwordsCount = 5;
-    private final PasswordEncoder passwordEncoder;
 
     @Transactional
     public GridResult fetchUsersGridData(SearchCriteria searchCriteria) {
@@ -175,74 +166,6 @@ public class UserService extends BaseService {
         profilePictureRepository.save(picture);
 
         return success("Profile picture saved successfully");
-    }
-
-    @Transactional
-    public ApiResponse changePassword(ChangePassword changePassword) {
-
-        if (changePassword.getUserId() == null) {
-            return failure("User ID is required");
-        }
-
-        if (changePassword.getCurrentPassword() == null
-                || changePassword.getCurrentPassword().isBlank()) {
-            return failure("Current password is required");
-        }
-
-        if (changePassword.getNewPassword() == null
-                || changePassword.getNewPassword().isBlank()) {
-            return failure("New password is required");
-        }
-
-        User user = userRepository.findById(changePassword.getUserId())
-                .orElse(null);
-
-        if (user == null) {
-            return failure("User not found");
-        }
-
-        // Verify the current password
-        if (!passwordEncoder.matches(
-                changePassword.getCurrentPassword(),
-                user.getPasswordHash())) {
-            return failure("Current password is incorrect");
-        }
-
-        // Prevent reusing recent passwords
-        List<UserPasswordHistory> passwordHistoryList =
-                userPasswordHistoryRepository
-                        .findByUser_IdOrderByChangedAtDesc(
-                                changePassword.getUserId(),
-                                PageRequest.of(0, passwordsCount));
-
-        if (passwordHistoryList.stream().anyMatch(
-                p -> passwordEncoder.matches(
-                        changePassword.getNewPassword(),
-                        p.getPasswordHash()))) {
-            return failure(
-                    "New password should be different from the last "
-                            + passwordsCount + " passwords");
-        }
-
-        // Encode once and reuse the encoded value
-        String encodedPassword =
-                passwordEncoder.encode(changePassword.getNewPassword());
-
-        user.setPasswordHash(encodedPassword);
-        user.setUpdatedBy(fetchLoginUsername());
-        userRepository.save(user);
-
-        UserPasswordHistory history = new UserPasswordHistory();
-        history.setUser(user);
-        history.setPasswordHash(encodedPassword);
-        history.setActionType(
-                UserPasswordHistory.PasswordActionType.CHANGE);
-        history.setChangedAt(Instant.now());
-        history.setChangedBy(fetchLoginUsername());
-
-        userPasswordHistoryRepository.save(history);
-
-        return success("Password has been changed successfully. Please login again.");
     }
 
 }

@@ -1927,3 +1927,30 @@ app-user-menu {
   overflow: hidden;
   border-radius: 0;
 }
+
+/* Forgot Password dialog sizing and scrolling */
+.forgot-password-panel {
+  max-height: calc(100dvh - 32px) !important;
+}
+
+.forgot-password-panel .mat-mdc-dialog-container {
+  max-height: calc(100dvh - 32px);
+  padding: 0;
+}
+
+.forgot-password-panel .mat-mdc-dialog-inner-container {
+  max-height: calc(100dvh - 32px);
+}
+
+.forgot-password-panel .mat-mdc-dialog-surface {
+  max-height: calc(100dvh - 32px);
+  height: auto;
+  padding: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  border-radius: 14px;
+}
+
+.forgot-password-panel .mat-mdc-dialog-content {
+  max-height: none;
+}

@@ -2,7 +2,7 @@ import { inject, Service } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom, Observable } from 'rxjs';
 
-import { ApiResponse, UserProfile } from '../types/types';
+import { ApiResponse, CaptchaResponse, ForgotPasswordRequest, UserProfile } from '../types/types';
 import { AppConfigService } from './app-config-service';
 import { Router } from '@angular/router';
 import { NotificationService } from './notification-service';
@@ -18,6 +18,7 @@ export interface LoginResponse {
   tokenType: string;
   expiresIn: number;
   userProfile: UserProfile;
+  mustChangePassword: boolean;
 }
 
 @Service()
@@ -66,5 +67,16 @@ export class AuthService {
 
   signUp(user: any): Observable<ApiResponse> {
     return this.http.post<ApiResponse>(`${this.config.configValue.apiUrl}/api/auth/signUp`, user);
+  }
+
+  getCaptcha(): Observable<CaptchaResponse> {
+    return this.http.get<CaptchaResponse>(`${this.config.configValue.apiUrl}/api/auth/captcha`);
+  }
+
+  forgotPassword(request: ForgotPasswordRequest): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(
+      `${this.config.configValue.apiUrl}/api/auth/forgot-password`,
+      request,
+    );
   }
 }

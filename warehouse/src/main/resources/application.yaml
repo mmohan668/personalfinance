@@ -36,11 +36,5 @@ export:
 app:
   activation-token:
     secret: 6X9uhRahHb/7YEUwZ297kXXC6Ec12xjg8KECVBadTCU=
-
-
-
-#logging:
-#  level:
-#    org.hibernate.SQL: DEBUG
-#    org.hibernate.orm.jdbc.bind: TRACE
-#    org.hibernate.orm.jdbc.extract: TRACE
+  password:
+    history-limit: 5

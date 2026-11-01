@@ -67,4 +67,18 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Transactional(readOnly = true)
     Optional<User> findByUsername(String username);
+
+    @Transactional(readOnly = true)
+    @Query("""
+            SELECT u
+            FROM User u
+            WHERE LOWER(TRIM(u.username)) = LOWER(TRIM(:username))
+            AND LOWER(TRIM(u.displayName)) = LOWER(TRIM(:displayName))
+            AND LOWER(TRIM(u.email)) = LOWER(TRIM(:email))
+            """)
+    Optional<User> findByUsernameAndDisplayNameAndEmail(
+            @Param("username") String username,
+            @Param("displayName") String displayName,
+            @Param("email") String email
+    );
 }

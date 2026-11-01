@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, Input, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { UserService } from '../../shared/service/user-service';
@@ -16,6 +16,8 @@ export class ChangePasswordDialog {
   private readonly dialogRef = inject(MatDialogRef<ChangePasswordDialog>);
   private readonly _us = inject(UserService);
   private readonly _cs = inject(CommonService);
+
+  @Input() forcePasswordChange = false;
 
   // Form fields
   currentPassword = '';

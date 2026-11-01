@@ -46,7 +46,9 @@ public class SecurityBeansConfig {
                         .requestMatchers(
                                 "/api/auth/signUp",
                                 "/api/auth/activateAccount",
-                                "/api/auth/login"
+                                "/api/auth/login",
+                                "/api/auth/captcha",
+                                "/api/auth/forgot-password"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )

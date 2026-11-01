@@ -40,6 +40,10 @@ public class User {
     @Column(name = "email", nullable = false)
     private String email;
 
+    @Column(name = "must_change_password", nullable = false)
+    @Builder.Default
+    private Boolean mustChangePassword = false;
+
     @Column(name = "password_hash", nullable = false)
     private String passwordHash;
 

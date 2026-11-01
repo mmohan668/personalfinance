@@ -31,7 +31,11 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
       } else if (error.status === 404) {
         message = 'Requested resource was not found.';
       } else if (error.status >= 500) {
-        message = 'An unexpected server error occurred. Please contact system administrator.';
+        if (error.error && typeof error.error === 'object' && error.error.message) {
+          message = error.error.message;
+        } else {
+          message = 'An unexpected server error occurred. Please contact system administrator.';
+        }
       }
 
       const isMissingProfilePicture =
