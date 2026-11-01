@@ -18,8 +18,14 @@ export class Login {
   password = '';
   errorMessage = '';
   isLoading = signal<boolean>(false);
+  showPassword = false;
+
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
+  }
 
   onLogin(): void {
+    this.showPassword = false;
     if (this.isLoading()) {
       return;
     }

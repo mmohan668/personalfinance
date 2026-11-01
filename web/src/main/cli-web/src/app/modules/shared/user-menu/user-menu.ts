@@ -7,6 +7,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ProfilePictureDialog } from '../../users/profile-picture-dialog/profile-picture-dialog';
 import { UserService } from '../service/user-service';
 import { NotificationService } from '../service/notification-service';
+import { ChangePasswordDialog } from '../../users/change-password-dialog/change-password-dialog';
 
 @Component({
   selector: 'app-user-menu',
@@ -73,7 +74,20 @@ export class UserMenu implements OnInit {
 
   changePassword(): void {
     this.closeProfileMenu();
-    this.router.navigate(['/change-password']);
+    this.dialog
+      .open(ChangePasswordDialog, {
+        width: '450px',
+        maxWidth: '95vw',
+        disableClose: false,
+        autoFocus: false,
+      })
+      .afterClosed()
+      .subscribe((successMessage) => {
+        if (successMessage) {
+          this._ns.success(successMessage);
+          this.logout(true);
+        }
+      });
   }
 
   openAbout(): void {
@@ -86,9 +100,9 @@ export class UserMenu implements OnInit {
     this.router.navigate(['/help-support']);
   }
 
-  logout(): void {
+  logout(passwordChange: boolean = false): void {
     this.closeProfileMenu();
-    this._as.logout();
+    this._as.logout(passwordChange);
   }
 
   private closeProfileMenu(): void {

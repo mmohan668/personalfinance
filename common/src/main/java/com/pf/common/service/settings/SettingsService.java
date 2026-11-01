@@ -175,7 +175,8 @@ public class SettingsService extends BaseService {
             if (referenceValueRepository.existsByReferenceObjectIdAndReferenceCodeAndIdNot(
                     referenceObject.getId(),
                     referenceValueDto.getReferenceCode(),
-                    referenceValue.getId())
+                    referenceValue.getId(),
+                    fetchAdminUserId())
             ) {
                 log.warn(
                         "Reference code already exists for the selected reference object. referenceCode = {}, refObjName {}",
@@ -233,7 +234,7 @@ public class SettingsService extends BaseService {
     }
 
     public Long fetchIdByReferenceCodeAndRefObjName(String referenceCode, String refObjName) {
-        return referenceValueRepository.fetchIdByReferenceCodeAndRefObjName(referenceCode, refObjName);
+        return referenceValueRepository.fetchIdByReferenceCodeAndRefObjName(referenceCode, refObjName, fetchAdminUserId());
     }
 
     @Transactional

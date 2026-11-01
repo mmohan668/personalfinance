@@ -3,6 +3,7 @@ package com.pf.warehouse.controller;
 import com.pf.common.dto.generic.ApiResponse;
 import com.pf.common.dto.gp.GridResult;
 import com.pf.common.dto.gp.SearchCriteria;
+import com.pf.common.dto.userManagement.ChangePassword;
 import com.pf.common.dto.userManagement.UserDto;
 import com.pf.common.entity.userManagement.ProfilePicture;
 import com.pf.common.repository.user.ProfilePictureRepository;
@@ -109,4 +110,8 @@ public class UserController {
                 .body(resource);
     }
 
+    @PostMapping("/changePassword")
+    public ApiResponse changePassword(@RequestBody ChangePassword changePassword) {
+        return userService.changePassword(changePassword);
+    }
 }

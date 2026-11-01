@@ -32,11 +32,13 @@ public interface ReferenceValueRepository extends JpaRepository<ReferenceValue, 
             FROM ReferenceValue rv
             WHERE rv.referenceObject.id = :refObjId
             AND LOWER(TRIM(rv.referenceCode)) = LOWER(TRIM(:referenceCode)) AND rv.id <> :id
+            AND rv.user.id = :userId
             """)
     boolean existsByReferenceObjectIdAndReferenceCodeAndIdNot(
             @Param("refObjId") Long refObjId,
             @Param("referenceCode") String referenceCode,
-            @Param("id") Long id
+            @Param("id") Long id,
+            @Param("userId") Long userId
     );
 
     @Transactional(readOnly = true)
@@ -61,10 +63,12 @@ public interface ReferenceValueRepository extends JpaRepository<ReferenceValue, 
             FROM ReferenceValue rv
             WHERE rv.referenceCode = :referenceCode
             AND rv.referenceObject.refObjName = :refObjName
+            AND rv.user.id = :userId
             """)
     Long fetchIdByReferenceCodeAndRefObjName(
             @Param("referenceCode") String referenceCode,
-            @Param("refObjName") String refObjName
+            @Param("refObjName") String refObjName,
+            @Param("userId") Long userId
     );
 
     @Transactional(readOnly = true)
