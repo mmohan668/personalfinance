@@ -1,0 +1,219 @@
+<div class="help-page">
+  <header class="help-header">
+    <div class="header-icon">
+      <mat-icon>help_outline</mat-icon>
+    </div>
+
+    <div class="header-content">
+      <h1>Help &amp; Support</h1>
+      <p>
+        Find guidance on using the application, working with records, understanding individual
+        grids, and using the available features to manage and customize your data.
+      </p>
+    </div>
+  </header>
+
+  <mat-divider></mat-divider>
+
+  <section class="help-intro">
+    <mat-icon>info_outline</mat-icon>
+
+    <div>
+      <h2>Application User Guide</h2>
+      <p>
+        This section provides help for the application's shared features and individual grids.
+        Expand a topic below to learn about toolbar actions, grid settings, data exports, column
+        visibility, and grid-specific functionality. More grid guides can be added as the
+        application documentation grows.
+      </p>
+    </div>
+  </section>
+
+  <mat-accordion class="help-accordion" multi>
+    <!-- Toolbar Guide: retained as a separate expansion panel -->
+    <mat-expansion-panel class="help-expansion-panel">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          <mat-icon class="panel-icon">build</mat-icon>
+          <span>Toolbar Guide</span>
+        </mat-panel-title>
+
+        <mat-panel-description>
+          Toolbar actions, settings, exports, and columns
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+
+      <div class="toolbar-guide-content">
+        <p class="panel-intro">
+          Use the toolbar to manage records and customize the current grid. Some actions require you
+          to select a record before proceeding.
+        </p>
+
+        @for (section of helpSections; track section.title) {
+          <section class="help-section">
+            <div class="section-heading">
+              <h2>{{ section.title }}</h2>
+              <p>{{ section.description }}</p>
+            </div>
+
+            <div class="help-grid">
+              @for (action of section.actions; track action.title) {
+                <mat-card class="help-card" appearance="outlined">
+                  <mat-card-content>
+                    <div class="card-heading">
+                      <div class="table-toolbar help-action-toolbar">
+                        <button
+                          mat-icon-button
+                          class="toolbar-border"
+                          type="button"
+                          [title]="action.title"
+                          [attr.aria-label]="action.title"
+                          disabled
+                        >
+                          <mat-icon>{{ action.icon }}</mat-icon>
+                        </button>
+                      </div>
+
+                      <h3>{{ action.title }}</h3>
+                    </div>
+
+                    <p class="action-description">
+                      {{ action.description }}
+                    </p>
+
+                    @if (action.details) {
+                      <p class="action-details">
+                        {{ action.details }}
+                      </p>
+                    }
+                  </mat-card-content>
+                </mat-card>
+              }
+            </div>
+          </section>
+        }
+
+        <section class="help-tips">
+          <div class="tips-heading">
+            <mat-icon>lightbulb</mat-icon>
+            <h2>Helpful Tips</h2>
+          </div>
+
+          <ul>
+            <li>
+              Select the appropriate record before using Copy, Edit, Delete, Activate, or
+              Inactivate.
+            </li>
+            <li>Review your selected rows before exporting selected records.</li>
+            <li>Use the Column Chooser to display only the fields you need.</li>
+            <li>Save your grid settings after customizing your preferred layout.</li>
+            <li>Use Reset Grid Settings to restore the default layout.</li>
+          </ul>
+        </section>
+      </div>
+    </mat-expansion-panel>
+
+    <!-- Grid Guides: separate from the Toolbar Guide -->
+    <mat-expansion-panel class="help-expansion-panel">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          <mat-icon class="panel-icon">table_chart</mat-icon>
+          <span>Grid Guides</span>
+        </mat-panel-title>
+
+        <mat-panel-description>
+          Grid-specific fields, actions, and functionality
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+
+      <div class="grid-guides-content">
+        <p class="panel-intro">
+          Select a grid below to learn about its purpose, available information, features, and usage
+          tips.
+        </p>
+
+        <mat-accordion class="individual-grid-accordion" multi>
+          @for (guide of gridGuides; track guide.title) {
+            <mat-expansion-panel class="individual-grid-panel">
+              <mat-expansion-panel-header>
+                <mat-panel-title>
+                  <mat-icon class="panel-icon">
+                    {{ guide.icon }}
+                  </mat-icon>
+                  <span>{{ guide.title }}</span>
+                </mat-panel-title>
+
+                <mat-panel-description>
+                  {{ guide.description }}
+                </mat-panel-description>
+              </mat-expansion-panel-header>
+
+              <div class="grid-guide-content">
+                <section class="grid-guide-overview">
+                  <h2>Overview</h2>
+                  <p>{{ guide.overview }}</p>
+                </section>
+
+                <section class="grid-guide-features">
+                  <div class="section-heading">
+                    <h2>Features and How to Use Them</h2>
+                    <p>Learn about the available information and functionality in this section.</p>
+                  </div>
+
+                  <div class="help-grid">
+                    @for (feature of guide.features; track feature.title) {
+                      <mat-card class="help-card grid-feature-card" appearance="outlined">
+                        <mat-card-content>
+                          <div class="card-heading">
+                            <div class="feature-icon">
+                              <mat-icon>{{ feature.icon }}</mat-icon>
+                            </div>
+
+                            <h3>{{ feature.title }}</h3>
+                          </div>
+
+                          <p class="action-description">
+                            {{ feature.description }}
+                          </p>
+
+                          @if (feature.details) {
+                            <p class="action-details">
+                              {{ feature.details }}
+                            </p>
+                          }
+                        </mat-card-content>
+                      </mat-card>
+                    }
+                  </div>
+                </section>
+
+                <section class="help-tips grid-guide-tips">
+                  <div class="tips-heading">
+                    <mat-icon>lightbulb</mat-icon>
+                    <h2>Helpful Tips</h2>
+                  </div>
+
+                  <ul>
+                    @for (tip of guide.tips; track tip) {
+                      <li>{{ tip }}</li>
+                    }
+                  </ul>
+                </section>
+              </div>
+            </mat-expansion-panel>
+          }
+        </mat-accordion>
+      </div>
+    </mat-expansion-panel>
+  </mat-accordion>
+
+  <footer class="help-footer">
+    <mat-icon>support_agent</mat-icon>
+
+    <p>
+      Need more assistance? Contact your application administrator or support team for help with
+      application features. Email:
+      <a [href]="'mailto:' + supportEmail">{{ supportEmail }}</a>
+    </p>
+  </footer>
+</div>

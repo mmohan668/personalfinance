@@ -1,0 +1,538 @@
+:host {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+
+  --help-primary: #4caf50;
+  --help-text: #263238;
+  --help-muted: #64748b;
+  --help-border: #e0e0e0;
+  --help-surface: #ffffff;
+  --help-subtle: #f8faf8;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.help-page {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 24px;
+  color: var(--help-text);
+  background: var(--help-surface);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.help-header {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 24px;
+}
+
+.header-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 58px;
+  height: 58px;
+  border-radius: 8px;
+  color: var(--help-primary);
+  background: #e8f5e9;
+
+  mat-icon {
+    width: 32px;
+    height: 32px;
+    font-size: 32px;
+  }
+}
+
+.header-content {
+  min-width: 0;
+
+  h1 {
+    margin: 0 0 8px;
+    font-size: 26px;
+    font-weight: 600;
+    line-height: 1.3;
+  }
+
+  p {
+    max-width: 900px;
+    margin: 0;
+    color: var(--help-muted);
+    font-size: 14px;
+    line-height: 1.7;
+  }
+}
+
+.help-intro {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin: 24px 0;
+  padding: 18px;
+  border: 1px solid var(--help-border);
+  border-radius: 4px;
+  background: var(--help-subtle);
+
+  > mat-icon {
+    flex-shrink: 0;
+    margin-top: 2px;
+    color: var(--help-primary);
+  }
+
+  h2 {
+    margin: 0 0 6px;
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  p {
+    margin: 0;
+    color: var(--help-muted);
+    font-size: 13px;
+    line-height: 1.8;
+  }
+}
+
+/* Main expansion panels */
+.help-accordion {
+  display: block;
+  width: 100%;
+}
+
+.help-expansion-panel {
+  margin-bottom: 14px;
+  overflow: hidden;
+  border: 1px solid var(--help-border);
+  border-radius: 4px !important;
+  background: var(--help-surface);
+  box-shadow: none !important;
+
+  &::before {
+    display: none;
+  }
+
+  mat-expansion-panel-header {
+    min-height: 68px;
+    padding: 0 20px;
+
+    &:hover {
+      background: var(--help-subtle) !important;
+    }
+  }
+
+  mat-panel-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 0 1 auto;
+    min-width: 0;
+    color: var(--help-text);
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  mat-panel-description {
+    display: flex;
+    justify-content: flex-end;
+    flex: 1 1 auto;
+    min-width: 0;
+    margin-left: 16px;
+    color: var(--help-muted);
+    font-size: 12px;
+    text-align: right;
+  }
+}
+
+.panel-icon {
+  flex-shrink: 0;
+  color: var(--help-primary);
+}
+
+.toolbar-guide-content,
+.grid-guides-content {
+  padding: 4px 0 8px;
+}
+
+.panel-intro {
+  margin: 0 0 28px;
+  padding: 14px 16px;
+  border-left: 3px solid var(--help-primary);
+  background: var(--help-subtle);
+  color: var(--help-muted);
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+/* Toolbar guide sections */
+.help-section {
+  margin-bottom: 32px;
+}
+
+.section-heading {
+  margin-bottom: 16px;
+
+  h2 {
+    margin: 0 0 6px;
+    font-size: 19px;
+    font-weight: 600;
+  }
+
+  p {
+    margin: 0;
+    color: var(--help-muted);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+}
+
+.help-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.help-card {
+  height: 100%;
+  min-width: 0;
+  border: 1px solid var(--help-border);
+  border-radius: 4px;
+  background: var(--help-surface);
+  box-shadow: none;
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease;
+
+  &:hover {
+    border-color: #a5d6a7;
+    box-shadow: 0 2px 6px rgb(0 0 0 / 5%);
+  }
+
+  mat-card-content {
+    padding: 16px;
+  }
+}
+
+.card-heading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  margin-bottom: 14px;
+
+  h3 {
+    min-width: 0;
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+  }
+}
+
+/*
+ * Reuse the global toolbar styles from styles.scss.
+ * Do not change styles.scss.
+ */
+.help-action-toolbar {
+  display: flex;
+  flex: 0 0 auto;
+  justify-content: flex-start;
+  gap: 0;
+  padding: 0;
+
+  button[mat-icon-button] {
+    flex-shrink: 0;
+  }
+}
+
+.action-description {
+  margin: 0 0 10px;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.7;
+}
+
+.action-details {
+  margin: 0;
+  color: var(--help-muted);
+  font-size: 12px;
+  line-height: 1.8;
+}
+
+/* Icons used by individual grid feature cards */
+.feature-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 36px;
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  color: var(--help-primary);
+  background: #e8f5e9;
+
+  mat-icon {
+    width: 21px;
+    height: 21px;
+    font-size: 21px;
+  }
+}
+
+/* Nested grid guide panels */
+.individual-grid-accordion {
+  display: block;
+  width: 100%;
+}
+
+.individual-grid-panel {
+  margin-bottom: 12px;
+  overflow: hidden;
+  border: 1px solid var(--help-border);
+  border-radius: 4px !important;
+  background: var(--help-surface);
+  box-shadow: none !important;
+
+  &::before {
+    display: none;
+  }
+
+  mat-expansion-panel-header {
+    min-height: 62px;
+    padding: 0 16px;
+
+    &:hover {
+      background: var(--help-subtle) !important;
+    }
+  }
+
+  mat-panel-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 0 1 auto;
+    min-width: 0;
+    color: var(--help-text);
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  mat-panel-description {
+    display: flex;
+    justify-content: flex-end;
+    flex: 1 1 auto;
+    min-width: 0;
+    margin-left: 14px;
+    color: var(--help-muted);
+    font-size: 12px;
+    text-align: right;
+  }
+}
+
+.grid-guide-content {
+  padding: 4px 0 8px;
+}
+
+.grid-guide-overview {
+  margin-bottom: 28px;
+  padding: 18px;
+  border: 1px solid var(--help-border);
+  border-radius: 4px;
+  background: var(--help-subtle);
+
+  h2 {
+    margin: 0 0 8px;
+    font-size: 17px;
+    font-weight: 600;
+  }
+
+  p {
+    margin: 0;
+    color: var(--help-muted);
+    font-size: 13px;
+    line-height: 1.8;
+  }
+}
+
+.grid-guide-features {
+  margin-bottom: 28px;
+}
+
+.grid-feature-card {
+  .card-heading {
+    align-items: center;
+  }
+}
+
+/* Helpful tips */
+.help-tips {
+  margin: 28px 0 12px;
+  padding: 22px;
+  border: 1px solid var(--help-border);
+  border-radius: 4px;
+  background: var(--help-subtle);
+
+  .tips-heading {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+
+    mat-icon {
+      color: var(--help-primary);
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 17px;
+      font-weight: 600;
+    }
+  }
+
+  ul {
+    display: grid;
+    gap: 10px;
+    margin: 0;
+    padding-left: 22px;
+  }
+
+  li {
+    padding-left: 4px;
+    color: var(--help-muted);
+    font-size: 13px;
+    line-height: 1.7;
+  }
+
+  li::marker {
+    color: var(--help-primary);
+  }
+}
+
+.grid-guide-tips {
+  margin-top: 24px;
+}
+
+.help-footer {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: 24px;
+  padding: 18px 0 4px;
+  border-top: 1px solid var(--help-border);
+
+  mat-icon {
+    flex-shrink: 0;
+    color: var(--help-primary);
+  }
+
+  p {
+    margin: 0;
+    color: var(--help-muted);
+    font-size: 13px;
+    line-height: 1.8;
+  }
+}
+
+/* Tablet */
+@media (max-width: 1100px) {
+  .help-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Mobile */
+@media (max-width: 700px) {
+  .help-page {
+    padding: 16px;
+  }
+
+  .help-header {
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .header-icon {
+    width: 46px;
+    height: 46px;
+
+    mat-icon {
+      width: 26px;
+      height: 26px;
+      font-size: 26px;
+    }
+  }
+
+  .header-content h1 {
+    font-size: 22px;
+  }
+
+  .help-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .help-intro,
+  .help-tips,
+  .grid-guide-overview {
+    padding: 14px;
+  }
+
+  .help-section {
+    margin-bottom: 28px;
+  }
+
+  .panel-intro {
+    padding: 12px;
+  }
+
+  .help-expansion-panel {
+    mat-expansion-panel-header {
+      min-height: 64px;
+      padding: 0 14px;
+    }
+
+    mat-panel-title {
+      gap: 8px;
+      font-size: 14px;
+    }
+
+    mat-panel-description {
+      display: none;
+    }
+  }
+
+  .individual-grid-panel {
+    mat-expansion-panel-header {
+      min-height: 58px;
+      padding: 0 12px;
+    }
+
+    mat-panel-title {
+      gap: 8px;
+      font-size: 14px;
+    }
+
+    mat-panel-description {
+      display: none;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .help-card {
+    transition: none;
+  }
+}
+
+.help-footer a {
+  color: #4caf50;
+  font-weight: 700;
+  text-decoration: underline;
+  overflow-wrap: anywhere;
+}

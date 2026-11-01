@@ -19,10 +19,10 @@ public class ProfilePictureStorageService {
 
     private Path uploadDirectory;
 
-    @Value("${files.images.max-file-size}")
+    @Value("${files.images.max-file-size: 10MB}")
     private DataSize maxFileSize;
 
-    @Value("${files.images.user-profiles-path}")
+    @Value("${files.images.user-profiles-path:}")
     private String uploadPath;
 
     @PostConstruct
