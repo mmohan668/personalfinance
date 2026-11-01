@@ -1,6 +1,7 @@
 package com.pf.mailer.config;
 
 import com.pf.common.dto.generic.AccountActivationRequest;
+import com.pf.common.dto.generic.ForgotPasswordEmailRequest;
 import jakarta.jms.ConnectionFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,7 +20,8 @@ public class JmsConfig {
         converter.setTypeIdPropertyName("_type");
         converter.setTypeIdMappings(
                 java.util.Map.of(
-                        "AccountActivationRequest", AccountActivationRequest.class
+                        "AccountActivationRequest", AccountActivationRequest.class,
+                        "ForgotPasswordEmailRequest", ForgotPasswordEmailRequest.class
                 )
         );
 

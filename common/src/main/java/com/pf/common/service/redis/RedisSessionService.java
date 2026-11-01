@@ -14,6 +14,8 @@ import java.util.List;
 public class RedisSessionService {
     private static final Duration SESSION_TIMEOUT = Duration.ofMinutes(15);
     private static final String SESSION_KEY_PREFIX = "jwt:session:";
+    private static final String CAPTCHA_KEY_PREFIX = "captcha:";
+    private static final Duration CAPTCHA_TIMEOUT = Duration.ofMinutes(5);
 
     private final StringRedisTemplate redisTemplate;
 
@@ -66,6 +68,40 @@ public class RedisSessionService {
         );
 
         return Long.valueOf(1L).equals(result);
+    }
+
+    public void saveCaptcha(String captchaId, String answer) {
+        redisTemplate.opsForValue().set(
+                CAPTCHA_KEY_PREFIX + captchaId,
+                answer,
+                CAPTCHA_TIMEOUT
+        );
+    }
+
+    public String getCaptchaAnswer(String captchaId) {
+        return redisTemplate.opsForValue().get(
+                CAPTCHA_KEY_PREFIX + captchaId
+        );
+    }
+
+    public void deleteCaptcha(String captchaId) {
+        redisTemplate.delete(CAPTCHA_KEY_PREFIX + captchaId);
+    }
+
+    public boolean validateCaptcha(String captchaId, String answer) {
+        String storedAnswer = getCaptchaAnswer(captchaId);
+
+        if (storedAnswer == null || answer == null) {
+            return false;
+        }
+
+        boolean valid = storedAnswer.equalsIgnoreCase(answer.trim());
+
+        if (valid) {
+            deleteCaptcha(captchaId);
+        }
+
+        return valid;
     }
 
 }

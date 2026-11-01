@@ -143,3 +143,16 @@ export interface UserProfile {
   adminUserId: number | null;
   profilePictureUrl: string | null;
 }
+
+export interface CaptchaResponse {
+  captchaId: string;
+  captchaImage: string;
+}
+
+export interface ForgotPasswordRequest {
+  username: string;
+  displayName: string;
+  email: string;
+  captchaId: string;
+  captchaAnswer: string;
+}

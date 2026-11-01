@@ -2,6 +2,7 @@ package com.pf.warehouse.config;
 
 import com.pf.common.dto.export.ExportRequest;
 import com.pf.common.dto.generic.AccountActivationRequest;
+import com.pf.common.dto.generic.ForgotPasswordEmailRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.support.converter.JacksonJsonMessageConverter;
@@ -19,7 +20,8 @@ public class JmsConfig {
         converter.setTypeIdMappings(
                 java.util.Map.of(
                         "ExportRequest", ExportRequest.class,
-                        "AccountActivationRequest", AccountActivationRequest.class
+                        "AccountActivationRequest", AccountActivationRequest.class,
+                        "ForgotPasswordEmailRequest", ForgotPasswordEmailRequest.class
                 )
         );
 

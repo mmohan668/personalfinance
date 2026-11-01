@@ -1,6 +1,7 @@
 package com.pf.mailer.service;
 
 import com.pf.common.dto.generic.AccountActivationRequest;
+import com.pf.common.dto.generic.ForgotPasswordEmailRequest;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -68,4 +69,48 @@ public class SendEmailService {
                     "Unable to send account activation email", e);
         }
     }
+
+
+    public void sendForgotPasswordEmail(ForgotPasswordEmailRequest request) {
+        if (request == null
+                || request.getEmailId() == null
+                || request.getEmailId().isBlank()
+                || request.getTemporaryPassword() == null
+                || request.getTemporaryPassword().isBlank()) {
+            throw new IllegalArgumentException(
+                    "Email address and temporary password are required");
+        }
+
+        try {
+            Context context = new Context();
+            context.setVariable(
+                    "temporaryPassword",
+                    request.getTemporaryPassword()
+            );
+
+            String htmlContent = templateEngine.process(
+                    "forgot-password",
+                    context
+            );
+
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper =
+                    new MimeMessageHelper(message, true, "UTF-8");
+
+            helper.setFrom(fromEmail);
+            helper.setTo(request.getEmailId());
+            helper.setSubject("Your Temporary Password");
+            helper.setText(htmlContent, true);
+
+            mailSender.send(message);
+
+            log.info("Forgot-password email sent successfully");
+
+        } catch (MessagingException | MailException e) {
+            log.error("Failed to send forgot-password email", e);
+            throw new IllegalStateException(
+                    "Unable to send forgot-password email", e);
+        }
+    }
+
 }

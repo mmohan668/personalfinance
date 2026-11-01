@@ -58,7 +58,7 @@ public class AccountRegistrationService extends BaseService {
         user.setPasswordHash(passwordEncoder.encode(dto.getPassword()));
         user.setIsAdminUser(Boolean.TRUE);
         user.setCreatedBy(SYSTEM);
-
+        user.setMustChangePassword(false);
         User savedUser = userRepository.save(user);
 
         generateActivationTokenAndSend(savedUser);

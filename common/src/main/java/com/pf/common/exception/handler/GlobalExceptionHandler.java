@@ -1,6 +1,7 @@
 package com.pf.common.exception.handler;
 
 import com.pf.common.dto.generic.ApiResponse;
+import com.pf.common.exception.AuthenticationFailedException;
 import com.pf.common.exception.ResourceNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -105,6 +106,22 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .badRequest()
                 .body(response);
+    }
+
+    @ExceptionHandler(AuthenticationFailedException.class)
+    public ResponseEntity<ApiResponse> handleAuthenticationFailedException(
+            AuthenticationFailedException ex,
+            HttpServletRequest request) {
+
+        log.warn("Authentication failed. URI: {}, Message: {}",
+                request.getRequestURI(), ex.getMessage());
+
+        ApiResponse response = ApiResponse.builder()
+                .success(false)
+                .message(ex.getMessage())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
     }
 
     @ExceptionHandler(Exception.class)

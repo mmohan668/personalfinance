@@ -16,6 +16,7 @@ public interface CommonConstants {
     String NO = "No";
     String SERVER_SIDE_GRID_EXPORT = "SERVER_SIDE_GRID_EXPORT";
     String ACCOUNT_ACTIVATION_MAIL = "ACCOUNT_ACTIVATION_MAIL";
+    String FORGOT_PASSWORD_MAIL = "FORGOT_PASSWORD_MAIL";
     String CURRENCY_CELL_TEMPLATE = "currencyCellTemplate";
     String HH_MM_SS = " HH:mm:ss";
     String CELL_VALUE_TEMPLATE = "cellValueTemplate";

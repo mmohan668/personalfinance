@@ -4,17 +4,18 @@
 
 CREATE TABLE users
 (
-    id            BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    admin_user_id BIGINT,
-    username      VARCHAR(100) NOT NULL CHECK (TRIM(username) <> ''),
-    display_name  VARCHAR(100) NOT NULL CHECK (TRIM(display_name) <> ''),
-    email         VARCHAR(255) NOT NULL CHECK (TRIM(email) <> ''),
-    password_hash VARCHAR(255) NOT NULL CHECK (TRIM(password_hash) <> ''),
-    is_active     BOOLEAN      NOT NULL DEFAULT FALSE,
-    created_by    VARCHAR(100) NOT NULL CHECK (TRIM(created_by) <> ''),
-    created_at    TIMESTAMPTZ  NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_by    VARCHAR(100),
-    updated_at    TIMESTAMPTZ,
+    id                   BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    admin_user_id        BIGINT,
+    username             VARCHAR(100) NOT NULL CHECK (TRIM(username) <> ''),
+    display_name         VARCHAR(100) NOT NULL CHECK (TRIM(display_name) <> ''),
+    email                VARCHAR(255) NOT NULL CHECK (TRIM(email) <> ''),
+    password_hash        VARCHAR(255) NOT NULL CHECK (TRIM(password_hash) <> ''),
+    must_change_password BOOLEAN      NOT NULL DEFAULT FALSE,
+    is_active            BOOLEAN      NOT NULL DEFAULT FALSE,
+    created_by           VARCHAR(100) NOT NULL CHECK (TRIM(created_by) <> ''),
+    created_at           TIMESTAMPTZ  NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_by           VARCHAR(100),
+    updated_at           TIMESTAMPTZ,
 
     CONSTRAINT fk_users_admin_user
         FOREIGN KEY (admin_user_id)
@@ -51,6 +52,7 @@ VALUES ('System',
         'FLYWAY');
 
 -- Associate system user with itself
+
 UPDATE users
 SET admin_user_id = id,
     is_active     = TRUE
@@ -62,23 +64,26 @@ WHERE username = 'System';
 
 CREATE TABLE users_history
 (
-    history_id    BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    user_id       BIGINT       NOT NULL REFERENCES users (id) on delete cascade,
-    admin_user_id BIGINT,
-    username      VARCHAR(100) NOT NULL,
-    display_name  VARCHAR(100) NOT NULL,
-    email         VARCHAR(255) NOT NULL,
-    is_active     BOOLEAN      NOT NULL,
-    created_by    VARCHAR(100) NOT NULL,
-    created_at    TIMESTAMPTZ  NOT NULL,
-    updated_by    VARCHAR(100),
-    updated_at    TIMESTAMPTZ,
+    history_id           BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    user_id              BIGINT       NOT NULL
+        REFERENCES users (id)
+            ON DELETE CASCADE,
+    admin_user_id        BIGINT,
+    username             VARCHAR(100) NOT NULL,
+    display_name         VARCHAR(100) NOT NULL,
+    email                VARCHAR(255) NOT NULL,
+    must_change_password BOOLEAN      NOT NULL,
+    is_active            BOOLEAN      NOT NULL,
+    created_by           VARCHAR(100) NOT NULL,
+    created_at           TIMESTAMPTZ  NOT NULL,
+    updated_by           VARCHAR(100),
+    updated_at           TIMESTAMPTZ,
 
-    action_type   VARCHAR(10)  NOT NULL
+    action_type          VARCHAR(10)  NOT NULL
         CHECK (action_type IN ('INSERT', 'UPDATE', 'DELETE')),
 
-    action_by     VARCHAR(100) NOT NULL,
-    action_at     TIMESTAMPTZ  NOT NULL DEFAULT CURRENT_TIMESTAMP
+    action_by            VARCHAR(100) NOT NULL,
+    action_at            TIMESTAMPTZ  NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 -- =========================================================
@@ -125,6 +130,7 @@ BEGIN
          username,
          display_name,
          email,
+         must_change_password,
          is_active,
          created_by,
          created_at,
@@ -138,6 +144,7 @@ BEGIN
                 OLD.username,
                 OLD.display_name,
                 OLD.email,
+                OLD.must_change_password,
                 OLD.is_active,
                 OLD.created_by,
                 OLD.created_at,
@@ -164,6 +171,7 @@ BEGIN
          username,
          display_name,
          email,
+         must_change_password,
          is_active,
          created_by,
          created_at,
@@ -177,6 +185,7 @@ BEGIN
                 NEW.username,
                 NEW.display_name,
                 NEW.email,
+                NEW.must_change_password,
                 NEW.is_active,
                 NEW.created_by,
                 NEW.created_at,
@@ -209,14 +218,19 @@ EXECUTE FUNCTION fn_users_history();
 CREATE TABLE users_password_history
 (
     password_history_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    user_id             BIGINT       NOT NULL REFERENCES users(id),
+
+    user_id             BIGINT       NOT NULL,
     password_hash       VARCHAR(255) NOT NULL
         CHECK (TRIM(password_hash) <> ''),
+
     action_type         VARCHAR(10)  NOT NULL DEFAULT 'CHANGE'
         CHECK (action_type IN ('INITIAL', 'CHANGE', 'RESET')),
+
     changed_by          VARCHAR(100) NOT NULL
         CHECK (TRIM(changed_by) <> ''),
+
     changed_at          TIMESTAMPTZ  NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
     CONSTRAINT fk_users_password_history_user
         FOREIGN KEY (user_id)
             REFERENCES users (id)

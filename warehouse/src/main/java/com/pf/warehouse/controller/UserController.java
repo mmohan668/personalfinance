@@ -7,6 +7,7 @@ import com.pf.common.dto.userManagement.ChangePassword;
 import com.pf.common.dto.userManagement.UserDto;
 import com.pf.common.entity.userManagement.ProfilePicture;
 import com.pf.common.repository.user.ProfilePictureRepository;
+import com.pf.common.service.userManagement.AuthenticationService;
 import com.pf.common.service.userManagement.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,6 +30,7 @@ import java.util.List;
 public class UserController {
     private final UserService userService;
     private final ProfilePictureRepository profilePictureRepository;
+    private final AuthenticationService authenticationService;
 
     @Value("${files.images.user-profiles-path}")
     private String uploadPath;
@@ -112,6 +114,6 @@ public class UserController {
 
     @PostMapping("/changePassword")
     public ApiResponse changePassword(@RequestBody ChangePassword changePassword) {
-        return userService.changePassword(changePassword);
+        return authenticationService.changePassword(changePassword);
     }
 }

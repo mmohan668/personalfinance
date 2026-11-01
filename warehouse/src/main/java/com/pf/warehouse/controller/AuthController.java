@@ -1,10 +1,7 @@
 package com.pf.warehouse.controller;
 
 import com.pf.common.dto.generic.ApiResponse;
-import com.pf.common.dto.userManagement.LoginRequest;
-import com.pf.common.dto.userManagement.LoginResponse;
-import com.pf.common.dto.userManagement.UserDto;
-import com.pf.common.dto.userManagement.UserProfile;
+import com.pf.common.dto.userManagement.*;
 import com.pf.common.entity.userManagement.ProfilePicture;
 import com.pf.common.entity.userManagement.User;
 import com.pf.common.mapper.userManagement.UserMapper;
@@ -13,6 +10,8 @@ import com.pf.common.repository.user.ProfilePictureRepository;
 import com.pf.common.service.redis.RedisSessionService;
 import com.pf.common.service.userManagement.AccountRegistrationService;
 import com.pf.common.service.userManagement.AuthenticationService;
+import com.pf.common.service.userManagement.CaptchaService;
+import com.pf.common.service.userManagement.ForgotPasswordService;
 import com.pf.warehouse.service.JwtService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +20,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -34,6 +35,8 @@ public class AuthController {
     private final UserMapper userMapper;
     private final RedisSessionService redisSessionService;
     private final ProfilePictureRepository profilePictureRepository;
+    private final ForgotPasswordService forgotPasswordService;
+    private final CaptchaService captchaService;
 
     @PostMapping("/signUp")
     public ApiResponse signUp(@RequestBody UserDto userDto) {
@@ -74,7 +77,8 @@ public class AuthController {
                         generatedJwt.token(),
                         "Bearer",
                         900,
-                        userProfile
+                        userProfile,
+                        user.getMustChangePassword()
                 )
         );
     }
@@ -90,6 +94,23 @@ public class AuthController {
         }
 
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<Map<String, String>> forgotPassword(
+            @Valid @RequestBody ForgotPasswordRequest request) {
+
+        forgotPasswordService.processRequest(request);
+
+        return ResponseEntity.ok(Map.of(
+                "message",
+                "If the account details are valid, instructions will be sent to your registered email."
+        ));
+    }
+
+    @GetMapping("/captcha")
+    public ResponseEntity<CaptchaResponse> getCaptcha() throws IOException {
+        return ResponseEntity.ok(captchaService.generateCaptcha());
     }
 }
 
