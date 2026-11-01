@@ -38,6 +38,13 @@ export class UserService {
     );
   }
 
+  changePassword(payload: any): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(
+      `${this.config.configValue.apiUrl}/users/changePassword`,
+      payload,
+    );
+  }
+
   loadProfilePicture(username: string): Observable<Blob> {
     return this.http.get(`${this.config.configValue.apiUrl}/users/${username}/profile-picture`, {
       responseType: 'blob',

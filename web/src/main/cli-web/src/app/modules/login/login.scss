@@ -426,3 +426,43 @@ a:hover {
 .brand-expense {
   color: #ef4444;
 }
+
+.input-wrapper {
+  position: relative;
+}
+
+.input-wrapper input {
+  box-sizing: border-box;
+  width: 100%;
+  padding-right: 44px;
+}
+
+.password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border: none;
+  background: transparent;
+  color: #64748b;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.password-toggle:hover {
+  color: #16a34a;
+}
+
+.password-toggle:focus-visible {
+  outline: 2px solid #16a34a;
+  outline-offset: 2px;
+}
+
+.password-toggle svg {
+  display: block;
+  flex-shrink: 0;
+}

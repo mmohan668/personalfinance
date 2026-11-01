@@ -41,13 +41,14 @@ export class AuthService {
     this._cs.setUserProfile(userProfile);
   }
 
-  logout(): void {
+  logout(passwordChange: boolean = false): void {
     firstValueFrom(this.http.post<void>(`${this.config.configValue.apiUrl}/api/auth/logout`, {}))
       .then(() => {
         localStorage.removeItem('authToken');
         localStorage.removeItem('userProfile');
-
-        this._ns.success('You have been logged out successfully.');
+        if (!passwordChange) {
+          this._ns.success('You have been logged out successfully.');
+        }
         this.router.navigate(['/login']);
       })
       .catch((error) => {
