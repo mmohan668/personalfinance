@@ -7,6 +7,7 @@ import com.pf.common.entity.userManagement.User;
 import com.pf.common.mapper.userManagement.UserMapper;
 import com.pf.common.record.jwt.GeneratedJwt;
 import com.pf.common.repository.user.ProfilePictureRepository;
+import com.pf.common.service.export.ExportService;
 import com.pf.common.service.redis.RedisSessionService;
 import com.pf.common.service.userManagement.AccountRegistrationService;
 import com.pf.common.service.userManagement.AuthenticationService;
@@ -37,6 +38,7 @@ public class AuthController {
     private final ProfilePictureRepository profilePictureRepository;
     private final ForgotPasswordService forgotPasswordService;
     private final CaptchaService captchaService;
+    private final ExportService exportService;
 
     @PostMapping("/signUp")
     public ApiResponse signUp(@RequestBody UserDto userDto) {
@@ -85,14 +87,13 @@ public class AuthController {
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(
-            @AuthenticationPrincipal Jwt jwt) {
+            @AuthenticationPrincipal Jwt jwt) throws IOException {
 
         String sessionId = jwt.getClaimAsString("sid");
-
+        exportService.deleteUserDirectory();
         if (sessionId != null) {
             redisSessionService.deleteSession(sessionId);
         }
-
         return ResponseEntity.noContent().build();
     }
 

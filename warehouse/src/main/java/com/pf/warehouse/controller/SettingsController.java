@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/settings")
+@RequestMapping("/api/settings")
 @RequiredArgsConstructor
 public class SettingsController {
     private final SettingsService settingsService;

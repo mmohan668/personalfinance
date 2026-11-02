@@ -640,9 +640,6 @@ export class ColumnFilterComponent implements OnInit, OnDestroy {
         ...this.filter,
       });
     }
-    this.valueChangeSubject.next({
-      ...this.filter,
-    });
     this.menuOpen = false;
   }
 

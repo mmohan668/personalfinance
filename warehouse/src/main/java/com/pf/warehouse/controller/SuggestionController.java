@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/suggestion")
+@RequestMapping("/api/suggestion")
 @RequiredArgsConstructor
 public class SuggestionController {
     private final SuggestionService suggestionService;

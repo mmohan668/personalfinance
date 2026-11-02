@@ -5,6 +5,7 @@ import com.pf.common.entity.userManagement.User;
 import com.pf.common.repository.user.UserRepository;
 import com.pf.common.service.activeMQ.ActiveMqProducer;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +16,10 @@ import com.pf.common.dto.generic.ForgotPasswordEmailRequest;
 
 @Service
 @RequiredArgsConstructor
+@ConditionalOnProperty(
+        name = "spring.application.name",
+        havingValue = "warehouse"
+)
 public class ForgotPasswordService {
 
     private final CaptchaService captchaService;

@@ -50,6 +50,7 @@ public interface ReferenceValueRepository extends JpaRepository<ReferenceValue, 
             FROM ReferenceValue rv
             WHERE rv.referenceObject.refObjName = :refObjName
             AND rv.user.id = :userId
+            AND rv.active = true
             ORDER BY LOWER(rv.referenceCode)
             """)
     List<SelectItem> fetchReferenceValuesByRefObjName(
@@ -64,6 +65,7 @@ public interface ReferenceValueRepository extends JpaRepository<ReferenceValue, 
             WHERE rv.referenceCode = :referenceCode
             AND rv.referenceObject.refObjName = :refObjName
             AND rv.user.id = :userId
+            AND rv.active = true
             """)
     Long fetchIdByReferenceCodeAndRefObjName(
             @Param("referenceCode") String referenceCode,

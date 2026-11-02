@@ -32,9 +32,8 @@ BEGIN
                                          reference_code_3 TEXT
         )
              JOIN reference_object ro
-                  ON ro.user_id = p_user_id
-                      AND LOWER(TRIM(ro.ref_obj_name))
-                         = LOWER(TRIM(x.reference_object));
+                  ON LOWER(TRIM(ro.ref_obj_name))
+                      = LOWER(TRIM(x.reference_object));
 
 END;
 $$;

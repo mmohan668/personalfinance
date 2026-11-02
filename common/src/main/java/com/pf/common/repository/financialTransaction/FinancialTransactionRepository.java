@@ -69,7 +69,7 @@ public interface FinancialTransactionRepository extends JpaRepository<FinancialT
                 COALESCE(SUM(ftv.amount), 0) AS total
             FROM FinancialTransactionView ftv
             WHERE ftv.transactionAt >= :from
-              AND ftv.transactionAt < :to
+              AND ftv.transactionAt <= :to
               AND ftv.adminUserId = :adminUserId
             GROUP BY
                 YEAR(ftv.transactionAt),

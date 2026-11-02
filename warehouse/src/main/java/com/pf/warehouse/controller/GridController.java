@@ -11,7 +11,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/grid")
+@RequestMapping("/api/grid")
 public class GridController {
     private final GridService gridService;
 
