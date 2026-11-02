@@ -1,5 +1,7 @@
 server:
   port: 1003
+  servlet:
+    context-path: /pf-warehouse
 spring:
   application:
     name: warehouse

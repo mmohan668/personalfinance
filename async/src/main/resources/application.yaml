@@ -1,5 +1,7 @@
 server:
   port: 1004
+  servlet:
+    context-path: /pf-async
 spring:
   application:
     name: async
