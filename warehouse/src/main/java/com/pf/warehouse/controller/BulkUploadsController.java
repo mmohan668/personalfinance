@@ -19,7 +19,7 @@ import java.io.IOException;
 
 @Slf4j
 @RestController
-@RequestMapping("/bulkupload")
+@RequestMapping("/api/bulkupload")
 @RequiredArgsConstructor
 public class BulkUploadsController {
     private final BulkUploadsService bulkUploadsService;

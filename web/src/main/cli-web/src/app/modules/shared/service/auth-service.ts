@@ -43,7 +43,7 @@ export class AuthService {
   }
 
   logout(passwordChange: boolean = false): void {
-    firstValueFrom(this.http.post<void>(`${this.config.configValue.apiUrl}/api/auth/logout`, {}))
+    firstValueFrom(this.http.post<void>(`${this.config.configValue.apiUrl}/auth/logout`, {}))
       .then(() => {
         localStorage.removeItem('authToken');
         localStorage.removeItem('userProfile');
@@ -60,22 +60,22 @@ export class AuthService {
 
   authenticate(request: LoginRequest): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(
-      `${this.config.configValue.apiUrl}/api/auth/login`,
+      `${this.config.configValue.apiUrl}/auth/login`,
       request,
     );
   }
 
   signUp(user: any): Observable<ApiResponse> {
-    return this.http.post<ApiResponse>(`${this.config.configValue.apiUrl}/api/auth/signUp`, user);
+    return this.http.post<ApiResponse>(`${this.config.configValue.apiUrl}/auth/signUp`, user);
   }
 
   getCaptcha(): Observable<CaptchaResponse> {
-    return this.http.get<CaptchaResponse>(`${this.config.configValue.apiUrl}/api/auth/captcha`);
+    return this.http.get<CaptchaResponse>(`${this.config.configValue.apiUrl}/auth/captcha`);
   }
 
   forgotPassword(request: ForgotPasswordRequest): Observable<ApiResponse> {
     return this.http.post<ApiResponse>(
-      `${this.config.configValue.apiUrl}/api/auth/forgot-password`,
+      `${this.config.configValue.apiUrl}/auth/forgot-password`,
       request,
     );
   }

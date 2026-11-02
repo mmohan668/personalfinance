@@ -26,12 +26,12 @@ files:
 
 bulk-upload:
   base-folder:
-    in-progress: E:/BulkUploads/in-progress
-    success: E:/BulkUploads/success
-    error: E:/BulkUploads/error
+    in-progress: E:/Files/bulk-uploads/in-progress
+    success: E:/Files/bulk-uploads/success
+    error: E:/Files/bulk-uploads/error
 
 export:
-  base-folder: E:/BulkExports
+  base-folder: E:/Files/bulk-exports
 
 app:
   activation-token:

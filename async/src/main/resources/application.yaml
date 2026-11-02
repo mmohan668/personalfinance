@@ -16,4 +16,4 @@ spring:
     broker-url: tcp://localhost:61616
 
 export:
-  base-folder: E:/BulkExports
+  base-folder: E:/Files/bulk-exports

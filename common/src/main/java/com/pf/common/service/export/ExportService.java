@@ -151,4 +151,49 @@ public class ExportService extends BaseService {
         }
         return resolvedPath;
     }
+
+
+    public void deleteUserDirectory() throws IOException {
+        String username = fetchLoginUsername();
+
+        if (username == null || username.isBlank()) {
+            throw new IllegalArgumentException("Invalid username");
+        }
+
+        Path normalizedBasePath = basePath.toAbsolutePath().normalize();
+        Path userDirectory = normalizedBasePath.resolve(username).normalize();
+
+        // Prevent path traversal
+        if (userDirectory.equals(normalizedBasePath)
+                || !userDirectory.startsWith(normalizedBasePath)) {
+            throw new SecurityException("Invalid user directory path");
+        }
+
+        if (!Files.exists(userDirectory, LinkOption.NOFOLLOW_LINKS)) {
+            return;
+        }
+
+        Files.walkFileTree(userDirectory, new SimpleFileVisitor<>() {
+            @Override
+            public FileVisitResult visitFile(
+                    Path file, BasicFileAttributes attrs) throws IOException {
+                Files.delete(file);
+                return FileVisitResult.CONTINUE;
+            }
+
+            @Override
+            public FileVisitResult postVisitDirectory(
+                    Path dir, IOException exc) throws IOException {
+                if (exc != null) {
+                    throw exc;
+                }
+
+                Files.delete(dir);
+                return FileVisitResult.CONTINUE;
+            }
+        });
+
+        log.info("Deleted export directory for user: {}", username);
+    }
+
 }

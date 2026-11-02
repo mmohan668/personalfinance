@@ -20,7 +20,7 @@ export class AppConfigService {
   get configValue(): AppConfig {
     if (!this.appConfig) {
       return {
-        apiUrl: 'http://localhost:1003',
+        apiUrl: 'http://localhost:1003/api',
         environment: 'Dev',
         pageSizeOptions: [25, 50, 100],
         defaultPageSize: 25,
