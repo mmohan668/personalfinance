@@ -19,7 +19,6 @@
   font-size: 13px;
   color: #334155;
 
-  /* Override PrimeNG's header padding variable */
   --p-datatable-header-cell-padding: 1px 8px;
 
   .p-datatable-table {
@@ -27,9 +26,7 @@
     border-spacing: 0;
   }
 
-  /* ===========================
-     Column Headers
-  =========================== */
+  /* Column Headers */
 
   .p-datatable-thead > tr > th {
     padding: 1px 8px !important;
@@ -58,9 +55,7 @@
     background: #e8eef6;
   }
 
-  /* ===========================
-     Sort Header
-  =========================== */
+  /* Sort Header */
 
   .sort-header {
     display: flex;
@@ -86,9 +81,7 @@
     font-weight: 700;
   }
 
-  /* ===========================
-     Filter Header Cells
-  =========================== */
+  /* Filter Header Cells */
 
   .p-datatable-thead > tr > th:has(app-column-filter) {
     padding: 1px 8px !important;
@@ -147,9 +140,7 @@
     box-sizing: border-box;
   }
 
-  /* ===========================
-     Compact Data Rows
-  =========================== */
+  /* Compact Data Rows */
 
   .p-datatable-tbody > tr {
     height: 32px;
@@ -197,9 +188,7 @@
       inset 0 -1px 0 #bfdbfe;
   }
 
-  /* ===========================
-     Selection Checkbox Column
-  =========================== */
+  /* Selection Checkbox Column */
 
   .selection-column {
     width: 48px;
@@ -220,9 +209,7 @@
     --mdc-checkbox-state-layer-size: 32px;
   }
 
-  /* ===========================
-     Group Headers
-  =========================== */
+  /* Group Headers */
 
   .group-header {
     padding: 2px 4px !important;
@@ -244,9 +231,7 @@
     font-weight: 700;
   }
 
-  /* ===========================
-     Links and Downloads
-  =========================== */
+  /* Links and Downloads */
 
   .hyp-link {
     color: #4caf50;
@@ -274,41 +259,73 @@
     line-height: 16px;
   }
 
-  /* ===========================
-     Empty State
-  =========================== */
+  /* Empty State */
 
   .empty-message {
     padding: 0 !important;
-    text-align: center;
-    border-bottom: 0 !important;
+    text-align: center !important;
+    vertical-align: middle !important;
+    border: 0 !important;
+  }
+
+  .empty-message-row {
+    height: 140px !important;
+  }
+
+  .empty-message-row > td {
+    height: 140px !important;
+    min-height: 140px !important;
+    padding: 0 !important;
+    text-align: center !important;
+    vertical-align: middle !important;
+    border: 0 !important;
   }
 
   .empty-state {
-    display: flex;
-    min-height: 140px;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    min-height: 140px !important;
+    height: 140px !important;
+    gap: 6px !important;
+    margin: 0 !important;
+    padding: 12px !important;
+    box-sizing: border-box !important;
+    text-align: center !important;
     color: #64748b;
   }
 
-  .empty-state mat-icon {
-    width: 32px;
-    height: 32px;
-    color: #94a3b8;
-    font-size: 32px;
+  .empty-state > mat-icon {
+    display: block !important;
+    flex: 0 0 32px !important;
+    width: 32px !important;
+    height: 32px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    color: #94a3b8 !important;
+    font-size: 32px !important;
+    line-height: 32px !important;
   }
 
-  .empty-state span {
-    color: #334155;
-    font-size: 13px;
-    font-weight: 600;
+  .empty-state > span {
+    display: block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    color: #334155 !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    line-height: 18px !important;
   }
 
-  .empty-state small {
-    font-size: 11px;
+  .empty-state > small {
+    display: block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    color: #64748b !important;
+    font-size: 11px !important;
+    line-height: 16px !important;
   }
 }
 
@@ -391,11 +408,11 @@
       height: 30px;
     }
 
-    .p-datatable-tbody > tr {
+    .p-datatable-tbody > tr:not(.empty-message-row) {
       height: 30px;
     }
 
-    .p-datatable-tbody > tr > td {
+    .p-datatable-tbody > tr:not(.empty-message-row) > td {
       padding: 3px 6px;
       height: 30px;
     }

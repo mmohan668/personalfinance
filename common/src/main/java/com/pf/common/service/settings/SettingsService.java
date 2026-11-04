@@ -1,7 +1,6 @@
 package com.pf.common.service.settings;
 
 import com.pf.common.dto.generic.ApiResponse;
-import com.pf.common.dto.gp.GridFilter;
 import com.pf.common.dto.gp.GridResult;
 import com.pf.common.dto.gp.GridSort;
 import com.pf.common.dto.gp.SearchCriteria;
@@ -30,17 +29,11 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static com.pf.common.constants.EntityConstants.*;
 import static com.pf.common.constants.FieldConstants.ID;
 import static com.pf.common.constants.FieldConstants.USER_ID;
-import static com.pf.common.enums.FilterOperator.EQUALS;
-import static com.pf.common.enums.SortOrder.ASC;
-
-import static com.pf.common.constants.EntityConstants.CREATED_BY_USER;
-import static com.pf.common.constants.EntityConstants.UPDATED_BY_USER;
-import static com.pf.common.constants.EntityConstants.REFERENCE_OBJECT;
-import static com.pf.common.constants.EntityConstants.USER;
-import static com.pf.common.constants.EntityConstants.CONFIG_VALUE;
 import static com.pf.common.enums.RefObjectNames.*;
+import static com.pf.common.enums.SortOrder.ASC;
 
 
 @Slf4j
@@ -79,12 +72,7 @@ public class SettingsService extends BaseService {
 
     public GridResult fetchReferenceValueGridData(SearchCriteria searchCriteria) {
         log.debug("fetchReferenceValuesGridData: {}", searchCriteria);
-        GridFilter gridFilter = GridFilter.builder()
-                .field(USER_ID)
-                .operator(EQUALS.getValue())
-                .value(String.valueOf(fetchAdminUserId()))
-                .build();
-        searchCriteria.getFilterList().add(gridFilter);
+        addAdminUserGridFilter(searchCriteria, USER_ID);
         searchCriteria.getSortList().add(new GridSort(ID, ASC.getValue()));
         searchCriteria.setFetchPaths(List.of(REFERENCE_OBJECT, USER, CREATED_BY_USER, UPDATED_BY_USER));
         searchCriteria.setFIELD_MAPPINGS(ReferenceValueDto.FIELD_MAPPINGS);
@@ -107,12 +95,7 @@ public class SettingsService extends BaseService {
 
     public GridResult fetchSystemConfigGridData(SearchCriteria searchCriteria) {
         log.debug("fetchSystemConfigGridData: {}", searchCriteria);
-        GridFilter gridFilter = GridFilter.builder()
-                .field(USER_ID)
-                .operator(EQUALS.getValue())
-                .value(String.valueOf(fetchAdminUserId()))
-                .build();
-        searchCriteria.getFilterList().add(gridFilter);
+        addAdminUserGridFilter(searchCriteria, USER_ID);
         searchCriteria.getSortList().add(new GridSort(ID, ASC.getValue()));
         searchCriteria.setFetchPaths(List.of(CONFIG_VALUE, CREATED_BY_USER, UPDATED_BY_USER));
         searchCriteria.setFIELD_MAPPINGS(SystemConfigDto.FIELD_MAPPINGS);

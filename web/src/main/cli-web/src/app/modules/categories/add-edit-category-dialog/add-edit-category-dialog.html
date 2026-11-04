@@ -1,9 +1,12 @@
 <div class="dialog-container" cdkDrag cdkDragRootElement=".cdk-overlay-pane">
   <!-- Title Bar -->
   <div class="dialog-title-bar" cdkDragHandle>
-    <span class="dialog-title">
-      {{ data.mode + ' Category' }}
-    </span>
+    <div class="dialog-heading">
+      <mat-icon class="dialog-heading-icon">category</mat-icon>
+      <span class="dialog-title">
+        {{ data.mode + ' Category' }}
+      </span>
+    </div>
   </div>
 
   <!-- Content -->

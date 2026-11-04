@@ -40,13 +40,6 @@ export class Categories {
   protected readonly gridExportFileName = GRID_EXPORT_FILE_NAMES.CATEGORIES_EFN;
   protected readonly dataKey = DATA_FIELDS.ID;
   protected readonly toolbaConfig!: ToolbarConfig;
-  protected readonly additionalFilters: GridFilter[] = [
-    {
-      field: DATA_FIELDS.USER_ID,
-      operator: FILTER_OPERATORS.EQUALS,
-      value: this._cs.loginUserId,
-    },
-  ];
   protected searchForm!: FormGroup;
 
   constructor() {

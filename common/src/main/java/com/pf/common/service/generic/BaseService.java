@@ -1,7 +1,9 @@
 package com.pf.common.service.generic;
 
 import com.pf.common.dto.generic.ApiResponse;
+import com.pf.common.dto.gp.GridFilter;
 import com.pf.common.dto.gp.GridResult;
+import com.pf.common.dto.gp.SearchCriteria;
 import com.pf.common.entity.userManagement.User;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -10,7 +12,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import static com.pf.common.constants.FieldConstants.USER_ID;
+import static com.pf.common.enums.FilterOperator.EQUALS;
 
 @Service
 public class BaseService extends GenericCriteriaService {
@@ -109,6 +115,19 @@ public class BaseService extends GenericCriteriaService {
 
     public User fetchAdminUser() {
         return entityManager.getReference(User.class, fetchAdminUserId());
+    }
+
+    public void addAdminUserGridFilter(SearchCriteria searchCriteria, String fieldName) {
+        if (searchCriteria.getFilterList() == null) {
+            searchCriteria.setFilterList(new ArrayList<>());
+        }
+        searchCriteria.getFilterList().add(
+                GridFilter.builder()
+                        .field(fieldName)
+                        .operator(EQUALS.getValue())
+                        .value(String.valueOf(fetchAdminUserId()))
+                        .build()
+        );
     }
 
 }

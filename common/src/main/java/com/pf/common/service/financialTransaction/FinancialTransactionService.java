@@ -24,6 +24,8 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Locale;
 
+import static com.pf.common.constants.FieldConstants.ADMIN_USER_ID;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -34,6 +36,7 @@ public class FinancialTransactionService extends BaseService {
 
     @Transactional
     public GridResult fetchFinancialTransactionGridData(SearchCriteria searchCriteria) {
+        addAdminUserGridFilter(searchCriteria, ADMIN_USER_ID);
         log.debug("fetchFinancialTransactionGridData: searchCriteria: {}", searchCriteria);
         long totalRecords = 0;
         if (!searchCriteria.isLoadAllData()) {

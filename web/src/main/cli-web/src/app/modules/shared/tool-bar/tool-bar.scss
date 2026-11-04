@@ -1,3 +1,7 @@
+/* ==========================================
+   TOOLBAR CONTAINER
+========================================== */
+
 .table-toolbar {
   display: flex;
   justify-content: flex-end;
@@ -5,24 +9,39 @@
   flex-wrap: wrap;
   gap: 8px;
   padding: 2px 12px;
+  box-sizing: border-box;
 }
 
-/* Base Toolbar Button */
+/* ==========================================
+   BASE TOOLBAR BUTTON
+========================================== */
+
 .table-toolbar .toolbar-border {
-  display: block;
-  align-items: center;
-  justify-content: center;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 
-  width: 32px;
-  height: 32px;
+  width: 32px !important;
+  min-width: 32px !important;
+  height: 32px !important;
+  min-height: 32px !important;
 
-  border: 1px solid #4caf50;
-  border-radius: 2px;
+  padding: 0 !important;
+  margin: 0 !important;
 
-  background: #ffffff;
-  color: #4caf50;
+  box-sizing: border-box !important;
+
+  border: 1px solid #4caf50 !important;
+  border-radius: 2px !important;
+
+  background: #ffffff !important;
+  color: #4caf50 !important;
+
+  line-height: 1 !important;
 
   box-shadow: 0 1px 2px rgb(15 23 42 / 5%);
+
+  vertical-align: middle;
 
   transition:
     background-color 180ms ease,
@@ -30,35 +49,70 @@
     border-color 180ms ease,
     box-shadow 180ms ease,
     transform 180ms ease;
-
-  mat-icon {
-    color: #4caf50;
-    width: 20px;
-    height: 20px;
-    font-size: 20px;
-    line-height: 20px;
-  }
-
-  &:hover {
-    background: #e8f5e9;
-    color: #4caf50;
-    border-color: #4caf50;
-    box-shadow: 0 3px 8px rgb(37 99 235 / 10%);
-    transform: translateY(-1px);
-  }
-
-  &:active {
-    transform: translateY(0);
-    box-shadow: none;
-  }
-
-  &:focus-visible {
-    outline: 2px solid #60a5fa;
-    outline-offset: 2px;
-  }
 }
 
-/* Toolbar Hover Effects */
+/* ==========================================
+   TOOLBAR ICONS
+========================================== */
+
+.table-toolbar .toolbar-border > mat-icon {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  width: 20px !important;
+  min-width: 20px !important;
+  height: 20px !important;
+
+  padding: 0 !important;
+  margin: 0 !important;
+
+  color: #4caf50 !important;
+
+  font-size: 20px !important;
+  line-height: 20px !important;
+
+  text-align: center !important;
+
+  flex-shrink: 0;
+}
+
+/* ==========================================
+   HOVER
+========================================== */
+
+.table-toolbar .toolbar-border:hover {
+  background: #e8f5e9 !important;
+  color: #4caf50 !important;
+  border-color: #4caf50 !important;
+
+  box-shadow: 0 3px 8px rgb(37 99 235 / 10%);
+
+  transform: translateY(-1px);
+}
+
+/* ==========================================
+   ACTIVE
+========================================== */
+
+.table-toolbar .toolbar-border:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+/* ==========================================
+   FOCUS
+========================================== */
+
+.table-toolbar .toolbar-border:focus-visible {
+  outline: 2px solid #60a5fa;
+  outline-offset: 2px;
+}
+
+/* ==========================================
+   TOOLBAR HOVER EFFECTS
+========================================== */
+
 .table-toolbar button[title='Refresh']:hover,
 .table-toolbar button[title='Add']:hover,
 .table-toolbar button[title='Copy']:hover,
@@ -69,12 +123,15 @@
 .table-toolbar button[title='Grid Settings']:hover,
 .table-toolbar button[title='Export']:hover,
 .table-toolbar button[title='Column Chooser']:hover {
-  color: #4caf50;
-  background: #e8f5e9;
-  border-color: #81c784;
+  color: #4caf50 !important;
+  background: #e8f5e9 !important;
+  border-color: #81c784 !important;
 }
 
-/* Menus */
+/* ==========================================
+   MENUS
+========================================== */
+
 .settings-menu,
 .export-menu,
 .column-menu {
@@ -83,7 +140,10 @@
   box-shadow: 0 8px 24px rgb(15 23 42 / 12%);
 }
 
-/* Menu Items */
+/* ==========================================
+   MENU ITEMS
+========================================== */
+
 .settings-menu .mat-mdc-menu-item,
 .export-menu .mat-mdc-menu-item,
 .column-menu .mat-mdc-menu-item {
@@ -94,12 +154,19 @@
   width: calc(100% - 12px);
 }
 
-/* Menu Icons */
+/* ==========================================
+   MENU ICONS
+========================================== */
+
 .settings-menu mat-icon,
 .export-menu mat-icon,
 .column-menu mat-icon {
   color: #64748b;
 }
+
+/* ==========================================
+   EXPORT IMAGES
+========================================== */
 
 .menu-icon {
   width: 18px;
@@ -123,20 +190,22 @@
 }
 
 /* Search Input */
+
 .column-search input[matInput] {
   padding-right: 8px;
 }
 
 /* ==========================================
-   CLEAR SEARCH BUTTON - UPDATED
+   CLEAR SEARCH BUTTON
 ========================================== */
 
 .column-search .clear-search {
   display: inline-flex !important;
-  align-items: center;
-  justify-content: center;
+  align-items: center !important;
+  justify-content: center !important;
+
   cursor: pointer;
-  /* Circular button */
+
   width: 32px !important;
   min-width: 32px !important;
   height: 32px !important;
@@ -146,14 +215,12 @@
 
   border-radius: 50% !important;
 
-  background: #fff;
+  background: #ffffff !important;
+  border: 1px solid #4caf50 !important;
 
-  border: 1px solid #4caf50;
-
-  line-height: normal !important;
+  line-height: 1 !important;
 
   flex-shrink: 0;
-
   box-sizing: border-box;
 
   transition:
@@ -161,48 +228,56 @@
     color 180ms ease,
     border-color 180ms ease,
     transform 180ms ease;
-
-  mat-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    width: 18px;
-    height: 18px;
-
-    font-size: 18px;
-    line-height: 18px;
-
-    color: #4caf50;
-  }
-
-  &:hover {
-    background: #e8f5e9;
-  }
-
-  &:active {
-    transform: scale(0.94);
-  }
-
-  &:focus-visible {
-    outline: 2px solid #60a5fa;
-    outline-offset: 2px;
-  }
 }
 
-/* Select All */
+.column-search .clear-search mat-icon {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  width: 18px !important;
+  height: 18px !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  font-size: 18px !important;
+  line-height: 18px !important;
+
+  color: #4caf50 !important;
+}
+
+.column-search .clear-search:hover {
+  background: #e8f5e9 !important;
+}
+
+.column-search .clear-search:active {
+  transform: scale(0.94);
+}
+
+.column-search .clear-search:focus-visible {
+  outline: 2px solid #60a5fa;
+  outline-offset: 2px;
+}
+
+/* ==========================================
+   SELECT ALL
+========================================== */
+
 .select-all {
   padding: 8px 12px;
   border-bottom: 1px solid #e2e8f0;
   margin-bottom: 4px;
 }
 
-/* Menu Item Height */
+/* ==========================================
+   MENU ITEM HEIGHT AND ICONS
+========================================== */
+
 .mat-mdc-menu-item {
   min-height: 32px;
 }
 
-/* Menu Item Icons */
 .mat-mdc-menu-item .mat-icon {
   color: #4caf50;
 }
@@ -217,9 +292,21 @@
     padding: 8px;
   }
 
+  /* Keep toolbar buttons at 32 x 32px */
   .table-toolbar .toolbar-border {
-    width: 36px;
-    height: 36px;
+    width: 32px !important;
+    min-width: 32px !important;
+    height: 32px !important;
+    min-height: 32px !important;
+  }
+
+  /* Keep toolbar icons at 20 x 20px */
+  .table-toolbar .toolbar-border > mat-icon {
+    width: 20px !important;
+    min-width: 20px !important;
+    height: 20px !important;
+    font-size: 20px !important;
+    line-height: 20px !important;
   }
 
   .column-search {
@@ -230,12 +317,14 @@
     width: 30px !important;
     min-width: 30px !important;
     height: 30px !important;
-
     margin-right: 6px !important;
   }
 }
 
-/* Reduced Motion */
+/* ==========================================
+   REDUCED MOTION
+========================================== */
+
 @media (prefers-reduced-motion: reduce) {
   .table-toolbar .toolbar-border,
   .column-search .clear-search {

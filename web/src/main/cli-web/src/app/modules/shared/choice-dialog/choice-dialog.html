@@ -4,10 +4,6 @@
     <span class="dialog-title">
       {{ data.title }}
     </span>
-
-    <button mat-icon-button type="button" aria-label="Close" (click)="dialogRef.close(false)">
-      <span class="material-icons">close</span>
-    </button>
   </div>
 
   <!-- Content -->
@@ -27,7 +23,25 @@
 
   <!-- Actions -->
   <mat-dialog-actions class="dialog-actions">
-    <button mat-raised-button type="button" [disabled]="!selectedAnswer" (click)="submit()">
+    <button
+      mat-icon-button
+      type="button"
+      class="dialog-cancel-button"
+      aria-label="Close"
+      (click)="dialogRef.close(false)"
+    >
+      <mat-icon>close</mat-icon>
+      Close
+    </button>
+    <span class="action-spacer"></span>
+    <button
+      mat-raised-button
+      type="button"
+      class="dialog-save-button"
+      [disabled]="!selectedAnswer"
+      (click)="submit()"
+    >
+      <mat-icon>check_circle</mat-icon>
       Submit
     </button>
   </mat-dialog-actions>

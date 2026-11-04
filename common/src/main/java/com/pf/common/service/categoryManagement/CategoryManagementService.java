@@ -27,9 +27,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static com.pf.common.constants.EntityConstants.REFERENCE_VALUE;
-import static com.pf.common.constants.EntityConstants.CREATED_BY_USER;
-import static com.pf.common.constants.EntityConstants.UPDATED_BY_USER;
+import static com.pf.common.constants.EntityConstants.*;
+import static com.pf.common.constants.FieldConstants.ADMIN_USER_ID;
+import static com.pf.common.constants.FieldConstants.USER_ID;
 
 @Slf4j
 @Service
@@ -45,6 +45,7 @@ public class CategoryManagementService extends BaseService {
     @Transactional
     public GridResult fetchCategoriesGridData(SearchCriteria searchCriteria) {
         log.debug("fetchCategoriesGridData: {}", searchCriteria);
+        addAdminUserGridFilter(searchCriteria, USER_ID);
         searchCriteria.setFetchPaths(List.of(REFERENCE_VALUE, CREATED_BY_USER, UPDATED_BY_USER));
         searchCriteria.setFIELD_MAPPINGS(UserCategoryDto.FIELD_MAPPINGS);
         long totalRecords = 0;
@@ -67,6 +68,7 @@ public class CategoryManagementService extends BaseService {
     @Transactional
     public GridResult fetchSubcategoriesGridData(SearchCriteria searchCriteria) {
         log.debug("fetchSubcategoriesGridData: {}", searchCriteria);
+        addAdminUserGridFilter(searchCriteria, ADMIN_USER_ID);
         long totalRecords = 0;
         if (!searchCriteria.isLoadAllData()) {
             totalRecords = getCountBySearchCriteria(

@@ -250,6 +250,7 @@ app-root {
 
 .p-datatable-tbody > tr > td {
   padding: 0px 14px !important;
+  color: #6f7279 !important;
 
   .hyp-link {
     color: #4caf50 !important;
@@ -523,6 +524,7 @@ app-root {
   overflow: hidden;
   box-shadow: 0 12px 35px rgba(15, 23, 42, 0.12);
   box-sizing: border-box;
+  font-family: 'Roboto', sans-serif;
 }
 
 /* ==========================================
@@ -599,7 +601,7 @@ app-root {
 ========================================== */
 
 .dialog-content {
-  padding: 26px 24px 20px;
+  padding: 20px 24px 10px;
   background: #ffffff;
   border-radius: 0 !important;
 }
@@ -839,10 +841,6 @@ app-root {
     font-size: 16px;
   }
 
-  .dialog-content {
-    padding: 18px 14px;
-  }
-
   .dialog-form {
     grid-template-columns: 1fr;
     gap: 12px;
@@ -908,4 +906,89 @@ app-root {
 /* All buttons inside dialogs */
 .mat-mdc-dialog-container button {
   border-radius: 0 !important;
+}
+
+.dialog-message {
+  color: #6f7279;
+}
+
+/* ==========================================
+   PrimeNG TABLE - EMPTY STATE
+   Global styles.scss
+========================================== */
+
+/* Empty message row */
+tr.empty-message-row {
+  height: 140px !important;
+}
+
+tr.empty-message-row > td.empty-message {
+  height: 140px !important;
+  min-height: 140px !important;
+  padding: 0 !important;
+  text-align: left !important;
+  vertical-align: middle !important;
+  border: 0 !important;
+}
+
+/* Empty state layout */
+.empty-state {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  justify-content: center !important;
+
+  width: 100% !important;
+  height: 140px !important;
+  min-height: 140px !important;
+
+  margin: 0 !important;
+  padding: 12px 50px !important;
+  box-sizing: border-box !important;
+
+  gap: 6px !important;
+  text-align: left !important;
+}
+
+/* Empty state icon */
+.empty-state > mat-icon {
+  display: block !important;
+  flex: 0 0 32px !important;
+
+  width: 32px !important;
+  height: 32px !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  color: #94a3b8 !important;
+  font-size: 32px !important;
+  line-height: 32px !important;
+}
+
+/* Empty state title */
+.empty-state > span {
+  display: block !important;
+  width: auto !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  color: #334155 !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  line-height: 18px !important;
+}
+
+/* Empty state description */
+.empty-state > small {
+  display: block !important;
+  width: auto !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  color: #64748b !important;
+  font-size: 11px !important;
+  line-height: 16px !important;
 }

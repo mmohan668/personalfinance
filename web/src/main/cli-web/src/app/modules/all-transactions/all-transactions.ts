@@ -55,13 +55,6 @@ export class AllTransactions {
   locations = signal<string[]>([]);
   categoryNames = signal<string[]>([]);
   subcategoryNames = signal<string[]>([]);
-  protected readonly additionalFilters: GridFilter[] = [
-    {
-      field: DATA_FIELDS.ADMIN_USER_ID,
-      operator: FILTER_OPERATORS.EQUALS,
-      value: this._cs.loginUserId,
-    },
-  ];
 
   constructor() {
     this.toolbarConfig = this._cs.toolbarConfigExcludeActivateInactivate();

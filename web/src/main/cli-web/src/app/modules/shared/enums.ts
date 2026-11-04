@@ -133,7 +133,7 @@ export enum DATA_FIELDS {
 }
 
 export enum ENTITIES {
-  REFERENCE_VALUE = 'referenceValue',
+  REFERENCE_VALUE = 'userReferenceValue',
   USER_CATEGORY = 'userCategory',
   USER_SUBCATEGORY = 'userSubCategory',
 }

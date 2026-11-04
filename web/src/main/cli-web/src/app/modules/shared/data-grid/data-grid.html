@@ -192,8 +192,9 @@
           </tr>
         </ng-template>
 
+        <!-- Empty message -->
         <ng-template #emptymessage>
-          <tr>
+          <tr class="empty-message-row">
             <td
               [attr.colspan]="visibleColumns.length + (enableSelection ? 1 : 0)"
               class="empty-message"
@@ -201,7 +202,7 @@
               <div class="empty-state">
                 <mat-icon>inbox</mat-icon>
                 <span>No records found</span>
-                <small>Try adjusting your filters or refreshing the grid.</small>
+                <small> Try adjusting your filters or refreshing the grid. </small>
               </div>
             </td>
           </tr>
@@ -209,6 +210,7 @@
       </p-table>
     }
   </div>
+
   @if (showPager) {
     <div class="grid-footer">
       <span>Total Records: {{ totalRecords }}</span>

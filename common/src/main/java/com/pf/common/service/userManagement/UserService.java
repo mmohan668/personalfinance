@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Locale;
 
 import static com.pf.common.constants.EntityConstants.ADMIN_USER;
+import static com.pf.common.constants.FieldConstants.ADMIN_USER_ID;
 import static com.pf.common.constants.FieldConstants.ID;
 import static com.pf.common.enums.SortOrder.ASC;
 
@@ -43,6 +44,7 @@ public class UserService extends BaseService {
 
     @Transactional
     public GridResult fetchUsersGridData(SearchCriteria searchCriteria) {
+        addAdminUserGridFilter(searchCriteria, ADMIN_USER_ID);
         log.debug("fetchUsersGridData: {}", searchCriteria);
         searchCriteria.getSortList().add(new GridSort(ID, ASC.getValue()));
         searchCriteria.setFetchPaths(List.of(ADMIN_USER));

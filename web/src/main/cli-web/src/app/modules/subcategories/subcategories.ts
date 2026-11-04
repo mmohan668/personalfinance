@@ -39,9 +39,7 @@ export class Subcategories {
   protected readonly gridExportFileName = GRID_EXPORT_FILE_NAMES.SUBCATEGORIES_EFN;
   protected readonly dataKey = DATA_FIELDS.ID;
   protected readonly toolbarConfig: ToolbarConfig;
-  protected readonly additionalFilters: GridFilter[] = [
-    { field: DATA_FIELDS.ADMIN_USER_ID, operator: FILTER_OPERATORS.EQUALS, value: this._cs.loginUserId },
-  ];
+  
   protected searchForm!: FormGroup;
   fieldCount = 4;
 

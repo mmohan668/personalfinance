@@ -36,13 +36,7 @@ export class BulkUpload {
   protected selectedUploadType = '';
   protected selectedFile: File | null = null;
   protected fileError = '';
-  protected readonly additionalFilters: GridFilter[] = [
-    {
-      field: DATA_FIELDS.USER_ID,
-      operator: FILTER_OPERATORS.EQUALS,
-      value: this._cs.loginUserId,
-    },
-  ];
+
   constructor() {
     this.toolbaConfig = this._cs.toolbarConfig();
     this.toolbaConfig.refresh = true;
