@@ -1,6 +1,6 @@
 package com.pf.common.entity.categoryManagement;
 
-import com.pf.common.entity.settings.ReferenceValue;
+import com.pf.common.entity.settings.UserReferenceValue;
 import com.pf.common.entity.userManagement.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -28,12 +28,12 @@ public class UserCategory {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "transaction_type", nullable = false)
-    private ReferenceValue referenceValue;
+    private UserReferenceValue userReferenceValue;
 
-    @Column(name = "category_name", nullable = false, length = 100)
+    @Column(name = "category_name", nullable = false)
     private String categoryName;
 
-    @Column(name = "category_description", length = 100)
+    @Column(name = "category_description")
     private String categoryDescription;
 
     @Column(name = "is_active", nullable = false)

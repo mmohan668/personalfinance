@@ -1,19 +1,18 @@
 <div class="dialog-container" cdkDrag cdkDragRootElement=".cdk-overlay-pane">
   <!-- Title Bar -->
   <div class="dialog-title-bar" cdkDragHandle>
-    <span class="dialog-title">
-      {{ data.mode + ' Category' }}
-    </span>
-
-    <button mat-icon-button type="button" aria-label="Close" (click)="dialogRef.close()">
-      <span class="material-icons">close</span>
-    </button>
+    <div class="dialog-heading">
+      <mat-icon class="dialog-heading-icon">category</mat-icon>
+      <span class="dialog-title">
+        {{ data.mode + ' Category' }}
+      </span>
+    </div>
   </div>
 
   <!-- Content -->
   <div class="dialog-content">
     <form [formGroup]="form" class="dialog-form">
-      <mat-form-field appearance="fill" class="dialog-field">
+      <mat-form-field appearance="outline" floatLabel="always" class="dialog-field">
         <mat-label>Transaction Type</mat-label>
 
         <mat-select formControlName="transactionType" name="transactionType">
@@ -31,7 +30,7 @@
         }
       </mat-form-field>
 
-      <mat-form-field appearance="fill" class="dialog-field">
+      <mat-form-field appearance="outline" floatLabel="always" class="dialog-field">
         <mat-label>Category Name</mat-label>
 
         <input matInput type="text" name="categoryName" formControlName="categoryName" />
@@ -43,7 +42,7 @@
         }
       </mat-form-field>
 
-      <mat-form-field appearance="fill" class="dialog-field">
+      <mat-form-field appearance="outline" floatLabel="always" class="dialog-field">
         <mat-label>Category Description</mat-label>
 
         <input
@@ -64,18 +63,31 @@
 
   <!-- Actions -->
   <mat-dialog-actions class="dialog-actions">
-    <button mat-stroked-button type="button" (click)="form.reset()">Reset</button>
+    <button mat-stroked-button type="button" class="dialog-reset-button" (click)="form.reset()">
+      <mat-icon>refresh</mat-icon>
+      Reset
+    </button>
 
     <span class="action-spacer"></span>
 
-    <button mat-stroked-button type="button" (click)="dialogRef.close()">Close</button>
+    <button
+      mat-stroked-button
+      type="button"
+      class="dialog-cancel-button"
+      (click)="dialogRef.close()"
+    >
+      <mat-icon>close</mat-icon>
+      Close
+    </button>
 
     <button
       mat-raised-button
       type="button"
+      class="dialog-save-button"
       [disabled]="form.invalid || form.pristine"
       (click)="save()"
     >
+      <mat-icon>save</mat-icon>
       Save
     </button>
   </mat-dialog-actions>

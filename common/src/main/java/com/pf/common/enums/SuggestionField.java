@@ -2,7 +2,7 @@ package com.pf.common.enums;
 
 import com.pf.common.entity.categoryManagement.UserCategory;
 import com.pf.common.entity.categoryManagement.UserSubcategory;
-import com.pf.common.entity.settings.ReferenceValue;
+import com.pf.common.entity.settings.UserReferenceValue;
 import com.pf.common.entity.userManagement.User;
 import lombok.Getter;
 
@@ -13,7 +13,7 @@ public enum SuggestionField {
 
     REFERENCE_VALUE(
             EntityName.REFERENCE_VALUE.getValue(),
-            ReferenceValue.class,
+            UserReferenceValue.class,
             QueryType.ENTITY
     ),
     USER_CATEGORY(

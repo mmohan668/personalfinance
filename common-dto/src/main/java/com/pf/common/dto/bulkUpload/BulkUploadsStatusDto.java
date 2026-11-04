@@ -13,7 +13,7 @@ import java.util.Map;
 @Builder
 public class BulkUploadsStatusDto extends BaseDto {
     public static final Map<String, String> FIELD_MAPPINGS = Map.of(
-            CREATED_BY, CREATED_BY_USERNAME
+            CREATED_BY, CREATED_BY_USERNAME, USER_ID, USER__ID
     );
     private Long id;
     private String uploadType;

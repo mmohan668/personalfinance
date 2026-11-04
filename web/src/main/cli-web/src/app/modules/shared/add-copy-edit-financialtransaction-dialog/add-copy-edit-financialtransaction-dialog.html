@@ -1,21 +1,29 @@
 <div class="dialog-container" cdkDrag cdkDragRootElement=".cdk-overlay-pane">
   <!-- Title Bar -->
   <div class="dialog-title-bar" cdkDragHandle>
-    <span class="dialog-title">
-      {{ data.mode + ' Expense' }}
-    </span>
-
-    <button mat-icon-button type="button" aria-label="Close" (click)="dialogRef.close()">
-      <span class="material-icons">close</span>
-    </button>
+    <div class="dialog-heading">
+      <mat-icon class="dialog-heading-icon">receipt_long</mat-icon>
+      <span class="dialog-title">
+        {{
+          data.mode +
+            (this.transactionType
+              ? ' ' +
+                this.transactionType
+                  .toLowerCase()
+                  .split('_')
+                  .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                  .join('')
+              : ' Financial Transaction')
+        }}
+      </span>
+    </div>
   </div>
 
   <!-- Content -->
   <div class="dialog-content">
     <form [formGroup]="form" class="dialog-form">
-      <mat-form-field appearance="fill" class="dialog-field">
+      <mat-form-field appearance="outline" floatLabel="always" class="dialog-field">
         <mat-label>Transaction Date</mat-label>
-
         <input
           matInput
           [matDatepicker]="expenseDatePicker"
@@ -23,9 +31,7 @@
           [max]="maxDate"
           formControlName="transactionDate"
         />
-
         <mat-datepicker-toggle matIconSuffix [for]="expenseDatePicker"> </mat-datepicker-toggle>
-
         <mat-datepicker #expenseDatePicker></mat-datepicker>
 
         @if (_cs.isInvalid(form.get('transactionDate'))) {
@@ -34,9 +40,9 @@
           </mat-error>
         }
       </mat-form-field>
-      <mat-form-field appearance="fill" class="dialog-field">
-        <mat-label>Amount</mat-label>
 
+      <mat-form-field appearance="outline" floatLabel="always" class="dialog-field">
+        <mat-label>Amount</mat-label>
         <input
           matInput
           type="text"
@@ -45,17 +51,16 @@
           inputmode="decimal"
           (input)="_cs.onAmountInput($event, 'amount', form)"
         />
-
         @if (_cs.isInvalid(form.get('amount'))) {
           <mat-error>
             {{ _cs.getValidationMessage(form.get('amount'), 'Amount') }}
           </mat-error>
         }
       </mat-form-field>
-      @if (data.allTransactions) {
-        <mat-form-field appearance="fill" class="dialog-field">
-          <mat-label>Transaction Type</mat-label>
 
+      @if (data.allTransactions) {
+        <mat-form-field appearance="outline" floatLabel="always" class="dialog-field">
+          <mat-label>Transaction Type</mat-label>
           <mat-select
             #transactionType
             formControlName="transactionType"
@@ -76,9 +81,9 @@
           }
         </mat-form-field>
       }
-      <mat-form-field appearance="fill" class="dialog-field">
-        <mat-label>Category</mat-label>
 
+      <mat-form-field appearance="outline" floatLabel="always" class="dialog-field">
+        <mat-label>Category</mat-label>
         <mat-select
           #category
           formControlName="category"
@@ -99,9 +104,8 @@
         }
       </mat-form-field>
 
-      <mat-form-field appearance="fill" class="dialog-field">
+      <mat-form-field appearance="outline" floatLabel="always" class="dialog-field">
         <mat-label>Subcategory</mat-label>
-
         <mat-select formControlName="subcategory" name="subcategory">
           @for (item of subcategories(); track item.value) {
             <mat-option [value]="item.value">
@@ -117,9 +121,8 @@
         }
       </mat-form-field>
 
-      <mat-form-field appearance="fill" class="dialog-field">
+      <mat-form-field appearance="outline" floatLabel="always" class="dialog-field">
         <mat-label>Location</mat-label>
-
         <mat-select formControlName="location" name="location">
           @for (item of locations(); track item.value) {
             <mat-option [value]="item.value">
@@ -127,6 +130,7 @@
             </mat-option>
           }
         </mat-select>
+
         @if (_cs.isNotNull(form.get('location')?.value)) {
           <button
             mat-icon-button
@@ -140,15 +144,16 @@
             <mat-icon>close</mat-icon>
           </button>
         }
+
         @if (_cs.isInvalid(form.get('location'))) {
           <mat-error>
             {{ _cs.getValidationMessage(form.get('location'), 'location') }}
           </mat-error>
         }
       </mat-form-field>
-      <mat-form-field appearance="fill" class="dialog-field">
-        <mat-label>Remarks</mat-label>
 
+      <mat-form-field appearance="outline" floatLabel="always" class="dialog-field">
+        <mat-label>Remarks</mat-label>
         <input matInput type="text" name="remarks" formControlName="remarks" />
 
         @if (_cs.isInvalid(form.get('remarks'))) {
@@ -162,18 +167,36 @@
 
   <!-- Actions -->
   <mat-dialog-actions class="dialog-actions">
-    <button mat-stroked-button type="button" (click)="form.reset(); fetchdropdowns()">Reset</button>
+    <button
+      mat-stroked-button
+      type="button"
+      class="dialog-reset-button"
+      (click)="form.reset(); fetchdropdowns()"
+    >
+      <mat-icon>refresh</mat-icon>
+      Reset
+    </button>
 
     <span class="action-spacer"></span>
 
-    <button mat-stroked-button type="button" (click)="dialogRef.close()">Close</button>
+    <button
+      mat-stroked-button
+      type="button"
+      class="dialog-cancel-button"
+      (click)="dialogRef.close()"
+    >
+      <mat-icon>close</mat-icon>
+      Close
+    </button>
 
     <button
       mat-raised-button
       type="button"
+      class="dialog-save-button"
       [disabled]="form.invalid || form.pristine"
       (click)="save()"
     >
+      <mat-icon>save</mat-icon>
       Save
     </button>
   </mat-dialog-actions>

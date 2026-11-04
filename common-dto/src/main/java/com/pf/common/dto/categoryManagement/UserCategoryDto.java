@@ -14,7 +14,7 @@ import java.util.Map;
 public class UserCategoryDto extends BaseDto {
 
     public static final Map<String, String> FIELD_MAPPINGS = Map.of(
-            TRANSACTION_TYPE, REFERENCE_VALUE_REFERENCE_CODE
+            TRANSACTION_TYPE, REFERENCE_VALUE_REFERENCE_CODE, USER_ID, USER__ID
     );
 
     private Long id;

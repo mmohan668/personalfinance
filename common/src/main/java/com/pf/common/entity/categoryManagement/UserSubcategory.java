@@ -23,10 +23,10 @@ public class UserSubcategory {
     @JoinColumn(name = "user_category_id", nullable = false)
     private UserCategory userCategory;
 
-    @Column(name = "subcategory_name", nullable = false, length = 100)
+    @Column(name = "subcategory_name", nullable = false)
     private String subcategoryName;
 
-    @Column(name = "subcategory_description", length = 100)
+    @Column(name = "subcategory_description")
     private String subcategoryDescription;
 
     @Column(name = "is_active", nullable = false)

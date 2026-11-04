@@ -7,24 +7,28 @@
       title="Refresh"
       (click)="refresh()"
     >
-      <mat-icon>refresh</mat-icon>
+      <mat-icon>autorenew</mat-icon>
     </button>
   }
+
   @if (toolbarConfig.addRow) {
     <button mat-icon-button class="toolbar-border" type="button" title="Add" (click)="addRow()">
       <mat-icon>add</mat-icon>
     </button>
   }
+
   @if (toolbarConfig.copyRow) {
     <button mat-icon-button class="toolbar-border" type="button" title="Copy" (click)="copyRow()">
       <mat-icon>file_copy</mat-icon>
     </button>
   }
+
   @if (toolbarConfig.editRow) {
     <button mat-icon-button class="toolbar-border" type="button" title="Edit" (click)="editRow()">
       <mat-icon>edit</mat-icon>
     </button>
   }
+
   @if (toolbarConfig.deleteRow) {
     <button
       mat-icon-button
@@ -36,6 +40,7 @@
       <mat-icon>delete</mat-icon>
     </button>
   }
+
   @if (toolbarConfig.activate) {
     <button
       mat-icon-button
@@ -70,11 +75,13 @@
     >
       <mat-icon>save</mat-icon>
     </button>
+
     <mat-menu #settingsMenu="matMenu" class="settings-menu">
       <button mat-menu-item type="button" (click)="saveGridSetting()">
         <mat-icon>save</mat-icon>
         <span>Save Grid Settings</span>
       </button>
+
       <button mat-menu-item type="button" (click)="resetGridSettings()">
         <mat-icon>restart_alt</mat-icon>
         <span>Reset Grid Settings</span>
@@ -98,6 +105,7 @@
         <img src="assets/icons/exportAll.png" class="menu-icon" alt="" />
         <span>Export All Data</span>
       </button>
+
       <button mat-menu-item type="button" (click)="exportExcel('SELECTED')">
         <img src="assets/icons/exportSelected.png" class="menu-icon" alt="" />
         <span>Export Selected Rows Data</span>
@@ -117,8 +125,9 @@
     </button>
 
     <mat-menu #columnMenu="matMenu" class="column-menu">
+      <!-- Column Search -->
       <div class="column-search" (click)="$event.stopPropagation()">
-        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-form-field appearance="outline" floatLabel="always" subscriptSizing="dynamic">
           <mat-label>Search columns</mat-label>
 
           <input
@@ -135,6 +144,8 @@
               matSuffix
               class="clear-search"
               type="button"
+              title="Clear search"
+              aria-label="Clear search"
               (click)="columnSearch = ''; $event.stopPropagation()"
             >
               <mat-icon>close</mat-icon>
@@ -143,6 +154,7 @@
         </mat-form-field>
       </div>
 
+      <!-- Select All -->
       @if (getColumns(searchInput.value).length > 0) {
         <div class="select-all" (click)="$event.stopPropagation()">
           <mat-checkbox
@@ -155,6 +167,7 @@
         </div>
       }
 
+      <!-- Column List -->
       @for (col of getColumns(searchInput.value); track col.field) {
         <button
           mat-menu-item

@@ -26,5 +26,5 @@ public class GridPersonalization {
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "GRID_COLUMN", nullable = false, columnDefinition = "jsonb")
-    private String gridColumnJson; // store JSON as String, or use JsonNode if using Hibernate Types
+    private String gridColumnJson;
 }

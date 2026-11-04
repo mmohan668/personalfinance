@@ -2,7 +2,7 @@ import { HttpInterceptorFn, HttpResponse } from '@angular/common/http';
 import { tap } from 'rxjs';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
-  const token = localStorage.getItem('authToken');
+  const token = sessionStorage.getItem('authToken');
 
   const authenticatedRequest = token
     ? req.clone({
@@ -17,7 +17,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
       if (event instanceof HttpResponse) {
         const renewedToken = event.headers.get('X-New-Access-Token');
         if (renewedToken) {
-          localStorage.setItem('authToken', renewedToken);
+          sessionStorage.setItem('authToken', renewedToken);
         }
       }
     }),

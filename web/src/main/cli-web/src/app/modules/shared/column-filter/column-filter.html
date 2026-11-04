@@ -1,5 +1,5 @@
 @if (column) {
-  <div class="column-filter">
+  <div class="column-filter" [class.between-active]="selectedOperator === FILTER_OPERATORS.BETWEEN">
     <button
       #operatorButton
       type="button"
@@ -37,7 +37,7 @@
                 placeholder="From"
                 [value]="filter.value"
                 (input)="onBetweenInput('from', $any($event.target).value)"
-                (onFocus)="menuOpen = false"
+                (focus)="menuOpen = false"
               />
             </div>
           }
@@ -63,7 +63,7 @@
                 placeholder="To"
                 [value]="filter.valueTo ?? ''"
                 (input)="onBetweenInput('to', $any($event.target).value)"
-                (onFocus)="menuOpen = false"
+                (focus)="menuOpen = false"
               />
             </div>
           }
@@ -149,19 +149,15 @@
             <span class="operator-option-symbol">
               {{ operator.icon }}
             </span>
-
-            <span>
-              {{ operator.label }}
-            </span>
+            <span>{{ operator.label }}</span>
           </button>
         }
 
         <div class="operator-separator"></div>
 
         <button type="button" class="operator-option reset-option" (click)="onReset()">
-          <span class="operator-option-symbol"> ↻ </span>
-
-          <span> Reset </span>
+          <span class="operator-option-symbol">↻</span>
+          <span>Reset</span>
         </button>
       </div>
     </ng-template>

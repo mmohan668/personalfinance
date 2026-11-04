@@ -85,7 +85,7 @@ export class Menu {
       children: [
         {
           label: 'System Config',
-          icon: 'tune',
+          icon: 'settings_applications',
           route: '/system-config',
         },
         {

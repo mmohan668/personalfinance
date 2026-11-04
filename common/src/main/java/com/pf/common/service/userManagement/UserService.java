@@ -7,11 +7,13 @@ import com.pf.common.dto.gp.SearchCriteria;
 import com.pf.common.dto.userManagement.UserDto;
 import com.pf.common.entity.userManagement.ProfilePicture;
 import com.pf.common.entity.userManagement.User;
+import com.pf.common.entity.userManagement.UserPasswordHistory;
 import com.pf.common.mapper.userManagement.UserMapper;
 import com.pf.common.repository.user.ProfilePictureRepository;
 import com.pf.common.repository.user.UserRepository;
 import com.pf.common.service.generic.BaseService;
 import com.pf.common.util.BatchUtils;
+import com.pf.common.util.PasswordUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -26,6 +28,7 @@ import java.util.List;
 import java.util.Locale;
 
 import static com.pf.common.constants.EntityConstants.ADMIN_USER;
+import static com.pf.common.constants.FieldConstants.ADMIN_USER_ID;
 import static com.pf.common.constants.FieldConstants.ID;
 import static com.pf.common.enums.SortOrder.ASC;
 
@@ -37,9 +40,11 @@ public class UserService extends BaseService {
     private final UserRepository userRepository;
     private final ProfilePictureRepository profilePictureRepository;
     private final ProfilePictureStorageService profilePictureStorageService;
+    private final UserPasswordHistoryService userPasswordHistoryService;
 
     @Transactional
     public GridResult fetchUsersGridData(SearchCriteria searchCriteria) {
+        addAdminUserGridFilter(searchCriteria, ADMIN_USER_ID);
         log.debug("fetchUsersGridData: {}", searchCriteria);
         searchCriteria.getSortList().add(new GridSort(ID, ASC.getValue()));
         searchCriteria.setFetchPaths(List.of(ADMIN_USER));
@@ -70,10 +75,15 @@ public class UserService extends BaseService {
                 return failure("Username is already in use");
             }
             User user = userMapper.toEntity(dto);
+            user.setPasswordHash(PasswordUtils.encode(dto.getPassword()));
             user.setAdminUser(fetchAdminUser());
             user.setIsAdminUser(Boolean.FALSE);
             user.setCreatedBy(fetchLoginUsername());
             userRepository.save(user);
+            userPasswordHistoryService.updatePasswordHistory(
+                    user,
+                    UserPasswordHistory.PasswordActionType.INITIAL
+            );
             log.debug("New user created {}", user.getUsername());
         } else {
             User user = userRepository.findById(dto.getId()).orElse(null);
@@ -120,8 +130,14 @@ public class UserService extends BaseService {
     public ApiResponse deleteUsers(List<Long> ids) {
         try {
             log.debug("deleteUsers: ids {}", ids);
-            BatchUtils.processInBatches(ids, userRepository::deleteAllByIdInBatch);
+            LocalDateTime deletedAT = LocalDateTime.now();
+            String deletedBy = fetchLoginUsername();
+            int count = BatchUtils.processBatchesAndSum(
+                    ids,
+                    chunk -> userRepository.deleteUsers(chunk, deletedBy, deletedAT)
+            );
             userRepository.flush();
+            log.debug("deleted User(s): count {}", count);
             return success("User(s) have been deleted successfully");
         } catch (DataIntegrityViolationException e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();

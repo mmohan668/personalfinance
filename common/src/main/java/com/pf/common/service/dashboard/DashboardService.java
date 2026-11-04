@@ -32,9 +32,9 @@ public class DashboardService extends BaseService {
                 .withDayOfMonth(1)
                 .minusMonths(11);
 
-        List<TransactionTotalProjection> transactionTotalProjections = financialTransactionRepository.fetchTransactionTotalProjection(from, to, fetchLoginUserId());
-        List<MonthlyTransactionTotalProjection> monthlyTransactionTotalProjections = financialTransactionRepository.fetchMonthlyTransactionTotalProjection(fromYear, today, fetchLoginUserId());
-        List<ExpenseByCategoryProjection> expenseProjections = financialTransactionRepository.fetchExpenseByCategory(from, to, fetchLoginUserId());
+        List<TransactionTotalProjection> transactionTotalProjections = financialTransactionRepository.fetchTransactionTotalProjection(from, to, fetchAdminUserId());
+        List<MonthlyTransactionTotalProjection> monthlyTransactionTotalProjections = financialTransactionRepository.fetchMonthlyTransactionTotalProjection(fromYear, today, fetchAdminUserId());
+        List<ExpenseByCategoryProjection> expenseProjections = financialTransactionRepository.fetchExpenseByCategory(from, to, fetchAdminUserId());
         log.info("Completed Fetching Dashboard Summary for year {} and month {}", year, month);
         return new DashboardSummary(transactionTotalProjections, expenseProjections, monthlyTransactionTotalProjections);
     }

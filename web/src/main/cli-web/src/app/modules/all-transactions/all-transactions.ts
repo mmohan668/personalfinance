@@ -55,13 +55,6 @@ export class AllTransactions {
   locations = signal<string[]>([]);
   categoryNames = signal<string[]>([]);
   subcategoryNames = signal<string[]>([]);
-  protected readonly additionalFilters: GridFilter[] = [
-    {
-      field: DATA_FIELDS.ADMIN_USER_ID,
-      operator: FILTER_OPERATORS.EQUALS,
-      value: this._cs.getUserProfile.adminUserId,
-    },
-  ];
 
   constructor() {
     this.toolbarConfig = this._cs.toolbarConfigExcludeActivateInactivate();
@@ -108,7 +101,7 @@ export class AllTransactions {
             field: DATA_FIELDS.CATEGORY_NAME,
             value: val,
             dependentField: DATA_FIELDS.USER_ID,
-            dependentValue: '2',
+            dependentValue: this._cs.loginUserId?.toString(),
           };
           firstValueFrom(this._ss.fetchSuggestion(suggestionRequest)).then((resp) => {
             this.categoryNames.set(resp);
@@ -125,7 +118,7 @@ export class AllTransactions {
             field: DATA_FIELDS.SUBCATEGORY_NAME,
             value: val,
             dependentField: DATA_FIELDS.USER_CATEGORY_USER_ID,
-            dependentValue: '2',
+            dependentValue: this._cs.loginUserId?.toString(),
           };
           firstValueFrom(this._ss.fetchSuggestion(suggestionRequest)).then((resp) => {
             this.subcategoryNames.set(resp);
@@ -159,13 +152,14 @@ export class AllTransactions {
   addRow = (): void => {
     this.dialog
       .open(AddCopyEditFinancialTransactionDialog, {
-        width: '70vw',
-        maxWidth: '70vw',
+        width: '95vw',
+        maxWidth: '1100px',
+        maxHeight: '90vh',
+        autoFocus: false,
         data: {
           mode: MODES.ADD,
           allTransactions: true,
         },
-        disableClose: true,
       })
       .afterClosed()
       .subscribe((value: any) => {

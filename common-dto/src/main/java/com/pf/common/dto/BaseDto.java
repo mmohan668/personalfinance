@@ -4,7 +4,7 @@ public class BaseDto {
     public static final String CREATED_BY = "createdBy";
     public static final String CREATED_BY_USERNAME = "createdBy.username";
     public static final String TRANSACTION_TYPE = "transactionType";
-    public static final String REFERENCE_VALUE_REFERENCE_CODE = "referenceValue.referenceCode";
+    public static final String REFERENCE_VALUE_REFERENCE_CODE = "userReferenceValue.referenceCode";
     public static final String UPDATED_BY = "updatedBy";
     public static final String UPDATED_BY_USERNAME = "updatedBy.username";
     public static final String REF_OBJ_NAME = "refObjName";

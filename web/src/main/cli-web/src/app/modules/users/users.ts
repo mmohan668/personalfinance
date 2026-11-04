@@ -37,9 +37,6 @@ export class Users {
   protected readonly gridExportFileName = GRID_EXPORT_FILE_NAMES.USERS_GRID_EFN;
   protected readonly dataKey = DATA_FIELDS.ID;
   protected readonly toolbaConfig!: ToolbarConfig;
-  protected readonly additionalFilters: GridFilter[] = [
-    { field: DATA_FIELDS.ADMIN_USER_ID, operator: FILTER_OPERATORS.EQUALS, value: 2 },
-  ];
 
   constructor() {
     this.toolbaConfig = this._cs.toolbarConfig(true);

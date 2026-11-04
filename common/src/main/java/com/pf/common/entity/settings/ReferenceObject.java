@@ -21,7 +21,7 @@ public class ReferenceObject {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "ref_obj_name", nullable = false, length = 100)
+    @Column(name = "ref_obj_name", nullable = false)
     private String refObjName;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

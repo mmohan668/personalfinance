@@ -15,7 +15,7 @@ export class Downloads {
   public readonly _cs = inject(CommonService);
   protected readonly _gs = inject(GridService);
 
-  protected readonly gridName = GRID_NAMES.DOWNLOADS;
+  protected readonly gridName = GRID_NAMES.DOWNLOADS_GRID;
   protected readonly dataKey = DATA_FIELDS.FILE_NAME;
   protected readonly toolbaConfig!: ToolbarConfig;
 

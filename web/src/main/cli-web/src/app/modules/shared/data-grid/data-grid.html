@@ -19,10 +19,11 @@
     [resetGridSettings]="resetGridSettings"
   ></app-tool-bar>
 
-  <div class="table-container">
+  <div class="table-container data-grid">
     @if (visibleColumns(); as visibleColumns) {
       <p-table
         #dataTable
+        styleClass="beautified-table"
         [value]="dataSource()"
         [dataKey]="dataKey"
         [rowGroupMode]="groupBy ? 'subheader' : undefined"
@@ -32,27 +33,23 @@
         [reorderableColumns]="true"
         [scrollable]="true"
         [scrollHeight]="scrollHeight + 'px'"
-        [tableStyle]="{
-          'min-width': '70rem',
-        }"
+        [tableStyle]="{ 'min-width': '70rem' }"
         (onSort)="onSort($event)"
         (onColReorder)="onColReorder($event)"
       >
         <ng-template #header>
-          <tr>
-            <!-- Selection header -->
+          <tr class="grid-header-row">
             @if (enableSelection) {
-              <th>
+              <th class="selection-column">
                 <mat-checkbox
                   aria-label="Select all rows"
                   [checked]="allRowsSelected()"
                   [indeterminate]="someRowsSelected()"
                   (change)="toggleAllRows($event.checked)"
-                >
-                </mat-checkbox>
+                ></mat-checkbox>
               </th>
             }
-            <!-- Data column headers -->
+
             @for (col of visibleColumns; track col.field) {
               <th
                 [pSortableColumn]="col.sortable !== false ? col.field : undefined"
@@ -62,27 +59,24 @@
                 pReorderableColumn
               >
                 <div class="sort-header">
-                  <span>
-                    {{ col.header }}
-                  </span>
+                  <span class="column-title">{{ col.header }}</span>
 
                   @if (col.sortable !== false) {
                     @if (getSortIcon(col.field); as sortIcon) {
-                      <span class="sort-icon">
-                        {{ sortIcon }}
-                      </span>
+                      <span class="sort-icon">{{ sortIcon }}</span>
                     }
                   }
                 </div>
               </th>
             }
           </tr>
+
           @if (hasFilterables()) {
             <tr class="filter-row">
-              <!-- Selection column spacer -->
-              <th class="selection-column"></th>
+              @if (enableSelection) {
+                <th class="selection-column"></th>
+              }
 
-              <!-- Filter columns -->
               @for (col of visibleColumns; track col.field) {
                 @if (col.filterable) {
                   <th
@@ -96,12 +90,11 @@
                       (valueChange)="applyFilter($event)"
                       (operatorChange)="changeOperator($event)"
                       [booleanOptions]="
-                        this.fetchBooleanOptions != undefined
+                        fetchBooleanOptions != undefined
                           ? fetchBooleanOptions(col)
                           : fetchDefaultBooleanOptions()
                       "
-                    >
-                    </app-column-filter>
+                    ></app-column-filter>
                   </th>
                 } @else {
                   <th></th>
@@ -113,47 +106,51 @@
 
         <ng-template #groupheader let-rowData>
           <tr pRowGroupHeader>
-            <td [attr.colspan]="visibleColumns.length + 1" class="group-header">
-              <strong>{{ getGroupColumnHeader() }}: </strong>{{ rowData[groupBy!] }}
+            <td
+              [attr.colspan]="visibleColumns.length + (enableSelection ? 1 : 0)"
+              class="group-header"
+            >
+              <span class="group-label">{{ getGroupColumnHeader() }}:</span>
+              <span class="group-value">{{ rowData[groupBy!] }}</span>
             </td>
           </tr>
         </ng-template>
 
         <ng-template #body let-row>
           <tr
+            class="grid-data-row"
             [class.selected-row]="isRowSelected(row)"
             [ngClass]="getTransactionRowClass(row)"
             (click)="onRowClick(row)"
           >
             @if (enableSelection) {
-              <!-- Row selection -->
-              <td>
+              <td class="selection-column">
                 <mat-checkbox
                   aria-label="Select row"
                   [checked]="isRowSelected(row)"
                   (click)="$event.stopPropagation()"
                   (change)="toggleRow(row, $event.checked)"
-                >
-                </mat-checkbox>
+                ></mat-checkbox>
               </td>
             }
-            <!-- Data columns -->
+
             @for (column of visibleColumns; track column.field) {
               <td
                 [ngStyle]="{
-                  'text-align': column.align,
+                  'text-align': column.align || 'left',
                   'width.px': column.width || 120,
                   'min-width.px': column.width || 120,
                   'max-width.px': 500,
                   'white-space': 'normal',
                   'overflow-wrap': 'anywhere',
-                  'word-break': 'break - word',
                 }"
               >
                 @if (column.cellTemplate === 'cellValueTemplate') {
                   {{ calculateCellValue(row, column) }}
                 } @else if (column.cellTemplate === 'titleCellTemplate') {
-                  <span [title]="fetchTitle(row, column)">{{ row[column.field] }}</span>
+                  <span [title]="fetchTitle(row, column)">
+                    {{ row[column.field] }}
+                  </span>
                 } @else if (column.cellTemplate === 'currencyCellTemplate') {
                   {{
                     row[column.field]
@@ -168,12 +165,13 @@
                     class="hyp-link"
                     href="javascript:void(0)"
                     (click)="$event.stopPropagation(); hyperlinkAction(row, column)"
-                    >{{ row[column.field] }}</a
                   >
+                    {{ row[column.field] }}
+                  </a>
                 } @else if (column.cellTemplate === 'downloadCellTemplate') {
                   @if (hasValue(row, column)) {
                     <a
-                      class="hyp-link"
+                      class="hyp-link download-link"
                       href="javascript:void(0)"
                       (click)="$event.stopPropagation(); downloadFile(row, column)"
                     >
@@ -194,16 +192,25 @@
           </tr>
         </ng-template>
 
+        <!-- Empty message -->
         <ng-template #emptymessage>
-          <tr>
-            <td [attr.colspan]="visibleColumns.length + 1" class="empty-message">
-              No records found.
+          <tr class="empty-message-row">
+            <td
+              [attr.colspan]="visibleColumns.length + (enableSelection ? 1 : 0)"
+              class="empty-message"
+            >
+              <div class="empty-state">
+                <mat-icon>inbox</mat-icon>
+                <span>No records found</span>
+                <small> Try adjusting your filters or refreshing the grid. </small>
+              </div>
             </td>
           </tr>
         </ng-template>
       </p-table>
     }
   </div>
+
   @if (showPager) {
     <div class="grid-footer">
       <span>Total Records: {{ totalRecords }}</span>

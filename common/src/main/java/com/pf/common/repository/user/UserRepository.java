@@ -56,6 +56,20 @@ public interface UserRepository extends JpaRepository<User, Long> {
             @Param("updatedAt") LocalDateTime updatedAt
     );
 
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("""
+            UPDATE User u
+            SET u.isDeleted = true, u.deletedBy = :deletedBy, u.deletedAT = :deletedAT
+            WHERE u.active = true
+            AND u.id <> u.adminUser.id
+            AND u.id IN (:ids)
+            """)
+    int deleteUsers(
+            @Param("ids") List<Long> ids,
+            @Param("deletedBy") String deletedBy,
+            @Param("deletedAT") LocalDateTime deletedAT
+    );
+
     @Transactional(readOnly = true)
     @Query("""
             SELECT COUNT(u) > 0

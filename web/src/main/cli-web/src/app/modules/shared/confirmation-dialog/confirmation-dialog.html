@@ -4,12 +4,6 @@
     <span class="dialog-title">
       {{ data.title }}
     </span>
-
-    @if (!data.isNotification) {
-      <button mat-icon-button type="button" aria-label="Close" (click)="dialogRef.close(false)">
-        <span class="material-icons">close</span>
-      </button>
-    }
   </div>
 
   <!-- Content -->
@@ -20,10 +14,35 @@
   <!-- Actions -->
   <mat-dialog-actions class="dialog-actions">
     @if (!data.isNotification) {
-      <button mat-stroked-button type="button" (click)="dialogRef.close(false)">No</button>
-      <button mat-raised-button type="button" (click)="dialogRef.close(true)">Yes</button>
+      <button
+        mat-stroked-button
+        type="button"
+        class="dialog-cancel-button"
+        (click)="dialogRef.close(false)"
+      >
+        <mat-icon>close</mat-icon>
+        No
+      </button>
+
+      <button
+        mat-raised-button
+        type="button"
+        class="dialog-save-button"
+        (click)="dialogRef.close(true)"
+      >
+        <mat-icon>check</mat-icon>
+        Yes
+      </button>
     } @else {
-      <button mat-raised-button type="button" (click)="dialogRef.close(true)">OK</button>
+      <button
+        mat-raised-button
+        type="button"
+        class="dialog-save-button"
+        (click)="dialogRef.close(true)"
+      >
+        <mat-icon>check_circle</mat-icon>
+        OK
+      </button>
     }
   </mat-dialog-actions>
 </div>

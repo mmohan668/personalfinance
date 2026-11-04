@@ -138,7 +138,7 @@ public class GenericCriteriaService {
          *
          * fetchPaths = ["createdBy"]
          *
-         * must still initialize ReferenceValue.createdBy.
+         * must still initialize UserReferenceValue.createdBy.
          */
         applyFetches(
                 root,

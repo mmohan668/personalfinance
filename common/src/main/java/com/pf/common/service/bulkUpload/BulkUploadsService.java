@@ -1,10 +1,11 @@
 package com.pf.common.service.bulkUpload;
 
+
 import com.pf.common.dto.bulkUpload.BulkUploadsStatusDto;
+import com.pf.common.dto.generic.ApiResponse;
 import com.pf.common.dto.gp.GridResult;
 import com.pf.common.dto.gp.SearchCriteria;
 import com.pf.common.entity.bulkUpload.BulkUploadsStatus;
-import com.pf.common.dto.generic.ApiResponse;
 import com.pf.common.entity.generic.TemplateName;
 import com.pf.common.mapper.bulkUpload.BulkUploadsStatusMapper;
 import com.pf.common.properties.BulkUploadProperties;
@@ -32,6 +33,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
+import static  com.pf.common.constants.FieldConstants.USER_ID;
 import static com.pf.common.enums.BulkUploadStatus.RECEIVED;
 
 @Slf4j
@@ -46,6 +48,7 @@ public class BulkUploadsService extends BaseService {
 
     public GridResult fetchBulkUploadStatusGridData(SearchCriteria searchCriteria) {
         log.debug("fetchBulkUploadStatusGridData: {}", searchCriteria);
+        addAdminUserGridFilter(searchCriteria, USER_ID);
         searchCriteria.setFIELD_MAPPINGS(BulkUploadsStatusDto.FIELD_MAPPINGS);
         long totalRecords = 0;
         if (!searchCriteria.isLoadAllData()) {

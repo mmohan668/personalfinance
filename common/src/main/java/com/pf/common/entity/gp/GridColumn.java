@@ -18,19 +18,19 @@ public class GridColumn {
     @JoinColumn(name = "GRID_NAME_ID", nullable = false)
     private GridName gridName;
 
-    @Column(name = "FIELD", nullable = false, length = 50)
+    @Column(name = "FIELD", nullable = false)
     private String field;
 
-    @Column(name = "HEADER", nullable = false, length = 100)
+    @Column(name = "HEADER", nullable = false)
     private String header;
 
-    @Column(name = "DATA_TYPE", nullable = false, length = 50)
+    @Column(name = "DATA_TYPE", nullable = false)
     private String dataType;
 
     @Column(name = "SORTABLE", nullable = false)
     private Boolean sortable;
 
-    @Column(name = "DEFAULT_SORT_ORDER", length = 5)
+    @Column(name = "DEFAULT_SORT_ORDER")
     private String defaultSortOrder;
 
     @Column(name = "FILTERABLE", nullable = false)
@@ -39,7 +39,7 @@ public class GridColumn {
     @Column(name = "EXPORTABLE", nullable = false)
     private Boolean exportable;
 
-    @Column(name = "DEFAULT_FILTER_OPERATOR", length = 30)
+    @Column(name = "DEFAULT_FILTER_OPERATOR")
     private String defaultFilterOperator;
 
     @Column(name = "WIDTH")
@@ -54,7 +54,7 @@ public class GridColumn {
     @Column(name = "VISIBLE_INDEX")
     private Integer visibleIndex;
 
-    @Column(name = "CELL_TEMPLATE", length = 100)
+    @Column(name = "CELL_TEMPLATE")
     private String cellTemplate;
 
     @Column(name = "SORT_INDEX")

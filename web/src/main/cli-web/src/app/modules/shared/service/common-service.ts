@@ -31,7 +31,7 @@ export class CommonService {
 
   private loadUserProfile(): UserProfile {
     try {
-      const profile = localStorage.getItem('userProfile');
+      const profile = sessionStorage.getItem('userProfile');
       return profile ? (JSON.parse(profile) as UserProfile) : ({} as UserProfile);
     } catch {
       return {} as UserProfile;
@@ -44,6 +44,18 @@ export class CommonService {
 
   get getUserProfile() {
     return this.userProfile();
+  }
+
+  get loginUserId() {
+    return this.userProfile().id;
+  }
+
+  get loginUsername() {
+    return this.userProfile().username;
+  }
+
+  get loginUserEmail() {
+    return this.userProfile().email;
   }
 
   isNotNull(value: any) {

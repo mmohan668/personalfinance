@@ -124,7 +124,7 @@ export class UserMenu implements OnInit {
   }
 
   loadProfilePicture() {
-    this._us.loadProfilePicture(this._cs.getUserProfile.username).subscribe({
+    this._us.loadProfilePicture(this._cs.loginUsername).subscribe({
       next: (blob: Blob) => {
         if (this.profilePictureUrl()) {
           URL.revokeObjectURL(this.profilePictureUrl());
