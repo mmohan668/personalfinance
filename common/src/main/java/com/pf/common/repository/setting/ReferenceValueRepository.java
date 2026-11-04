@@ -1,7 +1,7 @@
 package com.pf.common.repository.setting;
 
+import com.pf.common.entity.settings.UserReferenceValue;
 import com.pf.common.record.generic.SelectItem;
-import com.pf.common.entity.settings.ReferenceValue;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -13,13 +13,14 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
-public interface ReferenceValueRepository extends JpaRepository<ReferenceValue, Long> {
+public interface ReferenceValueRepository extends JpaRepository<UserReferenceValue, Long> {
 
     @Transactional(readOnly = true)
     @Query("""
-            SELECT count(rv) > 0 FROM ReferenceValue rv
-            WHERE rv.referenceObject.id = :refObjId
-            AND LOWER(TRIM(referenceCode)) = LOWER(TRIM(:refCode))
+            SELECT COUNT(urv) > 0
+            FROM UserReferenceValue urv
+            WHERE urv.referenceObject.id = :refObjId
+            AND LOWER(TRIM(urv.referenceCode)) = LOWER(TRIM(:refCode))
             """)
     boolean existsByReferenceObjectIdAndReferenceCode(
             @Param("refObjId") Long refObjId,
@@ -28,11 +29,12 @@ public interface ReferenceValueRepository extends JpaRepository<ReferenceValue, 
 
     @Transactional(readOnly = true)
     @Query("""
-            SELECT COUNT(rv) > 0
-            FROM ReferenceValue rv
-            WHERE rv.referenceObject.id = :refObjId
-            AND LOWER(TRIM(rv.referenceCode)) = LOWER(TRIM(:referenceCode)) AND rv.id <> :id
-            AND rv.user.id = :userId
+            SELECT COUNT(urv) > 0
+            FROM UserReferenceValue urv
+            WHERE urv.referenceObject.id = :refObjId
+            AND LOWER(TRIM(urv.referenceCode)) = LOWER(TRIM(:referenceCode))
+            AND urv.id <> :id
+            AND urv.user.id = :userId
             """)
     boolean existsByReferenceObjectIdAndReferenceCodeAndIdNot(
             @Param("refObjId") Long refObjId,
@@ -44,14 +46,14 @@ public interface ReferenceValueRepository extends JpaRepository<ReferenceValue, 
     @Transactional(readOnly = true)
     @Query("""
             SELECT new com.pf.common.record.generic.SelectItem(
-                        rv.id,
-                        rv.referenceCode || ' ~ '|| rv.referenceCodeDescription
+                        urv.id,
+                        urv.referenceCode || ' ~ ' || urv.referenceCodeDescription
             )
-            FROM ReferenceValue rv
-            WHERE rv.referenceObject.refObjName = :refObjName
-            AND rv.user.id = :userId
-            AND rv.active = true
-            ORDER BY LOWER(rv.referenceCode)
+            FROM UserReferenceValue urv
+            WHERE urv.referenceObject.refObjName = :refObjName
+            AND urv.user.id = :userId
+            AND urv.active = true
+            ORDER BY LOWER(urv.referenceCode)
             """)
     List<SelectItem> fetchReferenceValuesByRefObjName(
             @Param("refObjName") String refObjName,
@@ -60,12 +62,12 @@ public interface ReferenceValueRepository extends JpaRepository<ReferenceValue, 
 
     @Transactional(readOnly = true)
     @Query("""
-            SELECT rv.id
-            FROM ReferenceValue rv
-            WHERE rv.referenceCode = :referenceCode
-            AND rv.referenceObject.refObjName = :refObjName
-            AND rv.user.id = :userId
-            AND rv.active = true
+            SELECT urv.id
+            FROM UserReferenceValue urv
+            WHERE urv.referenceCode = :referenceCode
+            AND urv.referenceObject.refObjName = :refObjName
+            AND urv.user.id = :userId
+            AND urv.active = true
             """)
     Long fetchIdByReferenceCodeAndRefObjName(
             @Param("referenceCode") String referenceCode,
@@ -75,19 +77,21 @@ public interface ReferenceValueRepository extends JpaRepository<ReferenceValue, 
 
     @Transactional(readOnly = true)
     @Query("""
-            SELECT rv.referenceCode
-            FROM ReferenceValue rv
-            WHERE rv.referenceObject.refObjName = :refObjName
-            ORDER BY LOWER(rv.referenceCode)
+            SELECT urv.referenceCode
+            FROM UserReferenceValue urv
+            WHERE urv.referenceObject.refObjName = :refObjName
+            ORDER BY LOWER(urv.referenceCode)
             """)
     List<String> findReferenceCodeByRefObjName(@Param("refObjName") String refObjName);
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("""
-            UPDATE ReferenceValue rv
-            SET rv.active = true, rv.updatedBy.id = :updatedBy, rv.updatedAt = :updatedAt
-            WHERE rv.active = false
-            AND rv.id IN (:ids)
+            UPDATE UserReferenceValue urv
+            SET urv.active = true,
+                urv.updatedBy.id = :updatedBy,
+                urv.updatedAt = :updatedAt
+            WHERE urv.active = false
+            AND urv.id IN (:ids)
             """)
     int activateReferenceValues(
             @Param("ids") List<Long> ids,
@@ -97,10 +101,12 @@ public interface ReferenceValueRepository extends JpaRepository<ReferenceValue, 
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("""
-            UPDATE ReferenceValue rv
-            SET rv.active = false, rv.updatedBy.id = :updatedBy, rv.updatedAt = :updatedAt
-            WHERE rv.active = true
-            AND rv.id IN (:ids)
+            UPDATE UserReferenceValue urv
+            SET urv.active = false,
+                urv.updatedBy.id = :updatedBy,
+                urv.updatedAt = :updatedAt
+            WHERE urv.active = true
+            AND urv.id IN (:ids)
             """)
     int inactivateReferenceValues(
             @Param("ids") List<Long> ids,

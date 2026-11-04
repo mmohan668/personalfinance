@@ -19,17 +19,17 @@ public class SystemConfig {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "config_name", nullable = false, length = 100)
+    @Column(name = "config_name", nullable = false)
     private String configName;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "config_value", nullable = false)
-    private ReferenceValue configValue;
+    private UserReferenceValue configValue;
 
-    @Column(name = "description", nullable = false, length = 1000)
+    @Column(name = "description", nullable = false)
     private String description;
 
-    @Column(name = "user_id", nullable = false, length = 100)
+    @Column(name = "user_id", nullable = false)
     private Long userId;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

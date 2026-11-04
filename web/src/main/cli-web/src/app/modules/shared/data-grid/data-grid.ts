@@ -136,7 +136,7 @@ export class DataGrid implements OnInit {
     }
     this.loadGridColumns();
     if (!this.scrollHeight) {
-      this.scrollHeight = 480;
+      this.scrollHeight = 400;
     }
   }
 
@@ -150,7 +150,7 @@ export class DataGrid implements OnInit {
   }
 
   private fetchGridColumns(): void {
-    this._gs.loadGridColumns(this.gridName).subscribe((columns) => {
+    this._gs.loadGridColumns(this.gridName, this._cs.loginUserId as number).subscribe((columns) => {
       const normalizedColumns = columns.map((column) => ({
         ...column,
         visible: column.visible !== false,

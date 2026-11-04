@@ -40,7 +40,7 @@ export class BulkUpload {
     {
       field: DATA_FIELDS.USER_ID,
       operator: FILTER_OPERATORS.EQUALS,
-      value: 2,
+      value: this._cs.loginUserId,
     },
   ];
   constructor() {

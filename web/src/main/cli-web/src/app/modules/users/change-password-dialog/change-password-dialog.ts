@@ -84,7 +84,7 @@ export class ChangePasswordDialog {
     }
 
     const payload = {
-      userId: this._cs.getUserProfile.id, // Use the logged-in user's actual ID
+      userId: this._cs.loginUserId, // Use the logged-in user's actual ID
       currentPassword: this.currentPassword,
       newPassword: this.newPassword,
     };

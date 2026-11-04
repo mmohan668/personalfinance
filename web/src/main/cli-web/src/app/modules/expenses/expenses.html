@@ -1,27 +1,30 @@
-<div>
+<div class="search-section">
   <mat-expansion-panel class="search-panel" [expanded]="true">
     <mat-expansion-panel-header>
-      <mat-panel-title>Search Criteria</mat-panel-title>
+      <mat-panel-title>
+        <mat-icon class="search-title-icon">tune</mat-icon>
+        <span>Search Criteria</span>
+      </mat-panel-title>
     </mat-expansion-panel-header>
 
     <form [formGroup]="searchForm" (ngSubmit)="onSearch()">
       <div class="search-fields" [ngClass]="'fields-' + fieldCount">
-        <mat-form-field appearance="fill" subscriptSizing="dynamic">
+        <mat-form-field appearance="outline" floatLabel="always" subscriptSizing="dynamic">
           <mat-label>Category Name</mat-label>
           <input matInput type="text" formControlName="categoryName" />
         </mat-form-field>
 
-        <mat-form-field appearance="fill" subscriptSizing="dynamic">
+        <mat-form-field appearance="outline" floatLabel="always" subscriptSizing="dynamic">
           <mat-label>Subcategory Name</mat-label>
           <input matInput type="text" formControlName="subcategoryName" />
         </mat-form-field>
 
-        <mat-form-field appearance="fill" subscriptSizing="dynamic">
+        <mat-form-field appearance="outline" floatLabel="always" subscriptSizing="dynamic">
           <mat-label>Location</mat-label>
           <input matInput type="text" formControlName="location" />
         </mat-form-field>
 
-        <mat-form-field appearance="fill" class="dialog-field">
+        <mat-form-field appearance="outline" floatLabel="always" subscriptSizing="dynamic">
           <mat-label>Transaction From Date</mat-label>
 
           <input
@@ -48,7 +51,7 @@
           }
         </mat-form-field>
 
-        <mat-form-field appearance="fill" class="dialog-field">
+        <mat-form-field appearance="outline" floatLabel="always" subscriptSizing="dynamic">
           <mat-label>Transaction Thru Date</mat-label>
 
           <input
@@ -74,10 +77,19 @@
             </mat-error>
           }
         </mat-form-field>
-
+        <div></div>
+        <div></div>
+        <!-- Search and Clear Actions -->
         <div class="search-actions">
-          <button mat-raised-button color="primary" type="submit">Search</button>
-          <button mat-stroked-button type="button" (click)="resetSearchForm()">Clear</button>
+          <button mat-flat-button color="primary" type="submit" class="search-button">
+            <mat-icon>search</mat-icon>
+            Search
+          </button>
+
+          <button mat-stroked-button type="button" class="clear-button" (click)="resetSearchForm()">
+            <mat-icon>refresh</mat-icon>
+            Clear
+          </button>
         </div>
       </div>
     </form>

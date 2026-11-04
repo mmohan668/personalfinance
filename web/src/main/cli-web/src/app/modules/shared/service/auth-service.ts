@@ -30,23 +30,23 @@ export class AuthService {
   private _cs = inject(CommonService);
 
   isLoggedIn(): boolean {
-    return !!localStorage.getItem('authToken');
+    return !!sessionStorage.getItem('authToken');
   }
 
   storeToken(token: string): void {
-    localStorage.setItem('authToken', token);
+    sessionStorage.setItem('authToken', token);
   }
 
   storeUserInfo(userProfile: UserProfile): void {
-    localStorage.setItem('userProfile', JSON.stringify(userProfile));
+    sessionStorage.setItem('userProfile', JSON.stringify(userProfile));
     this._cs.setUserProfile(userProfile);
   }
 
   logout(passwordChange: boolean = false): void {
     firstValueFrom(this.http.post<void>(`${this.config.configValue.apiUrl}/auth/logout`, {}))
       .then(() => {
-        localStorage.removeItem('authToken');
-        localStorage.removeItem('userProfile');
+        sessionStorage.removeItem('authToken');
+        sessionStorage.removeItem('userProfile');
         if (!passwordChange) {
           this._ns.success('You have been logged out successfully.');
         }

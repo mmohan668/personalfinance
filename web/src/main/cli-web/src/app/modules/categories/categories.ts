@@ -41,7 +41,11 @@ export class Categories {
   protected readonly dataKey = DATA_FIELDS.ID;
   protected readonly toolbaConfig!: ToolbarConfig;
   protected readonly additionalFilters: GridFilter[] = [
-    { field: DATA_FIELDS.USER_ID, operator: FILTER_OPERATORS.EQUALS, value: 2 },
+    {
+      field: DATA_FIELDS.USER_ID,
+      operator: FILTER_OPERATORS.EQUALS,
+      value: this._cs.loginUserId,
+    },
   ];
   protected searchForm!: FormGroup;
 

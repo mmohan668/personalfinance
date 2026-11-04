@@ -8,12 +8,12 @@ import com.pf.common.exception.AuthenticationFailedException;
 import com.pf.common.repository.user.UserPasswordHistoryRepository;
 import com.pf.common.repository.user.UserRepository;
 import com.pf.common.service.generic.BaseService;
+import com.pf.common.util.PasswordUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,7 +31,7 @@ import java.util.List;
 public class AuthenticationService extends BaseService {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
+    private final UserPasswordHistoryService userPasswordHistoryService;
     private final UserPasswordHistoryRepository userPasswordHistoryRepository;
     @Value("${app.password.history-limit:5}")
     private int passwordHistoryLimit;
@@ -44,9 +44,9 @@ public class AuthenticationService extends BaseService {
                         new AuthenticationFailedException("Invalid username or password"));
 
         log.info("Password matches stored hash: {}",
-                passwordEncoder.matches(rawPassword, user.getPasswordHash()));
+                PasswordUtils.matches(rawPassword, user.getPasswordHash()));
 
-        if (!passwordEncoder.matches(rawPassword, user.getPasswordHash())) {
+        if (!PasswordUtils.matches(rawPassword, user.getPasswordHash())) {
             throw new AuthenticationFailedException("Invalid username or password");
         }
 
@@ -102,7 +102,7 @@ public class AuthenticationService extends BaseService {
         }
 
         // Verify the current password
-        if (!passwordEncoder.matches(
+        if (!PasswordUtils.matches(
                 changePassword.getCurrentPassword(),
                 user.getPasswordHash())) {
             return failure("Current password is incorrect");
@@ -116,7 +116,7 @@ public class AuthenticationService extends BaseService {
                                 PageRequest.of(0, passwordHistoryLimit));
 
         if (passwordHistoryList.stream().anyMatch(
-                p -> passwordEncoder.matches(
+                p -> PasswordUtils.matches(
                         changePassword.getNewPassword(),
                         p.getPasswordHash()))) {
             return failure(
@@ -126,23 +126,16 @@ public class AuthenticationService extends BaseService {
 
         // Encode once and reuse the encoded value
         String encodedPassword =
-                passwordEncoder.encode(changePassword.getNewPassword());
+                PasswordUtils.encode(changePassword.getNewPassword());
 
         user.setPasswordHash(encodedPassword);
         user.setUpdatedBy(fetchLoginUsername());
         user.setMustChangePassword(false);
         userRepository.save(user);
-
-        UserPasswordHistory history = new UserPasswordHistory();
-        history.setUser(user);
-        history.setPasswordHash(encodedPassword);
-        history.setActionType(
-                UserPasswordHistory.PasswordActionType.CHANGE);
-        history.setChangedAt(Instant.now());
-        history.setChangedBy(fetchLoginUsername());
-
-        userPasswordHistoryRepository.save(history);
-
+        userPasswordHistoryService.updatePasswordHistory(
+                user,
+                UserPasswordHistory.PasswordActionType.CHANGE
+        );
         return success("Password has been changed successfully. Please login again.");
     }
 }

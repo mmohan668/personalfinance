@@ -9,12 +9,12 @@ import com.pf.common.mapper.userManagement.UserMapper;
 import com.pf.common.repository.user.UserRepository;
 import com.pf.common.service.activeMQ.ActiveMqProducer;
 import com.pf.common.service.generic.BaseService;
+import com.pf.common.util.PasswordUtils;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.ParameterMode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,7 +35,6 @@ public class AccountRegistrationService extends BaseService {
     private final UserMapper userMapper;
     private final EntityManager entityManager;
     private final ActiveMqProducer activeMqProducer;
-    private final PasswordEncoder passwordEncoder;
 
     @Transactional
     public ApiResponse signUp(UserDto dto) {
@@ -55,7 +54,7 @@ public class AccountRegistrationService extends BaseService {
 
         User user = userMapper.toEntity(dto);
         user.setUsername(username);
-        user.setPasswordHash(passwordEncoder.encode(dto.getPassword()));
+        user.setPasswordHash(PasswordUtils.encode(dto.getPassword()));
         user.setIsAdminUser(Boolean.TRUE);
         user.setCreatedBy(SYSTEM);
         user.setMustChangePassword(false);

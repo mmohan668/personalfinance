@@ -28,10 +28,10 @@ public class ProfilePicture {
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
 
-    @Column(name = "image_path", nullable = false, length = 500)
+    @Column(name = "image_path", nullable = false)
     private String imagePath;
 
-    @Column(name = "content_type", length = 100)
+    @Column(name = "content_type")
     private String contentType;
 
     @Column(name = "file_size")

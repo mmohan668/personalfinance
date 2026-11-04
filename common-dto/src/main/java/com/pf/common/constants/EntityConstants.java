@@ -4,7 +4,7 @@ public interface EntityConstants {
     String REFERENCE_OBJECT = "referenceObject";
     String CREATED_BY_USER = "createdBy";
     String UPDATED_BY_USER = "updatedBy";
-    String REFERENCE_VALUE = "referenceValue";
+    String REFERENCE_VALUE = "userReferenceValue";
     String CONFIG_VALUE = "configValue";
     String USER = "user";
     String ADMIN_USER = "adminUser";

@@ -22,8 +22,8 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         message = 'Your session has expired. Please sign in again.';
 
         if (!req.url.includes('/api/auth/login')) {
-          localStorage.removeItem('authToken');
-          localStorage.removeItem('userProfile');
+          sessionStorage.removeItem('authToken');
+          sessionStorage.removeItem('userProfile');
           void router.navigate(['/login']);
         }
       } else if (error.status === 403) {

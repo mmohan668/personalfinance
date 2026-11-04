@@ -42,16 +42,16 @@
         <img
           class="user-avatar"
           [src]="profilePictureUrl() || 'assets/image.png'"
-          [alt]="_cs?.getUserProfile?.username || 'User profile'"
+          [alt]="_cs?.loginUsername || 'User profile'"
         />
 
         <span class="user-details">
           <span class="user-name">
-            {{ _cs?.getUserProfile?.username || 'User' }}
+            {{ _cs?.loginUsername || 'User' }}
           </span>
 
           <span class="user-email">
-            {{ _cs?.getUserProfile?.email || '' }}
+            {{ _cs?.loginUserEmail || '' }}
           </span>
         </span>
 
@@ -70,16 +70,16 @@
             <img
               class="dropdown-avatar"
               [src]="profilePictureUrl() || 'assets/image.png'"
-              [alt]="_cs?.getUserProfile?.username || 'User profile'"
+              [alt]="_cs?.loginUsername || 'User profile'"
             />
 
             <div class="dropdown-user-details">
               <strong>
-                {{ _cs?.getUserProfile?.username || 'User' }}
+                {{ _cs?.loginUsername || 'User' }}
               </strong>
 
               <small>
-                {{ _cs?.getUserProfile?.email || '' }}
+                {{ _cs?.loginUserEmail || '' }}
               </small>
 
               <!-- Edit profile picture -->

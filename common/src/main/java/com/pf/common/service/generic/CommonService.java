@@ -1,8 +1,8 @@
 package com.pf.common.service.generic;
 
 import com.pf.common.dto.generic.SystemConfigValue;
-import com.pf.common.entity.settings.ReferenceValue;
 import com.pf.common.entity.settings.SystemConfig;
+import com.pf.common.entity.settings.UserReferenceValue;
 import com.pf.common.repository.setting.SystemConfigRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,7 +20,7 @@ public class CommonService {
         List<SystemConfig> systemConfigList = systemConfigRepository.findAll();
         systemConfigList.forEach(systemConfig -> {
             if (systemConfig.getConfigName().equalsIgnoreCase(CURRENCY)) {
-                ReferenceValue currency = systemConfig.getConfigValue();
+                UserReferenceValue currency = systemConfig.getConfigValue();
                 systemConfigValue.setCurrencyCode(currency.getReferenceCode());
                 systemConfigValue.setLocale(currency.getReferenceCode2());
                 systemConfigValue.setDateFormat(currency.getReferenceCode3());

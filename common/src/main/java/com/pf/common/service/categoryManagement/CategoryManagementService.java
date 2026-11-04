@@ -8,7 +8,7 @@ import com.pf.common.dto.gp.SearchCriteria;
 import com.pf.common.entity.categoryManagement.SubcategoryView;
 import com.pf.common.entity.categoryManagement.UserCategory;
 import com.pf.common.entity.categoryManagement.UserSubcategory;
-import com.pf.common.entity.settings.ReferenceValue;
+import com.pf.common.entity.settings.UserReferenceValue;
 import com.pf.common.entity.userManagement.User;
 import com.pf.common.mapper.categoryManagement.SubcategoryViewMapper;
 import com.pf.common.mapper.categoryManagement.UserCategoryMapper;
@@ -87,11 +87,11 @@ public class CategoryManagementService extends BaseService {
     @Transactional
     public ApiResponse saveCategory(UserCategoryDto userCategoryDto) {
         log.debug("saveCategory: {}", userCategoryDto);
-        ReferenceValue referenceValue =
+        UserReferenceValue userReferenceValue =
                 referenceValueRepository.findById(userCategoryDto.getTransactionTypeId())
                         .orElse(null);
-        if (referenceValue == null) {
-            log.warn("saveCategory: referenceValue is null");
+        if (userReferenceValue == null) {
+            log.warn("saveCategory: userReferenceValue is null");
             return failure("Selected Transaction Type not found");
         }
         User user = fetchLoginUser();
@@ -112,7 +112,7 @@ public class CategoryManagementService extends BaseService {
                 return failure("Category already exists");
             }
             userCategory.setUser(user.getAdminUser());
-            userCategory.setReferenceValue(referenceValue);
+            userCategory.setUserReferenceValue(userReferenceValue);
             userCategoryRepository.save(userCategory);
         } else {
             log.warn("updateCategory: userCategoryDto = {}", userCategoryDto);
@@ -139,7 +139,7 @@ public class CategoryManagementService extends BaseService {
                 );
                 return failure("Category already exists");
             }
-            userCategory.setReferenceValue(referenceValue);
+            userCategory.setUserReferenceValue(userReferenceValue);
             userCategory.setUser(user);
             userCategory.setCategoryName(userCategoryDto.getCategoryName());
             userCategory.setCategoryDescription(userCategoryDto.getCategoryDescription());

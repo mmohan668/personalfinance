@@ -24,7 +24,7 @@ public class BulkUploadsStatus {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column(name = "upload_type", nullable = false, length = 100)
+    @Column(name = "upload_type", nullable = false)
     private String uploadType;
 
     @Column(name = "uploaded_file", nullable = false)
@@ -34,7 +34,7 @@ public class BulkUploadsStatus {
     @JoinColumn(name = "template_name", nullable = false)
     private TemplateName templateName;
 
-    @Column(name = "status", nullable = false, length = 100)
+    @Column(name = "status", nullable = false)
     private String status;
 
     @Column(name = "error_file", nullable = false)

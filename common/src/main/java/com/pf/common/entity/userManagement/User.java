@@ -31,10 +31,10 @@ public class User {
     @JoinColumn(name = "admin_user_id")
     private User adminUser;
 
-    @Column(name = "username", nullable = false, unique = true, length = 100)
+    @Column(name = "username", nullable = false, unique = true)
     private String username;
 
-    @Column(name = "display_name", nullable = false, unique = true, length = 100)
+    @Column(name = "display_name", nullable = false, unique = true)
     private String displayName;
 
     @Column(name = "email", nullable = false)
@@ -62,6 +62,15 @@ public class User {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @Column(name = "is_deleted")
+    private Boolean isDeleted;
+
+    @Column(name = "deleted_by")
+    private String deletedBy;
+
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAT;
+
     @Formula("CASE WHEN admin_user_id = id THEN true ELSE false END")
     private Boolean isAdminUser;
 
@@ -69,6 +78,7 @@ public class User {
     public void prePersist() {
         this.active = false;
         this.createdAt = LocalDateTime.now();
+        this.isDeleted = false;
     }
 
     @PreUpdate

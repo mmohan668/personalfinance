@@ -29,6 +29,9 @@ export class AddEditUserDialog {
 
   public readonly confirmPasswordMatcher = new ConfirmPasswordErrorMatcher();
 
+  showPassword = false;
+  showConfirmPassword = false;
+
   constructor() {
     this.createForm();
   }
@@ -116,6 +119,8 @@ export class AddEditUserDialog {
   }
 
   save(): void {
+    this.showPassword = false;
+    this.showConfirmPassword = false;
     const user: any = {
       id: this.data.mode === MODES.EDIT ? this.data.selectedRow.id : null,
       username: this.data.mode === MODES.ADD ? this.form.value.username.trim() : null,

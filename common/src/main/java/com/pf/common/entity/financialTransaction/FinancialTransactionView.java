@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @Setter
 @Entity
 @Immutable
-@Table(name = "v_financial_transactions")
+@Table(name = "vw_financial_transactions")
 public class FinancialTransactionView {
 
     @Id

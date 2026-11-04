@@ -19,7 +19,7 @@ public interface UserCategoryRepository extends JpaRepository<UserCategory, Long
     @Query("""
             SELECT COUNT(uc) > 0
             FROM UserCategory uc
-            WHERE uc.referenceValue.id = :transactionType
+            WHERE uc.userReferenceValue.id = :transactionType
             AND LOWER(TRIM(uc.categoryName)) =LOWER(TRIM(:categoryName))
             AND uc.user.adminUser.id = :userId
             """)
@@ -33,7 +33,7 @@ public interface UserCategoryRepository extends JpaRepository<UserCategory, Long
     @Query("""
             SELECT COUNT(uc) > 0
             FROM UserCategory uc
-            WHERE uc.referenceValue.id = :transactionType
+            WHERE uc.userReferenceValue.id = :transactionType
             AND LOWER(TRIM(uc.categoryName)) =LOWER(TRIM(:categoryName))
             AND uc.user.adminUser.id = :userId
             AND uc.id <> :id
@@ -79,7 +79,7 @@ public interface UserCategoryRepository extends JpaRepository<UserCategory, Long
             )
             FROM UserCategory uc
             WHERE uc.user.adminUser.id = :adminUserId
-            AND uc.referenceValue.id = :referenceValueId
+            AND uc.userReferenceValue.id = :referenceValueId
             AND uc.active = true
             ORDER BY LOWER(uc.categoryName)
             """)
@@ -96,7 +96,7 @@ public interface UserCategoryRepository extends JpaRepository<UserCategory, Long
             )
             FROM UserCategory uc
             WHERE uc.user.adminUser.id = :adminUserId
-            AND uc.referenceValue.referenceCode = :referenceCode
+            AND uc.userReferenceValue.referenceCode = :referenceCode
             AND uc.active = true
             ORDER BY LOWER(uc.categoryName)
             """)
@@ -108,7 +108,7 @@ public interface UserCategoryRepository extends JpaRepository<UserCategory, Long
     @Transactional(readOnly = true)
     @Query("""
             SELECT new com.pf.common.record.generic.SelectItem(
-                        referenceValue.referenceCode,
+                        userReferenceValue.referenceCode,
                         uc.categoryName
             )
             FROM UserCategory uc
@@ -132,7 +132,7 @@ public interface UserCategoryRepository extends JpaRepository<UserCategory, Long
     @Query("""
             SELECT COUNT(uc) > 0
             FROM UserCategory uc
-            WHERE uc.referenceValue.id IN (:ids)
+            WHERE uc.userReferenceValue.id IN (:ids)
             """)
     boolean existsByReferenceValueIdIn(@Param("ids") List<Long> referenceValueIds);
 }

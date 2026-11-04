@@ -1,0 +1,401 @@
+:host {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.column-filter {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+/* Shared filter controls */
+.filter-control {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+
+  input[pInputText] {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    height: 30px;
+    min-height: 30px;
+    box-sizing: border-box;
+    font-size: 13px;
+  }
+}
+
+/* Operator button inside the field, on the left */
+.column-filter > .operator-button {
+  position: relative;
+  flex: 0 0 24px;
+  width: 24px;
+  height: 30px;
+  margin: 0 -24px 0 0;
+  padding: 0;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 0;
+  outline: none;
+  background: transparent;
+  box-shadow: none;
+  color: #64748b;
+  cursor: pointer;
+
+  &:hover,
+  &:focus,
+  &:active,
+  &.active {
+    background: transparent;
+    box-shadow: none;
+    color: #2563eb;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #93c5fd;
+    outline-offset: -2px;
+    border-radius: 4px;
+  }
+
+  .operator-symbol {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    line-height: 1;
+  }
+}
+
+/* Filter content fills the available width */
+.column-filter > .filter-control,
+.column-filter > .between-filter {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* Regular text and number inputs */
+.column-filter
+  > .filter-control:not(.date-filter-control):not(.boolean-filter-control)
+  input[pInputText] {
+  padding: 0 10px 0 30px;
+}
+
+/* Standard DatePicker */
+.date-filter-control {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  height: 30px;
+  box-sizing: border-box;
+
+  p-datepicker {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    height: 30px;
+    box-sizing: border-box;
+  }
+}
+
+:host ::ng-deep .date-filter-control .p-datepicker {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-width: 0;
+  height: 30px;
+  min-height: 30px;
+  box-sizing: border-box;
+}
+
+:host ::ng-deep .date-filter-control .p-datepicker-input {
+  display: block;
+  flex: 1 1 auto;
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  min-height: 0;
+  box-sizing: border-box;
+  padding: 0 4px 0 30px;
+  font-size: 13px;
+}
+
+:host ::ng-deep .date-filter-control .p-datepicker-dropdown {
+  display: inline-flex;
+  flex: 0 0 28px;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  min-width: 28px;
+  max-width: 28px;
+  height: 100%;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  border: none;
+  background: transparent;
+  color: #94a3b8;
+}
+
+/* Boolean select */
+.boolean-filter-control {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  height: 30px;
+  box-sizing: border-box;
+
+  p-select {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    height: 30px;
+    box-sizing: border-box;
+  }
+}
+
+:host ::ng-deep .boolean-filter-control .p-select {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-width: 0;
+  height: 30px;
+  min-height: 30px;
+  box-sizing: border-box;
+}
+
+:host ::ng-deep .boolean-filter-control .p-select-label {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  padding: 0 34px 0 30px;
+  box-sizing: border-box;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 13px;
+}
+
+:host ::ng-deep .boolean-filter-control .p-select-dropdown {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  min-width: 30px;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  border: none;
+  background: transparent;
+  z-index: 1;
+}
+
+/* =========================================================
+   BETWEEN FILTERS
+   ========================================================= */
+
+.between-filter {
+  display: block;
+  flex: 1 1 auto;
+  width: calc(100% - 24px);
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.between-inputs {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+/* Both BETWEEN fields grow equally.
+   Date fields retain a minimum width of 150px. */
+.between-inputs > .filter-control,
+.between-inputs > .filter-control.date-filter-control {
+  display: block;
+  flex: 1 1 0;
+  width: auto;
+  min-width: 0;
+  max-width: none;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+/* Minimum width for each BETWEEN date field */
+.between-inputs > .date-filter-control {
+  flex: 1 0 150px;
+  width: 150px;
+  min-width: 150px;
+  max-width: none;
+}
+
+/* Text and number fields */
+.between-inputs input[pInputText] {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  height: 30px;
+  min-height: 30px;
+  padding: 0 6px;
+  box-sizing: border-box;
+  font-size: 12px;
+}
+
+/* BETWEEN DatePicker host wrapper */
+:host ::ng-deep .between-inputs p-datepicker {
+  display: block;
+  width: 100% !important;
+  min-width: 150px !important;
+  max-width: 100%;
+  height: 30px;
+  box-sizing: border-box;
+}
+
+/* DatePicker outer container */
+:host ::ng-deep .between-inputs .p-datepicker {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100% !important;
+  min-width: 150px !important;
+  max-width: 100% !important;
+  height: 30px;
+  min-height: 30px;
+  box-sizing: border-box;
+}
+
+/* Selected date input */
+:host ::ng-deep .between-inputs .p-datepicker-input {
+  display: block;
+  flex: 1 1 auto;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100%;
+  height: 100%;
+  min-height: 0;
+  margin: 0;
+  padding: 0 30px 0 6px;
+  box-sizing: border-box;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 12px;
+}
+
+/* First date field: reserve space for the operator icon */
+:host ::ng-deep .between-inputs > .date-filter-control:first-child .p-datepicker-input {
+  padding-left: 30px;
+  padding-right: 30px;
+}
+
+/* Calendar button stays inside the DatePicker */
+:host ::ng-deep .between-inputs .p-datepicker-dropdown {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  min-width: 28px;
+  max-width: 28px;
+  height: 100%;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  border: none;
+  background: transparent;
+  color: #94a3b8;
+}
+
+/* Validation error */
+.between-error {
+  margin-top: 4px;
+  color: #dc2626;
+  font-size: 11px;
+  line-height: 1.3;
+}
+
+/* Operator dropdown overlay */
+.operator-menu {
+  position: relative;
+  min-width: 180px;
+  padding: 4px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 6px 18px rgb(15 23 42 / 12%);
+  z-index: 1000;
+}
+
+.operator-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 2px 10px;
+  border: none;
+  border-radius: 5px;
+  background: transparent;
+  color: #334155;
+  text-align: left;
+  font-size: 13px;
+  cursor: pointer;
+
+  &:hover {
+    background: #f1f5f9;
+  }
+
+  &.selected {
+    background: #e8f5e9;
+    color: #4caf50;
+    font-weight: 500;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #93c5fd;
+    outline-offset: -2px;
+  }
+}
+
+.operator-option-symbol {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  flex-shrink: 0;
+  font-size: 14px;
+}
+
+.operator-separator {
+  height: 1px;
+  margin: 4px 0;
+  background: #e2e8f0;
+}
+
+.reset-option {
+  color: #64748b;
+}

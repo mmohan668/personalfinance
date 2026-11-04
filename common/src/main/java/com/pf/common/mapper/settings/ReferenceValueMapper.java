@@ -1,7 +1,7 @@
 package com.pf.common.mapper.settings;
 
 import com.pf.common.dto.settings.ReferenceValueDto;
-import com.pf.common.entity.settings.ReferenceValue;
+import com.pf.common.entity.settings.UserReferenceValue;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -13,13 +13,13 @@ public interface ReferenceValueMapper {
     @Mapping(target = "refObjNameId", source = "referenceObject.id")
     @Mapping(target = "createdBy", source = "createdBy.username")
     @Mapping(target = "updatedBy", source = "updatedBy.username")
-    ReferenceValueDto toDto(ReferenceValue entity);
+    ReferenceValueDto toDto(UserReferenceValue entity);
 
     @Mapping(target = "createdBy", ignore = true)
     @Mapping(target = "updatedBy", ignore = true)
     @Mapping(target = "user", ignore = true)
-    ReferenceValue toEntity(ReferenceValueDto dto);
+    UserReferenceValue toEntity(ReferenceValueDto dto);
 
-    List<ReferenceValueDto> toDtoList(List<ReferenceValue> entityList);
+    List<ReferenceValueDto> toDtoList(List<UserReferenceValue> entityList);
 
 }

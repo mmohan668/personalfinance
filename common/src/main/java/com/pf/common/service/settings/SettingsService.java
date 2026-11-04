@@ -9,8 +9,8 @@ import com.pf.common.dto.settings.ReferenceObjectDto;
 import com.pf.common.dto.settings.ReferenceValueDto;
 import com.pf.common.dto.settings.SystemConfigDto;
 import com.pf.common.entity.settings.ReferenceObject;
-import com.pf.common.entity.settings.ReferenceValue;
 import com.pf.common.entity.settings.SystemConfig;
+import com.pf.common.entity.settings.UserReferenceValue;
 import com.pf.common.entity.userManagement.User;
 import com.pf.common.mapper.settings.ReferenceObjectMapper;
 import com.pf.common.mapper.settings.ReferenceValueMapper;
@@ -91,7 +91,7 @@ public class SettingsService extends BaseService {
         long totalRecords = 0;
         if (!searchCriteria.isLoadAllData()) {
             totalRecords = getCountBySearchCriteria(
-                    ReferenceValue.class,
+                    UserReferenceValue.class,
                     searchCriteria
             );
             if (totalRecords == 0) {
@@ -99,7 +99,7 @@ public class SettingsService extends BaseService {
             }
         }
         List<ReferenceValueDto> recordDetails = referenceValueMapper.toDtoList(
-                getDataBySearchCriteria(ReferenceValue.class, searchCriteria)
+                getDataBySearchCriteria(UserReferenceValue.class, searchCriteria)
         );
         log.debug("fetchReferenceValuesGridData: totalRecords: {}", totalRecords);
         return gridResult(totalRecords, recordDetails);
@@ -144,28 +144,28 @@ public class SettingsService extends BaseService {
             );
             return failure("Reference object not found.");
         }
-        ReferenceValue referenceValue;
+        UserReferenceValue userReferenceValue;
         if (referenceValueDto.getId() == null) {
             //Create
-            referenceValue = referenceValueMapper.toEntity(referenceValueDto);
-            referenceValue.setReferenceObject(referenceObject);
+            userReferenceValue = referenceValueMapper.toEntity(referenceValueDto);
+            userReferenceValue.setReferenceObject(referenceObject);
             if (referenceValueRepository.existsByReferenceObjectIdAndReferenceCode(
                     referenceObject.getId(),
-                    referenceValue.getReferenceCode())
+                    userReferenceValue.getReferenceCode())
             ) {
                 log.warn(
                         "Reference code already exists for the selected reference object. refObjName = {}, referenceCode = {}",
                         referenceObject.getRefObjName(),
-                        referenceValue.getReferenceCode()
+                        userReferenceValue.getReferenceCode()
                 );
                 return failure("Reference code already exists for the selected reference object.");
             }
-            referenceValue.setUser(user.getAdminUser());
-            referenceValue.setCreatedBy(user);
+            userReferenceValue.setUser(user.getAdminUser());
+            userReferenceValue.setCreatedBy(user);
         } else {
             //Update
-            referenceValue = referenceValueRepository.findById(referenceValueDto.getId()).orElse(null);
-            if (referenceValue == null) {
+            userReferenceValue = referenceValueRepository.findById(referenceValueDto.getId()).orElse(null);
+            if (userReferenceValue == null) {
                 log.warn(
                         "saveReferenceValue: Reference value not found. referenceValueId = {}",
                         referenceValueDto.getId()
@@ -175,7 +175,7 @@ public class SettingsService extends BaseService {
             if (referenceValueRepository.existsByReferenceObjectIdAndReferenceCodeAndIdNot(
                     referenceObject.getId(),
                     referenceValueDto.getReferenceCode(),
-                    referenceValue.getId(),
+                    userReferenceValue.getId(),
                     fetchAdminUserId())
             ) {
                 log.warn(
@@ -185,15 +185,15 @@ public class SettingsService extends BaseService {
                 );
                 return failure("Reference code already exists for the selected reference object.");
             }
-            referenceValue.setReferenceObject(referenceObject);
-            referenceValue.setReferenceCode(referenceValueDto.getReferenceCode());
-            referenceValue.setReferenceCodeDescription(referenceValueDto.getReferenceCodeDescription());
-            referenceValue.setReferenceCode2(referenceValueDto.getReferenceCode2());
-            referenceValue.setReferenceCode3(referenceValueDto.getReferenceCode3());
-            referenceValue.setUser(user.getAdminUser());
-            referenceValue.setUpdatedBy(user);
+            userReferenceValue.setReferenceObject(referenceObject);
+            userReferenceValue.setReferenceCode(referenceValueDto.getReferenceCode());
+            userReferenceValue.setReferenceCodeDescription(referenceValueDto.getReferenceCodeDescription());
+            userReferenceValue.setReferenceCode2(referenceValueDto.getReferenceCode2());
+            userReferenceValue.setReferenceCode3(referenceValueDto.getReferenceCode3());
+            userReferenceValue.setUser(user.getAdminUser());
+            userReferenceValue.setUpdatedBy(user);
         }
-        referenceValueRepository.save(referenceValue);
+        referenceValueRepository.save(userReferenceValue);
         return success("Reference value saved successfully.");
     }
 
@@ -247,13 +247,13 @@ public class SettingsService extends BaseService {
         if (systemConfig == null) {
             return failure("System config not found.");
         }
-        ReferenceValue referenceValue =
+        UserReferenceValue userReferenceValue =
                 referenceValueRepository.findById(systemConfigDto.getReferenceId())
                         .orElse(null);
-        if (referenceValue == null) {
+        if (userReferenceValue == null) {
             return failure("Reference value not found.");
         }
-        systemConfig.setConfigValue(referenceValue);
+        systemConfig.setConfigValue(userReferenceValue);
         systemConfig.setUpdatedBy(fetchLoginUser());
         return success("System config saved successfully.");
     }

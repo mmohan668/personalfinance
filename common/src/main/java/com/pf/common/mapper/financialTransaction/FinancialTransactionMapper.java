@@ -3,7 +3,7 @@ package com.pf.common.mapper.financialTransaction;
 import com.pf.common.dto.financialTransaction.FinancialTransactionDto;
 import com.pf.common.entity.categoryManagement.UserSubcategory;
 import com.pf.common.entity.financialTransaction.FinancialTransaction;
-import com.pf.common.entity.settings.ReferenceValue;
+import com.pf.common.entity.settings.UserReferenceValue;
 import com.pf.common.entity.userManagement.User;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -22,7 +22,7 @@ public abstract class FinancialTransactionMapper {
     @Mapping(
             target = "location",
             source = "locationId",
-            qualifiedByName = "referenceValue"
+            qualifiedByName = "userReferenceValue"
     )
     @Mapping(
             target = "adminUser",
@@ -76,7 +76,7 @@ public abstract class FinancialTransactionMapper {
     @Mapping(
             target = "location",
             source = "locationId",
-            qualifiedByName = "referenceValue"
+            qualifiedByName = "userReferenceValue"
     )
     @Mapping(
             target = "adminUser",
@@ -92,14 +92,14 @@ public abstract class FinancialTransactionMapper {
             @MappingTarget FinancialTransaction entity
     );
 
-    @Named("referenceValue")
-    protected ReferenceValue mapReferenceValue(Long id) {
+    @Named("userReferenceValue")
+    protected UserReferenceValue mapReferenceValue(Long id) {
         if (id == null) {
             return null;
         }
 
         return entityManager.getReference(
-                ReferenceValue.class,
+                UserReferenceValue.class,
                 id
         );
     }
@@ -129,7 +129,7 @@ public abstract class FinancialTransactionMapper {
     }
 
     @Named("location")
-    public ReferenceValue location(Long locationId) {
+    public UserReferenceValue location(Long locationId) {
         return mapReferenceValue(locationId);
     }
 

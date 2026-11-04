@@ -1,7 +1,7 @@
 package com.pf.common.entity.financialTransaction;
 
 import com.pf.common.entity.categoryManagement.UserSubcategory;
-import com.pf.common.entity.settings.ReferenceValue;
+import com.pf.common.entity.settings.UserReferenceValue;
 import com.pf.common.entity.userManagement.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -23,7 +23,7 @@ public class FinancialTransaction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "amount", precision = 19, scale = 4, nullable = false)
+    @Column(name = "amount", nullable = false)
     private BigDecimal amount;
 
     @Column(name = "transaction_at", nullable = false)
@@ -35,9 +35,9 @@ public class FinancialTransaction {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "location_id")
-    private ReferenceValue location;
+    private UserReferenceValue location;
 
-    @Column(name = "remarks", length = 4000)
+    @Column(name = "remarks")
     private String remarks;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

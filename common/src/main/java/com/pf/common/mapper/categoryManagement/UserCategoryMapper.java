@@ -13,8 +13,8 @@ import java.util.List;
 public interface UserCategoryMapper {
 
     @Mapping(source = "user.id", target = "userId")
-    @Mapping(source = "referenceValue.referenceCode", target = "transactionType")
-    @Mapping(source = "referenceValue.id", target = "transactionTypeId")
+    @Mapping(source = "userReferenceValue.referenceCode", target = "transactionType")
+    @Mapping(source = "userReferenceValue.id", target = "transactionTypeId")
     @Mapping(source = "createdBy.username", target = "createdBy")
     @Mapping(source = "updatedBy.username", target = "updatedBy")
     UserCategoryDto toDto(UserCategory entity);

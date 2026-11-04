@@ -35,15 +35,15 @@ public class UserPasswordHistory {
     )
     private User user;
 
-    @Column(name = "password_hash", nullable = false, length = 255)
+    @Column(name = "password_hash", nullable = false)
     private String passwordHash;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "action_type", nullable = false, length = 10)
+    @Column(name = "action_type", nullable = false)
     @Builder.Default
     private PasswordActionType actionType = PasswordActionType.CHANGE;
 
-    @Column(name = "changed_by", nullable = false, length = 100)
+    @Column(name = "changed_by", nullable = false)
     private String changedBy;
 
     @Column(
@@ -56,7 +56,6 @@ public class UserPasswordHistory {
 
     public enum PasswordActionType {
         INITIAL,
-        CHANGE,
-        RESET
+        CHANGE
     }
 }

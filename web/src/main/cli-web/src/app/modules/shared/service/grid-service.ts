@@ -19,9 +19,9 @@ export class GridService {
 
   constructor() {}
 
-  loadGridColumns(gridName: string): Observable<GridColumn[]> {
+  loadGridColumns(gridName: string, userId: number): Observable<GridColumn[]> {
     return this.http.get<GridColumn[]>(
-      `${this.config.configValue.apiUrl}/grid/fetchGridColumns?gridName=${gridName}&userId=1`,
+      `${this.config.configValue.apiUrl}/grid/fetchGridColumns?gridName=${gridName}&userId=${userId}`,
     );
   }
 
