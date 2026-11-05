@@ -123,6 +123,8 @@ export enum DATA_FIELDS {
   SUBCATEGORY_DESCRIPTION = 'subcategoryDescription',
   IS_ACTIVE = 'isActive',
   REFERENCE_OBJECT_REF_OBJ_NAME = 'referenceObject.refObjName',
+  REFERENCE_VALUE_REFFERENCE_CODE = 'userReferenceValue.referenceCode',
+  USER_CATEGORY_REFERENCE_VALUE_REFFERENCE_CODE = 'userCategory.userReferenceValue.referenceCode',
   USER_CATEGORY_USER_ID = 'userCategory.user.id',
   ADMIN_USER_ID = 'adminUserId',
   FILE_NAME = 'fileName',
@@ -134,6 +136,7 @@ export enum DATA_FIELDS {
 
 export enum ENTITIES {
   REFERENCE_VALUE = 'userReferenceValue',
+  REFERENCE_OBJECT = 'referenceObject',
   USER_CATEGORY = 'userCategory',
   USER_SUBCATEGORY = 'userSubCategory',
 }

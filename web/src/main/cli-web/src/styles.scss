@@ -242,7 +242,7 @@ app-root {
 .p-datatable-thead > tr > th {
   padding: 2px 14px !important;
   color: #4caf50 !important;
-  background: #f8fafc !important;
+  background: #d2e0ef !important;
   font-weight: 500 !important;
   font-family: 'Roboto', sans-serif !important;
   font-size: 14px !important;
@@ -261,6 +261,10 @@ app-root {
     color: #4caf50 !important;
     text-decoration: underline !important;
   }
+}
+
+.p-datatable-tbody > tr.selected-row {
+  background-color: azure !important;
 }
 
 .p-datatable-tbody > tr > td {
@@ -991,4 +995,28 @@ tr.empty-message-row > td.empty-message {
   color: #64748b !important;
   font-size: 11px !important;
   line-height: 16px !important;
+}
+
+.p-datatable-tbody > tr > td.row-expense {
+  color: #ef4444 !important;
+  font-weight: 600 !important;
+}
+
+.p-datatable-tbody > tr > td.row-income {
+  color: #168447 !important;
+  font-weight: 600 !important;
+}
+
+.p-datatable-tbody > tr > td.row-investment {
+  color: #7545d8 !important;
+  font-weight: 600 !important;
+}
+
+.p-datatable-tbody > tr > td.row-transfer {
+  color: #0784c2 !important;
+  font-weight: 600 !important;
+}
+
+.mat-mdc-autocomplete-panel {
+  background-color: #ffffff !important;
 }

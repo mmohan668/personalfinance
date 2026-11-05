@@ -1,17 +1,24 @@
-import { ChangeDetectionStrategy, Component, inject, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal, ViewChild } from '@angular/core';
 import { DataGrid } from '../shared/data-grid/data-grid';
 import {
   DATA_FIELDS,
+  ENTITIES,
   FILTER_OPERATORS,
   GRID_EXPORT_FILE_NAMES,
   GRID_NAMES,
   MODES,
 } from '../shared/enums';
-import { ApiResponse, GridColumn, GridFilter, ToolbarConfig } from '../shared/types/types';
+import {
+  ApiResponse,
+  GridColumn,
+  GridFilter,
+  SuggestionRequest,
+  ToolbarConfig,
+} from '../shared/types/types';
 import { CommonService } from '../shared/service/common-service';
 import { MatDialog } from '@angular/material/dialog';
 import { AddEditCategoryDialog } from './add-edit-category-dialog/add-edit-category-dialog';
-import { firstValueFrom } from 'rxjs';
+import { debounceTime, firstValueFrom } from 'rxjs';
 import { CategoryManagementService } from '../shared/service/category-management-service';
 import { NotificationService } from '../shared/service/notification-service';
 import { MessageService } from '../shared/service/message-service';
@@ -19,6 +26,8 @@ import { ConfirmationDialog } from '../shared/confirmation-dialog/confirmation-d
 import { ChoiceDialog } from '../shared/choice-dialog/choice-dialog';
 import { CommonImportsModule } from '../shared/common-imports/common-imports-module';
 import { FormControl, FormGroup } from '@angular/forms';
+import { SuggestionService } from '../shared/service/suggestion-service';
+import { AppConfigService } from '../shared/service/app-config-service';
 
 @Component({
   imports: [DataGrid, CommonImportsModule],
@@ -35,6 +44,8 @@ export class Categories {
   private readonly _cms = inject(CategoryManagementService);
   protected readonly _ns = inject(NotificationService);
   protected readonly _ms = inject(MessageService);
+  private readonly _ss = inject(SuggestionService);
+  private readonly _acs = inject(AppConfigService);
 
   protected readonly gridName = GRID_NAMES.CATEGORIES_GRID;
   protected readonly gridExportFileName = GRID_EXPORT_FILE_NAMES.CATEGORIES_EFN;
@@ -42,10 +53,14 @@ export class Categories {
   protected readonly toolbaConfig!: ToolbarConfig;
   protected searchForm!: FormGroup;
 
+  transactionTypes = signal<string[]>([]);
+  categoryNames = signal<string[]>([]);
+
   constructor() {
     this.toolbaConfig = this._cs.toolbarConfig(true);
     this.toolbaConfig.copyRow = false;
     this.createSearchForm();
+    this.fetchSuggestions();
   }
 
   createSearchForm() {
@@ -54,6 +69,40 @@ export class Categories {
       categoryName: new FormControl(''),
       active: new FormControl(''),
     });
+  }
+
+  fetchSuggestions() {
+    this.searchForm.controls['transactionType'].valueChanges
+      .pipe(debounceTime(this._acs.configValue.debounceTime))
+      .subscribe((val) => {
+        if (this._cs.isNotNull(val)) {
+          const suggestionRequest: SuggestionRequest = {
+            entity: ENTITIES.REFERENCE_VALUE,
+            field: DATA_FIELDS.REFERENCE_CODE,
+            value: val,
+            dependentField: DATA_FIELDS.REFERENCE_OBJECT_REF_OBJ_NAME,
+            dependentValue: 'TRANSACTION_TYPE',
+          };
+          firstValueFrom(this._ss.fetchSuggestion(suggestionRequest)).then((resp) => {
+            this.transactionTypes.set(resp);
+          });
+        }
+      });
+
+    this.searchForm.controls['categoryName'].valueChanges
+      .pipe(debounceTime(this._acs.configValue.debounceTime))
+      .subscribe((val) => {
+        if (this._cs.isNotNull(val)) {
+          const suggestionRequest: SuggestionRequest = {
+            entity: ENTITIES.USER_CATEGORY,
+            field: DATA_FIELDS.CATEGORY_NAME,
+            value: val,
+          };
+          firstValueFrom(this._ss.fetchSuggestion(suggestionRequest)).then((resp) => {
+            this.categoryNames.set(resp);
+          });
+        }
+      });
   }
 
   calculateCellValue = (rowData: any, col: GridColumn): any => {

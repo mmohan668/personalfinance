@@ -1,17 +1,19 @@
-import { Component, inject, ViewChild } from '@angular/core';
-import { DATA_FIELDS, GRID_EXPORT_FILE_NAMES, GRID_NAMES, MODES } from '../shared/enums';
-import { GridColumn, ToolbarConfig } from '../shared/types/types';
+import { Component, inject, signal, ViewChild } from '@angular/core';
+import { DATA_FIELDS, ENTITIES, GRID_EXPORT_FILE_NAMES, GRID_NAMES, MODES } from '../shared/enums';
+import { GridColumn, SuggestionRequest, ToolbarConfig } from '../shared/types/types';
 import { CommonService } from '../shared/service/common-service';
 import { DataGrid } from '../shared/data-grid/data-grid';
 import { MatDialog } from '@angular/material/dialog';
 import { AdEditReferenceValueDialog } from './ad-edit-reference-value-dialog/ad-edit-reference-value-dialog';
 import { SettingsService } from '../shared/service/settings-service';
-import { firstValueFrom } from 'rxjs';
+import { debounceTime, firstValueFrom } from 'rxjs';
 import { NotificationService } from '../shared/service/notification-service';
 import { ConfirmationDialog } from '../shared/confirmation-dialog/confirmation-dialog';
 import { MessageService } from '../shared/service/message-service';
 import { FormControl, FormGroup } from '@angular/forms';
 import { CommonImportsModule } from '../shared/common-imports/common-imports-module';
+import { AppConfigService } from '../shared/service/app-config-service';
+import { SuggestionService } from '../shared/service/suggestion-service';
 
 @Component({
   imports: [DataGrid, CommonImportsModule],
@@ -27,6 +29,8 @@ export class ReferenceValues {
   private readonly _ss = inject(SettingsService);
   private readonly _ns = inject(NotificationService);
   protected readonly _ms = inject(MessageService);
+  private readonly _acs = inject(AppConfigService);
+  private readonly _sgs = inject(SuggestionService);
 
   protected readonly gridName = GRID_NAMES.REFERENCE_VALUES_GRID;
   protected readonly dataKey = DATA_FIELDS.ID;
@@ -34,9 +38,13 @@ export class ReferenceValues {
   protected readonly toolbarConfig!: ToolbarConfig;
   protected searchForm!: FormGroup;
 
+  refObjNames = signal<string[]>([]);
+  referenceCodes = signal<string[]>([]);
+
   constructor() {
     this.toolbarConfig = this._cs.toolbarConfig(true);
     this.createSearchForm();
+    this.fetchSuggestions();
   }
 
   createSearchForm(): void {
@@ -45,6 +53,38 @@ export class ReferenceValues {
       referenceCode: new FormControl(''),
       active: new FormControl(''),
     });
+  }
+
+  fetchSuggestions() {
+    this.searchForm.controls['refObjName'].valueChanges
+      .pipe(debounceTime(this._acs.configValue.debounceTime))
+      .subscribe((val) => {
+        if (this._cs.isNotNull(val)) {
+          const suggestionRequest: SuggestionRequest = {
+            entity: ENTITIES.REFERENCE_OBJECT,
+            field: DATA_FIELDS.REF_OBJ_NAME,
+            value: val,
+          };
+          firstValueFrom(this._sgs.fetchSuggestion(suggestionRequest)).then((resp) => {
+            this.refObjNames.set(resp);
+          });
+        }
+      });
+
+    this.searchForm.controls['referenceCode'].valueChanges
+      .pipe(debounceTime(this._acs.configValue.debounceTime))
+      .subscribe((val) => {
+        if (this._cs.isNotNull(val)) {
+          const suggestionRequest: SuggestionRequest = {
+            entity: ENTITIES.REFERENCE_VALUE,
+            field: DATA_FIELDS.REFERENCE_CODE,
+            value: val,
+          };
+          firstValueFrom(this._sgs.fetchSuggestion(suggestionRequest)).then((resp) => {
+            this.referenceCodes.set(resp);
+          });
+        }
+      });
   }
 
   calculateCellValue = (rowData: any, col: GridColumn): any => {
