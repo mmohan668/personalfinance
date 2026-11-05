@@ -12,13 +12,35 @@
         <!-- Transaction Type -->
         <mat-form-field appearance="outline" floatLabel="always" subscriptSizing="dynamic">
           <mat-label>Transaction Type</mat-label>
-          <input matInput type="text" formControlName="transactionType" />
+          <input
+            matInput
+            type="text"
+            formControlName="transactionType"
+            [matAutocomplete]="transactionTypeAuto"
+          />
+          <mat-autocomplete #transactionTypeAuto="matAutocomplete">
+            @for (item of transactionTypes(); track $index) {
+              <mat-option [value]="item">
+                {{ item }}
+              </mat-option>
+            }
+          </mat-autocomplete>
         </mat-form-field>
 
         <!-- Category Name -->
         <mat-form-field appearance="outline" floatLabel="always" subscriptSizing="dynamic">
           <mat-label>Category Name</mat-label>
-          <input matInput type="text" formControlName="categoryName" />
+          <input
+            matInput
+            type="text"
+            formControlName="categoryName"
+            [matAutocomplete]="categoryNameAuto"
+          />
+          <mat-autocomplete #categoryNameAuto="matAutocomplete">
+            @for (item of categoryNames(); track $index) {
+              <mat-option [value]="item">{{ item }}</mat-option>
+            }
+          </mat-autocomplete>
         </mat-form-field>
 
         <!-- Active Status -->

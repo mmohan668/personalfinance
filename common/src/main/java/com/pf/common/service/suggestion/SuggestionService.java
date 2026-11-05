@@ -26,6 +26,7 @@ public class SuggestionService extends BaseService {
     public List<?> fetchSuggestions(SuggestionRequest suggestionRequest) {
         SuggestionField suggestionField = SuggestionField.resolve(suggestionRequest.getEntity());
         SearchCriteria searchCriteria = createSearchCriteria(suggestionRequest);
+        addAdminUserGridFilter(searchCriteria, suggestionField.getUserField());
         if (suggestionField.getQueryType() == QueryType.ENTITY) {
             return getSuggestionBySearchCriteria(
                     suggestionField.getEntityClass(),

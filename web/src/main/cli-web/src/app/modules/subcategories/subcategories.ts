@@ -1,14 +1,21 @@
-import { Component, inject, ViewChild } from '@angular/core';
+import { Component, inject, signal, ViewChild } from '@angular/core';
 import { DataGrid } from '../shared/data-grid/data-grid';
 import {
   DATA_FIELDS,
+  ENTITIES,
   FILTER_OPERATORS,
   GRID_EXPORT_FILE_NAMES,
   GRID_NAMES,
   MODES,
   STATUS,
 } from '../shared/enums';
-import { ApiResponse, GridColumn, GridFilter, ToolbarConfig } from '../shared/types/types';
+import {
+  ApiResponse,
+  GridColumn,
+  GridFilter,
+  SuggestionRequest,
+  ToolbarConfig,
+} from '../shared/types/types';
 import { CommonService } from '../shared/service/common-service';
 import { MatDialog } from '@angular/material/dialog';
 import { AddEditSubCategoryDialog } from './add-edit-sub-category-dialog/add-edit-sub-category-dialog';
@@ -16,9 +23,11 @@ import { NotificationService } from '../shared/service/notification-service';
 import { MessageService } from '../shared/service/message-service';
 import { ConfirmationDialog } from '../shared/confirmation-dialog/confirmation-dialog';
 import { CategoryManagementService } from '../shared/service/category-management-service';
-import { firstValueFrom } from 'rxjs';
+import { debounceTime, firstValueFrom } from 'rxjs';
 import { FormControl, FormGroup } from '@angular/forms';
 import { CommonImportsModule } from '../shared/common-imports/common-imports-module';
+import { SuggestionService } from '../shared/service/suggestion-service';
+import { AppConfigService } from '../shared/service/app-config-service';
 
 @Component({
   imports: [DataGrid, CommonImportsModule],
@@ -34,18 +43,25 @@ export class Subcategories {
   private readonly _ns = inject(NotificationService);
   private readonly _ms = inject(MessageService);
   private readonly _cms = inject(CategoryManagementService);
+  private readonly _ss = inject(SuggestionService);
+  private readonly _acs = inject(AppConfigService);
 
   protected readonly gridName = GRID_NAMES.SUBCATEGORIES_GRID;
   protected readonly gridExportFileName = GRID_EXPORT_FILE_NAMES.SUBCATEGORIES_EFN;
   protected readonly dataKey = DATA_FIELDS.ID;
   protected readonly toolbarConfig: ToolbarConfig;
-  
+
   protected searchForm!: FormGroup;
   fieldCount = 4;
+
+  transactionTypes = signal<string[]>([]);
+  categoryNames = signal<string[]>([]);
+  subcategoryNames = signal<string[]>([]);
 
   constructor() {
     this.toolbarConfig = this._cs.toolbarConfig(true);
     this.createSearchForm();
+    this.fetchSuggestions();
   }
 
   createSearchForm() {
@@ -55,6 +71,55 @@ export class Subcategories {
       subcategoryName: new FormControl(''),
       isActive: new FormControl(''),
     });
+  }
+
+  fetchSuggestions() {
+    this.searchForm.controls['transactionType'].valueChanges
+      .pipe(debounceTime(this._acs.configValue.debounceTime))
+      .subscribe((val) => {
+        if (this._cs.isNotNull(val)) {
+          const suggestionRequest: SuggestionRequest = {
+            entity: ENTITIES.REFERENCE_VALUE,
+            field: DATA_FIELDS.REFERENCE_CODE,
+            value: val,
+            dependentField: DATA_FIELDS.REFERENCE_OBJECT_REF_OBJ_NAME,
+            dependentValue: 'TRANSACTION_TYPE',
+          };
+          firstValueFrom(this._ss.fetchSuggestion(suggestionRequest)).then((resp) => {
+            this.transactionTypes.set(resp);
+          });
+        }
+      });
+
+    this.searchForm.controls['categoryName'].valueChanges
+      .pipe(debounceTime(this._acs.configValue.debounceTime))
+      .subscribe((val) => {
+        if (this._cs.isNotNull(val)) {
+          const suggestionRequest: SuggestionRequest = {
+            entity: ENTITIES.USER_CATEGORY,
+            field: DATA_FIELDS.CATEGORY_NAME,
+            value: val,
+          };
+          firstValueFrom(this._ss.fetchSuggestion(suggestionRequest)).then((resp) => {
+            this.categoryNames.set(resp);
+          });
+        }
+      });
+
+    this.searchForm.controls['subcategoryName'].valueChanges
+      .pipe(debounceTime(this._acs.configValue.debounceTime))
+      .subscribe((val) => {
+        if (this._cs.isNotNull(val)) {
+          const suggestionRequest: SuggestionRequest = {
+            entity: ENTITIES.USER_SUBCATEGORY,
+            field: DATA_FIELDS.SUBCATEGORY_NAME,
+            value: val,
+          };
+          firstValueFrom(this._ss.fetchSuggestion(suggestionRequest)).then((resp) => {
+            this.subcategoryNames.set(resp);
+          });
+        }
+      });
   }
 
   calculateCellValue = (rowData: any, col: GridColumn) => {

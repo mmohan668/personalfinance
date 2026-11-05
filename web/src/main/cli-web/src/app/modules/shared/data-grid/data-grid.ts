@@ -25,7 +25,7 @@ import {
   ToolbarConfig,
 } from '../types/types';
 import { GridService } from '../service/grid-service';
-import { GRID_NAMES, SORT_ICONS, SORT_ORDERS, TRANSACTION_TYPES } from '../enums';
+import { DATA_FIELDS, GRID_NAMES, SORT_ICONS, SORT_ORDERS, TRANSACTION_TYPES } from '../enums';
 import * as FileSaver from 'file-saver';
 import { CommonService } from '../service/common-service';
 import { CommonImportsModule } from '../common-imports/common-imports-module';
@@ -788,19 +788,28 @@ export class DataGrid implements OnInit {
     this.loadGridData();
   };
 
-  getTransactionRowClass(row: any): string {
+  getTransactionCellClass(row: any, col: any): string {
     if (this.gridName !== GRID_NAMES.ALL_TRANSACTIONS_GRID) {
       return '';
     }
+
+    if (col.field !== DATA_FIELDS.AMOUNT) {
+      return '';
+    }
+
     switch (row.transactionType) {
       case TRANSACTION_TYPES.EXPENSE:
         return 'row-expense';
+
       case TRANSACTION_TYPES.INCOME:
         return 'row-income';
+
       case TRANSACTION_TYPES.INVESTMENT:
         return 'row-investment';
+
       case TRANSACTION_TYPES.TRANSFER:
         return 'row-transfer';
+
       default:
         return '';
     }

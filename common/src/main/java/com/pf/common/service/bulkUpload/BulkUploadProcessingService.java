@@ -137,15 +137,19 @@ public class BulkUploadProcessingService {
         switch (template) {
             case REFERENCE_VALUES: {
                 saveReferenceValuesBulk(json, bulkUploadsStatus.getUser());
+                break;
             }
             case CATEGORIES: {
                 saveCategoriesBulk(json, bulkUploadsStatus.getUser());
+                break;
             }
             case SUBCATEGORIES: {
                 saveSubcategoriesBulk(json, bulkUploadsStatus.getUser());
+                break;
             }
             case FINANCIAL_TRANSACTIONS: {
                 saveFinancialTransactionsBulk(json, bulkUploadsStatus.getUser());
+                break;
             }
         }
     }

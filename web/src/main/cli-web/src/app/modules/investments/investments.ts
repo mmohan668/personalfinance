@@ -1,8 +1,9 @@
-import { Component, inject, ViewChild } from '@angular/core';
+import { Component, inject, signal, ViewChild } from '@angular/core';
 import { DataGrid } from '../shared/data-grid/data-grid';
 import { MatDialog } from '@angular/material/dialog';
 import {
   DATA_FIELDS,
+  ENTITIES,
   FILTER_OPERATORS,
   GRID_EXPORT_FILE_NAMES,
   GRID_NAMES,
@@ -13,12 +14,20 @@ import { CommonService } from '../shared/service/common-service';
 import { NotificationService } from '../shared/service/notification-service';
 import { MessageService } from '../shared/service/message-service';
 import { FinancialTransactionsService } from '../shared/service/financial-transactions-service';
-import { ApiResponse, GridColumn, GridFilter, ToolbarConfig } from '../shared/types/types';
+import {
+  ApiResponse,
+  GridColumn,
+  GridFilter,
+  SuggestionRequest,
+  ToolbarConfig,
+} from '../shared/types/types';
 import { AddCopyEditFinancialTransactionDialog } from '../shared/add-copy-edit-financialtransaction-dialog/add-copy-edit-financialtransaction-dialog';
 import { ConfirmationDialog } from '../shared/confirmation-dialog/confirmation-dialog';
-import { firstValueFrom } from 'rxjs';
+import { debounceTime, firstValueFrom } from 'rxjs';
 import { FormControl, FormGroup } from '@angular/forms';
 import { CommonImportsModule } from '../shared/common-imports/common-imports-module';
+import { AppConfigService } from '../shared/service/app-config-service';
+import { SuggestionService } from '../shared/service/suggestion-service';
 
 @Component({
   imports: [DataGrid, CommonImportsModule],
@@ -34,6 +43,8 @@ export class Investments {
   private readonly _ns = inject(NotificationService);
   private readonly _ms = inject(MessageService);
   private readonly _fts = inject(FinancialTransactionsService);
+  private readonly _acs = inject(AppConfigService);
+  private readonly _ss = inject(SuggestionService);
 
   protected readonly dataKey = DATA_FIELDS.ID;
   protected readonly gridName = GRID_NAMES.INVESTMENTS_GRID;
@@ -50,10 +61,15 @@ export class Investments {
   protected readonly fieldCount = 2;
   protected readonly maxDate = new Date();
 
+  locations = signal<string[]>([]);
+  categoryNames = signal<string[]>([]);
+  subcategoryNames = signal<string[]>([]);
+
   constructor() {
     this.toolbarConfig = this._cs.toolbarConfigExcludeActivateInactivate();
     this.toolbarConfig.refresh = true;
     this.createSearchForm();
+    this.fetchSuggestions();
   }
 
   createSearchForm() {
@@ -64,6 +80,59 @@ export class Investments {
       transactionFromDate: new FormControl(''),
       transactionThruDate: new FormControl(''),
     });
+  }
+
+  fetchSuggestions() {
+    this.searchForm.controls['categoryName'].valueChanges
+      .pipe(debounceTime(this._acs.configValue.debounceTime))
+      .subscribe((val) => {
+        if (this._cs.isNotNull(val)) {
+          const suggestionRequest: SuggestionRequest = {
+            entity: ENTITIES.USER_CATEGORY,
+            field: DATA_FIELDS.CATEGORY_NAME,
+            value: val,
+            dependentField: DATA_FIELDS.REFERENCE_VALUE_REFFERENCE_CODE,
+            dependentValue: TRANSACTION_TYPES.INVESTMENT,
+          };
+          firstValueFrom(this._ss.fetchSuggestion(suggestionRequest)).then((resp) => {
+            this.categoryNames.set(resp);
+          });
+        }
+      });
+
+    this.searchForm.controls['subcategoryName'].valueChanges
+      .pipe(debounceTime(this._acs.configValue.debounceTime))
+      .subscribe((val) => {
+        if (this._cs.isNotNull(val)) {
+          const suggestionRequest: SuggestionRequest = {
+            entity: ENTITIES.USER_SUBCATEGORY,
+            field: DATA_FIELDS.SUBCATEGORY_NAME,
+            value: val,
+            dependentField: DATA_FIELDS.USER_CATEGORY_REFERENCE_VALUE_REFFERENCE_CODE,
+            dependentValue: TRANSACTION_TYPES.INVESTMENT,
+          };
+          firstValueFrom(this._ss.fetchSuggestion(suggestionRequest)).then((resp) => {
+            this.subcategoryNames.set(resp);
+          });
+        }
+      });
+
+    this.searchForm.controls['location'].valueChanges
+      .pipe(debounceTime(this._acs.configValue.debounceTime))
+      .subscribe((val) => {
+        if (this._cs.isNotNull(val)) {
+          const suggestionRequest: SuggestionRequest = {
+            entity: ENTITIES.REFERENCE_VALUE,
+            field: DATA_FIELDS.REFERENCE_CODE,
+            value: val,
+            dependentField: DATA_FIELDS.REFERENCE_OBJECT_REF_OBJ_NAME,
+            dependentValue: 'LOCATION',
+          };
+          firstValueFrom(this._ss.fetchSuggestion(suggestionRequest)).then((resp) => {
+            this.locations.set(resp);
+          });
+        }
+      });
   }
 
   fetchTitle = (rowData: any, col: GridColumn): any => {

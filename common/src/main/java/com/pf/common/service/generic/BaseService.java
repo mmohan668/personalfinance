@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.pf.common.constants.FieldConstants.USER_ID;
 import static com.pf.common.enums.FilterOperator.EQUALS;
 
 @Service
@@ -118,6 +117,9 @@ public class BaseService extends GenericCriteriaService {
     }
 
     public void addAdminUserGridFilter(SearchCriteria searchCriteria, String fieldName) {
+        if (fieldName == null || fieldName.trim().isEmpty()) {
+            return;
+        }
         if (searchCriteria.getFilterList() == null) {
             searchCriteria.setFilterList(new ArrayList<>());
         }

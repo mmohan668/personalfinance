@@ -1,21 +1,8 @@
 import { Component, inject, signal, ViewChild } from '@angular/core';
 import { DataGrid } from '../shared/data-grid/data-grid';
-import {
-  DATA_FIELDS,
-  ENTITIES,
-  FILTER_OPERATORS,
-  GRID_EXPORT_FILE_NAMES,
-  GRID_NAMES,
-  MODES,
-} from '../shared/enums';
+import { DATA_FIELDS, ENTITIES, GRID_EXPORT_FILE_NAMES, GRID_NAMES, MODES } from '../shared/enums';
 import { CommonService } from '../shared/service/common-service';
-import {
-  ApiResponse,
-  GridColumn,
-  GridFilter,
-  SuggestionRequest,
-  ToolbarConfig,
-} from '../shared/types/types';
+import { ApiResponse, GridColumn, SuggestionRequest, ToolbarConfig } from '../shared/types/types';
 import { MatDialog } from '@angular/material/dialog';
 import { AddCopyEditFinancialTransactionDialog } from '../shared/add-copy-edit-financialtransaction-dialog/add-copy-edit-financialtransaction-dialog';
 import { NotificationService } from '../shared/service/notification-service';
@@ -26,6 +13,7 @@ import { ConfirmationDialog } from '../shared/confirmation-dialog/confirmation-d
 import { FormControl, FormGroup } from '@angular/forms';
 import { CommonImportsModule } from '../shared/common-imports/common-imports-module';
 import { SuggestionService } from '../shared/service/suggestion-service';
+import { AppConfigService } from '../shared/service/app-config-service';
 
 @Component({
   imports: [DataGrid, CommonImportsModule],
@@ -42,6 +30,7 @@ export class AllTransactions {
   private readonly _ms = inject(MessageService);
   private readonly _fts = inject(FinancialTransactionsService);
   private readonly _ss = inject(SuggestionService);
+  private readonly _acs = inject(AppConfigService);
 
   protected readonly dataKey = DATA_FIELDS.ID;
   protected readonly gridName = GRID_NAMES.ALL_TRANSACTIONS_GRID;
@@ -76,7 +65,7 @@ export class AllTransactions {
 
   fetchSuggestions() {
     this.searchForm.controls['transactionType'].valueChanges
-      .pipe(debounceTime(300))
+      .pipe(debounceTime(this._acs.configValue.debounceTime))
       .subscribe((val) => {
         if (this._cs.isNotNull(val)) {
           const suggestionRequest: SuggestionRequest = {
@@ -93,15 +82,13 @@ export class AllTransactions {
       });
 
     this.searchForm.controls['categoryName'].valueChanges
-      .pipe(debounceTime(300))
+      .pipe(debounceTime(this._acs.configValue.debounceTime))
       .subscribe((val) => {
         if (this._cs.isNotNull(val)) {
           const suggestionRequest: SuggestionRequest = {
             entity: ENTITIES.USER_CATEGORY,
             field: DATA_FIELDS.CATEGORY_NAME,
             value: val,
-            dependentField: DATA_FIELDS.USER_ID,
-            dependentValue: this._cs.loginUserId?.toString(),
           };
           firstValueFrom(this._ss.fetchSuggestion(suggestionRequest)).then((resp) => {
             this.categoryNames.set(resp);
@@ -110,15 +97,13 @@ export class AllTransactions {
       });
 
     this.searchForm.controls['subcategoryName'].valueChanges
-      .pipe(debounceTime(300))
+      .pipe(debounceTime(this._acs.configValue.debounceTime))
       .subscribe((val) => {
         if (this._cs.isNotNull(val)) {
           const suggestionRequest: SuggestionRequest = {
             entity: ENTITIES.USER_SUBCATEGORY,
             field: DATA_FIELDS.SUBCATEGORY_NAME,
             value: val,
-            dependentField: DATA_FIELDS.USER_CATEGORY_USER_ID,
-            dependentValue: this._cs.loginUserId?.toString(),
           };
           firstValueFrom(this._ss.fetchSuggestion(suggestionRequest)).then((resp) => {
             this.subcategoryNames.set(resp);
@@ -126,20 +111,22 @@ export class AllTransactions {
         }
       });
 
-    this.searchForm.controls['location'].valueChanges.pipe(debounceTime(300)).subscribe((val) => {
-      if (this._cs.isNotNull(val)) {
-        const suggestionRequest: SuggestionRequest = {
-          entity: ENTITIES.REFERENCE_VALUE,
-          field: DATA_FIELDS.REFERENCE_CODE,
-          value: val,
-          dependentField: DATA_FIELDS.REFERENCE_OBJECT_REF_OBJ_NAME,
-          dependentValue: 'LOCATION',
-        };
-        firstValueFrom(this._ss.fetchSuggestion(suggestionRequest)).then((resp) => {
-          this.locations.set(resp);
-        });
-      }
-    });
+    this.searchForm.controls['location'].valueChanges
+      .pipe(debounceTime(this._acs.configValue.debounceTime))
+      .subscribe((val) => {
+        if (this._cs.isNotNull(val)) {
+          const suggestionRequest: SuggestionRequest = {
+            entity: ENTITIES.REFERENCE_VALUE,
+            field: DATA_FIELDS.REFERENCE_CODE,
+            value: val,
+            dependentField: DATA_FIELDS.REFERENCE_OBJECT_REF_OBJ_NAME,
+            dependentValue: 'LOCATION',
+          };
+          firstValueFrom(this._ss.fetchSuggestion(suggestionRequest)).then((resp) => {
+            this.locations.set(resp);
+          });
+        }
+      });
   }
 
   fetchTitle = (rowData: any, col: GridColumn): any => {
