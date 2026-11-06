@@ -137,7 +137,6 @@ export class Subcategories {
         data: {
           mode: MODES.ADD,
         },
-        disableClose: true,
       })
       .afterClosed()
       .subscribe((value: any) => {
@@ -164,7 +163,6 @@ export class Subcategories {
           mode: MODES.EDIT,
           selectedRow: this.dataGrid?.selectedRows[0],
         },
-        disableClose: true,
       })
       .afterClosed()
       .subscribe((value: any) => {
@@ -191,7 +189,6 @@ export class Subcategories {
           mode: MODES.COPY,
           selectedRow: this.dataGrid?.selectedRows[0],
         },
-        disableClose: true,
       })
       .afterClosed()
       .subscribe((value: any) => {
@@ -213,7 +210,6 @@ export class Subcategories {
           title: this._ms.get('subcategory.delete.title'),
           message: this._ms.get('subcategory.delete.confirmation'),
         },
-        disableClose: true,
       })
       .afterClosed()
       .subscribe((value: boolean) => {
@@ -248,7 +244,6 @@ export class Subcategories {
       .open(ConfirmationDialog, {
         width: 'auto',
         data: { title: title, message: message },
-        disableClose: true,
       })
       .afterClosed()
       .subscribe((value: boolean) => {
@@ -285,7 +280,6 @@ export class Subcategories {
       .open(ConfirmationDialog, {
         width: 'auto',
         data: { title: title, message: message },
-        disableClose: true,
       })
       .afterClosed()
       .subscribe((value: boolean) => {

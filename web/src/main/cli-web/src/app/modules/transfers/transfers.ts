@@ -151,7 +151,6 @@ export class Transfers {
           transactionType: TRANSACTION_TYPES.TRANSFER,
           mode: MODES.ADD,
         },
-        disableClose: true,
       })
       .afterClosed()
       .subscribe((value: any) => {
@@ -180,7 +179,6 @@ export class Transfers {
           mode: MODES.EDIT,
           selectedRow: this.dataGrid?.selectedRows[0],
         },
-        disableClose: true,
       })
       .afterClosed()
       .subscribe((value: any) => {
@@ -209,7 +207,6 @@ export class Transfers {
           mode: MODES.COPY,
           selectedRow: this.dataGrid?.selectedRows[0],
         },
-        disableClose: true,
       })
       .afterClosed()
       .subscribe((value: any) => {
@@ -232,7 +229,6 @@ export class Transfers {
           title: this._ms.get('common.delete.title'),
           message: this._ms.get('financialTransaction.delete.confirmation'),
         },
-        disableClose: true,
       })
       .afterClosed()
       .subscribe((value: boolean) => {

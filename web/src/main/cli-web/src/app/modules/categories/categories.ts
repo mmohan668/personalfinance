@@ -120,7 +120,6 @@ export class Categories {
         data: {
           mode: MODES.ADD,
         },
-        disableClose: true,
       })
       .afterClosed()
       .subscribe((message) => {
@@ -148,7 +147,6 @@ export class Categories {
           mode: MODES.EDIT,
           selectedRow: this.dataGrid.selectedRows[0],
         },
-        disableClose: true,
       })
       .afterClosed()
       .subscribe((message) => {
@@ -208,7 +206,6 @@ export class Categories {
       .open(ConfirmationDialog, {
         width: 'auto',
         data: { title: title, message: message },
-        disableClose: true,
       })
       .afterClosed()
       .subscribe((value: boolean) => {
@@ -258,7 +255,6 @@ export class Categories {
       .open(ConfirmationDialog, {
         width: 'auto',
         data: { title: title, message: message },
-        disableClose: true,
       })
       .afterClosed()
       .subscribe((value: boolean) => {

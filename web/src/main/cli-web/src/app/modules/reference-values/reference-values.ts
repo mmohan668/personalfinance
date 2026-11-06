@@ -102,7 +102,6 @@ export class ReferenceValues {
         data: {
           mode: MODES.ADD,
         },
-        disableClose: true,
       })
       .afterClosed()
       .subscribe((message) => {
