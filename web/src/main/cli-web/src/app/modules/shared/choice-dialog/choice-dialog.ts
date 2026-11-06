@@ -5,7 +5,6 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 @Component({
   imports: [CommonImportsModule],
   selector: 'app-choice-dialog',
-  styleUrl: './choice-dialog.scss',
   templateUrl: './choice-dialog.html',
 })
 export class ChoiceDialog {

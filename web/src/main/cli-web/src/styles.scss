@@ -1020,3 +1020,12 @@ tr.empty-message-row > td.empty-message {
 .mat-mdc-autocomplete-panel {
   background-color: #ffffff !important;
 }
+
+/* Use the primary action green for selected radio buttons throughout the app. */
+.mat-mdc-radio-button {
+  --mat-radio-selected-icon-color: #4caf50;
+  --mat-radio-selected-hover-icon-color: #388e3c;
+  --mat-radio-selected-focus-icon-color: #4caf50;
+  --mat-radio-selected-pressed-icon-color: #388e3c;
+  --mat-radio-checked-ripple-color: rgba(76, 175, 80, 0.18);
+}
