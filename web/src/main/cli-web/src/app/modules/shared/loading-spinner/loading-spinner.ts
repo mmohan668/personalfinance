@@ -6,41 +6,8 @@ import { LoadingService } from '../service/loading-service';
 @Component({
   selector: 'app-loading-spinner',
   standalone: true,
-  template: `
-    <ng-template #spinnerTemplate>
-      <div class="spinner-container">
-        <div class="spinner"></div>
-      </div>
-    </ng-template>
-  `,
-  styles: [
-    `
-      .spinner-container {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 60px;
-        height: 60px;
-        background: white;
-        border-radius: 8px;
-      }
-
-      .spinner {
-        width: 45px;
-        height: 45px;
-        border: 5px solid #ddd;
-        border-top-color: #333;
-        border-radius: 50%;
-        animation: spin 0.8s linear infinite;
-      }
-
-      @keyframes spin {
-        to {
-          transform: rotate(360deg);
-        }
-      }
-    `,
-  ],
+  templateUrl: './loading-spinner.html',
+  styleUrl: './loading-spinner.scss',
 })
 export class LoadingSpinner {
   @ViewChild('spinnerTemplate') protected spinnerTemplate!: TemplateRef<unknown>;
@@ -75,7 +42,7 @@ export class LoadingSpinner {
     this.overlayRef = this.overlay.create({
       positionStrategy,
       hasBackdrop: true,
-      backdropClass: 'loading-backdrop',
+      backdropClass: ['cdk-overlay-dark-backdrop', 'loading-backdrop'],
       scrollStrategy: this.overlay.scrollStrategies.block(),
     });
 

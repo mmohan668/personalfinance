@@ -1029,3 +1029,8 @@ tr.empty-message-row > td.empty-message {
   --mat-radio-selected-pressed-icon-color: #388e3c;
   --mat-radio-checked-ripple-color: rgba(76, 175, 80, 0.18);
 }
+
+.loading-backdrop {
+  background-color: rgba(21, 35, 27, 0.24) !important;
+  backdrop-filter: blur(3px);
+}

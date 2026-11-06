@@ -1,5 +1,18 @@
-@if (loadingService.loading()) {
-  <div class="spinner-overlay">
-    <div class="spinner"></div>
+<ng-template #spinnerTemplate>
+  <div class="loading-card" role="status" aria-live="polite" aria-busy="true">
+    <div class="spinner" aria-hidden="true">
+      <span class="spinner-track"></span>
+      <span class="spinner-arc"></span>
+      <span class="spinner-center"></span>
+    </div>
+
+    <div class="loading-copy">
+      <span class="loading-title">Loading...</span>
+      <span class="loading-subtitle">Please wait while we process your request…</span>
+    </div>
+
+    <div class="loading-progress" aria-hidden="true">
+      <span></span>
+    </div>
   </div>
-}
+</ng-template>
