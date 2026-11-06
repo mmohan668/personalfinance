@@ -17,12 +17,17 @@ export class Notification {
   private readonly viewContainerRef = inject(ViewContainerRef);
 
   private overlayRef: OverlayRef | null = null;
+  private pointerInside = false;
+  private focusInside = false;
 
   constructor() {
     effect(() => {
       const notification = this.notificationService.item();
       if (notification) {
         this.show();
+        if (this.pointerInside || this.focusInside) {
+          this.notificationService.pause();
+        }
       } else {
         this.hide();
       }
@@ -34,11 +39,7 @@ export class Notification {
       return;
     }
 
-    const positionStrategy = this.overlay
-      .position()
-      .global()
-      .centerHorizontally()
-      .centerVertically();
+    const positionStrategy = this.overlay.position().global().centerHorizontally().top('20px');
 
     this.overlayRef = this.overlay.create({
       positionStrategy,
@@ -57,15 +58,39 @@ export class Notification {
   }
 
   pause(): void {
-    this.notificationService.pause();
+    this.pointerInside = true;
+    this.updateTimerState();
   }
 
   resume(): void {
-    this.notificationService.resume();
+    this.pointerInside = false;
+    this.updateTimerState();
+  }
+
+  onFocusIn(): void {
+    this.focusInside = true;
+    this.updateTimerState();
+  }
+
+  onFocusOut(event: FocusEvent): void {
+    const container = event.currentTarget as HTMLElement;
+
+    if (!container.contains(event.relatedTarget as Node | null)) {
+      this.focusInside = false;
+      this.updateTimerState();
+    }
   }
 
   close(): void {
     this.notificationService.close();
+  }
+
+  private updateTimerState(): void {
+    if (this.pointerInside || this.focusInside) {
+      this.notificationService.pause();
+    } else {
+      this.notificationService.resume();
+    }
   }
 
   ngOnDestroy(): void {

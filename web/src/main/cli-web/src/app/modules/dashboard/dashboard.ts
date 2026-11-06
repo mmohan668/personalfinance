@@ -322,10 +322,10 @@ export class Dashboard {
     this.dashboardService.fetchDashboardSummary(this.selectedYear, this.selectedMonth).subscribe({
       next: (data: DashboardSummary) => {
         this.totals.set({
-          expense: data.transactions?.expense ?? 0,
-          income: data.transactions?.income ?? 0,
-          investment: data.transactions?.investment ?? 0,
-          transfer: data.transactions?.transfer ?? 0,
+          expense: this.toFiniteNumber(data.transactions?.expense),
+          income: this.toFiniteNumber(data.transactions?.income),
+          investment: this.toFiniteNumber(data.transactions?.investment),
+          transfer: this.toFiniteNumber(data.transactions?.transfer),
         });
 
         this.expenses.set(data.expenses ?? []);
@@ -531,6 +531,16 @@ export class Dashboard {
 
   abs(amount: number): number {
     return Math.abs(amount ?? 0);
+  }
+
+  hasTransactionData(): boolean {
+    return Object.values(this.totals()).some((amount) => Math.abs(amount) > 0);
+  }
+
+  private toFiniteNumber(value: number | string | null | undefined): number {
+    const amount = Number(value ?? 0);
+
+    return Number.isFinite(amount) ? amount : 0;
   }
 
   getIncomePercentage(amount: number): number {

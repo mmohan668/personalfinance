@@ -1,31 +1,57 @@
 <ng-template #notificationTemplate>
-  <div class="notification-container">
-    <div
-      class="notification"
-      role="alert"
-      aria-live="assertive"
-      [class.success]="notificationService.item()?.type === 'success'"
-      [class.error]="notificationService.item()?.type === 'error'"
-      (mouseenter)="pause()"
-      (mouseleave)="resume()"
-    >
-      <div class="notification-content">
+  @if (notificationService.item(); as notification) {
+    <div class="notification-container">
+      <div
+        class="notification"
+        [class.success]="notification.type === 'success'"
+        [class.error]="notification.type === 'error'"
+        [attr.data-notification-id]="notification.id"
+        [attr.role]="notification.type === 'error' ? 'alert' : 'status'"
+        [attr.aria-live]="notification.type === 'error' ? 'assertive' : 'polite'"
+        aria-atomic="true"
+        (mouseenter)="pause()"
+        (mouseleave)="resume()"
+        (focusin)="onFocusIn()"
+        (focusout)="onFocusOut($event)"
+      >
         <span class="icon" aria-hidden="true">
-          @if (notificationService.item()?.type === 'success') {
-            ✓
+          @if (notification.type === 'success') {
+            <svg viewBox="0 0 24 24" focusable="false">
+              <path d="m5 12.5 4.2 4.2L19 7" />
+            </svg>
           } @else {
-            !
+            <svg viewBox="0 0 24 24" focusable="false">
+              <path
+                d="M12 8v5m0 3h.01M10.3 3.9 2.8 17a2 2 0 0 0 1.7 3h15a2 2 0 0 0 1.7-3l-7.5-13.1a2 2 0 0 0-3.4 0Z"
+              />
+            </svg>
           }
         </span>
 
-        <span class="message">
-          {{ notificationService.item()?.message }}
-        </span>
-      </div>
+        <div class="notification-content">
+          <span class="notification-title">
+            {{ notification.type === 'success' ? 'All set' : 'Something went wrong' }}
+          </span>
+          <span class="message">{{ notification.message }}</span>
+        </div>
 
-      <button type="button" class="close-button" aria-label="Close notification" (click)="close()">
-        ×
-      </button>
+        <button
+          type="button"
+          class="close-button"
+          aria-label="Dismiss notification"
+          (click)="close()"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="m7 7 10 10M17 7 7 17" />
+          </svg>
+        </button>
+
+        <span
+          class="notification-progress"
+          aria-hidden="true"
+          [style.animation-duration.ms]="notification.duration"
+        ></span>
+      </div>
     </div>
-  </div>
+  }
 </ng-template>
