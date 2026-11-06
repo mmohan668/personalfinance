@@ -70,15 +70,12 @@ export class ProfilePictureDialog implements OnDestroy {
       .saveProfilePicture(formData)
       .pipe(
         finalize(() => {
-          console.log('Upload request finalized');
           this.uploading = false;
           this.cdr.detectChanges();
         }),
       )
       .subscribe({
         next: (response: ApiResponse) => {
-          console.log('Upload response:', response);
-
           if (response?.success !== true) {
             this.errorMessage = response?.message ?? 'Failed to upload profile picture.';
             this.cdr.detectChanges();
@@ -87,13 +84,10 @@ export class ProfilePictureDialog implements OnDestroy {
           this.dialogRef.close(true);
         },
         error: (error) => {
-          console.error('Upload error:', error);
-
           this.errorMessage = error?.error?.message ?? 'Failed to upload profile picture.';
           this.uploading = false;
         },
         complete: () => {
-          console.log('Upload request completed');
           this.uploading = false;
         },
       });

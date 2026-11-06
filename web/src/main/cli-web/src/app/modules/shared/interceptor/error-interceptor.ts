@@ -44,7 +44,6 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         /\/users\/[^/]+\/profile-picture(?:\?.*)?$/.test(req.url);
 
       if (!isMissingProfilePicture) {
-        console.error(error);
         ns.error(message);
       } else {
         message = '';

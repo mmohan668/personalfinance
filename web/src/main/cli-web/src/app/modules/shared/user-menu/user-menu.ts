@@ -133,7 +133,6 @@ export class UserMenu implements OnInit {
         this.profilePictureUrl.set(URL.createObjectURL(blob));
       },
       error: (error) => {
-        console.error('Failed to load profile picture:', error);
         this.profilePictureUrl.set('');
       },
     });

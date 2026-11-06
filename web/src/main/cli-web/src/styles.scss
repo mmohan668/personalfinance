@@ -907,6 +907,27 @@ app-root {
   border-radius: 0 !important;
 }
 
+/* Keep tall dialogs within the viewport and scroll their body independently. */
+.mat-mdc-dialog-container .dialog-container {
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100dvh - 32px);
+}
+
+.mat-mdc-dialog-container .dialog-title-bar,
+.mat-mdc-dialog-container .dialog-actions {
+  flex: 0 0 auto;
+}
+
+.mat-mdc-dialog-container .dialog-content {
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: none;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+}
+
 /* All buttons inside dialogs */
 .mat-mdc-dialog-container button {
   border-radius: 0 !important;
