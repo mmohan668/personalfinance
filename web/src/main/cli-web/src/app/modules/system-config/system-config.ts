@@ -39,7 +39,6 @@ export class SystemConfig {
           data: {
             rowData: rowData,
           },
-          disableClose: true,
         })
         .afterClosed()
         .subscribe((message: any) => {

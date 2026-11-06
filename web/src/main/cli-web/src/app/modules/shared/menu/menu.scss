@@ -9,13 +9,13 @@
   max-height: 100%;
   padding: 5px;
   box-sizing: border-box;
-  background: #4caf50;
+  background: linear-gradient(180deg, #1b5e20 0%, #2e7d32 100%);
   border-right: 1px solid #e5e7eb;
   overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior-y: contain;
   scrollbar-width: thin;
-  scrollbar-color: #c5cad3 transparent;
+  scrollbar-color: rgba(255, 255, 255, 0.42) transparent;
   font-family: Arial, Helvetica, sans-serif !important;
 
   transition:
@@ -53,12 +53,12 @@
       color 150ms ease;
 
     &:hover {
-      background: #f8fafc;
-      color: #334155;
+      background: rgba(255, 255, 255, 0.12);
+      color: #ffffff;
     }
 
     &:focus-visible {
-      outline: 2px solid #93c5fd;
+      outline: 2px solid rgba(255, 255, 255, 0.85);
       outline-offset: 2px;
     }
 
@@ -96,22 +96,22 @@
       color 150ms ease;
 
     &:hover {
-      background: #f8fafc;
-      color: #334155;
+      background: rgba(255, 255, 255, 0.12);
+      color: #ffffff;
     }
 
     &:focus-visible {
-      outline: 2px solid #93c5fd;
+      outline: 2px solid rgba(255, 255, 255, 0.85);
       outline-offset: 2px;
     }
 
     &--active {
-      background: #eff6ff;
-      color: #4caf50;
+      background: #e8f5e9;
+      color: #1b5e20;
 
       &:hover {
-        background: #eff6ff;
-        color: #334155;
+        background: #dcedde;
+        color: #1b5e20;
       }
     }
 
@@ -167,12 +167,12 @@
 }
 
 .menu::-webkit-scrollbar-thumb {
-  background: #c5cad3;
+  background: rgba(255, 255, 255, 0.42);
   border-radius: 6px;
 }
 
 .menu::-webkit-scrollbar-thumb:hover {
-  background: #9ca3af;
+  background: rgba(255, 255, 255, 0.65);
 }
 
 .submenu {
@@ -181,7 +181,7 @@
   gap: 0;
   margin: 2px 0 6px 24px;
   padding-left: 5px;
-  border-left: 1px solid #e2e8f0;
+  border-left: 1px solid rgba(255, 255, 255, 0.3);
   animation: submenu-open 150ms ease-out;
 }
 
@@ -207,18 +207,18 @@
     color 150ms ease;
 
   &:hover {
-    background: #f8fafc;
-    color: #334155;
+    background: rgba(255, 255, 255, 0.12);
+    color: #ffffff;
   }
 
   &:focus-visible {
-    outline: 2px solid #93c5fd;
+    outline: 2px solid rgba(255, 255, 255, 0.85);
     outline-offset: 2px;
   }
 
   &--active {
-    background: #eff6ff;
-    color: #4caf50;
+    background: #e8f5e9;
+    color: #1b5e20;
   }
 }
 

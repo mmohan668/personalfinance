@@ -16,6 +16,7 @@ import { DateAdapter, MAT_DATE_FORMATS } from '@angular/material/core';
 import { SystemDateAdapter } from './modules/shared/adapter/system-date-adapter';
 import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 import { authInterceptor } from './modules/shared/interceptor/auth-interceptor';
+import { MAT_DIALOG_DEFAULT_OPTIONS } from '@angular/material/dialog';
 
 export const APP_DATE_FORMATS = {
   parse: {
@@ -52,6 +53,10 @@ export const appConfig: ApplicationConfig = {
     {
       provide: MAT_DATE_FORMATS,
       useValue: APP_DATE_FORMATS,
+    },
+    {
+      provide: MAT_DIALOG_DEFAULT_OPTIONS,
+      useValue: { disableClose: true },
     },
   ],
 };

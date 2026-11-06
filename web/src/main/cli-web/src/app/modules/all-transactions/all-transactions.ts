@@ -175,7 +175,6 @@ export class AllTransactions {
           selectedRow: this.dataGrid?.selectedRows[0],
           allTransactions: true,
         },
-        disableClose: true,
       })
       .afterClosed()
       .subscribe((value: any) => {
@@ -204,7 +203,6 @@ export class AllTransactions {
           selectedRow: this.dataGrid?.selectedRows[0],
           allTransactions: true,
         },
-        disableClose: true,
       })
       .afterClosed()
       .subscribe((value: any) => {
@@ -227,7 +225,6 @@ export class AllTransactions {
           title: this._ms.get('common.delete.title'),
           message: this._ms.get('financialTransaction.delete.confirmation'),
         },
-        disableClose: true,
       })
       .afterClosed()
       .subscribe((value: boolean) => {

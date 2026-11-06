@@ -30,7 +30,7 @@
 
   .p-datatable-thead > tr > th {
     padding: 1px 8px !important;
-    height: 34px;
+    height: 30px;
     box-sizing: border-box;
     background: #f1f5f9;
     color: #334155;
@@ -43,6 +43,12 @@
     transition: background-color 160ms ease;
   }
 
+  .p-datatable-thead > tr.grid-header-row > th {
+    color: #ffffff !important;
+    background: linear-gradient(115deg, #1b5e20, #2e7d32) !important;
+    border-bottom-color: #164d1a !important;
+  }
+
   .p-datatable-thead > tr:first-child > th:first-child {
     border-top-left-radius: 10px;
   }
@@ -51,8 +57,9 @@
     border-top-right-radius: 10px;
   }
 
-  .p-datatable-thead > tr > th:hover {
-    background: #e8eef6;
+  .p-datatable-thead > tr.grid-header-row > th:hover {
+    color: #ffffff !important;
+    background: #2e7d32 !important;
   }
 
   /* Sort Header */
@@ -93,6 +100,12 @@
     box-sizing: border-box;
   }
 
+  .p-datatable-thead > tr.filter-row > th {
+    color: #1b5e20 !important;
+    background: linear-gradient(115deg, #e9ecef 0%, #f8f9fa 100%) !important;
+    border-bottom: 1px solid #c8e6c9 !important;
+  }
+
   app-column-filter {
     display: block;
     margin: 0 !important;
@@ -124,6 +137,24 @@
     min-height: 26px !important;
     font-size: 12px;
     box-sizing: border-box;
+  }
+
+  .filter-row .p-inputtext,
+  .filter-row .p-select,
+  .filter-row .p-dropdown,
+  .filter-row .p-datepicker {
+    color: #334155 !important;
+    background: #ffffff !important;
+    border-color: #b7d5bc !important;
+  }
+
+  .filter-row .p-inputtext::placeholder {
+    color: #718174 !important;
+    opacity: 1;
+  }
+
+  .filter-row .operator-button {
+    color: #1b5e20 !important;
   }
 
   .filter-control .p-datepicker {
@@ -164,10 +195,6 @@
 
   .p-datatable-tbody > tr:last-child > td {
     border-bottom: 0;
-  }
-
-  .p-datatable-tbody > tr:nth-child(even) > td {
-    background: #fbfcfe;
   }
 
   .p-datatable-tbody > tr:hover > td {
@@ -426,4 +453,64 @@
     align-items: flex-start;
     flex-direction: column;
   }
+}
+
+/* Keep the shared grid palette on the rendered PrimeNG header rows. */
+:host ::ng-deep .p-datatable-thead > tr:first-child > th {
+  color: #ffffff !important;
+  background: linear-gradient(115deg, #1b5e20, #2e7d32) !important;
+  border-bottom-color: #164d1a !important;
+  font-family: 'Roboto', sans-serif !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+}
+
+:host ::ng-deep .p-datatable-thead > tr:first-child > th:hover {
+  color: #ffffff !important;
+  background: #2e7d32 !important;
+}
+
+:host ::ng-deep .p-datatable-thead > tr.filter-row > th {
+  color: #1b5e20 !important;
+  background: linear-gradient(115deg, #e9ecef 0%, #f8f9fa 100%) !important;
+  border-bottom: 1px solid #c8e6c9 !important;
+}
+
+:host ::ng-deep .filter-row .p-inputtext,
+:host ::ng-deep .filter-row .p-select,
+:host ::ng-deep .filter-row .p-dropdown,
+:host ::ng-deep .filter-row .p-datepicker {
+  color: #334155 !important;
+  background: #ffffff !important;
+  border-color: #b7d5bc !important;
+}
+
+:host ::ng-deep .filter-row .p-inputtext::placeholder {
+  color: #718174 !important;
+  opacity: 1;
+}
+
+:host ::ng-deep .filter-row .operator-button {
+  color: #1b5e20 !important;
+}
+
+/* Use subtle grey gradients on alternating rows, matching the header treatment. */
+:host ::ng-deep .p-datatable-tbody > tr.grid-data-row:nth-child(odd) > td {
+  background: linear-gradient(115deg, #f0f2f4 0%, #ffffff 100%) !important;
+}
+
+:host ::ng-deep .p-datatable-tbody > tr.grid-data-row:nth-child(even) > td {
+  background: linear-gradient(115deg, #e9ecef 0%, #f8f9fa 100%) !important;
+}
+
+:host ::ng-deep .p-datatable-tbody > tr.grid-data-row:hover > td {
+  background: #f0f7ff !important;
+}
+
+:host ::ng-deep .p-datatable-tbody > tr.grid-data-row.selected-row > td {
+  background: linear-gradient(115deg, #cde6cf 0%, #e4f1e5 100%) !important;
+}
+
+:host ::ng-deep .p-datatable-tbody > tr.grid-data-row.selected-row:hover > td {
+  background: linear-gradient(115deg, #bfddc1 0%, #d9ebda 100%) !important;
 }

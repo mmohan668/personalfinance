@@ -239,15 +239,6 @@ app-root {
   }
 }
 
-.p-datatable-thead > tr > th {
-  padding: 2px 14px !important;
-  color: #4caf50 !important;
-  background: #d2e0ef !important;
-  font-weight: 500 !important;
-  font-family: 'Roboto', sans-serif !important;
-  font-size: 14px !important;
-}
-
 .p-datatable-tbody > tr > td {
   padding: 0px 14px !important;
   color: #6f7279 !important;
@@ -1054,4 +1045,241 @@ tr.empty-message-row > td.empty-message {
 .loading-backdrop {
   background-color: rgba(21, 35, 27, 0.24) !important;
   backdrop-filter: blur(3px);
+}
+
+/* Compact calendars opened from the shared data-grid filters. */
+.compact-column-filter-datepicker {
+  width: 230px !important;
+  min-width: 230px !important;
+  max-width: calc(100vw - 16px) !important;
+  padding: 3px !important;
+  border-radius: 12px !important;
+  box-sizing: border-box;
+  font-size: 12px !important;
+}
+
+.compact-column-filter-datepicker .p-datepicker-header {
+  gap: 1px;
+  padding: 1px 3px 4px !important;
+}
+
+.compact-column-filter-datepicker .p-datepicker-title {
+  gap: 2px;
+}
+
+.compact-column-filter-datepicker .p-datepicker-select-month,
+.compact-column-filter-datepicker .p-datepicker-select-year {
+  padding: 2px 3px !important;
+  font-size: 12px !important;
+}
+
+.compact-column-filter-datepicker .p-datepicker-prev-button,
+.compact-column-filter-datepicker .p-datepicker-next-button {
+  width: 23px !important;
+  min-width: 23px !important;
+  height: 23px !important;
+  padding: 0 !important;
+  border-radius: 8px !important;
+}
+
+.compact-column-filter-datepicker .p-datepicker-calendar {
+  width: 100% !important;
+  margin: 0 !important;
+  font-size: 12px !important;
+  table-layout: fixed;
+}
+
+.compact-column-filter-datepicker .p-datepicker-weekday {
+  padding: 1px 0 !important;
+  font-size: 9px !important;
+}
+
+.compact-column-filter-datepicker .p-datepicker-day-cell {
+  padding: 0 !important;
+}
+
+.compact-column-filter-datepicker .p-datepicker-day {
+  width: 23px !important;
+  height: 23px !important;
+  font-size: 10px !important;
+}
+
+/* Shared dialog polish */
+.mat-mdc-dialog-surface,
+.mdc-dialog__surface {
+  border-radius: 16px !important;
+  box-shadow:
+    0 24px 64px rgba(15, 35, 24, 0.2),
+    0 5px 18px rgba(15, 35, 24, 0.08) !important;
+  transition:
+    box-shadow 180ms ease,
+    border-radius 180ms ease;
+}
+
+.mat-mdc-dialog-container .dialog-container,
+.mat-mdc-dialog-container .forgot-password-dialog,
+.mat-mdc-dialog-container .change-password-dialog,
+.mat-mdc-dialog-container .profile-picture-dialog {
+  border-radius: 16px !important;
+}
+
+.mat-mdc-dialog-container .dialog-title-bar,
+.mat-mdc-dialog-container .dialog-header {
+  min-height: 52px;
+  padding-right: clamp(16px, 2.4vw, 28px);
+  padding-left: clamp(16px, 2.4vw, 28px);
+  background-image: linear-gradient(115deg, #1b5e20, #2e7d32);
+  border-radius: 16px 16px 0 0 !important;
+}
+
+.mat-mdc-dialog-container .dialog-heading {
+  min-width: 0;
+}
+
+.mat-mdc-dialog-container .dialog-title {
+  overflow-wrap: anywhere;
+}
+
+.mat-mdc-dialog-container .dialog-content {
+  padding: 14px clamp(16px, 2.4vw, 28px) !important;
+  background: #ffffff;
+}
+
+.mat-mdc-dialog-container .dialog-form {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  row-gap: 8px;
+  column-gap: clamp(12px, 1.4vw, 18px);
+}
+
+.mat-mdc-dialog-container .dialog-field {
+  min-width: 0;
+}
+
+.mat-mdc-dialog-container .dialog-field .mdc-notched-outline__leading,
+.mat-mdc-dialog-container .dialog-field .mdc-notched-outline__notch,
+.mat-mdc-dialog-container .dialog-field .mdc-notched-outline__trailing {
+  transition:
+    border-color 160ms ease,
+    border-width 160ms ease;
+}
+
+.mat-mdc-dialog-container .dialog-actions {
+  min-height: 58px;
+  padding: 8px clamp(16px, 2.4vw, 28px) !important;
+  background: #f8faf9;
+  border-top-color: #e6ede8;
+  border-radius: 0 0 16px 16px !important;
+}
+
+.mat-mdc-dialog-container .dialog-actions button {
+  min-height: 38px;
+  border-radius: 10px !important;
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease,
+    background-color 160ms ease,
+    color 160ms ease;
+}
+
+.mat-mdc-dialog-container .dialog-actions button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 5px 12px rgba(31, 67, 43, 0.14);
+}
+
+.mat-mdc-dialog-container .dialog-save-button:hover:not(:disabled) {
+  background: #388e3c !important;
+}
+
+@media (max-width: 1000px) {
+  .mat-mdc-dialog-container .dialog-form {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .mat-mdc-dialog-surface,
+  .mdc-dialog__surface,
+  .mat-mdc-dialog-container .dialog-container,
+  .mat-mdc-dialog-container .forgot-password-dialog,
+  .mat-mdc-dialog-container .change-password-dialog,
+  .mat-mdc-dialog-container .profile-picture-dialog {
+    border-radius: 13px !important;
+  }
+
+  .mat-mdc-dialog-container .dialog-title-bar,
+  .mat-mdc-dialog-container .dialog-header {
+    min-height: 48px;
+    border-radius: 13px 13px 0 0 !important;
+  }
+
+  .mat-mdc-dialog-container .dialog-form {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 8px;
+  }
+
+  .mat-mdc-dialog-container .dialog-actions {
+    flex-wrap: wrap;
+    min-height: auto;
+    gap: 8px;
+    padding: 8px 14px !important;
+    border-radius: 0 0 13px 13px !important;
+  }
+
+  .mat-mdc-dialog-container .dialog-actions .action-spacer {
+    display: none;
+  }
+
+  .mat-mdc-dialog-container .dialog-actions button {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: 0 10px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mat-mdc-dialog-surface,
+  .mdc-dialog__surface,
+  .mat-mdc-dialog-container .dialog-field .mdc-notched-outline__leading,
+  .mat-mdc-dialog-container .dialog-field .mdc-notched-outline__notch,
+  .mat-mdc-dialog-container .dialog-field .mdc-notched-outline__trailing,
+  .mat-mdc-dialog-container .dialog-actions button {
+    transition: none;
+  }
+}
+
+/* Apply one shared maximum width to every Material dialog. */
+.mat-mdc-dialog-panel {
+  max-width: min(1100px, calc(100vw - 32px)) !important;
+}
+
+/* Center dialogs in the workspace beside the persistent sidebar. */
+body:has(.app-shell) {
+  --app-dialog-sidebar-width: 255px;
+}
+
+body:has(.app-shell .menu--collapsed) {
+  --app-dialog-sidebar-width: 72px;
+}
+
+body:has(.app-shell) .cdk-global-overlay-wrapper:has(.mat-mdc-dialog-panel) {
+  box-sizing: border-box;
+  padding-left: var(--app-dialog-sidebar-width);
+}
+
+body:has(.app-shell) .mat-mdc-dialog-panel {
+  max-width: min(1100px, calc(100vw - var(--app-dialog-sidebar-width) - 32px)) !important;
+}
+
+body:has(.app-shell) .mat-mdc-dialog-panel:has(.dialog-form) {
+  width: min(70vw, 1100px, calc(100vw - var(--app-dialog-sidebar-width) - 32px)) !important;
+}
+
+@media (max-width: 767px) {
+  body:has(.app-shell) {
+    --app-dialog-sidebar-width: 0px;
+  }
+
+  body:has(.app-shell) .cdk-global-overlay-wrapper:has(.mat-mdc-dialog-panel) {
+    padding-left: 0;
+  }
 }

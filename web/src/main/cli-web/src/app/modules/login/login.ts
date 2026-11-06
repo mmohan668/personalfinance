@@ -36,7 +36,6 @@ export class Login {
       maxWidth: 'calc(100vw - 32px)',
       maxHeight: 'calc(100dvh - 32px)',
       autoFocus: false,
-      disableClose: false,
       panelClass: 'forgot-password-panel',
     });
   }
@@ -74,7 +73,6 @@ export class Login {
               maxWidth: 'calc(100vw - 32px)',
               maxHeight: 'calc(100dvh - 32px)',
               autoFocus: false,
-              disableClose: true,
               panelClass: 'change-password-panel',
             });
             dialogRef.componentInstance.forcePasswordChange = true;
@@ -85,7 +83,6 @@ export class Login {
                 maxWidth: 'calc(100vw - 32px)',
                 maxHeight: 'calc(100dvh - 32px)',
                 autoFocus: false,
-                disableClose: true,
                 panelClass: 'change-password-panel',
               });
 

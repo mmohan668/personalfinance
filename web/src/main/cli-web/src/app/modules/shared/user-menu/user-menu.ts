@@ -40,7 +40,6 @@ export class UserMenu implements OnInit {
       .open(ProfilePictureDialog, {
         width: '450px',
         maxWidth: '95vw',
-        disableClose: true,
         autoFocus: false,
         panelClass: 'profile-picture-dialog-panel',
       })
@@ -78,7 +77,6 @@ export class UserMenu implements OnInit {
       .open(ChangePasswordDialog, {
         width: '450px',
         maxWidth: '95vw',
-        disableClose: false,
         autoFocus: false,
       })
       .afterClosed()

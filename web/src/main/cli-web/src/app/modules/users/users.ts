@@ -71,7 +71,6 @@ export class Users {
         data: {
           mode: MODES.ADD,
         },
-        disableClose: true,
       })
       .afterClosed()
       .subscribe((message) => {
@@ -103,7 +102,6 @@ export class Users {
           mode: MODES.EDIT,
           selectedRow: this.dataGrid.selectedRows.at(0),
         },
-        disableClose: true,
       })
       .afterClosed()
       .subscribe((message) => {
@@ -132,7 +130,6 @@ export class Users {
       .open(ConfirmationDialog, {
         width: 'auto',
         data: { title: title, message: message },
-        disableClose: true,
       })
       .afterClosed()
       .subscribe((value: boolean) => {
@@ -169,7 +166,6 @@ export class Users {
       .open(ConfirmationDialog, {
         width: 'auto',
         data: { title: title, message: message },
-        disableClose: true,
       })
       .afterClosed()
       .subscribe((value: boolean) => {
@@ -213,7 +209,6 @@ export class Users {
       .open(ConfirmationDialog, {
         width: 'auto',
         data: { title: title, message: message },
-        disableClose: true,
       })
       .afterClosed()
       .subscribe((value: boolean) => {
