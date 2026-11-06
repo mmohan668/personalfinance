@@ -7,9 +7,8 @@
 -- ============================================================
 
 INSERT INTO grid_name
-(name)
-VALUES ('REFERENCE_OBJECTS_GRID')
-ON CONFLICT (LOWER(TRIM(name)))
+    (name)
+VALUES ('REFERENCE_OBJECTS_GRID') ON CONFLICT (LOWER(TRIM(name)))
     DO NOTHING;
 
 
@@ -96,8 +95,7 @@ FROM grid_name gn
           sort_index,
           align
              )
-WHERE LOWER(TRIM(gn.name)) = LOWER(TRIM('REFERENCE_OBJECTS_GRID'))
-ON CONFLICT
+WHERE LOWER(TRIM(gn.name)) = LOWER(TRIM('REFERENCE_OBJECTS_GRID')) ON CONFLICT
     (
     grid_name_id,
     (LOWER(TRIM(field)))

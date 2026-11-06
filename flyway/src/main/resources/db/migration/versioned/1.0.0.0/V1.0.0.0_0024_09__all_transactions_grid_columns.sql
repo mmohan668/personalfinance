@@ -7,9 +7,8 @@
 -- ============================================================
 
 INSERT INTO grid_name
-(name)
-VALUES ('ALL_TRANSACTIONS_GRID')
-ON CONFLICT (LOWER(TRIM(name)))
+    (name)
+VALUES ('ALL_TRANSACTIONS_GRID') ON CONFLICT (LOWER(TRIM(name)))
     DO NOTHING;
 
 
@@ -200,8 +199,7 @@ FROM grid_name gn
           cell_template,
           align
              )
-WHERE LOWER(TRIM(gn.name)) = LOWER(TRIM('ALL_TRANSACTIONS_GRID'))
-ON CONFLICT
+WHERE LOWER(TRIM(gn.name)) = LOWER(TRIM('ALL_TRANSACTIONS_GRID')) ON CONFLICT
     (
     grid_name_id,
     (LOWER(TRIM(field)))

@@ -7,14 +7,15 @@ describe('AddCopyEditFinancialTransactionDialog', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AddCopyEditFinancialTransactionDialog],l̥
+      imports: [AddCopyEditFinancialTransactionDialog],
+      l̥,
     }).compileComponents();
 
     fixture = TestBed.createComponent(AddCopyEditFinancialTransactionDialog);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });
-l̥
+  l̥;
   it('should create', () => {
     expect(component).toBeTruthy();
   });

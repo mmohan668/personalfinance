@@ -38,20 +38,16 @@ CREATE INDEX idx_users_password_history_changed_at
 -- Record its initial password hash explicitly; subsequent user inserts and
 -- password changes are captured by fn_users_password_history().
 INSERT INTO users_password_history
-(
-    user_id,
-    password_hash,
-    action_type,
-    changed_by,
-    changed_at
-)
-SELECT
-    id,
-    password_hash,
-    'INITIAL',
-    created_by,
-    created_at
+(user_id,
+ password_hash,
+ action_type,
+ changed_by,
+ changed_at)
+SELECT id,
+       password_hash,
+       'INITIAL',
+       created_by,
+       created_at
 FROM users
 WHERE LOWER(TRIM(username)) = 'system'
-  AND is_deleted = FALSE
-ON CONFLICT DO NOTHING;
+  AND is_deleted = FALSE ON CONFLICT DO NOTHING;

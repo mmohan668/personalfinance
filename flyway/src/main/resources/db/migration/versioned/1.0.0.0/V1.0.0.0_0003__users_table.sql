@@ -61,13 +61,11 @@ CREATE TABLE users
 -- =========================================================
 
 CREATE UNIQUE INDEX ux_users_user_name
-    ON users (LOWER(TRIM(username)))
-    WHERE is_deleted = FALSE;
+    ON users (LOWER(TRIM(username))) WHERE is_deleted = FALSE;
 
 
 CREATE UNIQUE INDEX ux_users_email
-    ON users (LOWER(TRIM(email)))
-    WHERE is_deleted = FALSE;
+    ON users (LOWER(TRIM(email))) WHERE is_deleted = FALSE;
 
 
 CREATE INDEX idx_users_admin_user_id

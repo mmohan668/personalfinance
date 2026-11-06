@@ -2,31 +2,34 @@
 -- Create Users History Trigger Function
 -- ============================================================
 
-CREATE OR REPLACE FUNCTION fn_users_history()
+CREATE
+OR REPLACE FUNCTION fn_users_history()
     RETURNS TRIGGER
     LANGUAGE plpgsql
 AS
 $$
 DECLARE
-    v_action_by VARCHAR(100);
+v_action_by VARCHAR(100);
 BEGIN
 
     -- ========================================================
     -- 1. SKIP UNCHANGED UPDATE OPERATIONS
     -- ========================================================
 
-    IF TG_OP = 'UPDATE' THEN
+    IF
+TG_OP = 'UPDATE' THEN
         IF OLD IS NOT DISTINCT FROM NEW THEN
             RETURN NEW;
-        END IF;
-    END IF;
+END IF;
+END IF;
 
 
     -- ========================================================
     -- 2. DETERMINE ACTION USER
     -- ========================================================
 
-    IF TG_OP = 'DELETE' THEN
+    IF
+TG_OP = 'DELETE' THEN
 
         v_action_by := COALESCE(
                 OLD.updated_by,
@@ -34,7 +37,7 @@ BEGIN
                 'SYSTEM'
                        );
 
-    ELSE
+ELSE
 
         v_action_by := COALESCE(
                 NEW.updated_by,
@@ -42,14 +45,15 @@ BEGIN
                 'SYSTEM'
                        );
 
-    END IF;
+END IF;
 
 
     -- ========================================================
     -- 3. INSERT HISTORY RECORD
     -- ========================================================
 
-    IF TG_OP = 'DELETE' THEN
+    IF
+TG_OP = 'DELETE' THEN
 
         INSERT INTO users_history
         (user_id,
@@ -87,9 +91,9 @@ BEGIN
                 v_action_by,
                 clock_timestamp());
 
-        RETURN OLD;
+RETURN OLD;
 
-    ELSE
+ELSE
 
         INSERT INTO users_history
         (user_id,
@@ -127,9 +131,9 @@ BEGIN
                 v_action_by,
                 clock_timestamp());
 
-        RETURN NEW;
+RETURN NEW;
 
-    END IF;
+END IF;
 
 END;
 $$;
