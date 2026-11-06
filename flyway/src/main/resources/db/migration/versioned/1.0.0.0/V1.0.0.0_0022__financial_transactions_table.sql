@@ -78,5 +78,4 @@ CREATE INDEX idx_financial_transactions_subcategory_id
     ON financial_transactions (subcategory_id);
 
 CREATE INDEX idx_financial_transactions_location_owner
-    ON financial_transactions (location_id, admin_user_id)
-    WHERE location_id IS NOT NULL;
+    ON financial_transactions (location_id, admin_user_id) WHERE location_id IS NOT NULL;

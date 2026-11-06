@@ -5,32 +5,35 @@
 DO
 $$
     DECLARE
-        v_system_user_count      INTEGER;
-        v_transaction_type_count INTEGER;
-    BEGIN
-        SELECT COUNT(*)
-        INTO v_system_user_count
-        FROM users
-        WHERE LOWER(TRIM(username)) = 'system'
-          AND is_deleted = FALSE;
+v_system_user_count      INTEGER;
+        v_transaction_type_count
+INTEGER;
+BEGIN
+SELECT COUNT(*)
+INTO v_system_user_count
+FROM users
+WHERE LOWER(TRIM(username)) = 'system'
+  AND is_deleted = FALSE;
 
-        IF v_system_user_count <> 1 THEN
+IF
+v_system_user_count <> 1 THEN
             RAISE EXCEPTION
                 'Expected exactly one active System user, but found %.',
                 v_system_user_count;
-        END IF;
+END IF;
 
-        SELECT COUNT(*)
-        INTO v_transaction_type_count
-        FROM reference_object
-        WHERE LOWER(TRIM(ref_obj_name)) = 'transaction_type';
+SELECT COUNT(*)
+INTO v_transaction_type_count
+FROM reference_object
+WHERE LOWER(TRIM(ref_obj_name)) = 'transaction_type';
 
-        IF v_transaction_type_count <> 1 THEN
+IF
+v_transaction_type_count <> 1 THEN
             RAISE EXCEPTION
                 'Expected exactly one TRANSACTION_TYPE reference object, but found %.',
                 v_transaction_type_count;
-        END IF;
-    END;
+END IF;
+END;
 $$;
 
 
@@ -663,8 +666,7 @@ FROM initial_subcategories s
          INNER JOIN categories c
                     ON c.transaction_type = rv.id
                         AND LOWER(TRIM(c.category_name)) =
-                            LOWER(TRIM(s.category_name))
-ON CONFLICT
+                            LOWER(TRIM(s.category_name)) ON CONFLICT
     (
     category_id,
     (LOWER(TRIM(subcategory_name)))

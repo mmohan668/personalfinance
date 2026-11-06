@@ -59,10 +59,7 @@ export class AuthService {
   }
 
   authenticate(request: LoginRequest): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(
-      `${this.config.configValue.apiUrl}/auth/login`,
-      request,
-    );
+    return this.http.post<LoginResponse>(`${this.config.configValue.apiUrl}/auth/login`, request);
   }
 
   signUp(user: any): Observable<ApiResponse> {

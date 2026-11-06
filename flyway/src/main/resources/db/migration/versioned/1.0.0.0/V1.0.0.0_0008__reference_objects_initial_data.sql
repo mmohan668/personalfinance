@@ -5,20 +5,21 @@
 DO
 $$
     DECLARE
-        v_system_user_count INTEGER;
-    BEGIN
-        SELECT COUNT(*)
-        INTO v_system_user_count
-        FROM users
-        WHERE LOWER(TRIM(username)) = 'system'
-          AND is_deleted = FALSE;
+v_system_user_count INTEGER;
+BEGIN
+SELECT COUNT(*)
+INTO v_system_user_count
+FROM users
+WHERE LOWER(TRIM(username)) = 'system'
+  AND is_deleted = FALSE;
 
-        IF v_system_user_count <> 1 THEN
+IF
+v_system_user_count <> 1 THEN
             RAISE EXCEPTION
                 'Expected exactly one active System user, but found %.',
                 v_system_user_count;
-        END IF;
-    END;
+END IF;
+END;
 $$;
 
 -- =========================================================
@@ -42,4 +43,4 @@ FROM system_account
              ('CURRENCY_CODE'),
              ('DATE_FORMAT'),
              ('LOCATION')) AS ref_objects (ref_obj_name)
-ON CONFLICT DO NOTHING;
+         ON CONFLICT DO NOTHING;

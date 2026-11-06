@@ -1,7 +1,6 @@
 package com.pf.common.mapper.categoryManagement;
 
 import com.pf.common.dto.categoryManagement.UserSubcategoryDto;
-
 import com.pf.common.entity.categoryManagement.UserSubcategory;
 import org.mapstruct.*;
 

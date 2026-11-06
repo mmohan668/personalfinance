@@ -33,7 +33,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
-import static  com.pf.common.constants.FieldConstants.USER_ID;
+import static com.pf.common.constants.FieldConstants.USER_ID;
 import static com.pf.common.enums.BulkUploadStatus.RECEIVED;
 
 @Slf4j

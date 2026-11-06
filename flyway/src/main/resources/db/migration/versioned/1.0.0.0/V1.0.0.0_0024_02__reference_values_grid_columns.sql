@@ -7,8 +7,7 @@
 -- ============================================================
 
 INSERT INTO grid_name (name)
-VALUES ('REFERENCE_VALUES_GRID')
-ON CONFLICT (LOWER(TRIM(name)))
+VALUES ('REFERENCE_VALUES_GRID') ON CONFLICT (LOWER(TRIM(name)))
     DO NOTHING;
 
 
@@ -37,8 +36,7 @@ VALUES ((SELECT id
         200,
         0,
         'asc',
-        0)
-ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
+        0) ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 
 
@@ -63,8 +61,7 @@ VALUES ((SELECT id
         200,
         1,
         'asc',
-        1)
-ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
+        1) ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 
 
@@ -85,8 +82,7 @@ VALUES ((SELECT id
         'text',
         'contains',
         200,
-        2)
-ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
+        2) ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 
 
@@ -111,8 +107,7 @@ VALUES ((SELECT id
         200,
         3,
         'cellValueTemplate',
-        'CENTER')
-ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
+        'CENTER') ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 
 
@@ -135,8 +130,7 @@ VALUES ((SELECT id
         'contains',
         200,
         4,
-        FALSE)
-ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
+        FALSE) ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 
 
@@ -159,8 +153,7 @@ VALUES ((SELECT id
         'contains',
         200,
         5,
-        FALSE)
-ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
+        FALSE) ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 
 
@@ -181,8 +174,7 @@ VALUES ((SELECT id
         'text',
         'contains',
         200,
-        6)
-ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
+        6) ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 
 
@@ -205,8 +197,7 @@ VALUES ((SELECT id
         'equals',
         200,
         7,
-        'RIGHT')
-ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
+        'RIGHT') ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 
 
@@ -227,8 +218,7 @@ VALUES ((SELECT id
         'text',
         'contains',
         200,
-        8)
-ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
+        8) ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
 
 
@@ -251,6 +241,5 @@ VALUES ((SELECT id
         'equals',
         200,
         9,
-        'RIGHT')
-ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
+        'RIGHT') ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
     DO NOTHING;
