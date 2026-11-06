@@ -330,10 +330,6 @@ export class Dashboard {
 
         this.expenses.set(data.expenses ?? []);
 
-        console.log('Full dashboard API response:', data);
-
-        console.log('Monthly projections:', data.monthlyTransactions);
-
         // Use the monthly projection rows returned by the backend.
         this.updateLast12MonthsChart(
           (data.monthlyTransactions ?? []) as MonthlyTransactionTotalProjection[],
@@ -400,12 +396,6 @@ export class Dashboard {
       monthMap.set(`${point.year}-${point.month}`, point);
     });
 
-    console.log('Monthly projections received:', projections);
-
-    console.log('Month map keys:', Array.from(monthMap.keys()));
-
-    console.log('Projection row sample:', projections?.[0]);
-
     for (const projection of projections ?? []) {
       const year = Number(projection.transactionYear);
       const month = Number(projection.transactionMonth);
@@ -416,15 +406,6 @@ export class Dashboard {
       }
 
       const point = monthMap.get(`${year}-${month}`);
-
-      console.log({
-        year,
-        month,
-        type: projection.transactionType,
-        total: projection.total,
-        mapKey: `${year}-${month}`,
-        matchedMonth: !!point,
-      });
 
       if (!point) {
         continue;
@@ -515,8 +496,6 @@ export class Dashboard {
       labels: months.map((point) => point.label),
       datasets,
     };
-
-    console.log('Line chart data:', this.last12MonthsData);
   }
 
   resetToCurrentMonth(): void {
