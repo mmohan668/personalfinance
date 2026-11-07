@@ -5,10 +5,33 @@
 .table-container {
   width: 100%;
   min-width: 0;
-  overflow: auto;
+  overflow-x: auto;
+  overflow-y: hidden;
   background: #ffffff;
   border: 1px solid #e2e8f0;
   box-shadow: 0 2px 8px rgb(15 23 42 / 4%);
+}
+
+:host ::ng-deep .table-container .p-datatable-table-container {
+  max-height: none !important;
+  overflow: visible !important;
+}
+
+.table-container.grid-scroll-enabled {
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+}
+
+:host ::ng-deep .table-container.grid-scroll-enabled .p-datatable-thead > tr.grid-header-row > th {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+}
+
+:host ::ng-deep .table-container.grid-scroll-enabled .p-datatable-thead > tr.filter-row > th {
+  position: sticky;
+  top: 36px;
+  z-index: 2;
 }
 
 /* ===========================
