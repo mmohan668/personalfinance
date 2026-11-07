@@ -1595,6 +1595,69 @@ body:has(.app-shell) .mat-mdc-dialog-panel:has(.dialog-form) {
   text-rendering: optimizeLegibility;
 }
 
+/* Dashboard month/year menus are rendered in the global CDK overlay. */
+.dashboard-select-panel.mat-mdc-select-panel {
+  position: relative;
+  top: 4px;
+  box-sizing: border-box;
+  margin-left: -11px !important;
+  max-height: min(220px, calc(100vh - 32px)) !important;
+  overflow-y: auto !important;
+  padding: 4px !important;
+  border: 1px solid #e3e9ef;
+  border-radius: 10px !important;
+  background: #ffffff !important;
+  background-clip: padding-box;
+  box-shadow: 0 8px 24px rgb(27 39 70 / 14%) !important;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+.dashboard-select-panel.mat-mdc-select-panel::-webkit-scrollbar {
+  width: 7px;
+}
+
+.dashboard-select-panel.mat-mdc-select-panel::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.dashboard-select-panel.mat-mdc-select-panel::-webkit-scrollbar-thumb {
+  border: 2px solid #ffffff;
+  border-radius: 10px;
+  background: #cbd5e1;
+}
+
+.dashboard-select-panel.mat-mdc-select-panel::-webkit-scrollbar-button {
+  display: none;
+}
+
+.dashboard-select-panel .mat-mdc-option {
+  box-sizing: border-box;
+  min-height: 34px !important;
+  height: 34px !important;
+  border-radius: 6px;
+  color: #315f38 !important;
+  font-size: 13px !important;
+  line-height: 34px !important;
+  transition: background-color 140ms ease;
+}
+
+.dashboard-select-panel .mat-mdc-option .mdc-list-item__primary-text {
+  color: inherit !important;
+  font-size: 13px !important;
+  line-height: 18px !important;
+}
+
+.dashboard-select-panel .mat-mdc-option:hover:not(.mdc-list-item--disabled),
+.dashboard-select-panel .mat-mdc-option.mat-mdc-option-active,
+.dashboard-select-panel .mat-mdc-option.mdc-list-item--selected:not(.mat-mdc-option-multiple) {
+  background: #e8f5e9 !important;
+}
+
+.dashboard-select-panel .mat-mdc-option.mdc-list-item--selected:not(.mat-mdc-option-multiple) {
+  color: #1b5e20 !important;
+}
+
 @media (max-width: 767px) {
   body:has(.app-shell) {
     --app-dialog-sidebar-width: 0px;
