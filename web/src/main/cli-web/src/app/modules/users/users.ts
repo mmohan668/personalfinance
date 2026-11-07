@@ -16,6 +16,7 @@ import { AddEditUserDialog } from './add-edit-user-dialog/add-edit-user-dialog';
 import { ConfirmationDialog } from '../shared/confirmation-dialog/confirmation-dialog';
 import { firstValueFrom } from 'rxjs';
 import { UserService } from '../shared/service/user-service';
+import { UserPermissionsDialog } from './user-permissions-dialog/user-permissions-dialog';
 
 @Component({
   imports: [DataGrid],
@@ -39,7 +40,7 @@ export class Users {
   protected readonly toolbaConfig!: ToolbarConfig;
 
   constructor() {
-    this.toolbaConfig = this._cs.toolbarConfig(true);
+    this.toolbaConfig = this._cs.toolbarConfig(true, 'User Management', 'Users', true);
     this.toolbaConfig.copyRow = false;
   }
 
@@ -109,6 +110,40 @@ export class Users {
           this._ns.success(message);
         }
         this.dataGrid.refreshGrid();
+      });
+  };
+
+  managePermissions = () => {
+    if (this.dataGrid.selectedRows.length === 0) {
+      this._ns.error(this._ms.get('user.permissions.noSelection'));
+      return;
+    }
+    if (this.dataGrid.selectedRows.length > 1) {
+      this._ns.error(this._ms.get('user.permissions.singleSelection'));
+      return;
+    }
+
+    const user = this.dataGrid.selectedRows.at(0);
+    if (user.isAdminUser === true) {
+      this._ns.error(this._ms.get('user.permissions.isAdminUser'));
+      return;
+    }
+
+    this.dialog
+      .open(UserPermissionsDialog, {
+        width: '820px',
+        maxWidth: '94vw',
+        data: {
+          userId: user.id,
+          username: user.username,
+        },
+      })
+      .afterClosed()
+      .subscribe((message: string | undefined) => {
+        if (message) {
+          this._ns.success(message);
+          this.dataGrid.refreshGrid();
+        }
       });
   };
 

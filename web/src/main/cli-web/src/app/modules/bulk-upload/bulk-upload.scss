@@ -176,11 +176,17 @@
     background-color 150ms ease,
     box-shadow 150ms ease,
     transform 150ms ease;
+  cursor: pointer;
 
-  &:hover {
+  &:hover:not(:disabled) {
     background: #43a047;
     box-shadow: 0 3px 8px rgb(46 125 50 / 18%);
     transform: translateY(-1px);
+  }
+
+  &:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
   }
 
   &:focus-visible {

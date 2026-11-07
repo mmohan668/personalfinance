@@ -99,6 +99,11 @@
     }
   },
   "user": {
+    "permissions": {
+      "noSelection": "Please select at least one record to edit permissions.",
+      "singleSelection": "Please select only one record to edit permissions.",
+      "isAdminUser": "The admin user already has permissions to all actions."
+    },
     "delete": {
       "isAdminUser": "The admin user cannot be deleted.",
       "title": "Delete Confirmation",

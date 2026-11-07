@@ -236,10 +236,6 @@
   }
 }
 
-/*
- * Reuse the global toolbar styles from styles.scss.
- * Do not change styles.scss.
- */
 .help-action-toolbar {
   display: flex;
   flex: 0 0 auto;
@@ -247,7 +243,47 @@
   gap: 0;
   padding: 0;
 
-  button[mat-icon-button] {
+  .toolbar-border {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-shrink: 0;
+    width: 32px !important;
+    min-width: 32px !important;
+    height: 32px !important;
+    min-height: 32px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+    border: 1px solid #a9cfae !important;
+    border-radius: 8px !important;
+    background: linear-gradient(145deg, #ffffff 0%, #f6faf6 100%) !important;
+    color: #388e3c !important;
+    line-height: 1 !important;
+    box-shadow: 0 2px 5px rgb(31 74 40 / 8%);
+    vertical-align: middle;
+    transition:
+      background-color 180ms ease,
+      color 180ms ease,
+      border-color 180ms ease,
+      box-shadow 180ms ease,
+      transform 180ms ease;
+    opacity: 1 !important;
+  }
+
+  .toolbar-border > mat-icon {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 20px !important;
+    min-width: 20px !important;
+    height: 20px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    color: #388e3c !important;
+    font-size: 20px !important;
+    line-height: 20px !important;
+    text-align: center !important;
     flex-shrink: 0;
   }
 }

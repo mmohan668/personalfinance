@@ -65,6 +65,7 @@ export class Login {
 
           this.authService.storeToken(response.accessToken);
           this.authService.storeUserInfo(response.userProfile);
+          this.authService.storePermissions(response.permissions);
           this.isLoading.set(false);
 
           if (response.mustChangePassword) {

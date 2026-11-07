@@ -27,7 +27,7 @@
             <button
               type="button"
               class="secondary-button download-template-button"
-              [disabled]="!selectedUploadType"
+              [disabled]="!hasUploadPermission"
               (click)="downloadTemplate()"
             >
               <mat-icon class="button-icon" aria-hidden="true">download</mat-icon>
@@ -37,16 +37,23 @@
 
           <div class="form-field">
             <div class="file-upload">
-              <label for="bulkUploadFile" class="choose-file-button">
+              <button
+                type="button"
+                class="choose-file-button"
+                [disabled]="!hasUploadPermission"
+                (click)="fileInput.click()"
+              >
                 <mat-icon class="button-icon" aria-hidden="true">attach_file</mat-icon>
                 Choose File
-              </label>
+              </button>
 
               <input
+                #fileInput
                 id="bulkUploadFile"
                 type="file"
                 accept=".xlsx"
                 hidden
+                [disabled]="!hasUploadPermission"
                 (change)="onFileSelected($event)"
               />
 

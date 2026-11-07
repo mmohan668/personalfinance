@@ -23,6 +23,29 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Transactional(readOnly = true)
     @Query("""
+            SELECT COUNT(u) > 0
+            FROM User u
+            WHERE u.id = :userId
+            AND u.adminUser.id = :adminUserId
+            AND u.isDeleted = false
+            """)
+    boolean existsByIdAndAdminUserId(
+            @Param("userId") Long userId,
+            @Param("adminUserId") Long adminUserId
+    );
+
+    @Transactional(readOnly = true)
+    @Query("""
+            SELECT COUNT(u) > 0
+            FROM User u
+            WHERE u.id = :userId
+            AND u.id = u.adminUser.id
+            AND u.isDeleted = false
+            """)
+    boolean existsAdminUserById(@Param("userId") Long userId);
+
+    @Transactional(readOnly = true)
+    @Query("""
             SELECT COUNT(U) > 0
             FROM User U
             WHERE LOWER(TRIM(U.email)) = :email

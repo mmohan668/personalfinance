@@ -11,6 +11,18 @@
     </button>
   }
 
+  @if (toolbarConfig.permissions) {
+    <button
+      mat-icon-button
+      class="toolbar-border"
+      type="button"
+      title="Permissions"
+      (click)="permissionsAction()"
+    >
+      <mat-icon>admin_panel_settings</mat-icon>
+    </button>
+  }
+
   @if (toolbarConfig.addRow) {
     <button mat-icon-button class="toolbar-border" type="button" title="Add" (click)="addRow()">
       <mat-icon>add</mat-icon>

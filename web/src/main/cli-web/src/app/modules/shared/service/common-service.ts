@@ -1,5 +1,10 @@
 import { inject, Service, signal } from '@angular/core';
-import { GridFilter, ToolbarConfig, UserProfile } from '../types/types';
+import {
+  GridFilter,
+  AppPermission,
+  ToolbarConfig,
+  UserProfile,
+} from '../types/types';
 import { AbstractControl, FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { NotificationService } from './notification-service';
@@ -23,6 +28,7 @@ export class CommonService {
   private _ns = inject(NotificationService);
 
   private userProfile = signal<UserProfile>(this.loadUserProfile());
+  private userPermissions = signal<AppPermission[]>(this.loadUserPermissions());
 
   constructor() {
     this.dialog.afterOpened.subscribe(() => this._ns.close());
@@ -38,12 +44,84 @@ export class CommonService {
     }
   }
 
+  private loadUserPermissions(): AppPermission[] {
+    try {
+      const permissions = sessionStorage.getItem('userPermissions');
+      return permissions ? (JSON.parse(permissions) as AppPermission[]) : [];
+    } catch {
+      return [];
+    }
+  }
+
   setUserProfile(userProfile: UserProfile) {
     this.userProfile.set(userProfile);
   }
 
+  setUserPermissions(permissions: AppPermission[]) {
+    this.userPermissions.set(permissions);
+  }
+
+  clearUserSession(): void {
+    this.userProfile.set({} as UserProfile);
+    this.userPermissions.set([]);
+  }
+
   get getUserProfile() {
     return this.userProfile();
+  }
+
+  get getUserPermissions(): AppPermission[] {
+    return this.userPermissions();
+  }
+
+  hasPermission(moduleName: string, screenName: string, actionName: string): boolean {
+    return CommonService.hasPermissionForUser(
+      this.loginUserId,
+      moduleName,
+      screenName,
+      actionName,
+    );
+  }
+
+  static hasPermissionForUser(
+    userId: number | null,
+    moduleName: string,
+    screenName: string,
+    actionName: string,
+  ): boolean {
+    if (CommonService.isAdminUser(userId)) {
+      return true;
+    }
+    if (userId === null) {
+      return false;
+    }
+
+    try {
+      const permissions = JSON.parse(
+        sessionStorage.getItem('userPermissions') ?? '[]',
+      ) as AppPermission[];
+      return permissions.some(
+        (permission) =>
+          permission.moduleName === moduleName &&
+          permission.screenName === screenName &&
+          permission.actionName === actionName &&
+          permission.hasPermission,
+      );
+    } catch {
+      return false;
+    }
+  }
+
+  private static isAdminUser(userId: number | null): boolean {
+    if (userId === null) {
+      return false;
+    }
+    try {
+      const profile = JSON.parse(sessionStorage.getItem('userProfile') ?? '{}') as UserProfile;
+      return profile.id === userId && profile.id === profile.adminUserId;
+    } catch {
+      return false;
+    }
   }
 
   get loginUserId() {
@@ -65,33 +143,79 @@ export class CommonService {
     return value !== undefined && value !== null && value !== '';
   }
 
-  toolbarConfig(value: boolean = false): ToolbarConfig {
-    return {
+  toolbarConfig(
+    value: boolean = false,
+    moduleName?: string,
+    screenName?: string,
+    permissions: boolean = false,
+  ): ToolbarConfig {
+    const config: ToolbarConfig = {
       addRow: value,
       copyRow: value,
       deleteRow: value,
       editRow: value,
       activate: value,
       inactivate: value,
+      permissions,
       refresh: value,
       gridSettings: true,
       export: true,
       columnChooser: true,
     };
+    return this.applyToolbarPermissions(config, moduleName, screenName);
   }
 
-  toolbarConfigExcludeActivateInactivate(): ToolbarConfig {
-    return {
+  toolbarConfigExcludeActivateInactivate(moduleName?: string, screenName?: string): ToolbarConfig {
+    const config: ToolbarConfig = {
       addRow: true,
       copyRow: true,
       deleteRow: true,
       editRow: true,
       activate: false,
       inactivate: false,
+      permissions: false,
       refresh: false,
       gridSettings: true,
       export: true,
       columnChooser: true,
+    };
+    return this.applyToolbarPermissions(config, moduleName, screenName);
+  }
+
+  private applyToolbarPermissions(
+    config: ToolbarConfig,
+    moduleName?: string,
+    screenName?: string,
+  ): ToolbarConfig {
+    const userId = this.loginUserId;
+    const toolbarPermissions: ToolbarConfig = {
+      ...config,
+      permissions: config.permissions && CommonService.isAdminUser(userId),
+    };
+    if (!moduleName || !screenName) {
+      return toolbarPermissions;
+    }
+
+    return {
+      ...toolbarPermissions,
+      addRow:
+        toolbarPermissions.addRow &&
+        CommonService.hasPermissionForUser(userId, moduleName, screenName, 'Add'),
+      copyRow:
+        toolbarPermissions.copyRow &&
+        CommonService.hasPermissionForUser(userId, moduleName, screenName, 'Copy'),
+      editRow:
+        toolbarPermissions.editRow &&
+        CommonService.hasPermissionForUser(userId, moduleName, screenName, 'Edit'),
+      deleteRow:
+        toolbarPermissions.deleteRow &&
+        CommonService.hasPermissionForUser(userId, moduleName, screenName, 'Delete'),
+      activate:
+        toolbarPermissions.activate &&
+        CommonService.hasPermissionForUser(userId, moduleName, screenName, 'Activate'),
+      inactivate:
+        toolbarPermissions.inactivate &&
+        CommonService.hasPermissionForUser(userId, moduleName, screenName, 'Inactivate'),
     };
   }
 

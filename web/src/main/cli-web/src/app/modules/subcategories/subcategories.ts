@@ -59,7 +59,7 @@ export class Subcategories {
   subcategoryNames = signal<string[]>([]);
 
   constructor() {
-    this.toolbarConfig = this._cs.toolbarConfig(true);
+    this.toolbarConfig = this._cs.toolbarConfig(true, 'Category Management', 'Subcategory');
     this.createSearchForm();
     this.fetchSuggestions();
   }

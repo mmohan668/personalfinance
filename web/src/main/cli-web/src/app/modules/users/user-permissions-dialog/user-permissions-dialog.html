@@ -1,0 +1,118 @@
+<div class="permissions-dialog" cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+  <div class="dialog-title-bar" cdkDragHandle>
+    <div class="dialog-heading">
+      <mat-icon class="dialog-heading-icon">admin_panel_settings</mat-icon>
+      <span class="dialog-title">Permissions — {{ data.username }}</span>
+    </div>
+  </div>
+
+  <div class="permissions-content">
+    @if (loading()) {
+      <p class="permissions-message">Loading permissions...</p>
+    } @else if (permissionModules.length === 0) {
+      <p class="permissions-message">No permissions are available for this user.</p>
+    } @else {
+      <div class="permission-selection-row application-selection">
+        <mat-checkbox
+          [checked]="areAllSelected(permissions)"
+          [indeterminate]="areSomeSelected(permissions)"
+          [disabled]="saving()"
+          (change)="setPermissions(permissions, $event.checked)"
+        >
+          Select all application permissions
+        </mat-checkbox>
+      </div>
+      <mat-tab-group class="module-tabs">
+        @for (module of permissionModules; track module.id) {
+          <mat-tab [label]="module.name">
+            <div class="module-content">
+              <div class="permission-selection-row">
+                <mat-checkbox
+                  [checked]="areAllSelected(modulePermissions(module))"
+                  [indeterminate]="areSomeSelected(modulePermissions(module))"
+                  [disabled]="saving()"
+                  (change)="setModulePermissions(module, $event.checked)"
+                >
+                  Select all module permissions
+                </mat-checkbox>
+              </div>
+              <mat-tab-group class="screen-tabs">
+                @for (screen of module.screens; track screen.id) {
+                  <mat-tab [label]="screen.name">
+                    <div class="permission-selection-row screen-selection">
+                      <mat-checkbox
+                        [checked]="areAllSelected(screen.permissions)"
+                        [indeterminate]="areSomeSelected(screen.permissions)"
+                        [disabled]="saving()"
+                        (change)="setPermissions(screen.permissions, $event.checked)"
+                      >
+                        Select all screen actions
+                      </mat-checkbox>
+                    </div>
+                    <table class="permissions-table">
+                      <thead>
+                        <tr>
+                          <th scope="col">Permission</th>
+                          <th scope="col" class="permission-checkbox-column">Allowed</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        @for (permission of screen.permissions; track permission.id) {
+                          <tr>
+                            <td>{{ permission.actionName }}</td>
+                            <td class="permission-checkbox-column">
+                              <mat-checkbox
+                                [(ngModel)]="permission.hasPermission"
+                                [aria-label]="
+                                  'Allow ' + permission.actionName + ' on ' + screen.name
+                                "
+                              ></mat-checkbox>
+                            </td>
+                          </tr>
+                        }
+                      </tbody>
+                    </table>
+                  </mat-tab>
+                }
+              </mat-tab-group>
+            </div>
+          </mat-tab>
+        }
+      </mat-tab-group>
+    }
+  </div>
+
+  <mat-dialog-actions class="dialog-actions permissions-actions">
+    <button
+      mat-stroked-button
+      type="button"
+      (click)="reset()"
+      [disabled]="loading() || saving()"
+      class="dialog-reset-button"
+    >
+      <mat-icon>restart_alt</mat-icon>
+      Reset
+    </button>
+    <span class="action-spacer"></span>
+    <button
+      mat-stroked-button
+      type="button"
+      (click)="dialogRef.close()"
+      [disabled]="saving()"
+      class="dialog-cancel-button"
+    >
+      <mat-icon>close</mat-icon>
+      Close
+    </button>
+    <button
+      mat-raised-button
+      type="button"
+      class="dialog-save-button"
+      (click)="update()"
+      [disabled]="loading() || saving() || !hasChanges"
+    >
+      <mat-icon>save</mat-icon>
+      Update
+    </button>
+  </mat-dialog-actions>
+</div>

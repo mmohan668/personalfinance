@@ -62,7 +62,7 @@ export class BulkUpload {
   }
 
   downloadTemplate(): void {
-    if (!this.selectedUploadType) {
+    if (!this.hasUploadPermission) {
       return;
     }
     firstValueFrom(this._bus.downloadTemplate(this.selectedUploadType)).then((response) => {
@@ -95,6 +95,10 @@ export class BulkUpload {
       this._ns.error(this._ms.get('common.file.required'));
       return;
     }
+    if (!this.canSubmit) {
+      this._ns.error('You do not have permission to perform this upload.');
+      return;
+    }
     const formData = new FormData();
     const uploadTypeLabel = this.uploadTypes.find((u) => u.value === this.selectedUploadType)
       ?.label as string;
@@ -113,7 +117,26 @@ export class BulkUpload {
   }
 
   get canSubmit(): boolean {
-    return !!this.selectedUploadType && !!this.selectedFile;
+    return this.hasUploadPermission && !!this.selectedFile;
+  }
+
+  get hasUploadPermission(): boolean {
+    const uploadActions: Record<string, string> = {
+      REFERENCE_VALUES: 'Upload Reference Values',
+      CATEGORIES: 'Upload Categories',
+      SUBCATEGORIES: 'Upload Subcategories',
+      FINANCIAL_TRANSACTIONS: 'Upload Financial Transactions',
+    };
+    const actionName = uploadActions[this.selectedUploadType];
+    return (
+      !!actionName &&
+      CommonService.hasPermissionForUser(
+        this._cs.loginUserId,
+        'Bulk Upload',
+        'Bulk Upload',
+        actionName,
+      )
+    );
   }
 
   hasValue = (rowData: any, col: GridColumn) => {
