@@ -456,6 +456,38 @@
 }
 
 /* Keep the shared grid palette on the rendered PrimeNG header rows. */
+:host ::ng-deep .p-datatable-thead > tr.grid-header-row {
+  height: 36px !important;
+}
+
+:host ::ng-deep .p-datatable-thead > tr.grid-header-row > th {
+  height: 36px !important;
+  min-height: 36px !important;
+  padding: 0 8px !important;
+  box-sizing: border-box;
+  line-height: 18px;
+}
+
+:host ::ng-deep .p-datatable-thead > tr.grid-header-row > th .mat-mdc-checkbox,
+:host ::ng-deep .p-datatable-thead > tr.grid-header-row > th .mat-internal-form-field {
+  min-height: 30px !important;
+  height: 30px !important;
+}
+
+:host ::ng-deep .p-datatable-thead > tr.filter-row > th {
+  height: 34px !important;
+  min-height: 34px !important;
+  padding: 2px 8px !important;
+  box-sizing: border-box;
+}
+
+:host ::ng-deep .filter-row .date-filter-control,
+:host ::ng-deep .filter-row .date-filter-control p-datepicker,
+:host ::ng-deep .filter-row .date-filter-control .p-datepicker {
+  height: 28px !important;
+  min-height: 28px !important;
+}
+
 :host ::ng-deep .p-datatable-thead > tr:first-child > th {
   color: #ffffff !important;
   background: linear-gradient(115deg, #1b5e20, #2e7d32) !important;
@@ -503,8 +535,12 @@
   background: linear-gradient(115deg, #e9ecef 0%, #f8f9fa 100%) !important;
 }
 
-:host ::ng-deep .p-datatable-tbody > tr.grid-data-row:hover > td {
-  background: #f0f7ff !important;
+:host ::ng-deep .p-datatable-tbody > tr.grid-data-row:nth-child(odd):hover > td {
+  background: linear-gradient(115deg, #e5edf4 0%, #f4f7fa 100%) !important;
+}
+
+:host ::ng-deep .p-datatable-tbody > tr.grid-data-row:nth-child(even):hover > td {
+  background: linear-gradient(115deg, #dfe8f0 0%, #eff4f8 100%) !important;
 }
 
 :host ::ng-deep .p-datatable-tbody > tr.grid-data-row.selected-row > td {
