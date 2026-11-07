@@ -21,8 +21,8 @@
 
   <div
     class="table-container data-grid"
-    [class.grid-scroll-enabled]="dataSource().length > 9"
-    [style.max-height.px]="dataSource().length > 9 ? scrollHeight : null"
+    [class.grid-scroll-enabled]="dataSource().length > 8"
+    [style.max-height.px]="dataSource().length > 8 ? scrollHeight : null"
   >
     @if (visibleColumns(); as visibleColumns) {
       <p-table
