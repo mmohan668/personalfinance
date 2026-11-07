@@ -19,7 +19,11 @@
     [resetGridSettings]="resetGridSettings"
   ></app-tool-bar>
 
-  <div class="table-container data-grid">
+  <div
+    class="table-container data-grid"
+    [class.grid-scroll-enabled]="dataSource().length > 9"
+    [style.max-height.px]="dataSource().length > 9 ? scrollHeight : null"
+  >
     @if (visibleColumns(); as visibleColumns) {
       <p-table
         #dataTable
@@ -31,8 +35,6 @@
         [lazy]="true"
         sortMode="multiple"
         [reorderableColumns]="true"
-        [scrollable]="true"
-        [scrollHeight]="scrollHeight + 'px'"
         [tableStyle]="{ 'min-width': '70rem' }"
         (onSort)="onSort($event)"
         (onColReorder)="onColReorder($event)"
