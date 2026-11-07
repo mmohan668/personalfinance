@@ -33,11 +33,7 @@ $$
         (screen_id, action_name, description, display_order, created_by)
         SELECT v_screen_id, a.action_name, a.description, a.display_order, v_system_user_id
         FROM (VALUES
-            ('Add', 'Create a user.', 1),
-            ('Edit', 'Update the selected user.', 2),
-            ('Delete', 'Delete the selected user.', 3),
-            ('Activate', 'Activate the selected user.', 4),
-            ('Inactivate', 'Inactivate the selected user.', 5)
+            ('Edit', 'Update the selected user.', 1)
         ) AS a(action_name, description, display_order)
         WHERE NOT EXISTS (
             SELECT 1
