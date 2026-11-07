@@ -51,6 +51,12 @@
     transform 180ms ease;
 }
 
+/* Match Material's hover state layer to the toolbar button's rounded-square shape. */
+::ng-deep .table-toolbar .toolbar-border .mat-mdc-button-persistent-ripple::before,
+::ng-deep .table-toolbar .toolbar-border .mat-ripple-element {
+  border-radius: 8px !important;
+}
+
 /* ==========================================
    TOOLBAR ICONS
 ========================================== */

@@ -15,6 +15,7 @@
     [deleteRow]="deleteRow"
     [activate]="activate"
     [inactivate]="inactivate"
+    [permissionsAction]="permissionsAction"
     [saveGridSetting]="saveGridSetting"
     [resetGridSettings]="resetGridSettings"
   ></app-tool-bar>
@@ -163,13 +164,17 @@
                 } @else if (column.dataType === 'datetime') {
                   {{ row[column.field] | date: getDateTimeFormate() }}
                 } @else if (column.cellTemplate === 'hyperlinkCellTemplate') {
-                  <a
-                    class="hyp-link"
-                    href="javascript:void(0)"
-                    (click)="$event.stopPropagation(); hyperlinkAction(row, column)"
-                  >
+                  @if (canOpenHyperlink()) {
+                    <a
+                      class="hyp-link"
+                      href="javascript:void(0)"
+                      (click)="$event.stopPropagation(); hyperlinkAction(row, column)"
+                    >
+                      {{ row[column.field] }}
+                    </a>
+                  } @else {
                     {{ row[column.field] }}
-                  </a>
+                  }
                 } @else if (column.cellTemplate === 'downloadCellTemplate') {
                   @if (hasValue(row, column)) {
                     <a

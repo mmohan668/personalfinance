@@ -76,7 +76,9 @@ public class User {
 
     @PrePersist
     public void prePersist() {
-        this.active = false;
+        if (this.active == null) {
+            this.active = false;
+        }
         this.createdAt = LocalDateTime.now();
         this.isDeleted = false;
     }

@@ -3,10 +3,12 @@ import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { catchError, throwError } from 'rxjs';
 import { NotificationService } from '../service/notification-service';
+import { CommonService } from '../service/common-service';
 
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const ns = inject(NotificationService);
   const router = inject(Router);
+  const commonService = inject(CommonService);
 
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
@@ -24,6 +26,8 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         if (!req.url.includes('/api/auth/login')) {
           sessionStorage.removeItem('authToken');
           sessionStorage.removeItem('userProfile');
+          sessionStorage.removeItem('userPermissions');
+          commonService.clearUserSession();
           void router.navigate(['/login']);
         }
       } else if (error.status === 403) {

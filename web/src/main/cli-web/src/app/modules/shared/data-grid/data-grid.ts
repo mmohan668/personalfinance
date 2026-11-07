@@ -93,6 +93,8 @@ export class DataGrid implements OnInit {
   @Input()
   public showPager: boolean = true;
   @Input()
+  public permissionsAction!: () => void;
+  @Input()
   public getGroupColumnHeader!: () => any;
 
   public config = inject(AppConfigService);
@@ -353,6 +355,13 @@ export class DataGrid implements OnInit {
 
   isRowSelected(row: any): boolean {
     return this.selectedRows.some((selected) => selected.id === row.id);
+  }
+
+  canOpenHyperlink(): boolean {
+    return (
+      this.gridName !== 'SYSTEM_CONFIG' ||
+      this._cs.hasPermission('Settings', 'System Config', 'Edit')
+    );
   }
 
   onRowClick(row: any): void {

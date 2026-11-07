@@ -42,7 +42,7 @@ export class ReferenceValues {
   referenceCodes = signal<string[]>([]);
 
   constructor() {
-    this.toolbarConfig = this._cs.toolbarConfig(true);
+    this.toolbarConfig = this._cs.toolbarConfig(true, 'Settings', 'Reference Values');
     this.createSearchForm();
     this.fetchSuggestions();
   }

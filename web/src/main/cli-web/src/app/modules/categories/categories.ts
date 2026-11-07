@@ -57,7 +57,7 @@ export class Categories {
   categoryNames = signal<string[]>([]);
 
   constructor() {
-    this.toolbaConfig = this._cs.toolbarConfig(true);
+    this.toolbaConfig = this._cs.toolbarConfig(true, 'Category Management', 'Category');
     this.toolbaConfig.copyRow = false;
     this.createSearchForm();
     this.fetchSuggestions();

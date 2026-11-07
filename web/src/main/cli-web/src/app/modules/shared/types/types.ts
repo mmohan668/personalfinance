@@ -67,6 +67,30 @@ export interface ApiResponse {
   data: any;
 }
 
+export interface UserPermissionViewDto {
+  id: number;
+  userId: number;
+  moduleId: number;
+  screenId: number;
+  actionId: number;
+  hasPermission: boolean;
+  moduleName: string;
+  screenName: string;
+  actionName: string;
+}
+
+export interface AppPermission {
+  actionName: string;
+  moduleName: string;
+  screenName: string;
+  hasPermission: boolean;
+}
+
+export interface UserPermissionUpdateRequest {
+  userId: number;
+  permissions: { id: number; hasPermission: boolean }[];
+}
+
 export interface ToolbarConfig {
   addRow: boolean | false;
   copyRow: boolean | false;
@@ -74,6 +98,7 @@ export interface ToolbarConfig {
   editRow: boolean | false;
   activate: boolean | false;
   inactivate: boolean | false;
+  permissions: boolean | false;
   refresh: boolean | false;
   gridSettings: boolean | true;
   export: boolean | true;

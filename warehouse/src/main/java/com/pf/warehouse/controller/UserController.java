@@ -5,6 +5,8 @@ import com.pf.common.dto.gp.GridResult;
 import com.pf.common.dto.gp.SearchCriteria;
 import com.pf.common.dto.userManagement.ChangePassword;
 import com.pf.common.dto.userManagement.UserDto;
+import com.pf.common.dto.userManagement.UserPermissionUpdateRequest;
+import com.pf.common.dto.userManagement.UserPermissionViewDto;
 import com.pf.common.entity.userManagement.ProfilePicture;
 import com.pf.common.repository.user.ProfilePictureRepository;
 import com.pf.common.service.userManagement.AuthenticationService;
@@ -38,6 +40,16 @@ public class UserController {
     @PostMapping("/fetchUsersGridData")
     public GridResult fetchUsersGridData(@RequestBody SearchCriteria searchCriteria) {
         return userService.fetchUsersGridData(searchCriteria);
+    }
+
+    @GetMapping("/{userId}/permissions")
+    public List<UserPermissionViewDto> fetchUserPermissions(@PathVariable Long userId) {
+        return userService.fetchUserPermissions(userId);
+    }
+
+    @PostMapping("/updateUserPermissions")
+    public ApiResponse updateUserPermissions(@RequestBody UserPermissionUpdateRequest request) {
+        return userService.updateUserPermissions(request);
     }
 
     @PostMapping("/saveUser")

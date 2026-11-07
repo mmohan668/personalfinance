@@ -4,6 +4,7 @@ import com.pf.common.dto.generic.ApiResponse;
 import com.pf.common.dto.userManagement.*;
 import com.pf.common.entity.userManagement.ProfilePicture;
 import com.pf.common.entity.userManagement.User;
+import com.pf.common.mapper.userManagement.UserPermissionViewMapper;
 import com.pf.common.mapper.userManagement.UserMapper;
 import com.pf.common.record.jwt.GeneratedJwt;
 import com.pf.common.repository.user.ProfilePictureRepository;
@@ -13,6 +14,7 @@ import com.pf.common.service.userManagement.AccountRegistrationService;
 import com.pf.common.service.userManagement.AuthenticationService;
 import com.pf.common.service.userManagement.CaptchaService;
 import com.pf.common.service.userManagement.ForgotPasswordService;
+import com.pf.common.service.userManagement.UserService;
 import com.pf.warehouse.service.JwtService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -34,11 +36,13 @@ public class AuthController {
     private final AuthenticationService authenticationService;
     private final JwtService jwtService;
     private final UserMapper userMapper;
+    private final UserPermissionViewMapper userPermissionViewMapper;
     private final RedisSessionService redisSessionService;
     private final ProfilePictureRepository profilePictureRepository;
     private final ForgotPasswordService forgotPasswordService;
     private final CaptchaService captchaService;
     private final ExportService exportService;
+    private final UserService userService;
 
     @PostMapping("/signUp")
     public ApiResponse signUp(@RequestBody UserDto userDto) {
@@ -57,6 +61,9 @@ public class AuthController {
         User user = authenticationService.authenticate(
                 request.getUsername(),
                 request.getPassword()
+        );
+        var permissions = userPermissionViewMapper.toAppPermissionList(
+                userService.fetchPermissionsForUser(user.getId())
         );
 
         String sessionId = UUID.randomUUID().toString();
@@ -80,7 +87,8 @@ public class AuthController {
                         "Bearer",
                         900,
                         userProfile,
-                        user.getMustChangePassword()
+                        user.getMustChangePassword(),
+                        permissions
                 )
         );
     }
@@ -114,4 +122,3 @@ public class AuthController {
         return ResponseEntity.ok(captchaService.generateCaptcha());
     }
 }
-

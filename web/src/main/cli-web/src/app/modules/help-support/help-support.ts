@@ -57,6 +57,13 @@ export class HelpSupport {
           details: 'Use this button to retrieve the latest records and update the grid.',
         },
         {
+          title: 'Permissions',
+          icon: 'admin_panel_settings',
+          description: 'Opens permission management for users.',
+          details:
+            'On the Users grid, select a user and click Permissions to manage which screen actions that user can access.',
+        },
+        {
           title: 'Add',
           icon: 'add',
           description: 'Creates a new record.',

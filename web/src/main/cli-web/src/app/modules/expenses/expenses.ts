@@ -66,7 +66,10 @@ export class Expenses {
   subcategoryNames = signal<string[]>([]);
 
   constructor() {
-    this.toolbarConfig = this._cs.toolbarConfigExcludeActivateInactivate();
+    this.toolbarConfig = this._cs.toolbarConfigExcludeActivateInactivate(
+      'Financial Transaction',
+      'Expense',
+    );
     this.toolbarConfig.refresh = true;
     this.createSearchForm();
     this.fetchSuggestions();

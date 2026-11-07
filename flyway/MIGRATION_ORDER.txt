@@ -38,3 +38,11 @@ V1.0.0.0_0025_01__insert_refval_template_meta_data.sql
 V1.0.0.0_0025_02__insert_category_template_meta_data.sql
 V1.0.0.0_0025_03__insert_subcategory_template_meta_data.sql
 V1.0.0.0_0025_04__insert_financial_transactions_template_meta_data.sql
+V1.0.0.0_0026_01__create_permission_catalog_tables.sql
+V1.0.0.0_0026_02__insert_permission_modules_and_screens.sql
+V1.0.0.0_0026_03__insert_financial_transaction_screen_actions.sql
+V1.0.0.0_0026_04__insert_category_management_screen_actions.sql
+V1.0.0.0_0026_05__insert_settings_screen_actions.sql
+V1.0.0.0_0026_06__insert_bulk_upload_screen_actions.sql
+V1.0.0.0_0026_07__insert_user_management_screen_actions.sql
+V1.0.0.0_0029__update_user_permissions_view_display_order.sql

@@ -2,7 +2,7 @@ import { inject, Service } from '@angular/core';
 import { AppConfigService } from './app-config-service';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { ApiResponse } from '../types/types';
+import { ApiResponse, UserPermissionUpdateRequest, UserPermissionViewDto } from '../types/types';
 
 @Service()
 export class UserService {
@@ -11,6 +11,19 @@ export class UserService {
 
   saveUser(user: any): Observable<ApiResponse> {
     return this.http.post<ApiResponse>(`${this.config.configValue.apiUrl}/users/saveUser`, user);
+  }
+
+  fetchUserPermissions(userId: number): Observable<UserPermissionViewDto[]> {
+    return this.http.get<UserPermissionViewDto[]>(
+      `${this.config.configValue.apiUrl}/users/${userId}/permissions`,
+    );
+  }
+
+  updateUserPermissions(request: UserPermissionUpdateRequest): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(
+      `${this.config.configValue.apiUrl}/users/updateUserPermissions`,
+      request,
+    );
   }
 
   inactivateUsers(ids: any[]): Observable<ApiResponse> {

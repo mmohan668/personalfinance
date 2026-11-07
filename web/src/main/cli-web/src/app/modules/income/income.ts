@@ -66,7 +66,10 @@ export class Income {
   subcategoryNames = signal<string[]>([]);
 
   constructor() {
-    this.toolbarConfig = this._cs.toolbarConfigExcludeActivateInactivate();
+    this.toolbarConfig = this._cs.toolbarConfigExcludeActivateInactivate(
+      'Financial Transaction',
+      'Income',
+    );
     this.toolbarConfig.refresh = true;
     this.createSearchForm();
     this.fetchSuggestions();

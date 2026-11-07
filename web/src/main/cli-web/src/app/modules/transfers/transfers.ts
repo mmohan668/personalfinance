@@ -66,7 +66,10 @@ export class Transfers {
   subcategoryNames = signal<string[]>([]);
 
   constructor() {
-    this.toolbarConfig = this._cs.toolbarConfigExcludeActivateInactivate();
+    this.toolbarConfig = this._cs.toolbarConfigExcludeActivateInactivate(
+      'Financial Transaction',
+      'Transfer',
+    );
     this.toolbarConfig.refresh = true;
     this.createSearchForm();
     this.fetchSuggestions();

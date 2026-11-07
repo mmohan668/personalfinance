@@ -5,15 +5,22 @@ import com.pf.common.dto.gp.GridResult;
 import com.pf.common.dto.gp.GridSort;
 import com.pf.common.dto.gp.SearchCriteria;
 import com.pf.common.dto.userManagement.UserDto;
+import com.pf.common.dto.userManagement.UserPermissionUpdateRequest;
+import com.pf.common.dto.userManagement.UserPermissionViewDto;
 import com.pf.common.entity.userManagement.ProfilePicture;
 import com.pf.common.entity.userManagement.User;
 import com.pf.common.entity.userManagement.UserPasswordHistory;
+import com.pf.common.exception.ResourceNotFoundException;
 import com.pf.common.mapper.userManagement.UserMapper;
+import com.pf.common.mapper.userManagement.UserPermissionViewMapper;
 import com.pf.common.repository.user.ProfilePictureRepository;
+import com.pf.common.repository.user.UserPermissionRepository;
+import com.pf.common.repository.user.UserPermissionViewRepository;
 import com.pf.common.repository.user.UserRepository;
 import com.pf.common.service.generic.BaseService;
-import com.pf.common.util.BatchUtils;
 import com.pf.common.util.PasswordUtils;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.ParameterMode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -26,21 +33,28 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.pf.common.constants.EntityConstants.ADMIN_USER;
 import static com.pf.common.constants.FieldConstants.ADMIN_USER_ID;
 import static com.pf.common.constants.FieldConstants.ID;
 import static com.pf.common.enums.SortOrder.ASC;
+import static com.pf.common.util.BatchUtils.processBatchesAndSum;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService extends BaseService {
     private final UserMapper userMapper;
+    private final UserPermissionViewMapper userPermissionViewMapper;
     private final UserRepository userRepository;
+    private final UserPermissionRepository userPermissionRepository;
+    private final UserPermissionViewRepository userPermissionViewRepository;
     private final ProfilePictureRepository profilePictureRepository;
     private final ProfilePictureStorageService profilePictureStorageService;
     private final UserPasswordHistoryService userPasswordHistoryService;
+    private final EntityManager entityManager;
 
     @Transactional
     public GridResult fetchUsersGridData(SearchCriteria searchCriteria) {
@@ -66,6 +80,74 @@ public class UserService extends BaseService {
         return gridResult(totalRecords, recordDetails);
     }
 
+    public List<UserPermissionViewDto> fetchUserPermissions(Long userId) {
+        if (!userRepository.existsByIdAndAdminUserId(userId, fetchAdminUserId())) {
+            throw new ResourceNotFoundException("User not found");
+        }
+        return fetchPermissionsForUser(userId);
+    }
+
+    public List<UserPermissionViewDto> fetchPermissionsForUser(Long userId) {
+        return userPermissionViewMapper.toDtoList(
+                userPermissionViewRepository
+                        .findAllByUserIdOrderByModuleDisplayOrderAscScreenDisplayOrderAscActionDisplayOrderAsc(
+                                userId
+                        )
+        );
+    }
+
+    @Transactional
+    public ApiResponse updateUserPermissions(UserPermissionUpdateRequest request) {
+        if (request.getUserId() == null ||
+                !userRepository.existsByIdAndAdminUserId(request.getUserId(), fetchAdminUserId())) {
+            return failure("User not found");
+        }
+        if (userRepository.existsAdminUserById(request.getUserId())) {
+            return failure("The admin user already has permissions to all actions");
+        }
+        if (request.getPermissions() == null) {
+            return failure("Permission updates are required");
+        }
+        if (request.getPermissions().stream().anyMatch(permission ->
+                permission == null || permission.getId() == null || permission.getHasPermission() == null
+        )) {
+            return failure("Each permission update must include an ID and permission value");
+        }
+        if (request.getPermissions().stream()
+                .map(UserPermissionUpdateRequest.UserPermissionUpdate::getId)
+                .distinct()
+                .count() != request.getPermissions().size()) {
+            return failure("Permission updates must not contain duplicate IDs");
+        }
+
+        Long updatedBy = fetchLoginUserId();
+        LocalDateTime updatedAt = LocalDateTime.now();
+        Map<Boolean, List<Long>> permissionIdsByValue = request.getPermissions().stream()
+                .collect(Collectors.groupingBy(
+                        UserPermissionUpdateRequest.UserPermissionUpdate::getHasPermission,
+                        Collectors.mapping(UserPermissionUpdateRequest.UserPermissionUpdate::getId,
+                                Collectors.toList())
+                ));
+        for (Map.Entry<Boolean, List<Long>> entry : permissionIdsByValue.entrySet()) {
+            int updated = processBatchesAndSum(
+                    entry.getValue(),
+                    permissionIds -> userPermissionRepository.updatePermissions(
+                            permissionIds,
+                            request.getUserId(),
+                            entry.getKey(),
+                            updatedBy,
+                            updatedAt
+                    )
+            );
+            if (updated != entry.getValue().size()) {
+                throw new IllegalArgumentException(
+                        "One or more permissions do not belong to user " + request.getUserId()
+                );
+            }
+        }
+        return success("User permissions have been updated successfully");
+    }
+
     @Transactional
     public ApiResponse saveUser(UserDto dto) {
         log.debug("saveUser: username {}", dto.getUsername());
@@ -78,13 +160,15 @@ public class UserService extends BaseService {
             user.setPasswordHash(PasswordUtils.encode(dto.getPassword()));
             user.setAdminUser(fetchAdminUser());
             user.setIsAdminUser(Boolean.FALSE);
+            user.setActive(Boolean.TRUE);
             user.setCreatedBy(fetchLoginUsername());
-            userRepository.save(user);
+            User savedUser = userRepository.saveAndFlush(user);
+            initializeUserPermissions(savedUser.getId());
             userPasswordHistoryService.updatePasswordHistory(
-                    user,
+                    savedUser,
                     UserPasswordHistory.PasswordActionType.INITIAL
             );
-            log.debug("New user created {}", user.getUsername());
+            log.debug("New user created {}", savedUser.getUsername());
         } else {
             User user = userRepository.findById(dto.getId()).orElse(null);
             if (user == null) {
@@ -100,12 +184,22 @@ public class UserService extends BaseService {
         return success("User has been saved successfully");
     }
 
+    private void initializeUserPermissions(Long userId) {
+        entityManager
+                .createStoredProcedureQuery("initialize_user_permissions")
+                .registerStoredProcedureParameter(1, Long.class, ParameterMode.IN)
+                .registerStoredProcedureParameter(2, Long.class, ParameterMode.IN)
+                .setParameter(1, userId)
+                .setParameter(2, fetchLoginUserId())
+                .execute();
+    }
+
     @Transactional
     public ApiResponse activateUsers(List<Long> ids) {
         log.debug("activateUsers: ids {}", ids);
         LocalDateTime updatedTime = LocalDateTime.now();
         String updatedBy = fetchLoginUsername();
-        int count = BatchUtils.processBatchesAndSum(
+        int count = processBatchesAndSum(
                 ids,
                 chunk -> userRepository.activateUsers(chunk, updatedBy, updatedTime)
         );
@@ -118,7 +212,7 @@ public class UserService extends BaseService {
         log.debug("inactivateUsers: ids {}", ids);
         LocalDateTime updatedTime = LocalDateTime.now();
         String updatedBy = fetchLoginUsername();
-        int count = BatchUtils.processBatchesAndSum(
+        int count = processBatchesAndSum(
                 ids,
                 chunk -> userRepository.inactivateUsers(chunk, updatedBy, updatedTime)
         );
@@ -132,7 +226,7 @@ public class UserService extends BaseService {
             log.debug("deleteUsers: ids {}", ids);
             LocalDateTime deletedAT = LocalDateTime.now();
             String deletedBy = fetchLoginUsername();
-            int count = BatchUtils.processBatchesAndSum(
+            int count = processBatchesAndSum(
                     ids,
                     chunk -> userRepository.deleteUsers(chunk, deletedBy, deletedAT)
             );

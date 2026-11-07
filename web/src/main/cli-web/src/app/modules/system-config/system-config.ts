@@ -28,7 +28,7 @@ export class SystemConfig {
   protected toolbarConfig!: ToolbarConfig;
 
   constructor() {
-    this.toolbarConfig = this._cs.toolbarConfig();
+    this.toolbarConfig = this._cs.toolbarConfig(false, 'Settings', 'System Config');
   }
 
   hyperlinkAction = (rowData: any, column: GridColumn): void => {

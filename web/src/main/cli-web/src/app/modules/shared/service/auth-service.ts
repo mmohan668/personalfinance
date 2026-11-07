@@ -2,7 +2,13 @@ import { inject, Service } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom, Observable } from 'rxjs';
 
-import { ApiResponse, CaptchaResponse, ForgotPasswordRequest, UserProfile } from '../types/types';
+import {
+  ApiResponse,
+  CaptchaResponse,
+  ForgotPasswordRequest,
+  AppPermission,
+  UserProfile,
+} from '../types/types';
 import { AppConfigService } from './app-config-service';
 import { Router } from '@angular/router';
 import { NotificationService } from './notification-service';
@@ -19,6 +25,7 @@ export interface LoginResponse {
   expiresIn: number;
   userProfile: UserProfile;
   mustChangePassword: boolean;
+  permissions: AppPermission[];
 }
 
 @Service()
@@ -42,11 +49,18 @@ export class AuthService {
     this._cs.setUserProfile(userProfile);
   }
 
+  storePermissions(permissions: AppPermission[]): void {
+    sessionStorage.setItem('userPermissions', JSON.stringify(permissions));
+    this._cs.setUserPermissions(permissions);
+  }
+
   logout(passwordChange: boolean = false): void {
     firstValueFrom(this.http.post<void>(`${this.config.configValue.apiUrl}/auth/logout`, {}))
       .then(() => {
         sessionStorage.removeItem('authToken');
         sessionStorage.removeItem('userProfile');
+        sessionStorage.removeItem('userPermissions');
+        this._cs.clearUserSession();
         if (!passwordChange) {
           this._ns.success('You have been logged out successfully.');
         }

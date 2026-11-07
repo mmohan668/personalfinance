@@ -1,4 +1,5 @@
 import { Component, Input } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -9,6 +10,7 @@ import { MatInputModule } from '@angular/material/input';
 
 @Component({
   imports: [
+    MatButtonModule,
     MatIconModule,
     MatMenuModule,
     MatFormFieldModule,
@@ -56,4 +58,6 @@ export class ToolBar {
   public resetGridSettings!: () => void;
   @Input()
   public toolbarConfig!: ToolbarConfig;
+  @Input()
+  public permissionsAction!: () => void;
 }
