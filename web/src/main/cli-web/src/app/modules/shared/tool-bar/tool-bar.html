@@ -119,6 +119,7 @@
       class="toolbar-border"
       type="button"
       title="Column Chooser"
+      aria-label="Choose visible columns"
       [matMenuTriggerFor]="columnMenu"
     >
       <mat-icon>view_column</mat-icon>
@@ -127,12 +128,20 @@
     <mat-menu #columnMenu="matMenu" class="column-menu">
       <!-- Column Search -->
       <div class="column-search" (click)="$event.stopPropagation()">
-        <mat-form-field appearance="outline" floatLabel="always" subscriptSizing="dynamic">
+        <mat-form-field
+          class="column-search-field"
+          appearance="outline"
+          floatLabel="always"
+          subscriptSizing="dynamic"
+        >
           <mat-label>Search columns</mat-label>
+
+          <mat-icon matPrefix aria-hidden="true">search</mat-icon>
 
           <input
             #searchInput
             matInput
+            aria-label="Search columns"
             [(ngModel)]="columnSearch"
             (click)="$event.stopPropagation()"
             (keydown)="$event.stopPropagation()"
@@ -167,10 +176,15 @@
         </div>
       }
 
+      @if (getColumns(searchInput.value).length === 0) {
+        <div class="column-empty-state" role="status">No matching columns</div>
+      }
+
       <!-- Column List -->
       @for (col of getColumns(searchInput.value); track col.field) {
         <button
           mat-menu-item
+          class="column-option"
           type="button"
           (click)="$event.stopPropagation(); toggleColumn(col, !(col.visible !== false))"
         >
@@ -179,7 +193,7 @@
             (change)="toggleColumn(col, $event.checked)"
             (click)="$event.stopPropagation()"
           >
-            {{ col.header }}
+            <span class="column-option-label">{{ col.header }}</span>
           </mat-checkbox>
         </button>
       }

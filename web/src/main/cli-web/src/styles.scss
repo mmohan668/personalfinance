@@ -171,8 +171,8 @@ app-root {
   justify-content: center;
   gap: 6px;
 
-  height: 42px !important;
-  min-height: 42px !important;
+  height: 30px !important;
+  min-height: 30px !important;
   box-sizing: border-box;
 
   padding: 0 16px;
@@ -745,7 +745,8 @@ app-root {
 /* Common action buttons */
 .dialog-actions button {
   min-width: 105px;
-  height: 40px;
+  height: 32px;
+  min-height: 32px;
 
   display: inline-flex;
   align-items: center;
@@ -862,6 +863,183 @@ app-root {
   .dialog-close-button,
   .dialog-actions button {
     transition: none;
+  }
+}
+
+/* Shared search panels: soft corners, clear focus, and responsive field layout. */
+.search-section {
+  margin-bottom: 10px;
+}
+
+.search-panel {
+  border: 1px solid #dce6df !important;
+  border-radius: 12px !important;
+  box-shadow: 0 2px 8px rgba(24, 54, 34, 0.06);
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.search-panel:hover {
+  border-color: #c6d9ca !important;
+  box-shadow: 0 5px 16px rgba(24, 54, 34, 0.1);
+}
+
+.search-panel mat-expansion-panel-header {
+  border-radius: 11px 11px 0 0;
+  background: linear-gradient(115deg, #f0f5f1 0%, #fbfcfb 100%);
+  transition:
+    background 180ms ease,
+    color 180ms ease;
+}
+
+.search-panel mat-expansion-panel-header:hover,
+.search-panel mat-expansion-panel-header.mat-expanded {
+  background: linear-gradient(115deg, #e8f1e9 0%, #f7faf7 100%) !important;
+}
+
+.search-panel mat-expansion-panel-header:focus-visible {
+  outline: 2px solid #81b787;
+  outline-offset: -2px;
+}
+
+.search-panel mat-expansion-panel-header.mat-expanded {
+  border-bottom-color: #dce6df;
+}
+
+.search-fields mat-form-field .mdc-notched-outline__leading,
+.search-fields mat-form-field .mdc-notched-outline__notch,
+.search-fields mat-form-field .mdc-notched-outline__trailing {
+  transition:
+    border-color 160ms ease,
+    border-width 160ms ease;
+}
+
+.search-fields mat-form-field,
+.search-fields .mat-mdc-text-field-wrapper,
+.search-fields .mdc-text-field--outlined {
+  height: 30px !important;
+  min-height: 30px !important;
+  box-sizing: border-box;
+}
+
+.search-fields .mdc-text-field--outlined .mat-mdc-form-field-infix {
+  height: 30px !important;
+  min-height: 30px !important;
+  padding-top: 4px !important;
+  padding-bottom: 4px !important;
+  box-sizing: border-box;
+}
+
+.search-fields .mat-mdc-input-element,
+.search-fields .mat-mdc-select-trigger {
+  height: 20px;
+  min-height: 20px;
+  line-height: 20px;
+}
+
+.search-fields .mat-mdc-input-element,
+.search-fields .mat-mdc-select-value-text,
+.search-fields .mat-mdc-select-min-line {
+  font-family: 'Roboto', 'Segoe UI', sans-serif;
+  font-size: clamp(11px, 0.78rem, 12px);
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.search-fields input[matInput],
+.search-fields input.mat-mdc-input-element {
+  font-family: 'Roboto', 'Segoe UI', sans-serif !important;
+  font-size: clamp(11px, 0.78rem, 12px) !important;
+  font-weight: 400 !important;
+  letter-spacing: 0.01em;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.search-fields .mat-mdc-form-field-icon-suffix button.mat-mdc-icon-button {
+  width: 30px;
+  height: 30px;
+  padding: 3px;
+}
+
+.search-actions button {
+  border-radius: 8px !important;
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease,
+    background-color 160ms ease,
+    color 160ms ease;
+}
+
+.search-actions button:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+@media (max-width: 1100px) {
+  .search-panel form {
+    padding: 12px;
+  }
+
+  .search-fields {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .search-fields > div:empty {
+    display: none;
+  }
+
+  .search-fields > .search-actions {
+    grid-column: 1 / -1;
+    justify-content: flex-end;
+  }
+}
+
+@media (max-width: 600px) {
+  .search-panel mat-expansion-panel-header {
+    padding: 0 12px;
+  }
+
+  .search-panel form {
+    padding: 10px;
+  }
+
+  .search-fields {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+  }
+
+  .search-fields > .search-actions {
+    justify-content: stretch;
+  }
+
+  .search-actions {
+    width: 100%;
+    gap: 8px;
+  }
+
+  .search-actions button {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 0 10px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .search-panel,
+  .search-panel mat-expansion-panel-header,
+  .search-fields mat-form-field .mdc-notched-outline__leading,
+  .search-fields mat-form-field .mdc-notched-outline__notch,
+  .search-fields mat-form-field .mdc-notched-outline__trailing,
+  .search-actions button {
+    transition: none;
+  }
+
+  .search-actions button:hover:not(:disabled) {
+    transform: none;
   }
 }
 
@@ -1104,6 +1282,90 @@ tr.empty-message-row > td.empty-message {
   font-size: 10px !important;
 }
 
+/* Keep Angular Material calendars as compact as the shared grid-filter calendar. */
+.mat-datepicker-content {
+  --mat-datepicker-calendar-text-font: 'Roboto', 'Segoe UI', sans-serif;
+  --mat-datepicker-calendar-text-size: 10px;
+  --mat-datepicker-calendar-body-label-text-size: 10px;
+  --mat-datepicker-calendar-period-button-text-size: 12px;
+  --mat-datepicker-calendar-header-text-size: 9px;
+  --mat-datepicker-calendar-date-selected-state-background-color: #4caf50;
+  --mat-datepicker-calendar-date-selected-state-text-color: #ffffff;
+  --mat-datepicker-calendar-date-focus-state-background-color: #e8f5e9;
+  --mat-datepicker-calendar-date-hover-state-background-color: #e8f5e9;
+  background-color: #ffffff !important;
+  border-radius: 12px !important;
+}
+
+.mat-datepicker-content .mat-calendar {
+  width: 230px !important;
+  height: auto !important;
+  max-width: calc(100vw - 16px);
+  max-height: 260px;
+  font-family: 'Roboto', 'Segoe UI', sans-serif;
+}
+
+.mat-datepicker-content .mat-calendar-header {
+  padding: 3px 4px 0;
+}
+
+.mat-datepicker-content .mat-calendar-content {
+  padding: 0 4px 4px;
+}
+
+.mat-datepicker-content .mat-calendar-controls {
+  margin: 2px 3px 4px;
+}
+
+.mat-datepicker-content .mat-calendar-period-button {
+  min-height: 24px;
+  margin: 0 3px;
+  padding: 0 3px;
+  font-size: 12px !important;
+  line-height: 20px;
+}
+
+.mat-datepicker-content .mat-calendar-controls .mat-mdc-icon-button.mat-mdc-button-base {
+  --mdc-icon-button-state-layer-size: 23px;
+  --mat-icon-button-state-layer-size: 23px;
+  --mat-icon-button-hover-state-layer-opacity: 0;
+  --mat-icon-button-focus-state-layer-opacity: 0;
+  --mat-icon-button-pressed-state-layer-opacity: 0;
+  --mat-icon-button-ripple-color: transparent;
+  width: 23px !important;
+  height: 23px !important;
+  padding: 3px !important;
+  border-radius: 50% !important;
+}
+
+.mat-datepicker-content .mat-calendar-controls .mat-mdc-icon-button:is(:hover, :focus, :active) > .mat-mdc-button-persistent-ripple::before,
+.mat-datepicker-content .mat-calendar-controls .mat-mdc-icon-button.cdk-program-focused > .mat-mdc-button-persistent-ripple::before,
+.mat-datepicker-content .mat-calendar-controls .mat-mdc-icon-button.cdk-keyboard-focused > .mat-mdc-button-persistent-ripple::before {
+  opacity: 0 !important;
+}
+
+.mat-datepicker-content .mat-calendar-controls .mat-mdc-icon-button svg {
+  width: 18px;
+  height: 18px;
+}
+
+.mat-datepicker-content .mat-calendar-table-header th {
+  padding-bottom: 3px;
+  font-size: 9px;
+}
+
+.mat-datepicker-content .mat-calendar-body {
+  min-width: 0 !important;
+}
+
+.mat-datepicker-content .mat-calendar-body-cell {
+  font-size: 10px;
+}
+
+.mat-datepicker-content .mat-calendar-body-label {
+  font-size: 10px !important;
+}
+
 /* Shared dialog polish */
 .mat-mdc-dialog-surface,
 .mdc-dialog__surface {
@@ -1172,7 +1434,8 @@ tr.empty-message-row > td.empty-message {
 }
 
 .mat-mdc-dialog-container .dialog-actions button {
-  min-height: 38px;
+  height: 32px;
+  min-height: 32px;
   border-radius: 10px !important;
   transition:
     transform 160ms ease,
@@ -1272,6 +1535,64 @@ body:has(.app-shell) .mat-mdc-dialog-panel {
 
 body:has(.app-shell) .mat-mdc-dialog-panel:has(.dialog-form) {
   width: min(70vw, 1100px, calc(100vw - var(--app-dialog-sidebar-width) - 32px)) !important;
+}
+
+/* Match Material dialog fields to the compact shared search-field sizing. */
+.mat-mdc-dialog-container .dialog-field {
+  height: auto !important;
+  min-height: 0 !important;
+  box-sizing: border-box;
+}
+
+.mat-mdc-dialog-container .dialog-field .mat-mdc-text-field-wrapper,
+.mat-mdc-dialog-container .dialog-field .mdc-text-field--outlined {
+  height: 30px !important;
+  min-height: 30px !important;
+  box-sizing: border-box;
+}
+
+.mat-mdc-dialog-container .dialog-field .mat-mdc-form-field-infix {
+  height: 30px !important;
+  min-height: 30px !important;
+  padding-top: 4px !important;
+  padding-bottom: 4px !important;
+  box-sizing: border-box;
+}
+
+.mat-mdc-dialog-container .dialog-field .mat-mdc-input-element,
+.mat-mdc-dialog-container .dialog-field input[matInput],
+.mat-mdc-dialog-container .dialog-field .mat-mdc-select-value,
+.mat-mdc-dialog-container .dialog-field .mat-mdc-select-value-text,
+.mat-mdc-dialog-container .dialog-field .mat-mdc-select-min-line {
+  font-family: 'Roboto', 'Segoe UI', sans-serif !important;
+  font-size: clamp(11px, 0.78rem, 12px) !important;
+  font-weight: 400 !important;
+  letter-spacing: 0.01em;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.mat-mdc-dialog-container .dialog-field .mat-mdc-input-element,
+.mat-mdc-dialog-container .dialog-field .mat-mdc-select-trigger {
+  height: 20px;
+  min-height: 20px;
+  line-height: 20px;
+}
+
+.mat-mdc-dialog-container .dialog-field .mat-mdc-form-field-icon-suffix button.mat-mdc-icon-button {
+  width: 30px;
+  height: 30px;
+  padding: 3px;
+}
+
+.mat-mdc-option,
+.mat-mdc-option .mdc-list-item__primary-text {
+  font-family: 'Roboto', 'Segoe UI', sans-serif !important;
+  font-size: clamp(11px, 0.78rem, 12px) !important;
+  font-weight: 400 !important;
+  letter-spacing: 0.01em;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 @media (max-width: 767px) {
