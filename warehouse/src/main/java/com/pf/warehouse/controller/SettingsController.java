@@ -50,24 +50,14 @@ public class SettingsController {
         return settingsService.fetchRefObjNames();
     }
 
-    @GetMapping("/fetchTransactionTypes")
-    public List<SelectItem> fetchTransactionTypes() {
-        return settingsService.fetchTransactionTypes();
-    }
-
-    @GetMapping("/fetchLocations")
-    public List<SelectItem> fetchLocations() {
-        return settingsService.fetchLocations();
+    @GetMapping("/fetchReferenceValuesByRefObjName")
+    public List<SelectItem> fetchReferenceValuesByRefObjName(@RequestParam("refObjName") String refObjName) {
+        return settingsService.fetchReferenceValuesByRefObjName(refObjName);
     }
 
     @GetMapping("/fetchIdByReferenceCodeAndRefObjName")
     public Long fetchIdByReferenceCodeAndRefObjName(@RequestParam String referenceCode, @RequestParam String refObjName) {
         return settingsService.fetchIdByReferenceCodeAndRefObjName(referenceCode, refObjName);
-    }
-
-    @GetMapping("/fetchCurrencies")
-    public List<SelectItem> fetchCurrencies() {
-        return settingsService.fetchCurrencies();
     }
 
     @PostMapping("/saveSystemConfig")

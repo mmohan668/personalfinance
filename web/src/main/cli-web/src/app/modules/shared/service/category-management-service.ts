@@ -9,12 +9,6 @@ export class CategoryManagementService {
   private http = inject(HttpClient);
   private config = inject(AppConfigService);
 
-  fetchTransactionTypes(): Observable<SelectItem[]> {
-    return this.http.get<SelectItem[]>(
-      `${this.config.configValue.apiUrl}/categoryManagement/fetchTransactionTypes`,
-    );
-  }
-
   fetchCategories(referenceValueId: any): Observable<SelectItem[]> {
     return this.http.get<SelectItem[]>(
       `${this.config.configValue.apiUrl}/categoryManagement/fetchCategories`,

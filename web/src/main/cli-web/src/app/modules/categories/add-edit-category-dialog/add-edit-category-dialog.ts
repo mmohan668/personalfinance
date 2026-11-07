@@ -5,7 +5,7 @@ import { CommonService } from '../../shared/service/common-service';
 import { CategoryManagementService } from '../../shared/service/category-management-service';
 import { firstValueFrom } from 'rxjs';
 import { NotificationService } from '../../shared/service/notification-service';
-import { DATA_FIELDS, MODES } from '../../shared/enums';
+import { DATA_FIELDS, MODES, REF_OBJ_NAMES } from '../../shared/enums';
 import { ApiResponse, SelectItem } from '../../shared/types/types';
 import { CommonImportsModule } from '../../shared/common-imports/common-imports-module';
 import { SettingsService } from '../../shared/service/settings-service';
@@ -35,9 +35,11 @@ export class AddEditCategoryDialog {
   }
 
   fetchTransactionTypes(): void {
-    firstValueFrom(this._ss.fetchTransactionTypes()).then((res: SelectItem[]) => {
-      this.transactionTypes.set(res);
-    });
+    firstValueFrom(this._ss.fetchReferenceValuesByRefObjName(REF_OBJ_NAMES.TRANSACTION_TYPE)).then(
+      (res: SelectItem[]) => {
+        this.transactionTypes.set(res);
+      },
+    );
   }
 
   getEditValue(fieldName: string): any {

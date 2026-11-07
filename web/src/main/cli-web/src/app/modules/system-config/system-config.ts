@@ -4,7 +4,7 @@ import { DATA_FIELDS, GRID_EXPORT_FILE_NAMES, GRID_NAMES } from '../shared/enums
 import { CommonService } from '../shared/service/common-service';
 import { GridColumn, ToolbarConfig } from '../shared/types/types';
 import { MatDialog } from '@angular/material/dialog';
-import { UpdateSystemCurrencyDialog } from './update-system-currency-dialog/update-system-currency-dialog';
+import { UpdateSystemConfigDialog } from './update-system-config-dialog/update-system-config-dialog';
 import { NotificationService } from '../shared/service/notification-service';
 import { SystemConfigService } from '../shared/service/system-config-service';
 
@@ -32,22 +32,21 @@ export class SystemConfig {
   }
 
   hyperlinkAction = (rowData: any, column: GridColumn): void => {
-    if (rowData['configName'] === 'Currency') {
-      this.dialog
-        .open(UpdateSystemCurrencyDialog, {
-          width: '35vw',
-          data: {
-            rowData: rowData,
-          },
-        })
-        .afterClosed()
-        .subscribe((message: any) => {
-          if (message) {
-            this._ns.success(message);
-            this.dataGrid?.refreshGrid();
-            this._scs.fetchSystemConfig();
-          }
-        });
-    }
+    this.dialog
+      .open(UpdateSystemConfigDialog, {
+        width: '35vw',
+        data: {
+          rowData: rowData,
+          configName: rowData['configName'],
+        },
+      })
+      .afterClosed()
+      .subscribe((message: any) => {
+        if (message) {
+          this._ns.success(message);
+          this.dataGrid?.refreshGrid();
+          this._scs.fetchSystemConfig();
+        }
+      });
   };
 }

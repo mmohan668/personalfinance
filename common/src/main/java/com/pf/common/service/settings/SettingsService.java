@@ -32,7 +32,6 @@ import java.util.List;
 import static com.pf.common.constants.EntityConstants.*;
 import static com.pf.common.constants.FieldConstants.ID;
 import static com.pf.common.constants.FieldConstants.USER_ID;
-import static com.pf.common.enums.RefObjectNames.*;
 import static com.pf.common.enums.SortOrder.ASC;
 
 
@@ -204,16 +203,8 @@ public class SettingsService extends BaseService {
         return referenceObjectRepository.fetchRefObjNames();
     }
 
-    public List<SelectItem> fetchTransactionTypes() {
-        return referenceValueRepository.fetchReferenceValuesByRefObjName(String.valueOf(TRANSACTION_TYPE), fetchAdminUserId());
-    }
-
-    public List<SelectItem> fetchLocations() {
-        return referenceValueRepository.fetchReferenceValuesByRefObjName(String.valueOf(LOCATION), fetchAdminUserId());
-    }
-
-    public List<SelectItem> fetchCurrencies() {
-        return referenceValueRepository.fetchReferenceValuesByRefObjName(String.valueOf(CURRENCY_CODE), fetchAdminUserId());
+    public List<SelectItem> fetchReferenceValuesByRefObjName(String refObjName) {
+        return referenceValueRepository.fetchReferenceValuesByRefObjName(refObjName, fetchAdminUserId());
     }
 
     public Long fetchIdByReferenceCodeAndRefObjName(String referenceCode, String refObjName) {
