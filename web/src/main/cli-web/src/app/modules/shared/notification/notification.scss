@@ -2,6 +2,9 @@
   --notification-accent: #16865b;
   --notification-tint: #eaf8f1;
   --notification-ink: #173d2d;
+  font-family: 'Roboto', 'Segoe UI', Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 .notification-container {

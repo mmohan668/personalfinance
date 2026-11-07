@@ -1,74 +1,84 @@
 <div class="bulk-upload-page">
-  <mat-expansion-panel class="search-panel" [expanded]="true">
-    <mat-expansion-panel-header>
-      <mat-panel-title> Bulk Upload </mat-panel-title>
+  <div class="search-section">
+    <mat-expansion-panel class="search-panel" [expanded]="true">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          <mat-icon class="search-title-icon">upload_file</mat-icon>
+          <span>Bulk Upload</span>
+        </mat-panel-title>
 
-      <mat-panel-description>
-        Select the type of data and upload an Excel file.
-      </mat-panel-description>
-    </mat-expansion-panel-header>
+        <mat-panel-description class="bulk-upload-description">
+          Select the data type and upload an Excel file.
+        </mat-panel-description>
+      </mat-expansion-panel-header>
 
-    <div class="upload-section">
-      <div class="form-content">
-        <div class="upload-type-row">
-          <fieldset class="upload-type-field">
-            <legend>Upload Type</legend>
+      <div class="upload-section">
+        <div class="form-content">
+          <div class="upload-type-row">
+            <mat-form-field appearance="outline" floatLabel="always" class="upload-type-field">
+              <mat-label>Upload Type</mat-label>
+              <mat-select id="uploadType" [(ngModel)]="selectedUploadType">
+                <mat-option value="" disabled>Select upload type</mat-option>
 
-            <select id="uploadType" [(ngModel)]="selectedUploadType">
-              <option value="" disabled>Select upload type</option>
+                @for (type of uploadTypes; track type.value) {
+                  <mat-option [value]="type.value">{{ type.label }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
 
-              @for (type of uploadTypes; track type.value) {
-                <option [value]="type.value">
-                  {{ type.label }}
-                </option>
-              }
-            </select>
-          </fieldset>
-
-          <button
-            type="button"
-            class="secondary-button download-template-button"
-            [disabled]="!selectedUploadType"
-            (click)="downloadTemplate()"
-          >
-            Download Template
-          </button>
-        </div>
-
-        <div class="form-field">
-          <div class="file-upload">
-            <label for="bulkUploadFile" class="choose-file-button"> Choose File </label>
-
-            <input
-              id="bulkUploadFile"
-              type="file"
-              accept=".xlsx"
-              hidden
-              (change)="onFileSelected($event)"
-            />
-
-            <span class="file-name">
-              {{ selectedFile?.name || 'No file selected' }}
-            </span>
+            <button
+              type="button"
+              class="secondary-button download-template-button"
+              [disabled]="!selectedUploadType"
+              (click)="downloadTemplate()"
+            >
+              <mat-icon class="button-icon" aria-hidden="true">download</mat-icon>
+              Download Template
+            </button>
           </div>
 
-          @if (fileError) {
-            <div class="file-error">
-              {{ fileError }}
+          <div class="form-field">
+            <div class="file-upload">
+              <label for="bulkUploadFile" class="choose-file-button">
+                <mat-icon class="button-icon" aria-hidden="true">attach_file</mat-icon>
+                Choose File
+              </label>
+
+              <input
+                id="bulkUploadFile"
+                type="file"
+                accept=".xlsx"
+                hidden
+                (change)="onFileSelected($event)"
+              />
+
+              <span class="file-name">
+                {{ selectedFile?.name || 'No file selected' }}
+              </span>
             </div>
-          }
+
+            @if (fileError) {
+              <div class="file-error">
+                {{ fileError }}
+              </div>
+            }
+          </div>
+        </div>
+
+        <div class="actions">
+          <button type="button" class="secondary-button" (click)="reset()">
+            <mat-icon class="button-icon" aria-hidden="true">refresh</mat-icon>
+            Reset
+          </button>
+
+          <button type="button" class="primary-button" [disabled]="!canSubmit" (click)="submit()">
+            <mat-icon class="button-icon" aria-hidden="true">cloud_upload</mat-icon>
+            Submit
+          </button>
         </div>
       </div>
-
-      <div class="actions">
-        <button type="button" class="secondary-button" (click)="reset()">Reset</button>
-
-        <button type="button" class="primary-button" [disabled]="!canSubmit" (click)="submit()">
-          Submit
-        </button>
-      </div>
-    </div>
-  </mat-expansion-panel>
+    </mat-expansion-panel>
+  </div>
 
   <div class="grid-container">
     <app-data-grid

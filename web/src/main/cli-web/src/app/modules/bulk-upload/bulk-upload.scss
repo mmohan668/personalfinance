@@ -4,11 +4,19 @@
   min-width: 0;
 }
 
+.bulk-upload-description {
+  margin-right: 8px;
+  color: #718174;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
 // Content inside expansion panel
 .upload-section {
   width: 100%;
   box-sizing: border-box;
   min-width: 0;
+  padding: 4px 0 10px;
 }
 
 .section-header {
@@ -34,7 +42,7 @@
 .form-content {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 14px;
   min-width: 0;
 }
 
@@ -49,115 +57,70 @@
   }
 }
 
-// --------------------------------------------------
-// Select with label embedded in the border
-// --------------------------------------------------
-
-.select-wrapper {
-  position: relative;
-  width: 400px;
-  max-width: 100%;
-
-  &::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    right: 16px;
-    width: 8px;
-    height: 8px;
-    border-right: 2px solid #333;
-    border-bottom: 2px solid #333;
-    transform: translateY(-65%) rotate(45deg);
-    pointer-events: none;
-  }
-
-  select {
-    width: 100%;
-    height: 42px;
-    padding: 8px 48px 8px 12px;
-    border: 1px solid #bdbdbd;
-    border-radius: 4px;
-    background-color: #fff;
-    font-size: 14px;
-    cursor: pointer;
-    box-sizing: border-box;
-
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-
-    &:focus {
-      outline: none;
-      border-color: #4caf50;
-    }
-  }
-}
-
-// Fieldset-based outlined select
+// Compact outlined selector, matching Search Criteria controls
 .upload-type-field {
+  flex: 0 1 400px;
   width: 400px;
   max-width: 100%;
   min-width: 0;
-  height: 56px;
   margin: 0;
-  padding: 2px 12px 6px;
-  box-sizing: border-box;
-  border: 1px solid #bdbdbd;
-  border-radius: 4px;
-  background-color: #fff;
-
-  legend {
-    padding: 0 6px;
-    margin-left: 2px;
-    color: #666;
-    font-size: 12px;
-    font-weight: 500;
-    line-height: 16px;
-  }
-
-  select {
-    display: block;
-    width: 100%;
-    height: 32px;
-    padding: 2px 36px 2px 0;
-    border: none;
-    outline: none;
-    background-color: transparent;
-    color: #333;
-    font-size: 14px;
-    cursor: pointer;
-    box-sizing: border-box;
-
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-
-    &:focus {
-      outline: none;
-    }
-  }
 }
 
-// Custom dropdown arrow for the fieldset select
-.upload-type-field {
-  position: relative;
+:host ::ng-deep .upload-type-field.mat-mdc-form-field,
+:host ::ng-deep .upload-type-field .mat-mdc-text-field-wrapper,
+:host ::ng-deep .upload-type-field .mdc-text-field--outlined {
+  height: 30px !important;
+  min-height: 30px !important;
+  box-sizing: border-box;
+}
 
-  &::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    right: 16px;
-    width: 8px;
-    height: 8px;
-    border-right: 2px solid #333;
-    border-bottom: 2px solid #333;
-    transform: translateY(-65%) rotate(45deg);
-    pointer-events: none;
-  }
+:host ::ng-deep .upload-type-field .mat-mdc-form-field-infix {
+  display: flex;
+  min-height: 30px !important;
+  height: 30px !important;
+  align-items: center;
+  padding: 3px 0 !important;
+  box-sizing: border-box;
+}
 
-  &:focus-within {
-    border-color: #4caf50;
-  }
+:host ::ng-deep .upload-type-field .mat-mdc-select-trigger {
+  display: flex;
+  height: 20px;
+  min-height: 20px;
+  align-items: center;
+  font-family: 'Roboto', 'Segoe UI', sans-serif;
+  font-size: 12px;
+  line-height: 20px;
+}
+
+:host ::ng-deep .upload-type-field .mat-mdc-floating-label {
+  color: #64748b;
+  font-size: 12px;
+}
+
+:host ::ng-deep .upload-type-field .mdc-notched-outline__leading,
+:host ::ng-deep .upload-type-field .mdc-notched-outline__notch,
+:host ::ng-deep .upload-type-field .mdc-notched-outline__trailing {
+  border-color: #cbd5e1 !important;
+  transition:
+    border-color 160ms ease,
+    border-width 160ms ease;
+}
+
+:host ::ng-deep .upload-type-field.mat-focused .mdc-notched-outline__leading,
+:host ::ng-deep .upload-type-field.mat-focused .mdc-notched-outline__notch,
+:host ::ng-deep .upload-type-field.mat-focused .mdc-notched-outline__trailing {
+  border-color: #4caf50 !important;
+  border-width: 2px !important;
+}
+
+:host ::ng-deep .upload-type-field.mat-focused .mat-mdc-floating-label,
+:host ::ng-deep .upload-type-field.mat-focused .mat-mdc-select-arrow {
+  color: #4caf50 !important;
+}
+
+:host ::ng-deep .upload-type-field .mat-mdc-form-field-subscript-wrapper {
+  display: none;
 }
 
 // --------------------------------------------------
@@ -167,8 +130,9 @@
 .upload-type-row {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
   min-width: 0;
+  padding-top: 6px;
 
   .form-field {
     flex: 0 1 400px;
@@ -177,9 +141,7 @@
 }
 
 .download-template-button {
-  height: 42px;
-  padding-left: 18px;
-  padding-right: 18px;
+  flex: 0 0 auto;
   white-space: nowrap;
 }
 
@@ -196,18 +158,34 @@
 
 .choose-file-button {
   display: inline-flex;
+  min-height: 30px;
   align-items: center;
-  padding: 3px 26px;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 12px;
   border: 1px solid #4caf50;
+  border-radius: 8px;
   background: #4caf50;
   color: #fff;
   cursor: pointer;
-  font-size: 14px;
-  font-weight: 700;
+  font-family: 'Roboto', 'Segoe UI', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
   white-space: nowrap;
+  transition:
+    background-color 150ms ease,
+    box-shadow 150ms ease,
+    transform 150ms ease;
 
   &:hover {
-    background: #4caf50;
+    background: #43a047;
+    box-shadow: 0 3px 8px rgb(46 125 50 / 18%);
+    transform: translateY(-1px);
+  }
+
+  &:focus-visible {
+    outline: 2px solid #81b787;
+    outline-offset: 2px;
   }
 }
 
@@ -234,19 +212,41 @@
   display: flex;
   justify-content: flex-end;
   gap: 12px;
-  margin-top: 5px;
-  padding-top: 10px;
-  border-top: 1px solid #eee;
+  margin-top: 4px;
+  margin-bottom: 4px;
+  padding: 10px 0 4px;
+  border-top: 1px solid #e7eee8;
 }
 
 .primary-button,
 .secondary-button {
+  display: inline-flex;
   min-width: 76px;
-  height: 32px;
-  padding: 1px 6px;
-  font-size: 14px;
-  font-weight: 500;
+  height: 30px;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 12px;
+  border-radius: 8px;
+  font-family: 'Roboto', 'Segoe UI', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
   cursor: pointer;
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    box-shadow 150ms ease,
+    transform 150ms ease;
+}
+
+.button-icon {
+  display: inline-flex;
+  width: 16px;
+  height: 16px;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  line-height: 16px;
 }
 
 .primary-button {
@@ -255,24 +255,30 @@
   color: #fff;
 
   &:hover:not(:disabled) {
-    background: #4caf50;
+    background: #43a047;
+    border-color: #43a047;
+    box-shadow: 0 3px 8px rgb(46 125 50 / 18%);
+    transform: translateY(-1px);
   }
 }
 
 .secondary-button {
   border: 1px solid #4caf50;
-  height: 32px;
+  height: 30px;
   background: #fff;
   color: #4caf50 !important;
 
   &:hover:not(:disabled) {
-    background: #f5f5f5;
+    background: #e8f5e9;
+    box-shadow: 0 2px 6px rgb(46 125 50 / 10%);
+    transform: translateY(-1px);
   }
 }
 
 button:disabled {
-  opacity: 0.5;
+  opacity: 0.55;
   cursor: not-allowed;
+  transform: none !important;
 }
 
 // --------------------------------------------------
@@ -286,6 +292,10 @@ button:disabled {
 
   .status-section {
     padding: 6px;
+  }
+
+  .bulk-upload-description {
+    display: none;
   }
 
   .upload-panel {
@@ -305,7 +315,6 @@ button:disabled {
     }
   }
 
-  .select-wrapper,
   .upload-type-field {
     width: 100%;
   }
