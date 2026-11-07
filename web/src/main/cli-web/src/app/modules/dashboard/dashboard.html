@@ -19,28 +19,34 @@
     <div class="month-controls">
       <div class="filter-field">
         <label for="selectedYear">Year</label>
-        <select
+        <mat-select
           id="selectedYear"
+          class="dashboard-select"
+          panelClass="dashboard-select-panel"
+          [disableOptionCentering]="true"
           [value]="selectedYear"
-          (change)="onYearChange($any($event.target).value)"
+          (selectionChange)="onYearChange($event.value)"
         >
           @for (year of yearOptions; track year) {
-            <option [value]="year">{{ year }}</option>
+            <mat-option [value]="year">{{ year }}</mat-option>
           }
-        </select>
+        </mat-select>
       </div>
 
       <div class="filter-field">
         <label for="selectedMonth">Month</label>
-        <select
+        <mat-select
           id="selectedMonth"
+          class="dashboard-select"
+          panelClass="dashboard-select-panel"
+          [disableOptionCentering]="true"
           [value]="selectedMonth"
-          (change)="onMonthChange($any($event.target).value)"
+          (selectionChange)="onMonthChange($event.value)"
         >
           @for (month of monthOptions; track month.value) {
-            <option [value]="month.value">{{ month.label }}</option>
+            <mat-option [value]="month.value">{{ month.label }}</mat-option>
           }
-        </select>
+        </mat-select>
       </div>
     </div>
 
