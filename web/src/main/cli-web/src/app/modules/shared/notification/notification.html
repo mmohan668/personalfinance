@@ -49,8 +49,13 @@
         <span
           class="notification-progress"
           aria-hidden="true"
-          [style.animation-duration.ms]="notification.duration"
-        ></span>
+        >
+          <span
+            class="notification-progress-fill"
+            [style.animation-duration.ms]="notification.duration"
+            (animationend)="onProgressComplete($event)"
+          ></span>
+        </span>
       </div>
     </div>
   }

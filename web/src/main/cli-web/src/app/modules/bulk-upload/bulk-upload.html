@@ -8,7 +8,7 @@
         </mat-panel-title>
 
         <mat-panel-description class="bulk-upload-description">
-          Select the data type and upload an Excel file.
+          Select the upload type and upload an Excel file.
         </mat-panel-description>
       </mat-expansion-panel-header>
 
@@ -18,8 +18,6 @@
             <mat-form-field appearance="outline" floatLabel="always" class="upload-type-field">
               <mat-label>Upload Type</mat-label>
               <mat-select id="uploadType" [(ngModel)]="selectedUploadType">
-                <mat-option value="" disabled>Select upload type</mat-option>
-
                 @for (type of uploadTypes; track type.value) {
                   <mat-option [value]="type.value">{{ type.label }}</mat-option>
                 }

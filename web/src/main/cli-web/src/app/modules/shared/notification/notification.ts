@@ -85,6 +85,12 @@ export class Notification {
     this.notificationService.close();
   }
 
+  onProgressComplete(event: AnimationEvent): void {
+    if (event.animationName === 'notification-countdown') {
+      this.close();
+    }
+  }
+
   private updateTimerState(): void {
     if (this.pointerInside || this.focusInside) {
       this.notificationService.pause();
