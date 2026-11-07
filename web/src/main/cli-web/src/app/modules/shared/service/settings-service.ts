@@ -2,7 +2,7 @@ import { inject, Service } from '@angular/core';
 import { AppConfigService } from './app-config-service';
 import { ApiResponse, SelectItem } from '../types/types';
 import { Observable } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 
 @Service()
 export class SettingsService {
@@ -29,14 +29,12 @@ export class SettingsService {
     );
   }
 
-  fetchTransactionTypes(): Observable<SelectItem[]> {
+  fetchReferenceValuesByRefObjName(refObjName: string): Observable<SelectItem[]> {
+    const params = new HttpParams().set('refObjName', refObjName);
     return this.http.get<SelectItem[]>(
-      `${this.config.configValue.apiUrl}/settings/fetchTransactionTypes`,
+      `${this.config.configValue.apiUrl}/settings/fetchReferenceValuesByRefObjName`,
+      { params: params },
     );
-  }
-
-  fetchLocations(): Observable<SelectItem[]> {
-    return this.http.get<SelectItem[]>(`${this.config.configValue.apiUrl}/settings/fetchLocations`);
   }
 
   fetchIdByReferenceCodeAndRefObjName(referenceCode: string, refObjName: string): Observable<any> {
@@ -48,12 +46,6 @@ export class SettingsService {
           refObjName: refObjName,
         },
       },
-    );
-  }
-
-  fetchCurrencies(): Observable<SelectItem[]> {
-    return this.http.get<SelectItem[]>(
-      `${this.config.configValue.apiUrl}/settings/fetchCurrencies`,
     );
   }
 

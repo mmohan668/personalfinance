@@ -4,7 +4,7 @@
     <div class="dialog-heading">
       <mat-icon class="dialog-heading-icon">settings_applications</mat-icon>
       <span class="dialog-title">
-        {{ title }}
+        {{ 'Update System ' + this.data.configName }}
       </span>
     </div>
   </div>
@@ -13,10 +13,10 @@
   <div class="dialog-content">
     <form [formGroup]="form" class="dialog-form-1">
       <mat-form-field appearance="outline" floatLabel="always" class="dialog-field">
-        <mat-label>Currency</mat-label>
+        <mat-label>Configured Value</mat-label>
 
-        <mat-select formControlName="currency" name="currency">
-          @for (item of currencies(); track item.value) {
+        <mat-select formControlName="configValue" name="configValue">
+          @for (item of referenceCodes(); track item.value) {
             <mat-option [value]="item.value">
               {{ item.label }}
             </mat-option>

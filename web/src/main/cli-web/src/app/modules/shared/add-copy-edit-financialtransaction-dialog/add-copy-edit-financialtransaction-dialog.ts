@@ -57,12 +57,14 @@ export class AddCopyEditFinancialTransactionDialog {
   }
 
   fetchTransactionTypes(): void {
-    firstValueFrom(this._ss.fetchTransactionTypes()).then((resp: SelectItem[]) => {
-      this.transactionTypes.set(resp);
-      if ([MODES.COPY, MODES.EDIT].includes(this.data.mode)) {
-        this.fetchCategories(this.data.selectedRow.transactionTypeId, false);
-      }
-    });
+    firstValueFrom(this._ss.fetchReferenceValuesByRefObjName(REF_OBJ_NAMES.TRANSACTION_TYPE)).then(
+      (resp: SelectItem[]) => {
+        this.transactionTypes.set(resp);
+        if ([MODES.COPY, MODES.EDIT].includes(this.data.mode)) {
+          this.fetchCategories(this.data.selectedRow.transactionTypeId, false);
+        }
+      },
+    );
   }
 
   fetchCategories(transactionTypeId: any, clearValue: boolean = true): void {
@@ -93,9 +95,11 @@ export class AddCopyEditFinancialTransactionDialog {
   }
 
   fetchLocations(): void {
-    firstValueFrom(this._ss.fetchLocations()).then((resp: SelectItem[]) => {
-      this.locations.set(resp);
-    });
+    firstValueFrom(this._ss.fetchReferenceValuesByRefObjName(REF_OBJ_NAMES.LOCATION)).then(
+      (resp: SelectItem[]) => {
+        this.locations.set(resp);
+      },
+    );
   }
 
   fetchSubcategories(categoryId: any, clearValue: boolean = true): void {

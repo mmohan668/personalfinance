@@ -159,6 +159,12 @@ export enum REF_OBJ_NAMES {
   TRANSACTION_TYPE = 'TRANSACTION_TYPE',
   CURRENCY_CODE = 'CURRENCY_CODE',
   LOCATION = 'LOCATION',
+  DATE_FORMAT = 'DATE_FORMAT',
+}
+
+export enum SYSTEM_CONFIG_NAME {
+  CURRENCY = 'Currency',
+  DATE_FORMAT = 'Date Format',
 }
 
 export enum STATUS {

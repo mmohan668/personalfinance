@@ -7,44 +7,54 @@ import { ApiResponse, SelectItem } from '../../shared/types/types';
 import { SettingsService } from '../../shared/service/settings-service';
 import { firstValueFrom } from 'rxjs';
 import { NotificationService } from '../../shared/service/notification-service';
+import { REF_OBJ_NAMES, SYSTEM_CONFIG_NAME } from '../../shared/enums';
 
 @Component({
   imports: [CommonImportsModule],
-  selector: 'app-update-system-currency-dialog',
-  styleUrl: './update-system-currency-dialog.scss',
-  templateUrl: './update-system-currency-dialog.html',
+  selector: 'app-update-system-config-dialog',
+  styleUrl: './update-system-config-dialog.scss',
+  templateUrl: './update-system-config-dialog.html',
 })
-export class UpdateSystemCurrencyDialog {
+export class UpdateSystemConfigDialog {
   protected readonly dialogRef = inject(MatDialogRef<this>);
   protected readonly data = inject<any>(MAT_DIALOG_DATA);
   protected readonly _cs = inject(CommonService);
   private readonly _ss = inject(SettingsService);
   private readonly _ns = inject(NotificationService);
 
-  protected readonly currencies = signal<SelectItem[]>([]);
+  protected readonly referenceCodes = signal<SelectItem[]>([]);
 
-  protected readonly title = 'Update System Currency';
   protected form!: FormGroup;
 
+  refObjNameByConfig = {
+    [SYSTEM_CONFIG_NAME.CURRENCY]: REF_OBJ_NAMES.CURRENCY_CODE,
+    [SYSTEM_CONFIG_NAME.DATE_FORMAT]: REF_OBJ_NAMES.DATE_FORMAT,
+  };
+
   constructor() {
-    this.fetchCurrencies();
+    this.fetchReferenceCodes();
     this.form = new FormGroup({
-      currency: new FormControl<number | string>(this.data.rowData.referenceId, {
+      configValue: new FormControl<number | string>(this.data.rowData.referenceId, {
         nonNullable: true,
         validators: [Validators.required],
       }),
     });
   }
 
-  fetchCurrencies(): void {
-    firstValueFrom(this._ss.fetchCurrencies()).then((resp: SelectItem[]) => {
-      this.currencies.set(resp);
-    });
+  fetchReferenceCodes(): void {
+    const refObjName = this.refObjNameByConfig[this.data.configName as SYSTEM_CONFIG_NAME];
+    if (!refObjName) return;
+
+    firstValueFrom(this._ss.fetchReferenceValuesByRefObjName(refObjName)).then(
+      (resp: SelectItem[]) => {
+        this.referenceCodes.set(resp);
+      },
+    );
   }
 
   save(): void {
     const systemConfigDto = this.data.rowData;
-    systemConfigDto['referenceId'] = this.form.value.currency;
+    systemConfigDto['referenceId'] = this.form.value.configValue;
     firstValueFrom(this._ss.saveSystemConfig(systemConfigDto)).then((resp: ApiResponse) => {
       if (resp.success) {
         this.dialogRef.close(resp.message);

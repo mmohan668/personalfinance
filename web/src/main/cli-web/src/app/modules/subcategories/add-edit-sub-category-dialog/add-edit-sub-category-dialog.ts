@@ -1,6 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { DATA_FIELDS, MODES } from '../../shared/enums';
+import { DATA_FIELDS, MODES, REF_OBJ_NAMES } from '../../shared/enums';
 import { CommonImportsModule } from '../../shared/common-imports/common-imports-module';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
@@ -43,9 +43,11 @@ export class AddEditSubCategoryDialog {
   }
 
   fetchTransactionTypes() {
-    firstValueFrom(this._ss.fetchTransactionTypes()).then((resp: SelectItem[]) => {
-      this.transactionTypes.set(resp);
-    });
+    firstValueFrom(this._ss.fetchReferenceValuesByRefObjName(REF_OBJ_NAMES.TRANSACTION_TYPE)).then(
+      (resp: SelectItem[]) => {
+        this.transactionTypes.set(resp);
+      },
+    );
   }
 
   fetchCategories(referenceValueId: any, clearValue: boolean = true) {
