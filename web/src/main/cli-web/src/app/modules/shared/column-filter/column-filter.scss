@@ -116,8 +116,14 @@
   min-height: 30px;
   box-sizing: border-box;
   overflow: hidden;
-  background: transparent !important;
+  border: 1px solid #b7d5bc !important;
+  background: #ffffff !important;
   border-radius: 8px;
+}
+
+:host ::ng-deep .date-filter-control .p-datepicker:focus-within {
+  border-color: #4caf50 !important;
+  box-shadow: 0 0 0 2px rgb(76 175 80 / 12%);
 }
 
 :host ::ng-deep .date-filter-control .p-datepicker-input {
@@ -131,7 +137,8 @@
   padding: 0 4px 0 30px;
   font-size: 13px;
   background: #ffffff;
-  border-radius: 8px 0 0 8px;
+  border: 0 !important;
+  border-radius: 7px 0 0 7px;
 }
 
 :host ::ng-deep .date-filter-control .p-datepicker-dropdown {
@@ -147,10 +154,10 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  border: none;
+  border: 0 !important;
   background: #ffffff !important;
   color: #94a3b8;
-  border-radius: 0 8px 8px 0 !important;
+  border-radius: 0 7px 7px 0 !important;
 }
 
 /* Boolean select */
