@@ -21,7 +21,7 @@ export class AppConfigService {
   get configValue(): AppConfig {
     if (!this.appConfig) {
       return {
-        apiUrl: 'http://localhost:1003/pf-warehouse/api',
+        apiUrl: 'http://192.168.0.101:1991/pf-warehouse/api',
         environment: 'Dev',
         pageSizeOptions: [25, 50, 100],
         defaultPageSize: 25,

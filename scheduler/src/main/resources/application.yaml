@@ -1,17 +1,12 @@
-server:
-  port: 1006
-  servlet:
-    context-path: /pf-scheduler
-app:
-  logging:
-    directory: ${APP_LOG_DIR:E:/Files/logs}
 spring:
   application:
     name: scheduler
-
-async:
-  base-url: ${ASYNC_BASE_URL:http://localhost:1004/pf-async}
-  scheduler-token: ${ASYNC_SCHEDULER_TOKEN:local-dev-only-change-before-production}
-
-scheduler:
-  recurring-poll-delay-ms: ${RECURRING_POLL_DELAY_MS:60000}
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
+  config:
+    import: "configserver:${CONFIG_SERVER_URL:http://192.168.0.101:8888}"
+  cloud:
+    config:
+      username: ${CONFIG_SERVER_USERNAME}
+      password: ${CONFIG_SERVER_PASSWORD}
+      label: ${CONFIG_REPO_LABEL:1.0.0.0_dev}

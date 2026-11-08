@@ -1,51 +1,12 @@
-server:
-  port: 1003
-  servlet:
-    context-path: /pf-warehouse
 spring:
   application:
     name: warehouse
-  data:
-    redis:
-      host: localhost
-      port: 6379
-  datasource:
-    url: jdbc:postgresql://localhost:5432/personal_finance_dev
-    username: personal_finance_dev
-    password: personal_finance_dev
-    driver-class-name: org.postgresql.Driver
-    hikari:
-      minimum-idle: 5
-      maximum-pool-size: 10
-  jpa:
-    hibernate:
-      ddl-auto: none
-    show-sql: false
-  activemq:
-    broker-url: tcp://localhost:61616
-logging:
-  level:
-    org.hibernate.SQL: DEBUG
-    org.hibernate.orm.connections.pooling: WARN
-
-files:
-  images:
-    user-profiles-path: E:/Files/profile-images/users
-    max-file-size: 10MB
-
-bulk-upload:
-  base-folder:
-    in-progress: E:/Files/bulk-uploads/in-progress
-    success: E:/Files/bulk-uploads/success
-    error: E:/Files/bulk-uploads/error
-
-export:
-  base-folder: E:/Files/bulk-exports
-
-app:
-  logging:
-    directory: ${APP_LOG_DIR:E:/Files/logs}
-  activation-token:
-    secret: 6X9uhRahHb/7YEUwZ297kXXC6Ec12xjg8KECVBadTCU=
-  password:
-    history-limit: 5
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
+  config:
+    import: "configserver:${CONFIG_SERVER_URL:http://192.168.0.101:8888}"
+  cloud:
+    config:
+      username: ${CONFIG_SERVER_USERNAME}
+      password: ${CONFIG_SERVER_PASSWORD}
+      label: ${CONFIG_REPO_LABEL:1.0.0.0_dev}

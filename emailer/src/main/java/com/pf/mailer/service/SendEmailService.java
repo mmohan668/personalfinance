@@ -18,13 +18,15 @@ import org.thymeleaf.context.Context;
 @Service
 @RequiredArgsConstructor
 public class SendEmailService {
+    public static final String ACTIVATE_ACCOUNT = "/api/auth/activateAccount";
+    public static final String TOKEN = "?token=";
     private final JavaMailSender mailSender;
     private final TemplateEngine templateEngine;
 
     @Value("${app.mail.from}")
     private String fromEmail;
 
-    @Value("${app.frontend.activation-url}")
+    @Value("${app.warehouse-rest-url}")
     private String activationUrl;
 
     public void sendAccountActivationEmail(AccountActivationRequest accountActivationRequest) {
@@ -38,7 +40,7 @@ public class SendEmailService {
         }
 
         try {
-            String link = activationUrl + "?token="
+            String link = activationUrl + ACTIVATE_ACCOUNT + TOKEN
                     + java.net.URLEncoder.encode(
                     accountActivationRequest.getToken(),
                     java.nio.charset.StandardCharsets.UTF_8);
