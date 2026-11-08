@@ -45,6 +45,11 @@ interface GridGuide {
 export class HelpSupport {
   protected readonly supportEmail = 'personalfinanceapp.support@gmail.com';
 
+  isToolbarAction(title: string): boolean {
+    return /^(add|copy|edit|delete|activate|inactivate|export|refresh)(\s|$)/i.test(title)
+      || /permissions?$/i.test(title);
+  }
+
   readonly helpSections: HelpSection[] = [
     {
       title: 'Record Management',
@@ -52,7 +57,7 @@ export class HelpSupport {
       actions: [
         {
           title: 'Refresh',
-          icon: 'refresh',
+          icon: 'autorenew',
           description: 'Refreshes the data displayed in the grid.',
           details: 'Use this button to retrieve the latest records and update the grid.',
         },
@@ -226,21 +231,21 @@ export class HelpSupport {
         },
         {
           title: 'Refresh Dashboard',
-          icon: 'refresh',
+          icon: 'autorenew',
           description: 'Returns the dashboard to the current month and refreshes its data.',
           details:
             'Click Refresh to reset the year and month to the current date and request the latest dashboard summary.',
         },
         {
           title: 'Total Expenses',
-          icon: 'trending_up',
+          icon: 'account_balance_wallet',
           description: 'Displays the total expenses for the selected month.',
           details:
             'Use this summary card to see the expense amount reported for the selected period.',
         },
         {
           title: 'Total Income',
-          icon: 'trending_down',
+          icon: 'payments',
           description: 'Displays the total income for the selected month.',
           details: 'Use this card to review the income amount reported for the selected period.',
         },
@@ -394,14 +399,14 @@ function createTransactionGuide(
       },
       {
         title: 'Export',
-        icon: 'file_download',
+        icon: 'ios_share',
         description: `Export ${exportLabel}.`,
         details:
           'Use the export options to download all available records or only the selected rows.',
       },
       {
         title: 'Refresh',
-        icon: 'refresh',
+        icon: 'autorenew',
         description: 'Request the latest grid data.',
         details: 'Click Refresh to request the latest data for the grid.',
       },
@@ -488,14 +493,14 @@ function createCategoryGuide(): GridGuide {
       },
       {
         title: 'Export',
-        icon: 'file_download',
+        icon: 'ios_share',
         description: 'Export category records.',
         details:
           'Use the export options to download all available category records or only the selected rows.',
       },
       {
         title: 'Refresh',
-        icon: 'refresh',
+        icon: 'autorenew',
         description: 'Request the latest category data.',
         details: 'Click Refresh to request the latest data for the Categories grid.',
       },
@@ -595,14 +600,14 @@ function createSubcategoryGuide(): GridGuide {
       },
       {
         title: 'Export',
-        icon: 'file_download',
+        icon: 'ios_share',
         description: 'Export subcategory records.',
         details:
           'Use the export options to download all available subcategory records or only the selected rows.',
       },
       {
         title: 'Refresh',
-        icon: 'refresh',
+        icon: 'autorenew',
         description: 'Request the latest subcategory data.',
         details: 'Click Refresh to request the latest data for the Subcategories grid.',
       },
@@ -623,9 +628,10 @@ function createSystemConfigGuide(): GridGuide {
   return {
     title: 'System Configuration',
     icon: 'tune',
-    description: 'Review and configure system-wide preferences, such as currency and date format.',
+    description:
+      'Review and configure system-wide preferences, including currency, date format, country, state, and time zone.',
     overview:
-      'Use System Configuration to review system settings, including the currency used to display amounts and the configured date pattern.',
+      'Use System Configuration to review and update the currency used to display amounts, date format, country and state used for public holiday calendars, and time zone used for scheduled tasks.',
     features: [
       {
         title: 'Review Configuration Settings',
@@ -642,22 +648,43 @@ function createSystemConfigGuide(): GridGuide {
           'Click the Currency configuration value to open the currency update dialog. Choose the desired currency and complete the update.',
       },
       {
-        title: 'Date Pattern',
+        title: 'Date Format',
         icon: 'calendar_today',
         description: 'Review or change the configured date pattern.',
         details:
-          'Select the date-pattern configuration and use its available setting action to choose the preferred date format.',
+          'Click the Date Format configuration value to open its update dialog and choose the preferred date format.',
+      },
+      {
+        title: 'Country',
+        icon: 'public',
+        description: 'Change the country used for public holiday calendars.',
+        details:
+          'Click the Country configuration value to open its update dialog and choose the country for public holiday calendars.',
+      },
+      {
+        title: 'State',
+        icon: 'location_on',
+        description: 'Change the state used for public holiday calendars.',
+        details:
+          'Click the State configuration value to open its update dialog and choose the state for public holiday calendars.',
+      },
+      {
+        title: 'Time Zone',
+        icon: 'schedule',
+        description: 'Change the time zone used for scheduled tasks.',
+        details:
+          'Click the Time Zone configuration value to open its update dialog and choose the time zone used by scheduled tasks.',
       },
       {
         title: 'Export',
-        icon: 'file_download',
+        icon: 'ios_share',
         description: 'Export system configuration records.',
         details:
           'Use the grid export options to download all available configuration records or only the selected rows.',
       },
       {
         title: 'Refresh',
-        icon: 'refresh',
+        icon: 'autorenew',
         description: 'Request the latest configuration data.',
         details: 'Click Refresh to request the latest data after a setting has been updated.',
       },
@@ -666,7 +693,9 @@ function createSystemConfigGuide(): GridGuide {
       'Review the current configuration values before changing a setting.',
       'Click the Currency value to open its update dialog.',
       'Check the displayed currency after updating it.',
-      'Review the configured date pattern.',
+      'Use Date Format to select how dates are displayed.',
+      'Set the Country and State used for public holiday calendars.',
+      'Set the Time Zone used for scheduled tasks.',
       'Use Export and Refresh as separate grid actions when needed.',
     ],
   };
@@ -696,13 +725,13 @@ function createReferenceObjectsGuide(): GridGuide {
       },
       {
         title: 'Export',
-        icon: 'file_download',
+        icon: 'ios_share',
         description: 'Export reference object records.',
         details: 'Use the grid export options to export reference object data when needed.',
       },
       {
         title: 'Refresh',
-        icon: 'refresh',
+        icon: 'autorenew',
         description: 'Refresh the reference object grid.',
         details: 'Use Refresh to reload the grid data.',
       },
@@ -782,14 +811,14 @@ function createReferenceValuesGuide(): GridGuide {
       },
       {
         title: 'Export',
-        icon: 'file_download',
+        icon: 'ios_share',
         description: 'Export reference value records.',
         details:
           'Use the grid export options to download reference value data, including all available records or selected rows where supported.',
       },
       {
         title: 'Refresh',
-        icon: 'refresh',
+        icon: 'autorenew',
         description: 'Reload reference value data.',
         details: 'Click Refresh to request the latest data and update the Reference Values grid.',
       },
@@ -872,13 +901,13 @@ function createBulkUploadGuide(): GridGuide {
       },
       {
         title: 'Export',
-        icon: 'file_download',
+        icon: 'ios_share',
         description: 'Export upload status records.',
         details: 'Use the grid export options to export upload status data when needed.',
       },
       {
         title: 'Refresh',
-        icon: 'refresh',
+        icon: 'autorenew',
         description: 'Reload the upload status grid.',
         details: 'Click Refresh to retrieve the latest upload status records.',
       },
@@ -912,7 +941,7 @@ function createUserManagementGuide(): GridGuide {
       },
       {
         title: 'Add User',
-        icon: 'person_add',
+        icon: 'add',
         description: 'Add a family member or another user.',
         details:
           'Click Add to open the user form. Enter the required user information and save the record to add the user to your application.',
@@ -954,13 +983,13 @@ function createUserManagementGuide(): GridGuide {
       },
       {
         title: 'Export',
-        icon: 'file_download',
+        icon: 'ios_share',
         description: 'Export user records.',
         details: 'Use the grid export options to export user data when needed.',
       },
       {
         title: 'Refresh',
-        icon: 'refresh',
+        icon: 'autorenew',
         description: 'Reload the user list.',
         details: 'Click Refresh to retrieve the latest user records and reflect recent changes.',
       },
@@ -1001,7 +1030,7 @@ function createDownloadsGuide(): GridGuide {
       },
       {
         title: 'Refresh',
-        icon: 'refresh',
+        icon: 'autorenew',
         description: 'Reload the list of available downloads.',
         details:
           'Click Refresh to retrieve the latest download records and check whether a newly generated export is available.',

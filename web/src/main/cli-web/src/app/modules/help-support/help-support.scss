@@ -288,6 +288,31 @@
   }
 }
 
+.grid-feature-card .grid-guide-action-button {
+  width: 32px !important;
+  min-width: 32px !important;
+  height: 32px !important;
+  min-height: 32px !important;
+  padding: 0 !important;
+  border: 1px solid #a9cfae !important;
+  border-radius: 8px !important;
+  background: linear-gradient(145deg, #ffffff 0%, #f6faf6 100%) !important;
+  color: #388e3c !important;
+  box-shadow: 0 2px 5px rgb(31 74 40 / 8%) !important;
+  opacity: 1 !important;
+}
+
+.grid-feature-card .grid-guide-action-button > mat-icon {
+  color: #388e3c !important;
+}
+
+.help-action-toolbar .help-export-icon {
+  display: block;
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
 .action-description {
   margin: 0 0 10px;
   font-size: 13px;
@@ -320,6 +345,8 @@
     font-size: 21px;
   }
 }
+
+
 
 /* Nested grid guide panels */
 .individual-grid-accordion {
