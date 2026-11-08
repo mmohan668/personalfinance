@@ -78,7 +78,10 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
+  box-sizing: border-box;
   flex-shrink: 0;
+  height: 34px;
+  min-height: 34px;
   padding: 10px 14px;
   border: 1px solid #4caf50;
   border-radius: 2px;

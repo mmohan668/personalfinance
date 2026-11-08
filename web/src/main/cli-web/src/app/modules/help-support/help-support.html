@@ -70,7 +70,17 @@
                           [attr.aria-label]="action.title"
                           disabled
                         >
-                          <mat-icon>{{ action.icon }}</mat-icon>
+                          @if (action.title === 'Export All Data') {
+                            <img src="assets/icons/exportAll.png" class="help-export-icon" alt="" />
+                          } @else if (action.title === 'Export Selected Rows Data') {
+                            <img
+                              src="assets/icons/exportSelected.png"
+                              class="help-export-icon"
+                              alt=""
+                            />
+                          } @else {
+                            <mat-icon>{{ action.icon }}</mat-icon>
+                          }
                         </button>
                       </div>
 
@@ -165,9 +175,24 @@
                       <mat-card class="help-card grid-feature-card" appearance="outlined">
                         <mat-card-content>
                           <div class="card-heading">
-                            <div class="feature-icon">
-                              <mat-icon>{{ feature.icon }}</mat-icon>
-                            </div>
+                            @if (isToolbarAction(feature.title)) {
+                              <div class="table-toolbar help-action-toolbar">
+                                <button
+                                  mat-icon-button
+                                  class="toolbar-border grid-guide-action-button"
+                                  type="button"
+                                  [title]="feature.title"
+                                  [attr.aria-label]="feature.title"
+                                  disabled
+                                >
+                                  <mat-icon>{{ feature.icon }}</mat-icon>
+                                </button>
+                              </div>
+                            } @else {
+                              <div class="feature-icon">
+                                <mat-icon>{{ feature.icon }}</mat-icon>
+                              </div>
+                            }
 
                             <h3>{{ feature.title }}</h3>
                           </div>
