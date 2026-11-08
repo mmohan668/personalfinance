@@ -1,6 +1,5 @@
 package com.pf.scheduler.recurring;
 
-import com.pf.common.dto.generic.SchedulerUserConfig;
 import com.pf.common.dto.recurringTransaction.SchedulerRecurringTransactionRuleDto;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
@@ -33,19 +32,6 @@ public class AsyncRecurringTransactionClient {
                 .body(new ParameterizedTypeReference<>() {});
         if (rules == null) throw new IllegalStateException("Async returned an empty recurring rules response");
         return rules;
-    }
-
-    public List<SchedulerUserConfig> fetchConfigurations() {
-        requireToken();
-        List<SchedulerUserConfig> configurations = restClient.get()
-                .uri("/api/recurringTransactions/scheduler/configurations")
-                .header("X-Async-Scheduler-Token", schedulerApiToken)
-                .retrieve()
-                .body(new ParameterizedTypeReference<>() {});
-        if (configurations == null) {
-            throw new IllegalStateException("Async returned an empty scheduler configuration response");
-        }
-        return configurations;
     }
 
     public boolean execute(Long ruleId, LocalDate occurrenceDate, LocalTime occurrenceTime) {
