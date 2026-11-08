@@ -46,7 +46,7 @@ public class CategoryManagementService extends BaseService {
 
     @Transactional
     public GridResult fetchCategoriesGridData(SearchCriteria searchCriteria) {
-        log.debug("fetchCategoriesGridData: {}", searchCriteria);
+        log.info("Fetching category grid data: searchCriteria={}", searchCriteria);
         addAdminUserGridFilter(searchCriteria, USER_ID);
         searchCriteria.setFetchPaths(List.of(REFERENCE_VALUE, CREATED_BY_USER, UPDATED_BY_USER));
         searchCriteria.setFIELD_MAPPINGS(UserCategoryDto.FIELD_MAPPINGS);
@@ -63,13 +63,13 @@ public class CategoryManagementService extends BaseService {
         List<UserCategoryDto> recordDetails = userCategoryMapper.toDtoList(
                 getDataBySearchCriteria(UserCategory.class, searchCriteria)
         );
-        log.debug("fetchCategoriesGridData: totalRecords: {}", totalRecords);
+        log.info("Fetched category grid data: totalRecords={}", totalRecords);
         return gridResult(totalRecords, recordDetails);
     }
 
     @Transactional
     public GridResult fetchSubcategoriesGridData(SearchCriteria searchCriteria) {
-        log.debug("fetchSubcategoriesGridData: {}", searchCriteria);
+        log.info("Fetching subcategory grid data: searchCriteria={}", searchCriteria);
         addAdminUserGridFilter(searchCriteria, ADMIN_USER_ID);
         long totalRecords = 0;
         if (!searchCriteria.isLoadAllData()) {
@@ -84,13 +84,13 @@ public class CategoryManagementService extends BaseService {
         List<SubcategoryViewDto> recordDetails = subcategoryViewMapper.toDtoList(
                 getDataBySearchCriteria(SubcategoryView.class, searchCriteria)
         );
-        log.debug("fetchSubcategoriesGridData: totalRecords: {}", totalRecords);
+        log.info("Fetched subcategory grid data: totalRecords={}", totalRecords);
         return gridResult(totalRecords, recordDetails);
     }
 
     @Transactional
     public ApiResponse saveCategory(UserCategoryDto userCategoryDto) {
-        log.debug("saveCategory: {}", userCategoryDto);
+        log.info("Saving category");
         UserReferenceValue userReferenceValue =
                 referenceValueRepository.findById(userCategoryDto.getTransactionTypeId())
                         .orElse(null);
@@ -100,7 +100,7 @@ public class CategoryManagementService extends BaseService {
         }
         User user = fetchLoginUser();
         if (userCategoryDto.getId() == null) {
-            log.debug("addCategory: userCategoryDto = {}", userCategoryDto);
+            log.info("Creating category");
             UserCategory userCategory = userCategoryMapper.toEntity(userCategoryDto);
             userCategory.setCreatedBy(user);
             if (userCategoryRepository.existsByTransactionTypeAndNameAndUserId(
@@ -155,7 +155,7 @@ public class CategoryManagementService extends BaseService {
 
     @Transactional
     public ApiResponse deleteCategories(List<Long> ids) {
-        log.debug("deleteCategories: {}", ids);
+        log.info("Deleting categories: requestedCount={}", ids == null ? 0 : ids.size());
         if (ids == null || ids.isEmpty()) {
             log.warn("deleteCategories: ids is empty");
             return failure("Ids is empty");
@@ -234,7 +234,7 @@ public class CategoryManagementService extends BaseService {
 
     @Transactional
     public ApiResponse saveSubcategory(SubcategoryViewDto subcategoryViewDto) {
-        log.debug("saveSubcategory: {}", subcategoryViewDto);
+        log.info("Saving subcategory");
         User user = fetchLoginUser();
         UserCategory userCategory =
                 userCategoryRepository.findById(subcategoryViewDto.getUserCategoryId())
@@ -281,7 +281,7 @@ public class CategoryManagementService extends BaseService {
 
     @Transactional
     public ApiResponse deleteSubcategories(List<Long> ids) {
-        log.debug("deleteSubcategories: {}", ids);
+        log.info("Deleting subcategories: requestedCount={}", ids == null ? 0 : ids.size());
         if (ids == null || ids.isEmpty()) {
             log.warn("deleteSubcategories: ids is empty");
             return failure("Ids is empty");
@@ -307,7 +307,7 @@ public class CategoryManagementService extends BaseService {
 
     @Transactional
     public ApiResponse activateSubcategories(List<Long> ids) {
-        log.debug("activateSubcategories: {}", ids);
+        log.info("Activating subcategories: requestedCount={}", ids == null ? 0 : ids.size());
         if (ids == null || ids.isEmpty()) {
             log.warn("activateSubcategories: ids is empty");
             return failure("Ids are empty");
@@ -324,7 +324,7 @@ public class CategoryManagementService extends BaseService {
 
     @Transactional
     public ApiResponse inactivateSubcategories(List<Long> ids) {
-        log.debug("deactivateSubcategories: {}", ids);
+        log.info("Deactivating subcategories: requestedCount={}", ids == null ? 0 : ids.size());
         if (ids == null || ids.isEmpty()) {
             log.warn("deactivateSubcategories: ids is empty");
             return failure("Ids are empty");

@@ -48,7 +48,7 @@ public class SettingsService extends BaseService {
     private final UserCategoryRepository userCategoryRepository;
 
     public GridResult fetchReferenceObjectGridData(SearchCriteria searchCriteria) {
-        log.debug("fetchReferenceObjectGridData: {}", searchCriteria);
+        log.info("Fetching reference object grid data: searchCriteria={}", searchCriteria);
         searchCriteria.getSortList().add(new GridSort(ID, ASC.getValue()));
         searchCriteria.setFetchPaths(List.of(CREATED_BY_USER, UPDATED_BY_USER));
         searchCriteria.setFIELD_MAPPINGS(ReferenceObjectDto.FIELD_MAPPINGS);
@@ -65,12 +65,12 @@ public class SettingsService extends BaseService {
         List<ReferenceObjectDto> recordDetails = referenceObjectMapper.toDtoList(
                 getDataBySearchCriteria(ReferenceObject.class, searchCriteria)
         );
-        log.debug("fetchReferenceObjectGridData: totalRecords: {}", totalRecords);
+        log.info("Fetched reference object grid data: totalRecords={}", totalRecords);
         return gridResult(totalRecords, recordDetails);
     }
 
     public GridResult fetchReferenceValueGridData(SearchCriteria searchCriteria) {
-        log.debug("fetchReferenceValuesGridData: {}", searchCriteria);
+        log.info("Fetching reference value grid data: searchCriteria={}", searchCriteria);
         addAdminUserGridFilter(searchCriteria, USER_ID);
         searchCriteria.getSortList().add(new GridSort(ID, ASC.getValue()));
         searchCriteria.setFetchPaths(List.of(REFERENCE_OBJECT, USER, CREATED_BY_USER, UPDATED_BY_USER));
@@ -88,12 +88,12 @@ public class SettingsService extends BaseService {
         List<ReferenceValueDto> recordDetails = referenceValueMapper.toDtoList(
                 getDataBySearchCriteria(UserReferenceValue.class, searchCriteria)
         );
-        log.debug("fetchReferenceValuesGridData: totalRecords: {}", totalRecords);
+        log.info("Fetched reference value grid data: totalRecords={}", totalRecords);
         return gridResult(totalRecords, recordDetails);
     }
 
     public GridResult fetchSystemConfigGridData(SearchCriteria searchCriteria) {
-        log.debug("fetchSystemConfigGridData: {}", searchCriteria);
+        log.info("Fetching system configuration grid data: searchCriteria={}", searchCriteria);
         addAdminUserGridFilter(searchCriteria, USER_ID);
         searchCriteria.getSortList().add(new GridSort(ID, ASC.getValue()));
         searchCriteria.setFetchPaths(List.of(CONFIG_VALUE, CREATED_BY_USER, UPDATED_BY_USER));
@@ -108,13 +108,13 @@ public class SettingsService extends BaseService {
         List<SystemConfigDto> recordDetails = systemConfigMapper.toDtoList(
                 getDataBySearchCriteria(SystemConfig.class, searchCriteria)
         );
-        log.debug("fetchSystemConfigGridData: totalRecords: {}", totalRecords);
+        log.info("Fetched system configuration grid data: totalRecords={}", totalRecords);
         return gridResult(totalRecords, recordDetails);
     }
 
     @Transactional
     public ApiResponse saveReferenceValue(ReferenceValueDto referenceValueDto) {
-        log.debug("saveReferenceValue: {}", referenceValueDto);
+        log.info("Saving reference value");
         User user = fetchLoginUser();
         ReferenceObject referenceObject =
                 referenceObjectRepository.findById(referenceValueDto.getRefObjNameId())
@@ -181,7 +181,7 @@ public class SettingsService extends BaseService {
 
     @Transactional
     public ApiResponse deleteReferenceValue(List<Long> ids) {
-        log.debug("deleteReferenceValue: {}", ids);
+        log.info("Deleting reference values: requestedCount={}", ids == null ? 0 : ids.size());
         if (ids == null || ids.isEmpty()) {
             return failure("No reference values selected for deletion.");
         }
@@ -213,7 +213,7 @@ public class SettingsService extends BaseService {
 
     @Transactional
     public ApiResponse saveSystemConfig(SystemConfigDto systemConfigDto) {
-        log.debug("saveSystemConfig: {}", systemConfigDto);
+        log.info("Saving system configuration");
         if (systemConfigDto == null) {
             return failure("System config object not found.");
         }
@@ -234,7 +234,7 @@ public class SettingsService extends BaseService {
 
     @Transactional
     public ApiResponse activateReferenceValue(List<Long> ids) {
-        log.debug("activateReferenceValue: {}", ids);
+        log.info("Activating reference values: requestedCount={}", ids == null ? 0 : ids.size());
         if (ids == null || ids.isEmpty()) {
             return failure("No reference value(s) selected for activation.");
         }
@@ -244,13 +244,13 @@ public class SettingsService extends BaseService {
                 ids,
                 chunk -> referenceValueRepository.activateReferenceValues(chunk, updatedBy, updatedAt)
         );
-        log.debug("{} Reference value(s) activated", activated);
+        log.info("Activated reference values: count={}", activated);
         return success("Reference value(s) activated successfully.");
     }
 
     @Transactional
     public ApiResponse inactivateReferenceValue(List<Long> ids) {
-        log.debug("inactivateReferenceValue: {}", ids);
+        log.info("Inactivating reference values: requestedCount={}", ids == null ? 0 : ids.size());
         if (ids == null || ids.isEmpty()) {
             return failure("No reference value(s) selected for inactivation.");
         }
@@ -260,7 +260,7 @@ public class SettingsService extends BaseService {
                 ids,
                 chunk -> referenceValueRepository.inactivateReferenceValues(chunk, updatedBy, updatedAt)
         );
-        log.debug("{} Reference value(s) inactivated", inactivated);
+        log.info("Inactivated reference values: count={}", inactivated);
         return success("Reference value(s) inactivated successfully.");
     }
 

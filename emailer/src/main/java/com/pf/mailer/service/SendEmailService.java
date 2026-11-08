@@ -30,88 +30,107 @@ public class SendEmailService {
     private String activationUrl;
 
     public void sendAccountActivationEmail(AccountActivationRequest accountActivationRequest) {
-        if (accountActivationRequest == null
-                || accountActivationRequest.getEmailId() == null
-                || accountActivationRequest.getEmailId().isBlank()
-                || accountActivationRequest.getToken() == null
-                || accountActivationRequest.getToken().isBlank()) {
-            throw new IllegalArgumentException(
-                    "Email address and activation token are required");
-        }
-
+        log.info("Starting account activation email delivery");
+        boolean completedSuccessfully = false;
         try {
-            String link = activationUrl + ACTIVATE_ACCOUNT + TOKEN
-                    + java.net.URLEncoder.encode(
-                    accountActivationRequest.getToken(),
-                    java.nio.charset.StandardCharsets.UTF_8);
+            if (accountActivationRequest == null
+                    || accountActivationRequest.getEmailId() == null
+                    || accountActivationRequest.getEmailId().isBlank()
+                    || accountActivationRequest.getToken() == null
+                    || accountActivationRequest.getToken().isBlank()) {
+                log.warn("Account activation email request rejected: required fields are missing");
+                throw new IllegalArgumentException(
+                        "Email address and activation token are required");
+            }
 
-            Context context = new Context();
-            context.setVariable("activationLink", link);
+            try {
+                String link = activationUrl + ACTIVATE_ACCOUNT + TOKEN
+                        + java.net.URLEncoder.encode(
+                        accountActivationRequest.getToken(),
+                        java.nio.charset.StandardCharsets.UTF_8);
 
-            String htmlContent = templateEngine.process(
-                    "account-activation", context);
+                Context context = new Context();
+                context.setVariable("activationLink", link);
 
-            MimeMessage message = mailSender.createMimeMessage();
+                log.info("Rendering account activation email template");
+                String htmlContent = templateEngine.process(
+                        "account-activation", context);
+                log.info("Rendered account activation email template");
 
-            MimeMessageHelper helper = new MimeMessageHelper(
-                    message, true, "UTF-8");
+                MimeMessage message = mailSender.createMimeMessage();
+                MimeMessageHelper helper = new MimeMessageHelper(
+                        message, true, "UTF-8");
 
-            helper.setFrom(fromEmail);
-            helper.setTo(accountActivationRequest.getEmailId());
-            helper.setSubject("Activate your ExpenseTrack account");
-            helper.setText(htmlContent, true);
+                helper.setFrom(fromEmail);
+                helper.setTo(accountActivationRequest.getEmailId());
+                helper.setSubject("Activate your ExpenseTrack account");
+                helper.setText(htmlContent, true);
 
-            mailSender.send(message);
-
-            log.info("Account activation email sent successfully");
-
-        } catch (MessagingException | MailException e) {
-            log.error("Failed to send account activation email");
-            throw new IllegalStateException(
-                    "Unable to send account activation email", e);
+                log.info("Sending account activation email");
+                mailSender.send(message);
+                log.info("Account activation email sent successfully");
+            } catch (MessagingException | MailException e) {
+                log.error("Failed to send account activation email", e);
+                throw new IllegalStateException(
+                        "Unable to send account activation email", e);
+            }
+            completedSuccessfully = true;
+        } finally {
+            log.info("Account activation email delivery {}",
+                    completedSuccessfully ? "completed successfully" : "failed");
         }
     }
 
 
     public void sendForgotPasswordEmail(ForgotPasswordEmailRequest request) {
-        if (request == null
-                || request.getEmailId() == null
-                || request.getEmailId().isBlank()
-                || request.getTemporaryPassword() == null
-                || request.getTemporaryPassword().isBlank()) {
-            throw new IllegalArgumentException(
-                    "Email address and temporary password are required");
-        }
-
+        log.info("Starting forgot-password email delivery");
+        boolean completedSuccessfully = false;
         try {
-            Context context = new Context();
-            context.setVariable(
-                    "temporaryPassword",
-                    request.getTemporaryPassword()
-            );
+            if (request == null
+                    || request.getEmailId() == null
+                    || request.getEmailId().isBlank()
+                    || request.getTemporaryPassword() == null
+                    || request.getTemporaryPassword().isBlank()) {
+                log.warn("Forgot-password email request rejected: required fields are missing");
+                throw new IllegalArgumentException(
+                        "Email address and temporary password are required");
+            }
 
-            String htmlContent = templateEngine.process(
-                    "forgot-password",
-                    context
-            );
+            try {
+                Context context = new Context();
+                context.setVariable(
+                        "temporaryPassword",
+                        request.getTemporaryPassword()
+                );
 
-            MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper helper =
-                    new MimeMessageHelper(message, true, "UTF-8");
+                log.info("Rendering forgot-password email template");
+                String htmlContent = templateEngine.process(
+                        "forgot-password",
+                        context
+                );
+                log.info("Rendered forgot-password email template");
 
-            helper.setFrom(fromEmail);
-            helper.setTo(request.getEmailId());
-            helper.setSubject("Your Temporary Password");
-            helper.setText(htmlContent, true);
+                MimeMessage message = mailSender.createMimeMessage();
+                MimeMessageHelper helper =
+                        new MimeMessageHelper(message, true, "UTF-8");
 
-            mailSender.send(message);
+                helper.setFrom(fromEmail);
+                helper.setTo(request.getEmailId());
+                helper.setSubject("Your Temporary Password");
+                helper.setText(htmlContent, true);
 
-            log.info("Forgot-password email sent successfully");
-
-        } catch (MessagingException | MailException e) {
-            log.error("Failed to send forgot-password email", e);
-            throw new IllegalStateException(
-                    "Unable to send forgot-password email", e);
+                log.info("Sending forgot-password email");
+                mailSender.send(message);
+                log.info("Forgot-password email sent successfully");
+            } catch (MessagingException | MailException e) {
+                log.error("Failed to send forgot-password email", e);
+                throw new IllegalStateException(
+                        "Unable to send forgot-password email", e);
+            }
+            completedSuccessfully = true;
+        } finally {
+            log.info("Forgot-password email delivery {}",
+                    completedSuccessfully ? "completed successfully" : "failed");
         }
     }
 

@@ -37,7 +37,7 @@ public class FinancialTransactionService extends BaseService {
     @Transactional
     public GridResult fetchFinancialTransactionGridData(SearchCriteria searchCriteria) {
         addAdminUserGridFilter(searchCriteria, ADMIN_USER_ID);
-        log.debug("fetchFinancialTransactionGridData: searchCriteria: {}", searchCriteria);
+        log.info("Fetching financial transaction grid data: searchCriteria={}", searchCriteria);
         long totalRecords = 0;
         if (!searchCriteria.isLoadAllData()) {
             totalRecords = getCountBySearchCriteria(
@@ -51,13 +51,13 @@ public class FinancialTransactionService extends BaseService {
         List<FinancialTransactionViewDto> recordDetails = financialTransactionViewMapper.toDtoList(
                 getDataBySearchCriteria(FinancialTransactionView.class, searchCriteria)
         );
-        log.debug("fetchFinancialTransactionGridData: totalRecords: {}", totalRecords);
+        log.info("Fetched financial transaction grid data: totalRecords={}", totalRecords);
         return gridResult(totalRecords, recordDetails);
     }
 
     @Transactional
     public ApiResponse saveFinancialTransaction(FinancialTransactionDto financialTransactionDto) {
-        log.debug("saveFinancialTransaction: {}", financialTransactionDto);
+        log.info("Saving financial transaction");
         User user = fetchLoginUser();
         if (!StringUtils.hasText(financialTransactionDto.getRemarks())) {
             financialTransactionDto.setRemarks(null);
@@ -72,9 +72,7 @@ public class FinancialTransactionService extends BaseService {
         if (sameFinancialTransaction != null
                 && (financialTransactionDto.getId() == null
                 || !financialTransactionDto.getId().equals(sameFinancialTransaction.getId()))) {
-            log.debug(
-                    "Same FinancialTransaction already exists!. So updating the same instead of creating new record."
-            );
+            log.info("Matching financial transaction found; updating existing record");
             BigDecimal amount = sameFinancialTransaction.getAmount();
             amount = amount.add(financialTransactionDto.getAmount());
             sameFinancialTransaction.setAmount(amount);
@@ -87,9 +85,9 @@ public class FinancialTransactionService extends BaseService {
             sameFinancialTransaction.setUpdatedBy(user);
             financialTransactionRepository.save(sameFinancialTransaction);
             if (financialTransactionDto.getId() != null) {
-                log.debug("Deleting updated FinancialTransaction with id: {}", financialTransactionDto.getId());
+                log.info("Removing superseded financial transaction");
                 deleteFinancialTransactions(List.of(financialTransactionDto.getId()));
-                log.debug("Deleted FinancialTransaction with id: {}", financialTransactionDto.getId());
+                log.info("Removed superseded financial transaction");
             }
             return success("Financial transaction saved successfully");
         }
@@ -102,10 +100,7 @@ public class FinancialTransactionService extends BaseService {
             FinancialTransaction financialTransaction =
                     financialTransactionRepository.findById(financialTransactionDto.getId())
                             .orElseThrow(() -> {
-                                        log.debug(
-                                                "Financial transaction not found for update: id={}",
-                                                financialTransactionDto.getId()
-                                        );
+                                        log.info("Financial transaction not found for update");
                                         return new ResourceNotFoundException(
                                                 "The financial transaction you are trying to update was not found"
                                         );
@@ -120,9 +115,10 @@ public class FinancialTransactionService extends BaseService {
 
     @Transactional
     public ApiResponse deleteFinancialTransactions(List<Long> financialTransactionIds) {
-        log.debug("deleteFinancialTransactions: {}", financialTransactionIds);
+        log.info("Deleting financial transactions: requestedCount={}",
+                financialTransactionIds == null ? 0 : financialTransactionIds.size());
         if (financialTransactionIds == null || financialTransactionIds.isEmpty()) {
-            log.debug("deleteFinancialTransactions: financialTransactionIds is null or empty");
+            log.info("No financial transactions selected for deletion");
             return failure("No records found to delete");
         }
         BatchUtils.processInBatches(

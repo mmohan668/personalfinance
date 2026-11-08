@@ -68,11 +68,11 @@ public class ExportService extends BaseService {
         }
         Path userDirectory = basePath.resolve(username).normalize();
         if (!userDirectory.startsWith(basePath)) {
-            log.debug("Invalid user directory {}", userDirectory);
+            log.info("Invalid user export directory");
             return gridResult(0, new ArrayList<>());
         }
         if (!Files.isDirectory(userDirectory)) {
-            log.debug("User export directory not found {}", userDirectory);
+            log.info("User export directory not found");
             return gridResult(0, new ArrayList<>());
         }
         List<ExportFileDto> files = new ArrayList<>();
@@ -205,7 +205,7 @@ public class ExportService extends BaseService {
             }
         });
 
-        log.info("Deleted export directory for user: {}", username);
+        log.info("Deleted user export directory");
     }
 
 }

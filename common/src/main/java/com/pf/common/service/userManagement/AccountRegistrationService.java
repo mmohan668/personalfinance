@@ -40,15 +40,15 @@ public class AccountRegistrationService extends BaseService {
     public ApiResponse signUp(UserDto dto) {
         String username = dto.getUsername().trim();
 
-        log.debug("Signup request received for username: {}", username);
+        log.info("Signup request received");
 
         if (userRepository.existsByUsername(username.toLowerCase(Locale.ROOT).trim())) {
-            log.warn("Signup failed: username '{}' is already in use", username);
+            log.warn("Signup failed: username is already in use");
             return failure("Username is already taken. Please choose another username.");
         }
 
         if (userRepository.existsByEmail(dto.getEmail().toLowerCase(Locale.ROOT).trim())) {
-            log.warn("Signup failed: email '{}' is already in use", dto.getEmail());
+            log.warn("Signup failed: email is already in use");
             return failure("Email is already taken. Please choose another email.");
         }
 
@@ -62,7 +62,7 @@ public class AccountRegistrationService extends BaseService {
 
         generateActivationTokenAndSend(savedUser);
 
-        log.info("User account created successfully. Awaiting email activation for username: {}", username);
+        log.info("User account created successfully; awaiting email activation");
 
         return success(
                 "Account created successfully! Please check your inbox to activate your account. " +
@@ -85,7 +85,7 @@ public class AccountRegistrationService extends BaseService {
 
     @Transactional
     public String activateAccount(String token) {
-        log.debug("Activate account request received for token: {}", token);
+        log.info("Account activation request received");
         Long userId = activationTokenService.validateAndGetUserId(token);
         if (!userRepository.existsById(userId)) {
             throw new IllegalArgumentException(
