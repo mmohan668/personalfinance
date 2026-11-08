@@ -16,7 +16,7 @@ public class AsyncRecurringTransactionClient {
     private final String schedulerApiToken;
 
     public AsyncRecurringTransactionClient(
-            @Value("${async.base-url}") String asyncBaseUrl,
+            @Value("${app.async-rest-url}") String asyncBaseUrl,
             @Value("${async.scheduler-token:}") String schedulerApiToken
     ) {
         this.restClient = RestClient.create(asyncBaseUrl);
@@ -29,7 +29,8 @@ public class AsyncRecurringTransactionClient {
                 .uri("/api/recurringTransactions/scheduler/rules")
                 .header("X-Async-Scheduler-Token", schedulerApiToken)
                 .retrieve()
-                .body(new ParameterizedTypeReference<>() {});
+                .body(new ParameterizedTypeReference<>() {
+                });
         if (rules == null) throw new IllegalStateException("Async returned an empty recurring rules response");
         return rules;
     }

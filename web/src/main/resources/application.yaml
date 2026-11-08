@@ -1,10 +1,12 @@
-server:
-  port: 1002
-  servlet:
-    context-path: /pf-web
-app:
-  logging:
-    directory: ${APP_LOG_DIR:E:/Files/logs}
 spring:
   application:
     name: web
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
+  config:
+    import: "configserver:${CONFIG_SERVER_URL:http://192.168.0.101:8888}"
+  cloud:
+    config:
+      username: ${CONFIG_SERVER_USERNAME}
+      password: ${CONFIG_SERVER_PASSWORD}
+      label: ${CONFIG_REPO_LABEL:1.0.0.0_dev}
