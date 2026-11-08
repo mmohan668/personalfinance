@@ -43,6 +43,7 @@ public class ExportService extends BaseService {
     }
 
     public ApiResponse exportServer(ExportRequest exportRequest) {
+        exportRequest.setUserId(fetchLoginUserId());
         activeMqProducer.sendMessage(SERVER_SIDE_GRID_EXPORT, exportRequest);
         return success("Export request sent to server. Please check downloads section after some time");
     }

@@ -12,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -28,7 +27,6 @@ public class ExcelValidationService {
     private final TemplateNameRepository templateNamesRepository;
     private final DataFormatter dataFormatter = new DataFormatter();
 
-    @Transactional(readOnly = true)
     public ExcelValidationResult validateExcel(String uploadType, Workbook workbook) {
         TemplateName templateNames = templateNamesRepository.findByTemplateName(uploadType);
         if (templateNames == null

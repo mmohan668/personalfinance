@@ -1,0 +1,18 @@
+<section class="p-3">
+  <h2>Recurring Transactions</h2>
+  <div class="grid-container">
+    <app-data-grid
+      #dataGrid
+      [gridName]="gridName"
+      [gridExportFileName]="gridExportFileName"
+      [dataKey]="dataKey"
+      [toolbarConfig]="toolbarConfig"
+      [calculateCellValue]="calculateCellValue"
+      [addRow]="addRow"
+      [editRow]="editRow"
+      [deleteRow]="deleteRow"
+      [activate]="activate"
+      [inactivate]="inactivate"
+    ></app-data-grid>
+  </div>
+</section>

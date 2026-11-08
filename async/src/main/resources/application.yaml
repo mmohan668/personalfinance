@@ -24,5 +24,8 @@ logging:
   level:
     org.hibernate.orm.connections.pooling: WARN
 
+async:
+  scheduler-token: ${ASYNC_SCHEDULER_TOKEN:local-dev-only-change-before-production}
+
 export:
   base-folder: E:/Files/bulk-exports

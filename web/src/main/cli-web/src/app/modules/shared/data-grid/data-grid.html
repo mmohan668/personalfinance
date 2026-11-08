@@ -182,7 +182,7 @@
                       href="javascript:void(0)"
                       (click)="$event.stopPropagation(); downloadFile(row, column)"
                     >
-                      @if (gridName === 'DOWNLOADS') {
+                      @if (gridName === 'DOWNLOADS_GRID') {
                         {{ row[column.field] }}
                       } @else {
                         <mat-icon class="download">download</mat-icon>

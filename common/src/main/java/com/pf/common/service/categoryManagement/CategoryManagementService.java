@@ -16,6 +16,7 @@ import com.pf.common.record.generic.SelectItem;
 import com.pf.common.repository.categoryManagement.UserCategoryRepository;
 import com.pf.common.repository.categoryManagement.UserSubcategoryRepository;
 import com.pf.common.repository.financialTransaction.FinancialTransactionRepository;
+import com.pf.common.repository.financialTransaction.RecurringTransactionRuleRepository;
 import com.pf.common.repository.setting.ReferenceValueRepository;
 import com.pf.common.service.generic.BaseService;
 import com.pf.common.util.BatchUtils;
@@ -41,6 +42,7 @@ public class CategoryManagementService extends BaseService {
     private final UserCategoryRepository userCategoryRepository;
     private final UserSubcategoryRepository userSubcategoryRepository;
     private final FinancialTransactionRepository financialTransactionRepository;
+    private final RecurringTransactionRuleRepository recurringTransactionRuleRepository;
 
     @Transactional
     public GridResult fetchCategoriesGridData(SearchCriteria searchCriteria) {
@@ -161,6 +163,12 @@ public class CategoryManagementService extends BaseService {
         if (userSubcategoryRepository.existsByCategoryId(ids)) {
             log.warn("Delete category failed, Subcategories associated with selected categories");
             return failure("Delete category failed. Subcategories associated with selected categories");
+        }
+        if (BatchUtils.hasFailingBatch(
+                ids,
+                chunk -> !recurringTransactionRuleRepository.existsByCategoryIds(chunk)
+        )) {
+            return failure("Categories cannot be deleted while recurring transaction rules use their subcategories");
         }
         userCategoryRepository.deleteAllByIdInBatch(ids);
         return success("Categories deleted successfully");
@@ -283,6 +291,12 @@ public class CategoryManagementService extends BaseService {
                 chunk -> !financialTransactionRepository.existsBySubcategoryIds(chunk))
         ) {
             return failure("Subcategories cannot be deleted because one or more are currently in use");
+        }
+        if (BatchUtils.hasFailingBatch(
+                ids,
+                chunk -> !recurringTransactionRuleRepository.existsBySubcategoryIds(chunk)
+        )) {
+            return failure("Subcategories cannot be deleted while recurring transaction rules use them");
         }
         BatchUtils.processInBatches(
                 ids,

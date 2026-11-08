@@ -1,12 +1,16 @@
 package com.pf.common.service.redis;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.Cursor;
+import org.springframework.data.redis.core.RedisCallback;
+import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -38,6 +42,23 @@ public class RedisSessionService {
 
     public void deleteSession(String sessionId) {
         redisTemplate.delete(sessionKey(sessionId));
+    }
+
+    public long deleteAllSessions() {
+        Long deleted = redisTemplate.execute((RedisCallback<Long>) connection -> {
+            long deletedCount = 0;
+            ScanOptions options = ScanOptions.scanOptions()
+                    .match(SESSION_KEY_PREFIX + "*")
+                    .count(500)
+                    .build();
+            try (Cursor<byte[]> keys = connection.keyCommands().scan(options)) {
+                while (keys.hasNext()) {
+                    deletedCount += connection.keyCommands().del(keys.next());
+                }
+            }
+            return deletedCount;
+        });
+        return Objects.requireNonNull(deleted, "Redis did not return the deleted session count");
     }
 
 
@@ -85,22 +106,6 @@ public class RedisSessionService {
 
     public void deleteCaptcha(String captchaId) {
         redisTemplate.delete(CAPTCHA_KEY_PREFIX + captchaId);
-    }
-
-    public boolean validateCaptcha(String captchaId, String answer) {
-        String storedAnswer = getCaptchaAnswer(captchaId);
-
-        if (storedAnswer == null || answer == null) {
-            return false;
-        }
-
-        boolean valid = storedAnswer.equalsIgnoreCase(answer.trim());
-
-        if (valid) {
-            deleteCaptcha(captchaId);
-        }
-
-        return valid;
     }
 
 }

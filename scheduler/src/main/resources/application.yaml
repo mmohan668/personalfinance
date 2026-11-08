@@ -1,3 +1,14 @@
+server:
+  port: 1006
+  servlet:
+    context-path: /pf-scheduler
 spring:
   application:
     name: scheduler
+
+async:
+  base-url: ${ASYNC_BASE_URL:http://localhost:1004/pf-async}
+  scheduler-token: ${ASYNC_SCHEDULER_TOKEN:local-dev-only-change-before-production}
+
+scheduler:
+  recurring-poll-delay-ms: ${RECURRING_POLL_DELAY_MS:60000}

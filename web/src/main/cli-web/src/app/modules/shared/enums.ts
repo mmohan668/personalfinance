@@ -78,6 +78,7 @@ export enum GRID_NAMES {
   BULK_UPLOADS_STATUS = 'BULK_UPLOADS_STATUS',
   DOWNLOADS_GRID = 'DOWNLOADS_GRID',
   USERS_GRID = 'USERS_GRID',
+  RECURRING_TRANSACTIONS_GRID = 'RECURRING_TRANSACTIONS_GRID',
 }
 
 export enum GRID_EXPORT_FILE_NAMES {
@@ -93,6 +94,7 @@ export enum GRID_EXPORT_FILE_NAMES {
   SYSTEM_CONFIG_EFN = 'system_config',
   BULK_UPLOADS_STATUS = 'bulk_uploads_status',
   USERS_GRID_EFN = 'users',
+  RECURRING_TRANSACTIONS_GRID_EFN = 'recurring_transactions',
 }
 
 export enum DATA_FIELDS {
@@ -160,11 +162,17 @@ export enum REF_OBJ_NAMES {
   CURRENCY_CODE = 'CURRENCY_CODE',
   LOCATION = 'LOCATION',
   DATE_FORMAT = 'DATE_FORMAT',
+  COUNTRY_CODE = 'COUNTRY_CODE',
+  STATE_CODE = 'STATE_CODE',
+  TIME_ZONE = 'TIME_ZONE',
 }
 
 export enum SYSTEM_CONFIG_NAME {
   CURRENCY = 'Currency',
   DATE_FORMAT = 'Date Format',
+  COUNTRY = 'Country',
+  STATE = 'State',
+  TIME_ZONE = 'Time Zone',
 }
 
 export enum STATUS {

@@ -36,7 +36,6 @@ public class AuthenticationService extends BaseService {
     @Value("${app.password.history-limit:5}")
     private int passwordHistoryLimit;
 
-    @Transactional(readOnly = true)
     public User authenticate(String username, String rawPassword) {
 
         User user = userRepository.findByUsername(username)

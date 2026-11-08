@@ -2,6 +2,7 @@ import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { CommonService } from '../service/common-service';
 
 interface MenuItem {
   label: string;
@@ -19,6 +20,7 @@ interface MenuItem {
 export class Menu {
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly commonService = inject(CommonService);
 
   readonly collapsed = signal(false);
   readonly expandedItems = signal<Set<string>>(
@@ -98,6 +100,11 @@ export class Menu {
           icon: 'fact_check',
           route: '/reference-values',
         },
+        {
+          label: 'Recurring Transactions',
+          icon: 'event_repeat',
+          route: '/recurringTransactions',
+        },
       ],
     },
     {
@@ -162,8 +169,13 @@ export class Menu {
     if (item.route) {
       return this.isRouteActive(url, item.route);
     }
+
     if (item.children?.length) {
-      return item.children.some((child) => child.route && this.isRouteActive(url, child.route));
+      return item.children.some(
+        (child) =>
+          child.route &&
+          this.isRouteActive(url, child.route),
+      );
     }
     return false;
   }

@@ -131,6 +131,9 @@ export interface SystemConfigValue {
   currencyCode: string;
   locale: string;
   dateFormat: string;
+  countryCode: string;
+  stateCode: string;
+  timeZone: string;
 }
 
 export interface SuggestionRequest {

@@ -62,6 +62,7 @@ export class CommonService {
   }
 
   clearUserSession(): void {
+    this.dialog.closeAll();
     this.userProfile.set({} as UserProfile);
     this.userPermissions.set([]);
   }

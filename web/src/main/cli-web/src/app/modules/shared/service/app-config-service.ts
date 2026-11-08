@@ -25,7 +25,7 @@ export class AppConfigService {
         environment: 'Dev',
         pageSizeOptions: [25, 50, 100],
         defaultPageSize: 25,
-        maxExportRows: 100,
+        maxExportRows: 1,
         maxSuggestionRows: 50,
         debounceTime: 500,
       };

@@ -16,6 +16,7 @@ spring:
     validate-on-migrate: true
     table: flyway_schema_history_pf
     baselineOnMigrate: true
+    out-of-order: true
 
   jpa:
     hibernate:

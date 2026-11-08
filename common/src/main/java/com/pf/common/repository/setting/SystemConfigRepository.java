@@ -21,4 +21,14 @@ public interface SystemConfigRepository extends JpaRepository<SystemConfig, Long
 
     @Transactional(readOnly = true)
     SystemConfig findByConfigNameAndUserId(@Param("configName") String configName, @Param("userId") Long userId);
+
+    @Transactional(readOnly = true)
+    @Query("""
+            SELECT sc
+            FROM SystemConfig sc
+            JOIN FETCH sc.configValue
+            WHERE sc.userId IN :userIds
+            AND LOWER(TRIM(sc.configName)) IN ('country', 'state', 'time zone')
+            """)
+    List<SystemConfig> findSchedulerSettingsByUserIdIn(@Param("userIds") List<Long> userIds);
 }

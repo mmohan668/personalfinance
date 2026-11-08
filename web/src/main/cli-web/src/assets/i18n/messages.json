@@ -98,6 +98,25 @@
       "confirmation": "Are you sure you want to delete the selected financial transactions?"
     }
   },
+  "recurringTransaction": {
+    "ownership": {
+      "editDenied": "You can only edit recurring transaction rules that you created.",
+      "deleteDenied": "You can only delete recurring transaction rules that you created.",
+      "activateDenied": "You can only activate recurring transaction rules that you created.",
+      "inactivateDenied": "You can only inactivate recurring transaction rules that you created.",
+      "mixedSelection": "Rules created by other users will be skipped. Only rules you created can be changed."
+    },
+    "activate": {
+      "alreadyActive": "Please select only inactive recurring transaction rules to activate.",
+      "mixedSelection": "Some selected recurring transaction rules are already active. Only inactive rules will be activated. Do you want to continue?",
+      "confirmation": "Are you sure you want to activate the selected recurring transaction rules?"
+    },
+    "inactivate": {
+      "alreadyInactive": "Please select only active recurring transaction rules to inactivate.",
+      "mixedSelection": "Some selected recurring transaction rules are already inactive. Only active rules will be inactivated. Do you want to continue?",
+      "confirmation": "Are you sure you want to inactivate the selected recurring transaction rules?"
+    }
+  },
   "user": {
     "permissions": {
       "noSelection": "Please select at least one record to edit permissions.",

@@ -20,6 +20,9 @@ export class SystemConfigService {
   readonly locale = signal<string>(DEFAULT_CURRENCY_LOCALE);
   readonly dateFormat = signal<string>(DEFAULT_DATE_FORMAT);
   readonly dateTimeFormat = signal<string>(DEFAULT_DATE_TIME_FORMAT);
+  readonly countryCode = signal<string>('');
+  readonly stateCode = signal<string>('');
+  readonly timeZone = signal<string>('');
 
   private config = inject(AppConfigService);
   private http = inject(HttpClient);
@@ -35,6 +38,9 @@ export class SystemConfigService {
     ).then((systemConfigValue: SystemConfigValue) => {
       this.currency.set(systemConfigValue.currencyCode);
       this.locale.set(systemConfigValue.locale);
+      this.countryCode.set(systemConfigValue.countryCode);
+      this.stateCode.set(systemConfigValue.stateCode);
+      this.timeZone.set(systemConfigValue.timeZone);
       if (this._cs.isNotNull(systemConfigValue.dateFormat)) {
         const dateFormat = systemConfigValue.dateFormat
           .replace(/YYYY/g, 'yyyy')

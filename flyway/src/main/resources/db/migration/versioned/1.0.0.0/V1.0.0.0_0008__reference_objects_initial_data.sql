@@ -42,5 +42,8 @@ FROM system_account
      (VALUES ('TRANSACTION_TYPE'),
              ('CURRENCY_CODE'),
              ('DATE_FORMAT'),
-             ('LOCATION')) AS ref_objects (ref_obj_name)
+             ('LOCATION'),
+             ('COUNTRY_CODE'),
+             ('STATE_CODE'),
+             ('TIME_ZONE')) AS ref_objects (ref_obj_name)
          ON CONFLICT DO NOTHING;
