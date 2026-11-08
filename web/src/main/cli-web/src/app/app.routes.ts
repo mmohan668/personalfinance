@@ -35,6 +35,11 @@ export const routes: Routes = [
           import('./modules/all-transactions/all-transactions').then((m) => m.AllTransactions),
       },
       {
+        path: 'recurringTransactions',
+        loadComponent: () =>
+          import('./modules/recurring-transactions/recurring-transactions').then((m) => m.RecurringTransactions),
+      },
+      {
         path: 'expenses',
         loadComponent: () => import('./modules/expenses/expenses').then((m) => m.Expenses),
       },

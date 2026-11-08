@@ -12,13 +12,17 @@ import com.pf.common.service.financialTransaction.FinancialTransactionService;
 import com.pf.common.service.gp.GridService;
 import com.pf.common.service.settings.SettingsService;
 import com.pf.common.service.userManagement.UserService;
+import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -41,11 +45,10 @@ public class ProcessExportService {
                 exportRequest.getSearchCriteria().getGridName(),
                 exportRequest.getUserId()
         );
-        User user = userRepository.findById(exportRequest.getUserId()).orElse(null);
-        if (user == null) {
-            log.error("User not found for user id {}", exportRequest.getUserId());
-            return;
-        }
+        User user = userRepository.findById(exportRequest.getUserId())
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "User not found for user id " + exportRequest.getUserId()
+                ));
         List<GridColumnDto> gridColumns = gridService.fetchGridColumns(
                 exportRequest.getSearchCriteria().getGridName(),
                 exportRequest.getUserId()
@@ -55,7 +58,7 @@ public class ProcessExportService {
             return;
         }
         log.info("Grid columns found for user id {}", exportRequest.getUserId());
-        List<?> gridData = fetchGridData(exportRequest.getSearchCriteria());
+        List<?> gridData = fetchGridDataAsUser(exportRequest.getSearchCriteria(), user);
         if (gridData == null || gridData.isEmpty()) {
             log.warn(
                     "Empty gridData for grid {} for user id {}",
@@ -74,9 +77,41 @@ public class ProcessExportService {
         );
     }
 
-    private List<?> fetchGridData(SearchCriteria searchCriteria) {
-        GridNames gridName = GridNames.valueOf(searchCriteria.getGridName());
+    private List<?> fetchGridDataAsUser(SearchCriteria searchCriteria, User user) {
+        SecurityContext previousContext = SecurityContextHolder.getContext();
+        SecurityContext exportContext = SecurityContextHolder.createEmptyContext();
+        exportContext.setAuthentication(createExportAuthentication(user));
+        SecurityContextHolder.setContext(exportContext);
         try {
+            return fetchGridData(searchCriteria);
+        } finally {
+            SecurityContextHolder.setContext(previousContext);
+        }
+    }
+
+    private JwtAuthenticationToken createExportAuthentication(User user) {
+        Long adminUserId = Boolean.TRUE.equals(user.getIsAdminUser())
+                ? user.getId()
+                : user.getAdminUser() == null ? null : user.getAdminUser().getId();
+        if (adminUserId == null) {
+            throw new IllegalStateException(
+                    "Cannot determine admin user for export user id " + user.getId()
+            );
+        }
+        Jwt jwt = Jwt.withTokenValue("server-side-export")
+                .header("alg", "none")
+                .subject(user.getId().toString())
+                .claim("userId", user.getId())
+                .claim("username", user.getUsername())
+                .claim("adminUserId", adminUserId)
+                .claim("admin", Boolean.TRUE.equals(user.getIsAdminUser()))
+                .build();
+        return new JwtAuthenticationToken(jwt, AuthorityUtils.NO_AUTHORITIES);
+    }
+
+    private List<?> fetchGridData(SearchCriteria searchCriteria) {
+        try {
+            GridNames gridName = GridNames.valueOf(searchCriteria.getGridName());
             return switch (gridName) {
                 case ALL_TRANSACTIONS_GRID, INCOMES_GRID, EXPENSES_GRID, TRANSFERS_GRID, INVESTMENTS_GRID ->
                         financialTransactionService.fetchFinancialTransactionGridData(searchCriteria).getRecordDetails();
@@ -93,9 +128,13 @@ public class ProcessExportService {
                         bulkUploadsService.fetchBulkUploadStatusGridData(searchCriteria).getRecordDetails();
                 case USERS_GRID -> userService.fetchUsersGridData(searchCriteria).getRecordDetails();
             };
-        } catch (Exception e) {
-            log.error("Error getting grid data", e);
-            return new ArrayList<>();
+        } catch (RuntimeException e) {
+            log.error(
+                    "Error getting grid data for grid {}",
+                    searchCriteria.getGridName(),
+                    e
+            );
+            throw e;
         }
     }
 }

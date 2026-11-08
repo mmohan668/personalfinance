@@ -13,4 +13,7 @@ public class SystemConfigValue implements Serializable {
     private String currencyCode;
     private String locale;
     private String dateFormat;
+    private String countryCode;
+    private String stateCode;
+    private String timeZone;
 }

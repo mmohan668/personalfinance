@@ -12,6 +12,9 @@ INTEGER;
 INTEGER;
         v_date_format_count
 INTEGER;
+        v_country_code_count INTEGER;
+        v_state_code_count   INTEGER;
+        v_time_zone_count    INTEGER;
 BEGIN
         -- Validate active System user
 
@@ -69,6 +72,39 @@ v_date_format_count <> 1 THEN
                 'Expected exactly one DATE_FORMAT reference object, but found %.',
                 v_date_format_count;
 END IF;
+
+SELECT COUNT(*)
+INTO v_country_code_count
+FROM reference_object
+WHERE LOWER(TRIM(ref_obj_name)) = 'country_code';
+
+IF v_country_code_count <> 1 THEN
+            RAISE EXCEPTION
+                'Expected exactly one COUNTRY_CODE reference object, but found %.',
+                v_country_code_count;
+END IF;
+
+SELECT COUNT(*)
+INTO v_state_code_count
+FROM reference_object
+WHERE LOWER(TRIM(ref_obj_name)) = 'state_code';
+
+IF v_state_code_count <> 1 THEN
+            RAISE EXCEPTION
+                'Expected exactly one STATE_CODE reference object, but found %.',
+                v_state_code_count;
+END IF;
+
+SELECT COUNT(*)
+INTO v_time_zone_count
+FROM reference_object
+WHERE LOWER(TRIM(ref_obj_name)) = 'time_zone';
+
+IF v_time_zone_count <> 1 THEN
+            RAISE EXCEPTION
+                'Expected exactly one TIME_ZONE reference object, but found %.',
+                v_time_zone_count;
+END IF;
 END;
 $$;
 
@@ -90,7 +126,10 @@ WITH system_account AS
                 (
                  'transaction_type',
                  'currency_code',
-                 'date_format'
+                 'date_format',
+                 'country_code',
+                 'state_code',
+                 'time_zone'
                     )),
 
      initial_reference_values
@@ -114,7 +153,19 @@ WITH system_account AS
 
               -- Date formats
               ('date_format', 'Day/Month/Year', 'dd/MM/yyyy', NULL, NULL),
-              ('date_format', 'Month/Day/Year', 'MM/dd/yyyy', NULL, NULL))
+              ('date_format', 'Month/Day/Year', 'MM/dd/yyyy', NULL, NULL),
+
+              -- Country codes
+              ('country_code', 'India', 'IN', NULL, NULL),
+              ('country_code', 'United States', 'US', NULL, NULL),
+
+              -- State/subdivision codes (code 2 stores the country code)
+              ('state_code', 'Karnataka', 'IN-KA', 'IN', NULL),
+              ('state_code', 'California', 'US-CA', 'US', NULL),
+
+              -- IANA time zones
+              ('time_zone', 'India Standard Time', 'Asia/Kolkata', NULL, NULL),
+              ('time_zone', 'Pacific Time (United States)', 'America/Los_Angeles', 'US-CA', NULL))
 
 INSERT
 INTO reference_values

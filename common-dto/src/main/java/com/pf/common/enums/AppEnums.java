@@ -15,7 +15,10 @@ public class AppEnums {
     @Getter
     public enum SystemConfigName {
         CURRENCY("Currency"),
-        DATE_FORMAT("Date Format");
+        DATE_FORMAT("Date Format"),
+        COUNTRY("Country"),
+        STATE("State"),
+        TIME_ZONE("Time Zone");
 
         private final String value;
 

@@ -133,10 +133,25 @@ public class ExportTemplateService {
             List<?> data,
             User user
     ) {
+        User adminUser = user.getAdminUser();
+        Long settingsUserId = Boolean.TRUE.equals(user.getIsAdminUser())
+                ? user.getId()
+                : adminUser == null ? null : adminUser.getId();
+        if (settingsUserId == null) {
+            throw new IllegalStateException(
+                    "Admin user not found for export user id " + user.getId()
+            );
+        }
         SystemConfig systemConfig = systemConfigRepository.findByConfigNameAndUserId(
                 AppEnums.SystemConfigName.CURRENCY.getValue(),
-                user.getId()
+                settingsUserId
         );
+        if (systemConfig == null) {
+            throw new IllegalStateException(
+                    "Currency system configuration not found for admin user id " + settingsUserId
+                            + " while exporting for user id " + user.getId()
+            );
+        }
         String dateFormat = systemConfig.getConfigValue().getReferenceCode3();
         if (dateFormat == null || dateFormat.isBlank()) {
             dateFormat = DD_MM_YYYY;

@@ -46,6 +46,17 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Transactional(readOnly = true)
     @Query("""
+            SELECT u.id
+            FROM User u
+            WHERE u.id = u.adminUser.id
+            AND u.isDeleted = false
+            AND u.active = true
+            ORDER BY u.id
+            """)
+    List<Long> findAllAdminUserIds();
+
+    @Transactional(readOnly = true)
+    @Query("""
             SELECT COUNT(U) > 0
             FROM User U
             WHERE LOWER(TRIM(U.email)) = :email

@@ -40,7 +40,8 @@ public class SecurityBeansConfig {
                                 "/api/auth/activateAccount",
                                 "/api/auth/login",
                                 "/api/auth/captcha",
-                                "/api/auth/forgot-password"
+                                "/api/auth/forgot-password",
+                                "/api/recurringTransactions/scheduler/**"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )

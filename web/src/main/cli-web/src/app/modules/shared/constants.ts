@@ -14,6 +14,7 @@ export const GRID_URL_MAP = new Map<string, string>([
   [GRID_NAMES.BULK_UPLOADS_STATUS, '/bulkupload/fetchBulkUploadStatusGridData'],
   [GRID_NAMES.DOWNLOADS_GRID, '/export/fetchExports'],
   [GRID_NAMES.USERS_GRID, '/users/fetchUsersGridData'],
+  [GRID_NAMES.RECURRING_TRANSACTIONS_GRID, '/recurringTransactions/fetchRecurringTransactionsGridData'],
 ]);
 
 export const EMPTY = '';

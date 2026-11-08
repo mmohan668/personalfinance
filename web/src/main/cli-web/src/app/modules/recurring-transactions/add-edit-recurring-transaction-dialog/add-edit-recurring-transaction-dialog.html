@@ -1,0 +1,188 @@
+<div class="dialog-container" cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+  <div class="dialog-title-bar" cdkDragHandle>
+    <div class="dialog-heading">
+      <mat-icon class="dialog-heading-icon">event_repeat</mat-icon>
+      <span class="dialog-title">{{ data.mode }} Recurring Transaction</span>
+    </div>
+  </div>
+
+  <div class="dialog-content">
+    <form [formGroup]="form" class="dialog-form">
+      <mat-form-field appearance="outline" floatLabel="always" class="dialog-field">
+        <mat-label>Rule Name</mat-label>
+        <input matInput maxlength="150" formControlName="ruleName" />
+        @if (commonService.isInvalid(form.get('ruleName'))) {
+          <mat-error>{{ commonService.getValidationMessage(form.get('ruleName'), 'Rule Name') }}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" floatLabel="always" class="dialog-field">
+        <mat-label>Transaction Type</mat-label>
+        <mat-select formControlName="transactionType" (selectionChange)="onTransactionTypeChange($event.value)">
+          @for (item of transactionTypes(); track item.value) {
+            <mat-option [value]="item.value">{{ item.label }}</mat-option>
+          }
+        </mat-select>
+        @if (commonService.isInvalid(form.get('transactionType'))) {
+          <mat-error>{{ commonService.getValidationMessage(form.get('transactionType'), 'Transaction Type') }}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" floatLabel="always" class="dialog-field">
+        <mat-label>Category</mat-label>
+        <mat-select formControlName="categoryId" (selectionChange)="onCategoryChange($event.value)">
+          @for (item of categories(); track item.value) {
+            <mat-option [value]="item.value">{{ item.label }}</mat-option>
+          }
+        </mat-select>
+        @if (commonService.isInvalid(form.get('categoryId'))) {
+          <mat-error>{{ commonService.getValidationMessage(form.get('categoryId'), 'Category') }}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" floatLabel="always" class="dialog-field">
+        <mat-label>Subcategory</mat-label>
+        <mat-select formControlName="subcategoryId">
+          @for (item of subcategories(); track item.value) {
+            <mat-option [value]="item.value">{{ item.label }}</mat-option>
+          }
+        </mat-select>
+        @if (commonService.isInvalid(form.get('subcategoryId'))) {
+          <mat-error>{{ commonService.getValidationMessage(form.get('subcategoryId'), 'Subcategory') }}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" floatLabel="always" class="dialog-field">
+        <mat-label>Amount</mat-label>
+        <input matInput type="number" min="0.0001" step="0.01" formControlName="amount" />
+        @if (commonService.isInvalid(form.get('amount'))) {
+          <mat-error>{{ commonService.getValidationMessage(form.get('amount'), 'Amount') }}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" floatLabel="always" class="dialog-field">
+        <mat-label>Location</mat-label>
+        <mat-select formControlName="locationId">
+          <mat-option [value]="null">None</mat-option>
+          @for (item of locations(); track item.value) {
+            <mat-option [value]="item.value">{{ item.label }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" floatLabel="always" class="dialog-field">
+        <mat-label>Frequency</mat-label>
+        <mat-select formControlName="frequency">
+          <mat-option value="MINUTELY">Minutes</mat-option>
+          <mat-option value="HOURLY">Hourly</mat-option>
+          <mat-option value="DAILY">Daily</mat-option>
+          <mat-option value="WEEKLY">Weekly</mat-option>
+          <mat-option value="MONTHLY">Monthly</mat-option>
+          <mat-option value="YEARLY">Yearly</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" floatLabel="always" class="dialog-field">
+        <mat-label>Every</mat-label>
+        <input matInput type="number" min="1" formControlName="intervalValue" />
+        @if (commonService.isInvalid(form.get('intervalValue'))) {
+          <mat-error>{{ commonService.getValidationMessage(form.get('intervalValue'), 'Interval') }}</mat-error>
+        }
+      </mat-form-field>
+
+      @if (form.controls.frequency.value === 'WEEKLY') {
+        <mat-form-field appearance="outline" floatLabel="always" class="dialog-field">
+          <mat-label>Weekday</mat-label>
+          <mat-select formControlName="dayOfWeek">
+            <mat-option [value]="1">Monday</mat-option>
+            <mat-option [value]="2">Tuesday</mat-option>
+            <mat-option [value]="3">Wednesday</mat-option>
+            <mat-option [value]="4">Thursday</mat-option>
+            <mat-option [value]="5">Friday</mat-option>
+            <mat-option [value]="6">Saturday</mat-option>
+            <mat-option [value]="7">Sunday</mat-option>
+          </mat-select>
+        </mat-form-field>
+      }
+
+      @if (form.controls.frequency.value === 'MONTHLY') {
+        <mat-form-field appearance="outline" floatLabel="always" class="dialog-field">
+          <mat-label>Monthly Schedule</mat-label>
+          <mat-select formControlName="monthlyPattern">
+            <mat-option value="DAY_OF_MONTH">Day of month</mat-option>
+            <mat-option value="LAST_DAY">Last day</mat-option>
+            <mat-option value="LAST_WORKING_DAY">Last working day</mat-option>
+          </mat-select>
+        </mat-form-field>
+      }
+
+      @if (form.controls.frequency.value === 'YEARLY' || (form.controls.frequency.value === 'MONTHLY' && form.controls.monthlyPattern.value === 'DAY_OF_MONTH')) {
+        <mat-form-field appearance="outline" floatLabel="always" class="dialog-field">
+          <mat-label>Day of Month</mat-label>
+          <input matInput type="number" min="1" max="31" formControlName="dayOfMonth" />
+        </mat-form-field>
+      }
+
+      @if (form.controls.frequency.value === 'YEARLY') {
+        <mat-form-field appearance="outline" floatLabel="always" class="dialog-field">
+          <mat-label>Month</mat-label>
+          <input matInput type="number" min="1" max="12" formControlName="monthOfYear" />
+        </mat-form-field>
+      }
+
+      <mat-form-field appearance="outline" floatLabel="always" class="dialog-field">
+        <mat-label>Start Date</mat-label>
+        <input matInput type="date" formControlName="startDate" />
+        @if (commonService.isInvalid(form.get('startDate'))) {
+          <mat-error>{{ commonService.getValidationMessage(form.get('startDate'), 'Start Date') }}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" floatLabel="always" class="dialog-field">
+        <mat-label>End Date (Optional)</mat-label>
+        <input matInput type="date" formControlName="endDate" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" floatLabel="always" class="dialog-field">
+        <mat-label>Start Time / Local Execution Time</mat-label>
+        <input matInput type="time" formControlName="executionTime" />
+        @if (commonService.isInvalid(form.get('executionTime'))) {
+          <mat-error>{{ commonService.getValidationMessage(form.get('executionTime'), 'Execution Time') }}</mat-error>
+        }
+        @if (form.controls.frequency.value === 'MINUTELY' || form.controls.frequency.value === 'HOURLY') {
+          <mat-hint>Hourly and minute intervals start from this local date and time.</mat-hint>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" floatLabel="always" class="dialog-field">
+        <mat-label>Remarks</mat-label>
+        <input matInput maxlength="4000" formControlName="remarks" />
+      </mat-form-field>
+    </form>
+  </div>
+
+  <mat-dialog-actions class="dialog-actions">
+    <button mat-stroked-button type="button" class="dialog-reset-button" (click)="resetForm()">
+      <mat-icon>refresh</mat-icon>
+      Reset
+    </button>
+
+    <span class="action-spacer"></span>
+
+    <button mat-stroked-button type="button" class="dialog-cancel-button" (click)="dialogRef.close()">
+      <mat-icon>close</mat-icon>
+      Close
+    </button>
+
+    <button
+      mat-raised-button
+      type="button"
+      class="dialog-save-button"
+      [disabled]="form.invalid || form.pristine"
+      (click)="save()"
+    >
+      <mat-icon>save</mat-icon>
+      Save
+    </button>
+  </mat-dialog-actions>
+</div>

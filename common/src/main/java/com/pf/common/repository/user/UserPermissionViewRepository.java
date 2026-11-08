@@ -14,4 +14,9 @@ public interface UserPermissionViewRepository extends JpaRepository<UserPermissi
     List<UserPermissionView> findAllByUserIdOrderByModuleDisplayOrderAscScreenDisplayOrderAscActionDisplayOrderAsc(
             Long userId
     );
+
+    @Transactional(readOnly = true)
+    boolean existsByUserIdAndModuleNameAndScreenNameAndActionNameAndHasPermissionTrue(
+            Long userId, String moduleName, String screenName, String actionName
+    );
 }

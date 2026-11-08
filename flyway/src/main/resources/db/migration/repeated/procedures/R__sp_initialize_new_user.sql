@@ -20,6 +20,9 @@ BIGINT;
 BIGINT;
     v_transaction_type_ref_id
 BIGINT;
+    v_country_code_id BIGINT;
+    v_state_code_id   BIGINT;
+    v_time_zone_id    BIGINT;
 BEGIN
     -- 1. Validate user
     IF
@@ -141,7 +144,64 @@ FROM user_reference_value urv
 WHERE urv.id = v_date_format_id
   AND urv.user_id = p_user_id ON CONFLICT ((LOWER(TRIM(config_name))), user_id) DO NOTHING;
 
--- 9. Copy global categories, mapping global transaction type codes
+-- 9. Resolve default country, state, and time zone
+SELECT id
+INTO v_country_code_id
+FROM user_reference_value
+WHERE user_id = p_user_id
+  AND LOWER(TRIM(reference_code)) = 'in'
+  AND ref_obj_name_id = (
+      SELECT id
+      FROM reference_object
+      WHERE LOWER(TRIM(ref_obj_name)) = 'country_code'
+  )
+  AND is_active = TRUE;
+
+IF v_country_code_id IS NULL THEN
+    RAISE EXCEPTION 'Country code IN is unavailable for user %', p_user_id;
+END IF;
+
+SELECT id
+INTO v_state_code_id
+FROM user_reference_value
+WHERE user_id = p_user_id
+  AND LOWER(TRIM(reference_code)) = 'in-ka'
+  AND ref_obj_name_id = (
+      SELECT id
+      FROM reference_object
+      WHERE LOWER(TRIM(ref_obj_name)) = 'state_code'
+  )
+  AND is_active = TRUE;
+
+IF v_state_code_id IS NULL THEN
+    RAISE EXCEPTION 'State code IN-KA is unavailable for user %', p_user_id;
+END IF;
+
+SELECT id
+INTO v_time_zone_id
+FROM user_reference_value
+WHERE user_id = p_user_id
+  AND LOWER(TRIM(reference_code)) = 'asia/kolkata'
+  AND ref_obj_name_id = (
+      SELECT id
+      FROM reference_object
+      WHERE LOWER(TRIM(ref_obj_name)) = 'time_zone'
+  )
+  AND is_active = TRUE;
+
+IF v_time_zone_id IS NULL THEN
+    RAISE EXCEPTION 'Time zone Asia/Kolkata is unavailable for user %', p_user_id;
+END IF;
+
+-- 10. Set default country, state, and time zone
+INSERT INTO system_config
+    (config_name, config_value, description, user_id, created_by)
+VALUES ('Country', v_country_code_id, 'Country used for public holiday calendars.', p_user_id, p_user_id),
+       ('State', v_state_code_id, 'State used for public holiday calendars.', p_user_id, p_user_id),
+       ('Time Zone', v_time_zone_id, 'Time zone used for scheduled tasks.', p_user_id, p_user_id)
+ON CONFLICT ((LOWER(TRIM(config_name))), user_id) DO NOTHING;
+
+-- 11. Copy global categories, mapping global transaction type codes
 --    to this user's transaction type IDs.
 INSERT INTO user_categories
 (user_id, transaction_type, category_name,
