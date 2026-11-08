@@ -33,11 +33,7 @@ public class GridService extends BaseService {
     private final ObjectMapper objectMapper;
 
     public List<GridColumnDto> fetchGridColumns(String gridName, Long userId) {
-        log.debug(
-                "Fetching grid columns for gridName: {}, userId: {}",
-                gridName,
-                userId
-        );
+        log.info("Fetching grid columns: gridName = {}, userId = {}", gridName, userId);
         Long gridId = gridNameRepository.findIdByName(gridName);
         if (gridId == null) {
             log.warn(
@@ -52,11 +48,8 @@ public class GridService extends BaseService {
                         .findByGridName_NameAndUserId(gridName, userId)
                         .orElse(null);
         if (gridPersonalization != null) {
-            log.debug(
-                    "User-specific grid personalization found for gridName: {}, userId: {}",
-                    gridName,
-                    userId
-            );
+            log.info("User-specific grid personalization found: gridName={}, userId={}",
+                    gridName, userId);
             String gridColumnJson = gridPersonalization.getGridColumnJson();
             List<GridColumnDto> personalizedColumns =
                     objectMapper.readValue(
@@ -66,29 +59,20 @@ public class GridService extends BaseService {
                     );
             return Collections.unmodifiableList(personalizedColumns);
         }
-        log.debug(
-                "No user-specific grid personalization found for gridName: {}, userId: {}. " +
-                        "Fetching default grid columns.",
-                gridName,
-                userId
-        );
+        log.info("No user-specific grid personalization found; fetching default grid columns: " +
+                "gridName={}, userId={}", gridName, userId);
         List<GridColumnDto> defaultColumns =
                 gridColumnMapper.toDTOList(
                         gridColumnRepository
                                 .findByGridName_NameOrderByVisibleIndex(gridName)
                 );
         if (defaultColumns.isEmpty()) {
-            log.debug(
-                    "No default grid columns found for gridName: {}",
-                    gridName
-            );
+            log.info("No default grid columns found: gridName={}, userId={}",
+                    gridName, userId);
             return Collections.emptyList();
         }
-        log.debug(
-                "Successfully fetched {} default grid columns for gridName: {}",
-                defaultColumns.size(),
-                gridName
-        );
+        log.info("Fetched default grid columns: gridName={}, userId={}, count={}",
+                gridName, userId, defaultColumns.size());
         return Collections.unmodifiableList(defaultColumns);
     }
 
@@ -118,22 +102,14 @@ public class GridService extends BaseService {
                         .findByGridName_NameAndUserId(gridName, userId)
                         .orElse(null);
         if (gridPersonalization == null) {
-            log.debug(
-                    "No existing grid personalization found for gridName: {}, userId: {}. " +
-                            "Creating new personalization.",
-                    gridName,
-                    userId
-            );
+            log.info("No existing grid personalization found; creating new personalization: " +
+                    "gridName={}, userId={}", gridName, userId);
             gridPersonalizationDto.setGridNameId(gridId);
             gridPersonalization =
                     gridPersonalizationMapper.toEntity(gridPersonalizationDto);
         } else {
-            log.debug(
-                    "Existing grid personalization found for gridName: {}, userId: {}. " +
-                            "Updating personalization.",
-                    gridName,
-                    userId
-            );
+            log.info("Existing grid personalization found; updating personalization: " +
+                    "gridName={}, userId={}", gridName, userId);
             gridPersonalization.setGridColumnJson(
                     gridPersonalizationDto.getGridColumnJson()
             );

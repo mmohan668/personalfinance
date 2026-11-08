@@ -26,13 +26,21 @@ public class ActiveMqConsumer {
             containerFactory = "jmsListenerContainerFactory"
     )
     public void receiveMessage(Message message) throws JMSException {
-        log.info("Receive message from {} ", message.getJMSMessageID());
-        Object payload = messageConverter.fromMessage(message);
-        if (payload instanceof AccountActivationRequest accountActivationRequest) {
-            log.info("Received request for Account activation email {} ", accountActivationRequest);
-            sendEmailService.sendAccountActivationEmail(accountActivationRequest);
-        } else {
-            log.warn("Received message type: {}", message.getClass().getName());
+        log.info("Starting account activation email message processing");
+        boolean completedSuccessfully = false;
+        try {
+            Object payload = messageConverter.fromMessage(message);
+            if (payload instanceof AccountActivationRequest accountActivationRequest) {
+                log.info("Received account activation email request");
+                sendEmailService.sendAccountActivationEmail(accountActivationRequest);
+            } else {
+                log.warn("Received unsupported account activation message type: {}",
+                        message.getClass().getName());
+            }
+            completedSuccessfully = true;
+        } finally {
+            log.info("Account activation email message processing {}",
+                    completedSuccessfully ? "completed successfully" : "failed");
         }
     }
 
@@ -42,17 +50,21 @@ public class ActiveMqConsumer {
     )
     public void receiveForgotPasswordMessage(Message message)
             throws JMSException {
-
-        log.info("Received forgot-password email message: {}",
-                message.getJMSMessageID());
-
-        Object payload = messageConverter.fromMessage(message);
-
-        if (payload instanceof ForgotPasswordEmailRequest request) {
-            sendEmailService.sendForgotPasswordEmail(request);
-        } else {
-            log.warn("Unexpected forgot-password message type: {}",
-                    payload.getClass().getName());
+        log.info("Starting forgot-password email message processing");
+        boolean completedSuccessfully = false;
+        try {
+            Object payload = messageConverter.fromMessage(message);
+            if (payload instanceof ForgotPasswordEmailRequest request) {
+                log.info("Received forgot-password email request");
+                sendEmailService.sendForgotPasswordEmail(request);
+            } else {
+                log.warn("Unexpected forgot-password message type: {}",
+                        payload.getClass().getName());
+            }
+            completedSuccessfully = true;
+        } finally {
+            log.info("Forgot-password email message processing {}",
+                    completedSuccessfully ? "completed successfully" : "failed");
         }
     }
 }

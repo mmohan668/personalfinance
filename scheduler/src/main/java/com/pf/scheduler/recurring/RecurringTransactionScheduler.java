@@ -33,21 +33,32 @@ public class RecurringTransactionScheduler {
 
     @Scheduled(fixedDelayString = "${scheduler.recurring-poll-delay-ms:60000}")
     public void processDueTransactions() {
-        processDueTransactions(Instant.now());
+        log.info("Starting recurring transaction scheduler poll");
+        boolean completedSuccessfully = false;
+        try {
+            completedSuccessfully = processDueTransactions(Instant.now());
+        } finally {
+            log.info("Recurring transaction scheduler poll {}",
+                    completedSuccessfully ? "completed successfully" : "failed");
+        }
     }
 
-    void processDueTransactions(Instant now) {
+    boolean processDueTransactions(Instant now) {
+        boolean completedSuccessfully = true;
         try {
             for (SchedulerRecurringTransactionRuleDto rule : client.fetchRules()) {
                 try {
                     processRule(rule, now);
                 } catch (RuntimeException exception) {
                     log.error("Failed to process recurring transaction rule {}", rule.getId(), exception);
+                    completedSuccessfully = false;
                 }
             }
         } catch (RuntimeException exception) {
             log.error("Unable to fetch recurring transaction rules from Async", exception);
+            return false;
         }
+        return completedSuccessfully;
     }
 
     private void processRule(SchedulerRecurringTransactionRuleDto rule, Instant now) {
@@ -74,11 +85,9 @@ public class RecurringTransactionScheduler {
             LocalDateTime occurrenceAt = LocalDateTime.of(date, rule.getExecutionTime());
             if (occurrenceAt.isAfter(localNow)) continue;
             if (client.execute(rule.getId(), date, rule.getExecutionTime())) {
-                log.info("Processed recurring transaction occurrence: rule={}, occurrence={}",
-                        rule.getId(), occurrenceAt);
+                log.info("Processed recurring transaction occurrence: occurrence={}", occurrenceAt);
             } else {
-                log.debug("Recurring transaction occurrence already exists: rule={}, occurrence={}",
-                        rule.getId(), occurrenceAt);
+                log.info("Recurring transaction occurrence already exists: occurrence={}", occurrenceAt);
             }
         }
     }
@@ -102,11 +111,9 @@ public class RecurringTransactionScheduler {
         while (!occurrenceAt.isAfter(localNow)
                 && (rule.getEndDate() == null || !occurrenceAt.toLocalDate().isAfter(rule.getEndDate()))) {
             if (client.execute(rule.getId(), occurrenceAt.toLocalDate(), occurrenceAt.toLocalTime())) {
-                log.info("Processed recurring transaction occurrence: rule={}, occurrence={}",
-                        rule.getId(), occurrenceAt);
+                log.info("Processed recurring transaction occurrence: occurrence={}", occurrenceAt);
             } else {
-                log.debug("Recurring transaction occurrence already exists: rule={}, occurrence={}",
-                        rule.getId(), occurrenceAt);
+                log.info("Recurring transaction occurrence already exists: occurrence={}", occurrenceAt);
             }
             occurrenceAt = hourly ? occurrenceAt.plusHours(interval) : occurrenceAt.plusMinutes(interval);
         }

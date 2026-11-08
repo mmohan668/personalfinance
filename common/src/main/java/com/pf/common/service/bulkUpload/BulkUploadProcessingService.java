@@ -86,13 +86,14 @@ public class BulkUploadProcessingService {
                 );
                 bulkUploadsStatus.setErrorFile(errorFilePath);
                 if (validationResult.errors().size() == validationResult.nonEmptyRowsCount()) {
-                    log.debug("Validation failed for all rows");
+                    log.info("Bulk upload validation failed for all rows");
                     bulkUploadsStatus.setStatus(BulkUploadStatus.ERRORS.getValue());
                     bulkUploadsStatus.setRemarks(BulkUploadStatus.ERRORS.getDescription());
                     bulkUploadsStatusRepository.saveAndFlush(bulkUploadsStatus);
                     log.info("Bulk Upload marked as ERRORS for id = {}", id);
                 } else {
-                    log.debug("Validation failed for {} rows for id = {}", validationResult.errors().size(), id);
+                    log.info("Bulk upload validation failed for {} rows",
+                            validationResult.errors().size());
                     bulkUploadsStatus.setStatus(BulkUploadStatus.PARTIAL_SUCCESS.getValue());
                     bulkUploadsStatus.setRemarks(BulkUploadStatus.PARTIAL_SUCCESS.getDescription());
                     bulkUploadsStatusRepository.saveAndFlush(bulkUploadsStatus);

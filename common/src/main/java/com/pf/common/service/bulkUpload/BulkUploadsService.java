@@ -47,7 +47,7 @@ public class BulkUploadsService extends BaseService {
     private final TemplateNameRepository templateNameRepository;
 
     public GridResult fetchBulkUploadStatusGridData(SearchCriteria searchCriteria) {
-        log.debug("fetchBulkUploadStatusGridData: {}", searchCriteria);
+        log.info("Fetching bulk upload status grid data: searchCriteria={}", searchCriteria);
         addAdminUserGridFilter(searchCriteria, USER_ID);
         searchCriteria.setFIELD_MAPPINGS(BulkUploadsStatusDto.FIELD_MAPPINGS);
         long totalRecords = 0;
@@ -60,7 +60,7 @@ public class BulkUploadsService extends BaseService {
         List<BulkUploadsStatusDto> recordDetails = bulkUploadsStatusMapper.toDtoList(
                 getDataBySearchCriteria(BulkUploadsStatus.class, searchCriteria)
         );
-        log.debug("fetchBulkUploadStatusGridData: totalRecords: {}", totalRecords);
+        log.info("Fetched bulk upload status grid data: totalRecords={}", totalRecords);
         return gridResult(totalRecords, recordDetails);
     }
 
@@ -93,7 +93,7 @@ public class BulkUploadsService extends BaseService {
     }
 
     public ResponseEntity<Resource> downloadFile(String filePath) throws IOException {
-        log.debug("Request for downloadFile: {}", filePath);
+        log.info("Request to download bulk upload file received");
         Path path = Paths.get(filePath);
         if (!Files.exists(path)) {
             return ResponseEntity.notFound().build();

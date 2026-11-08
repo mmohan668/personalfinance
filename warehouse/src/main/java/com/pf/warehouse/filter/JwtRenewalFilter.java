@@ -73,7 +73,7 @@ public class JwtRenewalFilter extends OncePerRequestFilter {
             response.sendError(
                     HttpServletResponse.SC_UNAUTHORIZED,
                     "Invalid token");
-            log.debug("Invalid token");
+            log.info("Rejected invalid authentication token");
             return;
         }
 
@@ -87,7 +87,7 @@ public class JwtRenewalFilter extends OncePerRequestFilter {
                     HttpServletResponse.SC_SERVICE_UNAVAILABLE,
                     "Redis Authentication service temporarily unavailable"
             );
-            log.debug("Redis Authentication service temporarily unavailable");
+            log.info("Redis authentication service temporarily unavailable");
             return;
         }
 
@@ -95,7 +95,7 @@ public class JwtRenewalFilter extends OncePerRequestFilter {
             response.sendError(
                     HttpServletResponse.SC_UNAUTHORIZED,
                     "Token expired or superseded");
-            log.debug("Token expired or superseded");
+            log.info("Rejected expired or superseded authentication token");
             return;
         }
 
@@ -139,7 +139,7 @@ public class JwtRenewalFilter extends OncePerRequestFilter {
                         HttpServletResponse.SC_SERVICE_UNAVAILABLE,
                         "Authentication service temporarily unavailable"
                 );
-                log.debug("Authentication service temporarily unavailable");
+                log.info("Authentication service temporarily unavailable");
             }
             return;
         }

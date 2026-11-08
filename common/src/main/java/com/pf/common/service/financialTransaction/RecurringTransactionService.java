@@ -60,6 +60,7 @@ public class RecurringTransactionService extends BaseService {
 
     @Transactional
     public GridResult fetchGridData(SearchCriteria criteria) {
+        log.info("Fetching recurring transaction grid data: searchCriteria={}", criteria);
         addAdminUserGridFilter(criteria, "adminUserId");
         long totalRecords = criteria.isLoadAllData()
                 ? 0

@@ -26,13 +26,21 @@ public class ActiveMqConsumer {
             containerFactory = "jmsListenerContainerFactory"
     )
     public void receiveMessage(Message message) throws JMSException, IOException {
-        log.info("Receive message from {} ", message.getJMSMessageID());
-        Object payload = messageConverter.fromMessage(message);
-        if (payload instanceof ExportRequest exportRequest) {
-            log.info("Received search criteria for server side export {} ", exportRequest);
-            processExportService.processServerSideExport(exportRequest);
-        } else {
-            log.warn("Received message type: {}", message.getClass().getName());
+        log.info("Starting server-side export message processing");
+        boolean completedSuccessfully = false;
+        try {
+            Object payload = messageConverter.fromMessage(message);
+            if (payload instanceof ExportRequest exportRequest) {
+                log.info("Received server-side export request");
+                processExportService.processServerSideExport(exportRequest);
+            } else {
+                log.warn("Received unsupported server-side export message type: {}",
+                        message.getClass().getName());
+            }
+            completedSuccessfully = true;
+        } finally {
+            log.info("Server-side export message processing {}",
+                    completedSuccessfully ? "completed successfully" : "failed");
         }
     }
 }

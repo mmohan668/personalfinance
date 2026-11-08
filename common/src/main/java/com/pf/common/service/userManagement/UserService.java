@@ -59,7 +59,7 @@ public class UserService extends BaseService {
     @Transactional
     public GridResult fetchUsersGridData(SearchCriteria searchCriteria) {
         addAdminUserGridFilter(searchCriteria, ADMIN_USER_ID);
-        log.debug("fetchUsersGridData: {}", searchCriteria);
+        log.info("Fetching users grid data: searchCriteria={}", searchCriteria);
         searchCriteria.getSortList().add(new GridSort(ID, ASC.getValue()));
         searchCriteria.setFetchPaths(List.of(ADMIN_USER));
         searchCriteria.setFIELD_MAPPINGS(UserDto.FIELD_MAPPINGS);
@@ -76,7 +76,7 @@ public class UserService extends BaseService {
         List<UserDto> recordDetails = userMapper.toDtoList(
                 getDataBySearchCriteria(User.class, searchCriteria)
         );
-        log.debug("fetchUsersGridData: totalRecords: {}", totalRecords);
+        log.info("Fetched users grid data: totalRecords={}", totalRecords);
         return gridResult(totalRecords, recordDetails);
     }
 
@@ -150,9 +150,9 @@ public class UserService extends BaseService {
 
     @Transactional
     public ApiResponse saveUser(UserDto dto) {
-        log.debug("saveUser: username {}", dto.getUsername());
+        log.info("Saving user");
         if (dto.getId() == null) {
-            log.debug("Creating new user {}", dto.getUsername());
+            log.info("Creating new user");
             if (userRepository.existsByUsername(dto.getUsername().toLowerCase(Locale.ROOT).trim())) {
                 return failure("Username is already in use");
             }
@@ -168,18 +168,18 @@ public class UserService extends BaseService {
                     savedUser,
                     UserPasswordHistory.PasswordActionType.INITIAL
             );
-            log.debug("New user created {}", savedUser.getUsername());
+            log.info("New user created");
         } else {
             User user = userRepository.findById(dto.getId()).orElse(null);
             if (user == null) {
                 return failure("User not found");
             }
-            log.debug("Updating user {}", user.getUsername());
+            log.info("Updating existing user");
             user.setDisplayName(dto.getDisplayName());
             user.setEmail(dto.getEmail());
             user.setUpdatedBy(fetchLoginUsername());
             userRepository.save(user);
-            log.debug("Updated user {}", user.getUsername());
+            log.info("Updated existing user");
         }
         return success("User has been saved successfully");
     }
@@ -196,34 +196,34 @@ public class UserService extends BaseService {
 
     @Transactional
     public ApiResponse activateUsers(List<Long> ids) {
-        log.debug("activateUsers: ids {}", ids);
+        log.info("Activating users: requestedCount={}", ids == null ? 0 : ids.size());
         LocalDateTime updatedTime = LocalDateTime.now();
         String updatedBy = fetchLoginUsername();
         int count = processBatchesAndSum(
                 ids,
                 chunk -> userRepository.activateUsers(chunk, updatedBy, updatedTime)
         );
-        log.debug("activated User(s): count {}", count);
+        log.info("Activated users: count={}", count);
         return success("User(s) have been activated successfully");
     }
 
     @Transactional
     public ApiResponse inactivateUsers(List<Long> ids) {
-        log.debug("inactivateUsers: ids {}", ids);
+        log.info("Inactivating users: requestedCount={}", ids == null ? 0 : ids.size());
         LocalDateTime updatedTime = LocalDateTime.now();
         String updatedBy = fetchLoginUsername();
         int count = processBatchesAndSum(
                 ids,
                 chunk -> userRepository.inactivateUsers(chunk, updatedBy, updatedTime)
         );
-        log.debug("inactivated User(s): count {}", count);
+        log.info("Inactivated users: count={}", count);
         return success("User(s) have been inactivated successfully");
     }
 
     @Transactional
     public ApiResponse deleteUsers(List<Long> ids) {
         try {
-            log.debug("deleteUsers: ids {}", ids);
+            log.info("Deleting users: requestedCount={}", ids == null ? 0 : ids.size());
             LocalDateTime deletedAT = LocalDateTime.now();
             String deletedBy = fetchLoginUsername();
             int count = processBatchesAndSum(
@@ -231,7 +231,7 @@ public class UserService extends BaseService {
                     chunk -> userRepository.deleteUsers(chunk, deletedBy, deletedAT)
             );
             userRepository.flush();
-            log.debug("deleted User(s): count {}", count);
+            log.info("Deleted users: count={}", count);
             return success("User(s) have been deleted successfully");
         } catch (DataIntegrityViolationException e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -260,7 +260,7 @@ public class UserService extends BaseService {
         } catch (IllegalArgumentException e) {
             return failure(e.getMessage());
         } catch (IOException e) {
-            log.error("Failed to save profile picture for user {}", username, e);
+            log.error("Failed to save profile picture", e);
             return failure("Failed to save profile picture");
         }
 
