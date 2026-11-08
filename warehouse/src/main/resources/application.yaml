@@ -20,11 +20,12 @@ spring:
   jpa:
     hibernate:
       ddl-auto: none
-    show-sql: true
+    show-sql: false
   activemq:
     broker-url: tcp://localhost:61616
 logging:
   level:
+    org.hibernate.SQL: DEBUG
     org.hibernate.orm.connections.pooling: WARN
 
 files:
@@ -42,6 +43,8 @@ export:
   base-folder: E:/Files/bulk-exports
 
 app:
+  logging:
+    directory: ${APP_LOG_DIR:E:/Files/logs}
   activation-token:
     secret: 6X9uhRahHb/7YEUwZ297kXXC6Ec12xjg8KECVBadTCU=
   password:

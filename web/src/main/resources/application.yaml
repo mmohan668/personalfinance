@@ -1,7 +1,10 @@
 server:
   port: 1002
   servlet:
-    context-path: pf-web
+    context-path: /pf-web
+app:
+  logging:
+    directory: ${APP_LOG_DIR:E:/Files/logs}
 spring:
   application:
     name: web

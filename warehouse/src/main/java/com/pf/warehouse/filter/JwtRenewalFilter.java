@@ -1,5 +1,6 @@
 package com.pf.warehouse.filter;
 
+import com.pf.common.logging.UserLogContext;
 import com.pf.common.record.jwt.GeneratedJwt;
 import com.pf.common.service.redis.RedisSessionService;
 import com.pf.warehouse.service.JwtService;
@@ -38,17 +39,29 @@ public class JwtRenewalFilter extends OncePerRequestFilter {
             FilterChain filterChain)
             throws ServletException, IOException {
 
-        // Do not renew the token during logout.
-        if ("/api/auth/logout".equals(request.getServletPath())) {
+        Authentication authentication =
+                SecurityContextHolder.getContext().getAuthentication();
+        if (!(authentication instanceof JwtAuthenticationToken jwtAuth)) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        Authentication authentication =
-                SecurityContextHolder.getContext().getAuthentication();
+        Object userIdClaim = jwtAuth.getToken().getClaim("userId");
+        Long userId = userIdClaim instanceof Number number ? number.longValue() : null;
+        String username = jwtAuth.getToken().getClaimAsString("username");
+        try (UserLogContext ignored = UserLogContext.open(userId, username)) {
+            doFilterAuthenticated(request, response, filterChain, jwtAuth);
+        }
+    }
 
-        // Validate the incoming token against Redis before the controller runs.
-        if (!(authentication instanceof JwtAuthenticationToken jwtAuth)) {
+    private void doFilterAuthenticated(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain filterChain,
+            JwtAuthenticationToken jwtAuth
+    ) throws ServletException, IOException {
+        // Do not renew the token during logout.
+        if ("/api/auth/logout".equals(request.getServletPath())) {
             filterChain.doFilter(request, response);
             return;
         }

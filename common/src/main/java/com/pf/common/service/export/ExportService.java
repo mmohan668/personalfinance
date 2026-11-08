@@ -43,8 +43,19 @@ public class ExportService extends BaseService {
     }
 
     public ApiResponse exportServer(ExportRequest exportRequest) {
-        exportRequest.setUserId(fetchLoginUserId());
+        Long userId = fetchLoginUserId();
+        exportRequest.setUserId(userId);
+        log.info(
+                "Starting server-side export for grid {} by user id {}",
+                exportRequest.getSearchCriteria().getGridName(),
+                userId
+        );
         activeMqProducer.sendMessage(SERVER_SIDE_GRID_EXPORT, exportRequest);
+        log.info(
+                "Server-side export request sent successfully for grid {} by user id {}",
+                exportRequest.getSearchCriteria().getGridName(),
+                userId
+        );
         return success("Export request sent to server. Please check downloads section after some time");
     }
 

@@ -1,0 +1,47 @@
+<configuration>
+    <springProperty scope="context" name="SERVICE_NAME" source="spring.application.name" defaultValue="scheduler"/>
+    <springProperty scope="context" name="LOG_ROOT" source="app.logging.directory" defaultValue="logs"/>
+    <timestamp key="RUN_ID" datePattern="yyyy-MM-dd_HH-mm-ss.SSS"/>
+    <property name="LOG_PATTERN" value="%d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX} %-5level [%thread] [%X{username:-system}] %logger{36} : %msg%n%ex"/>
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder><pattern>${LOG_PATTERN}</pattern></encoder>
+    </appender>
+    <appender name="SERVICE_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_ROOT}/${SERVICE_NAME}/${SERVICE_NAME}-${RUN_ID}.log</file>
+        <filter class="com.pf.scheduler.logging.StartupLogControl$StartupOnlyFilter"/>
+        <encoder><pattern>${LOG_PATTERN}</pattern></encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_ROOT}/${SERVICE_NAME}/archive/%d{yyyy-MM-dd}/${SERVICE_NAME}.%i.log.gz</fileNamePattern>
+            <maxFileSize>100MB</maxFileSize>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>5GB</totalSizeCap>
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
+        </rollingPolicy>
+    </appender>
+    <appender name="USER_FILE" class="ch.qos.logback.classic.sift.SiftingAppender">
+        <filter class="com.pf.scheduler.logging.StartupLogControl$RuntimeOnlyFilter"/>
+        <discriminator class="ch.qos.logback.classic.sift.MDCBasedDiscriminator">
+            <key>userLogFile</key>
+            <defaultValue>system</defaultValue>
+        </discriminator>
+        <sift>
+            <appender name="USER-${userLogFile}" class="ch.qos.logback.core.rolling.RollingFileAppender">
+                <file>${LOG_ROOT}/${SERVICE_NAME}/users/${userLogFile}/${SERVICE_NAME}-${RUN_ID}.log</file>
+                <encoder><pattern>${LOG_PATTERN}</pattern></encoder>
+                <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+                    <fileNamePattern>${LOG_ROOT}/${SERVICE_NAME}/users/archive/${userLogFile}/%d{yyyy-MM-dd}/${SERVICE_NAME}.%i.log.gz</fileNamePattern>
+                    <maxFileSize>100MB</maxFileSize>
+                    <maxHistory>30</maxHistory>
+                    <totalSizeCap>2GB</totalSizeCap>
+                    <cleanHistoryOnStart>true</cleanHistoryOnStart>
+                </rollingPolicy>
+            </appender>
+        </sift>
+    </appender>
+    <root level="DEBUG">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="SERVICE_FILE"/>
+        <appender-ref ref="USER_FILE"/>
+    </root>
+</configuration>
