@@ -2,6 +2,9 @@ server:
   port: 1004
   servlet:
     context-path: /pf-async
+app:
+  logging:
+    directory: ${APP_LOG_DIR:E:/Files/logs}
 spring:
   application:
     name: async
@@ -16,12 +19,13 @@ spring:
   jpa:
     hibernate:
       ddl-auto: none
-    show-sql: true
+    show-sql: false
   activemq:
     broker-url: tcp://localhost:61616
 
 logging:
   level:
+    org.hibernate.SQL: DEBUG
     org.hibernate.orm.connections.pooling: WARN
 
 async:

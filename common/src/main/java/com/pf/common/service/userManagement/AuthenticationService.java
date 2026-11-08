@@ -5,6 +5,7 @@ import com.pf.common.dto.userManagement.ChangePassword;
 import com.pf.common.entity.userManagement.User;
 import com.pf.common.entity.userManagement.UserPasswordHistory;
 import com.pf.common.exception.AuthenticationFailedException;
+import com.pf.common.logging.UserLogContext;
 import com.pf.common.repository.user.UserPasswordHistoryRepository;
 import com.pf.common.repository.user.UserRepository;
 import com.pf.common.service.generic.BaseService;
@@ -42,9 +43,6 @@ public class AuthenticationService extends BaseService {
                 .orElseThrow(() ->
                         new AuthenticationFailedException("Invalid username or password"));
 
-        log.info("Password matches stored hash: {}",
-                PasswordUtils.matches(rawPassword, user.getPasswordHash()));
-
         if (!PasswordUtils.matches(rawPassword, user.getPasswordHash())) {
             throw new AuthenticationFailedException("Invalid username or password");
         }
@@ -61,6 +59,9 @@ public class AuthenticationService extends BaseService {
             );
         }
 
+        try (UserLogContext ignored = UserLogContext.open(user.getId(), user.getUsername())) {
+            log.info("User authenticated successfully");
+        }
         return user;
     }
 

@@ -22,6 +22,8 @@ spring:
 
 # Application email settings
 app:
+  logging:
+    directory: ${APP_LOG_DIR:E:/Files/logs}
   mail:
     from: ${MAIL_FROM:${MAIL_USERNAME}}
   frontend:

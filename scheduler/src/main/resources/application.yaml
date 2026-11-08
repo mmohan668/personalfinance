@@ -2,6 +2,9 @@ server:
   port: 1006
   servlet:
     context-path: /pf-scheduler
+app:
+  logging:
+    directory: ${APP_LOG_DIR:E:/Files/logs}
 spring:
   application:
     name: scheduler

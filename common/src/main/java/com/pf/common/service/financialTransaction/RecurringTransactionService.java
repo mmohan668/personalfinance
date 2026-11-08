@@ -13,6 +13,7 @@ import com.pf.common.entity.financialTransaction.RecurringTransactionRule;
 import com.pf.common.entity.financialTransaction.RecurringTransactionRuleView;
 import com.pf.common.entity.settings.UserReferenceValue;
 import com.pf.common.entity.userManagement.User;
+import com.pf.common.logging.UserLogContext;
 import com.pf.common.repository.categoryManagement.UserSubcategoryRepository;
 import com.pf.common.repository.financialTransaction.FinancialTransactionRepository;
 import com.pf.common.repository.financialTransaction.RecurringTransactionExecutionRepository;
@@ -212,6 +213,20 @@ public class RecurringTransactionService extends BaseService {
         LocalDateTime occurrenceAt = LocalDateTime.of(occurrenceDate, occurrenceTime);
         RecurringTransactionRule rule = ruleRepository.findByIdForUpdate(ruleId)
                 .orElseThrow(() -> new IllegalArgumentException("Recurring transaction rule not found: " + ruleId));
+        User creator = rule.getCreatedBy();
+        try (UserLogContext ignored = UserLogContext.open(creator.getId(), creator.getUsername())) {
+            return executeOccurrence(rule, ruleId, occurrenceDate, occurrenceTime, occurrenceAt, creator);
+        }
+    }
+
+    private boolean executeOccurrence(
+            RecurringTransactionRule rule,
+            Long ruleId,
+            LocalDate occurrenceDate,
+            LocalTime occurrenceTime,
+            LocalDateTime occurrenceAt,
+            User creator
+    ) {
         if (!Boolean.TRUE.equals(rule.getActive())
                 || !Boolean.TRUE.equals(rule.getSubcategory().getActive())
                 || !Boolean.TRUE.equals(rule.getSubcategory().getUserCategory().getActive())
@@ -226,7 +241,6 @@ public class RecurringTransactionService extends BaseService {
         )) return false;
 
         User admin = rule.getAdminUser();
-        User creator = rule.getCreatedBy();
         if (!canCreatorAddTransaction(rule, creator)) {
             log.warn(
                     "Skipping recurring transaction: creator {} lacks Add permission for rule {}",

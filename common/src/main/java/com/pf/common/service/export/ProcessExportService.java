@@ -5,10 +5,12 @@ import com.pf.common.dto.gp.GridColumnDto;
 import com.pf.common.dto.gp.SearchCriteria;
 import com.pf.common.entity.userManagement.User;
 import com.pf.common.enums.GridNames;
+import com.pf.common.logging.UserLogContext;
 import com.pf.common.repository.user.UserRepository;
 import com.pf.common.service.bulkUpload.BulkUploadsService;
 import com.pf.common.service.categoryManagement.CategoryManagementService;
 import com.pf.common.service.financialTransaction.FinancialTransactionService;
+import com.pf.common.service.financialTransaction.RecurringTransactionService;
 import com.pf.common.service.gp.GridService;
 import com.pf.common.service.settings.SettingsService;
 import com.pf.common.service.userManagement.UserService;
@@ -33,6 +35,7 @@ public class ProcessExportService {
     private final CategoryManagementService categoryManagementService;
     private final BulkUploadsService bulkUploadsService;
     private final SettingsService settingsService;
+    private final RecurringTransactionService recurringTransactionService;
     private final UserService userService;
     private final UserRepository userRepository;
     private final GridService gridService;
@@ -40,15 +43,21 @@ public class ProcessExportService {
 
     @Transactional
     public void processServerSideExport(ExportRequest exportRequest) throws IOException {
+        User user = userRepository.findById(exportRequest.getUserId())
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "User not found for user id " + exportRequest.getUserId()
+                ));
+        try (UserLogContext ignored = UserLogContext.open(user.getId(), user.getUsername())) {
+            processServerSideExport(exportRequest, user);
+        }
+    }
+
+    private void processServerSideExport(ExportRequest exportRequest, User user) throws IOException {
         log.info(
                 "Processing Server Side Export Request for the grid {} for user id {}",
                 exportRequest.getSearchCriteria().getGridName(),
                 exportRequest.getUserId()
         );
-        User user = userRepository.findById(exportRequest.getUserId())
-                .orElseThrow(() -> new IllegalArgumentException(
-                        "User not found for user id " + exportRequest.getUserId()
-                ));
         List<GridColumnDto> gridColumns = gridService.fetchGridColumns(
                 exportRequest.getSearchCriteria().getGridName(),
                 exportRequest.getUserId()
@@ -124,6 +133,7 @@ public class ProcessExportService {
                 case REFERENCE_VALUES_GRID ->
                         settingsService.fetchReferenceValueGridData(searchCriteria).getRecordDetails();
                 case SYSTEM_CONFIG -> settingsService.fetchSystemConfigGridData(searchCriteria).getRecordDetails();
+                case RECURRING_TRANSACTIONS_GRID -> recurringTransactionService.fetchGridData(searchCriteria).getRecordDetails();
                 case BULK_UPLOADS_STATUS ->
                         bulkUploadsService.fetchBulkUploadStatusGridData(searchCriteria).getRecordDetails();
                 case USERS_GRID -> userService.fetchUsersGridData(searchCriteria).getRecordDetails();

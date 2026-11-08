@@ -4,6 +4,7 @@ import com.pf.common.dto.generic.ApiResponse;
 import com.pf.common.dto.userManagement.*;
 import com.pf.common.entity.userManagement.ProfilePicture;
 import com.pf.common.entity.userManagement.User;
+import com.pf.common.logging.UserLogContext;
 import com.pf.common.mapper.userManagement.UserPermissionViewMapper;
 import com.pf.common.mapper.userManagement.UserMapper;
 import com.pf.common.record.jwt.GeneratedJwt;
@@ -62,35 +63,37 @@ public class AuthController {
                 request.getUsername(),
                 request.getPassword()
         );
-        var permissions = userPermissionViewMapper.toAppPermissionList(
-                userService.fetchPermissionsForUser(user.getId())
-        );
-
-        String sessionId = UUID.randomUUID().toString();
-        GeneratedJwt generatedJwt = jwtService.generateToken(user, sessionId);
-        redisSessionService.setCurrentTokenId(sessionId, generatedJwt.tokenId());
-        UserProfile userProfile = userMapper.toUserProfile(user);
-        ProfilePicture profilePicture = profilePictureRepository
-                .findByUserId(user.getId())
-                .orElse(null);
-
-        if (profilePicture != null) {
-            userProfile.setProfilePictureUrl(
-                    "/users/" + user.getUsername() + "/profile-picture"
+        try (UserLogContext ignored = UserLogContext.open(user.getId(), user.getUsername())) {
+            var permissions = userPermissionViewMapper.toAppPermissionList(
+                    userService.fetchPermissionsForUser(user.getId())
             );
-        } else {
-            userProfile.setProfilePictureUrl(null);
+
+            String sessionId = UUID.randomUUID().toString();
+            GeneratedJwt generatedJwt = jwtService.generateToken(user, sessionId);
+            redisSessionService.setCurrentTokenId(sessionId, generatedJwt.tokenId());
+            UserProfile userProfile = userMapper.toUserProfile(user);
+            ProfilePicture profilePicture = profilePictureRepository
+                    .findByUserId(user.getId())
+                    .orElse(null);
+
+            if (profilePicture != null) {
+                userProfile.setProfilePictureUrl(
+                        "/users/" + user.getUsername() + "/profile-picture"
+                );
+            } else {
+                userProfile.setProfilePictureUrl(null);
+            }
+            return ResponseEntity.ok(
+                    new LoginResponse(
+                            generatedJwt.token(),
+                            "Bearer",
+                            900,
+                            userProfile,
+                            user.getMustChangePassword(),
+                            permissions
+                    )
+            );
         }
-        return ResponseEntity.ok(
-                new LoginResponse(
-                        generatedJwt.token(),
-                        "Bearer",
-                        900,
-                        userProfile,
-                        user.getMustChangePassword(),
-                        permissions
-                )
-        );
     }
 
     @PostMapping("/logout")
