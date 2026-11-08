@@ -1,9 +1,7 @@
 package com.pf.async.controller;
 
-import com.pf.common.dto.generic.SchedulerUserConfig;
 import com.pf.common.dto.recurringTransaction.SchedulerRecurringTransactionRuleDto;
 import com.pf.common.service.financialTransaction.RecurringTransactionService;
-import com.pf.common.service.generic.CommonService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -22,18 +20,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RecurringTransactionSchedulerController {
     private final RecurringTransactionService recurringTransactionService;
-    private final CommonService commonService;
 
     @Value("${async.scheduler-token:}")
     private String schedulerApiToken;
-
-    @GetMapping("/configurations")
-    public List<SchedulerUserConfig> fetchConfigurations(
-            @RequestHeader(name = "X-Async-Scheduler-Token", required = false) String token
-    ) {
-        validateToken(token);
-        return commonService.fetchSchedulerUserConfigs();
-    }
 
     @GetMapping("/rules")
     public List<SchedulerRecurringTransactionRuleDto> fetchRules(
