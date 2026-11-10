@@ -473,7 +473,7 @@ export class DataGrid implements OnInit {
 
       if (this.totalRecords > this.config.configValue.maxExportRows) {
         const exportRequest: ExportRequest = {
-          userId: 2,
+          userId: this._cs.loginUserId,
           exportFileName: this.gridExportFileName,
           columns: visibleColumns,
           searchCriteria: request,
@@ -755,7 +755,7 @@ export class DataGrid implements OnInit {
     const gridPersonalizationDto: GridPersonalizationDto = {
       gridName: this.gridName,
       gridColumnJson: JSON.stringify(columnsToSave),
-      userId: 1,
+      userId: this._cs.loginUserId as number,
     };
     firstValueFrom(this._gs.saveGridSetting(gridPersonalizationDto)).then((resp: ApiResponse) => {
       if (resp.success) {
@@ -772,7 +772,7 @@ export class DataGrid implements OnInit {
     const gridPersonalizationDto: GridPersonalizationDto = {
       gridName: this.gridName,
       gridColumnJson: null,
-      userId: 1,
+      userId: this._cs.loginUserId as number,
     };
     firstValueFrom(this._gs.resetGridSettings(gridPersonalizationDto)).then((resp: ApiResponse) => {
       if (resp.success) {

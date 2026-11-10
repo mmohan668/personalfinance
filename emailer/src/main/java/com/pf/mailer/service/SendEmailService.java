@@ -26,7 +26,7 @@ public class SendEmailService {
     @Value("${app.mail.from}")
     private String fromEmail;
 
-    @Value("${app.warehouse-rest-url}")
+    @Value("${app.urls.warehouse-rest-url}")
     private String activationUrl;
 
     public void sendAccountActivationEmail(AccountActivationRequest accountActivationRequest) {

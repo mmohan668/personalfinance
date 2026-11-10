@@ -28,6 +28,8 @@ dependencyManagement {
 }
 
 dependencies {
+	implementation files("$rootDir/libs/password-util.jar")
+	implementation project(':common')
 	implementation 'org.springframework.cloud:spring-cloud-starter-config'
 	implementation 'org.springframework.boot:spring-boot-starter-flyway'
 	implementation 'org.flywaydb:flyway-database-postgresql'
