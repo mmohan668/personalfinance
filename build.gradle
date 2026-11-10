@@ -17,6 +17,14 @@ repositories {
 	mavenCentral()
 }
 
+allprojects {
+	repositories {
+		flatDir {
+			dirs "${rootProject.projectDir}/libs"
+		}
+	}
+}
+
 tasks.named('test') {
 	useJUnitPlatform()
 }

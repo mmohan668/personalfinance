@@ -16,7 +16,7 @@ public class AsyncRecurringTransactionClient {
     private final String schedulerApiToken;
 
     public AsyncRecurringTransactionClient(
-            @Value("${app.async-rest-url}") String asyncBaseUrl,
+            @Value("${app.urls.async-rest-url}") String asyncBaseUrl,
             @Value("${async.scheduler-token:}") String schedulerApiToken
     ) {
         this.restClient = RestClient.create(asyncBaseUrl);

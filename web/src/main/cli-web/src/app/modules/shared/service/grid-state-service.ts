@@ -26,4 +26,8 @@ export class GridStateService {
       return next;
     });
   }
+
+  clearAllColumns(): void {
+    this._columns.set({});
+  }
 }

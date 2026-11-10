@@ -210,6 +210,7 @@ app-root {
 
 .search-button:hover {
   box-shadow: 0 4px 10px rgba(37, 99, 235, 0.25);
+  cursor: pointer !important;
 }
 
 /* Clear button */
@@ -221,6 +222,7 @@ app-root {
 
 .clear-button:hover {
   background: #e8f5e9;
+  cursor: pointer !important;
 }
 
 /* Responsive layout */
@@ -1338,9 +1340,18 @@ tr.empty-message-row > td.empty-message {
   border-radius: 50% !important;
 }
 
-.mat-datepicker-content .mat-calendar-controls .mat-mdc-icon-button:is(:hover, :focus, :active) > .mat-mdc-button-persistent-ripple::before,
-.mat-datepicker-content .mat-calendar-controls .mat-mdc-icon-button.cdk-program-focused > .mat-mdc-button-persistent-ripple::before,
-.mat-datepicker-content .mat-calendar-controls .mat-mdc-icon-button.cdk-keyboard-focused > .mat-mdc-button-persistent-ripple::before {
+.mat-datepicker-content
+  .mat-calendar-controls
+  .mat-mdc-icon-button:is(:hover, :focus, :active)
+  > .mat-mdc-button-persistent-ripple::before,
+.mat-datepicker-content
+  .mat-calendar-controls
+  .mat-mdc-icon-button.cdk-program-focused
+  > .mat-mdc-button-persistent-ripple::before,
+.mat-datepicker-content
+  .mat-calendar-controls
+  .mat-mdc-icon-button.cdk-keyboard-focused
+  > .mat-mdc-button-persistent-ripple::before {
   opacity: 0 !important;
 }
 

@@ -81,7 +81,8 @@ public class GridService extends BaseService {
             GridPersonalizationDto gridPersonalizationDto
     ) {
         String gridName = gridPersonalizationDto.getGridName();
-        Long userId = gridPersonalizationDto.getUserId();
+        Long userId = fetchLoginUserId();
+        gridPersonalizationDto.setUserId(userId);
         log.info(
                 "Saving grid personalization for gridName: {}, userId: {}",
                 gridName,
@@ -128,7 +129,8 @@ public class GridService extends BaseService {
             GridPersonalizationDto gridPersonalizationDto
     ) {
         String gridName = gridPersonalizationDto.getGridName();
-        Long userId = gridPersonalizationDto.getUserId();
+        Long userId = fetchLoginUserId();
+        gridPersonalizationDto.setUserId(userId);
         log.info(
                 "Resetting grid personalization for gridName: {}, userId: {}",
                 gridName,

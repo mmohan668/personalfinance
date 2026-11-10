@@ -13,6 +13,7 @@ import { AppConfigService } from './app-config-service';
 import { Router } from '@angular/router';
 import { NotificationService } from './notification-service';
 import { CommonService } from './common-service';
+import { GridStateService } from './grid-state-service';
 
 export interface LoginRequest {
   username: string;
@@ -35,6 +36,7 @@ export class AuthService {
   private router = inject(Router);
   private _ns = inject(NotificationService);
   private _cs = inject(CommonService);
+  private _gss = inject(GridStateService);
 
   isLoggedIn(): boolean {
     return !!sessionStorage.getItem('authToken');
@@ -64,6 +66,7 @@ export class AuthService {
         if (!passwordChange) {
           this._ns.success('You have been logged out successfully.');
         }
+        this._gss.clearAllColumns();
         this.router.navigate(['/login']);
       })
       .catch((error) => {
