@@ -187,7 +187,8 @@ export class AddCopyEditFinancialTransactionDialog {
     firstValueFrom(this._fts.saveFinancialTransaction(financialTransactionDto)).then(
       (resp: ApiResponse) => {
         if (resp.success) {
-          this.dialogRef.close(resp.message);
+          this._ns.success(resp.message);
+          this.form.reset();
         } else {
           this._ns.error(resp.message);
         }
