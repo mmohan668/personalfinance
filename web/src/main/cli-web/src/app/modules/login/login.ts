@@ -5,6 +5,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ForgotPasswordDialog } from '../users/forgot-password-dialog/forgot-password-dialog';
 import { CommonImportsModule } from '../shared/common-imports/common-imports-module';
 import { ChangePasswordDialog } from '../users/change-password-dialog/change-password-dialog';
+import { CommonService } from '../shared/service/common-service';
 
 @Component({
   selector: 'app-login',
@@ -17,6 +18,7 @@ export class Login {
   private authService = inject(AuthService);
   private router = inject(Router);
   private dialog = inject(MatDialog);
+  private _cs = inject(CommonService);
 
   username = '';
   password = '';
@@ -97,6 +99,7 @@ export class Login {
                 }
               });
             } else {
+              this._cs.identifyDevice();
               void this.router.navigate(['/']);
             }
           }

@@ -1,10 +1,5 @@
 import { inject, Service, signal } from '@angular/core';
-import {
-  GridFilter,
-  AppPermission,
-  ToolbarConfig,
-  UserProfile,
-} from '../types/types';
+import { GridFilter, AppPermission, ToolbarConfig, UserProfile } from '../types/types';
 import { AbstractControl, FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { NotificationService } from './notification-service';
@@ -29,6 +24,7 @@ export class CommonService {
 
   private userProfile = signal<UserProfile>(this.loadUserProfile());
   private userPermissions = signal<AppPermission[]>(this.loadUserPermissions());
+  public isMobile = signal<boolean>(false);
 
   constructor() {
     this.dialog.afterOpened.subscribe(() => this._ns.close());
@@ -76,12 +72,7 @@ export class CommonService {
   }
 
   hasPermission(moduleName: string, screenName: string, actionName: string): boolean {
-    return CommonService.hasPermissionForUser(
-      this.loginUserId,
-      moduleName,
-      screenName,
-      actionName,
-    );
+    return CommonService.hasPermissionForUser(this.loginUserId, moduleName, screenName, actionName);
   }
 
   static hasPermissionForUser(
@@ -383,5 +374,19 @@ export class CommonService {
     }
 
     return filters;
+  }
+
+  identifyDevice() {
+    const userAgent = navigator.userAgent;
+
+    if (/Android|iPhone|iPod|Mobile/i.test(userAgent)) {
+      this.isMobile.set(true);
+      return;
+    }
+
+    if (/iPad|Tablet/i.test(userAgent)) {
+      this.isMobile.set(true);
+      return;
+    }
   }
 }
