@@ -20,7 +20,7 @@ interface MenuItem {
 export class Menu {
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
-  private readonly commonService = inject(CommonService);
+  private readonly _cs = inject(CommonService);
 
   readonly collapsed = signal(false);
   readonly expandedItems = signal<Set<string>>(
@@ -171,11 +171,7 @@ export class Menu {
     }
 
     if (item.children?.length) {
-      return item.children.some(
-        (child) =>
-          child.route &&
-          this.isRouteActive(url, child.route),
-      );
+      return item.children.some((child) => child.route && this.isRouteActive(url, child.route));
     }
     return false;
   }
