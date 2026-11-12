@@ -93,12 +93,6 @@ public class ExportTemplateService {
             createBody(workbook, sheet, columns, data, user);
             for (int i = 0; i < columns.size(); i++) {
                 sheet.autoSizeColumn(i);
-                log.info(
-                        "Column: {}, Header: {}, Calculated width: {}",
-                        i,
-                        columns.get(i).getHeader(),
-                        sheet.getColumnWidth(i) / 256.0
-                );
             }
             workbook.setActiveSheet(0);
             workbook.write(outputStream);

@@ -1,7 +1,10 @@
 import { Component, DestroyRef, inject, signal } from '@angular/core';
+
 import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
+
 import { filter } from 'rxjs/operators';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+
 import { CommonService } from '../service/common-service';
 
 interface MenuItem {
@@ -23,9 +26,15 @@ export class Menu {
   private readonly _cs = inject(CommonService);
 
   readonly collapsed = signal(false);
+
+  // Mobile detection
+  readonly isMobile = signal(this._cs.isMobile());
+
+  // Expanded menu items
   readonly expandedItems = signal<Set<string>>(
     new Set(['Financial Transaction', 'Category Management', 'Settings']),
   );
+
   readonly currentUrl = signal(this.router.url);
 
   readonly menuItems: MenuItem[] = [
@@ -125,6 +134,11 @@ export class Menu {
   ];
 
   constructor() {
+    // Expand all submenu items on mobile
+    if (this.isMobile()) {
+      this.expandAllMenus();
+    }
+
     this.router.events
       .pipe(
         filter((event): event is NavigationEnd => event instanceof NavigationEnd),
@@ -132,40 +146,66 @@ export class Menu {
       )
       .subscribe((event) => {
         this.currentUrl.set(event.urlAfterRedirects);
+
         this.expandActiveParent();
       });
 
     this.expandActiveParent();
   }
 
+  // Expand all parent menus
+  private expandAllMenus(): void {
+    this.expandedItems.set(
+      new Set(this.menuItems.filter((item) => item.children?.length).map((item) => item.label)),
+    );
+  }
+
+  // Sidebar collapse / expand
   toggleSidebar(): void {
+    if (this.isMobile()) {
+      return;
+    }
+
     this.collapsed.update((value) => !value);
   }
 
+  // Parent menu toggle
   toggleMenu(item: MenuItem): void {
     if (!item.children?.length) {
       return;
     }
+
+    // On mobile, all menus remain expanded
+    if (this.isMobile()) {
+      this.expandAllMenus();
+      return;
+    }
+
     if (this.collapsed()) {
       this.collapsed.set(false);
     }
+
     this.expandedItems.update((expanded) => {
       const next = new Set(expanded);
+
       if (next.has(item.label)) {
         next.delete(item.label);
       } else {
         next.add(item.label);
       }
+
       return next;
     });
   }
 
   isExpanded(item: MenuItem): boolean {
-    return this.expandedItems().has(item.label);
+    return this.isMobile() || this.expandedItems().has(item.label);
   }
 
+  // Check active menu
   isActive(item: MenuItem): boolean {
     const url = this.currentUrl();
+
     if (item.route) {
       return this.isRouteActive(url, item.route);
     }
@@ -173,29 +213,38 @@ export class Menu {
     if (item.children?.length) {
       return item.children.some((child) => child.route && this.isRouteActive(url, child.route));
     }
+
     return false;
   }
 
+  // Route matching
   private isRouteActive(currentUrl: string, route: string): boolean {
     const currentPath = currentUrl.split('?')[0].split('#')[0];
+
     return currentPath === route || currentPath.startsWith(`${route}/`);
   }
 
+  // Automatically expand active parent
   private expandActiveParent(): void {
     const url = this.currentUrl();
+
     this.expandedItems.update((expanded) => {
       const next = new Set(expanded);
+
       for (const item of this.menuItems) {
         if (!item.children?.length) {
           continue;
         }
+
         const childIsActive = item.children.some(
           (child) => child.route && this.isRouteActive(url, child.route),
         );
+
         if (childIsActive) {
           next.add(item.label);
         }
       }
+
       return next;
     });
   }
