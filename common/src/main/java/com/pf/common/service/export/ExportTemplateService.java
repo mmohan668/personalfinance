@@ -69,10 +69,13 @@ public class ExportTemplateService {
             throw new IOException("Invalid export file path");
         }
         Files.createDirectories(outputPath.getParent());
+        long startTime = System.currentTimeMillis();
         try (ByteArrayInputStream inputStream =
                      createWorkBook(exportColumns, data, gridName, user, exportFileName)) {
             Files.copy(inputStream, outputPath, StandardCopyOption.REPLACE_EXISTING);
         }
+        log.info("Excel export completed: rows={}, duration={} ms",
+                data.size(), System.currentTimeMillis() - startTime);
         log.info("Excel file created at {}", outputPath);
     }
 
@@ -88,6 +91,10 @@ public class ExportTemplateService {
             XSSFSheet sheet = workbook.createSheet(exportFileName);
             createHeader(workbook, sheet, columns);
             createBody(workbook, sheet, columns, data, user);
+            // Calculate widths once after all data is populated
+            for (int i = 0; i < columns.size(); i++) {
+                ExcelUtils.setMaxWidth(i, sheet);
+            }
             workbook.setActiveSheet(0);
             workbook.write(outputStream);
             return new ByteArrayInputStream(outputStream.toByteArray());
@@ -142,22 +149,32 @@ public class ExportTemplateService {
                     "Admin user not found for export user id " + user.getId()
             );
         }
-        SystemConfig systemConfig = systemConfigRepository.findByConfigNameAndUserId(
+        SystemConfig currencyConfig = systemConfigRepository.findByConfigNameAndUserId(
                 AppEnums.SystemConfigName.CURRENCY.getValue(),
                 settingsUserId
         );
-        if (systemConfig == null) {
+        if (currencyConfig == null) {
             throw new IllegalStateException(
                     "Currency system configuration not found for admin user id " + settingsUserId
                             + " while exporting for user id " + user.getId()
             );
         }
-        String dateFormat = systemConfig.getConfigValue().getReferenceCode3();
+        SystemConfig dateFormatConfig = systemConfigRepository.findByConfigNameAndUserId(
+                AppEnums.SystemConfigName.DATE_FORMAT.getValue(),
+                settingsUserId
+        );
+        if (dateFormatConfig == null) {
+            throw new IllegalStateException(
+                    "DateFormat system configuration not found for admin user id " + settingsUserId
+                            + " while exporting for user id " + user.getId()
+            );
+        }
+        String dateFormat = dateFormatConfig.getConfigValue().getReferenceCode();
         if (dateFormat == null || dateFormat.isBlank()) {
             dateFormat = DD_MM_YYYY;
         }
-        String currencyCode = systemConfig.getConfigValue().getReferenceCode();
-        String localeTag = systemConfig.getConfigValue().getReferenceCode2();
+        String currencyCode = currencyConfig.getConfigValue().getReferenceCode();
+        String localeTag = currencyConfig.getConfigValue().getReferenceCode2();
         String currencySymbol = CurrencyUtil.getCurrencySymbol(currencyCode, localeTag);
         String excelDateFormat = dateFormat.replace("/", "\\/");
         var dataFormat = workbook.getCreationHelper().createDataFormat();
@@ -204,7 +221,6 @@ public class ExportTemplateService {
                     throw new IllegalStateException(
                             "Unable to read field '" + column.getField() + "'", e);
                 }
-                ExcelUtils.setMaxWidth(columnIndex - 1, sheet);
             }
         }
     }
