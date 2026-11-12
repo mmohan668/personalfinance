@@ -183,7 +183,7 @@
       mat-stroked-button
       type="button"
       class="dialog-cancel-button"
-      (click)="dialogRef.close()"
+      (click)="dialogRef.close(_cs.isNotNull(successMessage()) ? true : false)"
     >
       <mat-icon>close</mat-icon>
       Close

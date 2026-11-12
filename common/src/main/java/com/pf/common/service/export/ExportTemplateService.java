@@ -91,9 +91,14 @@ public class ExportTemplateService {
             XSSFSheet sheet = workbook.createSheet(exportFileName);
             createHeader(workbook, sheet, columns);
             createBody(workbook, sheet, columns, data, user);
-            // Calculate widths once after all data is populated
             for (int i = 0; i < columns.size(); i++) {
-                ExcelUtils.setMaxWidth(i, sheet);
+                sheet.autoSizeColumn(i);
+                log.info(
+                        "Column: {}, Header: {}, Calculated width: {}",
+                        i,
+                        columns.get(i).getHeader(),
+                        sheet.getColumnWidth(i) / 256.0
+                );
             }
             workbook.setActiveSheet(0);
             workbook.write(outputStream);
@@ -126,7 +131,6 @@ public class ExportTemplateService {
             Cell cell = headerRow.createCell(index);
             cell.setCellValue(column.getHeader());
             cell.setCellStyle(headerStyle);
-            ExcelUtils.setMaxWidth(index, sheet);
             index++;
         }
         headerRow.setHeightInPoints(25);
