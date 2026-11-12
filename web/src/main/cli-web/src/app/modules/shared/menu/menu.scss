@@ -251,3 +251,50 @@
     transform: translateY(0);
   }
 }
+
+.menu {
+  &--mobile {
+    width: 64px;
+    min-width: 64px;
+
+    .menu__nav {
+      align-items: center;
+    }
+
+    .menu__item {
+      justify-content: center;
+      width: 100%;
+      padding: 12px 0;
+    }
+
+    .menu__icon {
+      margin: 0;
+    }
+
+    .submenu {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+    }
+
+    .submenu__item {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      padding: 10px 0;
+    }
+
+    .submenu__icon {
+      margin: 0;
+    }
+
+    .menu__label,
+    .submenu__label,
+    .menu__arrow,
+    .menu__collapse {
+      display: none;
+    }
+  }
+}
