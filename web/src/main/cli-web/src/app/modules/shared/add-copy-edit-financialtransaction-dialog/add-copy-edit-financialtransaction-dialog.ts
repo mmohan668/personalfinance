@@ -37,6 +37,8 @@ export class AddCopyEditFinancialTransactionDialog {
   protected readonly transactionType!: any;
   protected transactionTypeId!: any;
 
+  public successMessage = signal<string>('');
+
   constructor() {
     this.transactionType = this.data.transactionType;
     this.fetchLocations();
@@ -186,9 +188,14 @@ export class AddCopyEditFinancialTransactionDialog {
     };
     firstValueFrom(this._fts.saveFinancialTransaction(financialTransactionDto)).then(
       (resp: ApiResponse) => {
-        if (resp.success) {
-          this._ns.success(resp.message);
-          this.form.reset();
+        if (this._cs.isNotNull(resp.success)) {
+          if (this.data.mode === MODES.ADD) {
+            this.successMessage.set(resp.message);
+            this._ns.success(resp.message);
+            this.form.reset();
+          } else {
+            this.dialogRef.close(resp.message);
+          }
         } else {
           this._ns.error(resp.message);
         }

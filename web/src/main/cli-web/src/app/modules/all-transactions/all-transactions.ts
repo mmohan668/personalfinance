@@ -154,7 +154,9 @@ export class AllTransactions {
       .afterClosed()
       .subscribe((value: any) => {
         if (value) {
-          this._ns.success(value);
+          if (typeof value === 'string') {
+            this._ns.success(value);
+          }
           this.dataGrid?.refreshGrid();
         }
       });
