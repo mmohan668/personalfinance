@@ -1,7 +1,3 @@
--- =========================================================
--- Create user permissions table
--- =========================================================
-
 CREATE UNIQUE INDEX ux_app_screen_id_module
     ON app_screen (id, module_id);
 
@@ -10,18 +6,16 @@ CREATE UNIQUE INDEX ux_app_action_id_screen
 
 CREATE TABLE user_permissions
 (
-    id         BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-
-    user_id    BIGINT      NOT NULL,
-    module_id  BIGINT      NOT NULL,
-    screen_id  BIGINT      NOT NULL,
-    action_id  BIGINT      NOT NULL,
-    has_permission BOOLEAN NOT NULL DEFAULT FALSE,
-
-    created_by BIGINT      NOT NULL,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_by BIGINT,
-    updated_at TIMESTAMPTZ,
+    id             BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    user_id        BIGINT      NOT NULL,
+    module_id      BIGINT      NOT NULL,
+    screen_id      BIGINT      NOT NULL,
+    action_id      BIGINT      NOT NULL,
+    has_permission BOOLEAN     NOT NULL DEFAULT FALSE,
+    created_by     BIGINT      NOT NULL,
+    created_at     TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_by     BIGINT,
+    updated_at     TIMESTAMPTZ,
 
     CONSTRAINT fk_user_permissions_user
         FOREIGN KEY (user_id)
@@ -50,10 +44,6 @@ CREATE TABLE user_permissions
             (updated_by IS NOT NULL AND updated_at IS NOT NULL)
             )
 );
-
--- =========================================================
--- Create indexes
--- =========================================================
 
 CREATE UNIQUE INDEX ux_user_permissions_user_action
     ON user_permissions (user_id, action_id);

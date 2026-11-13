@@ -32,7 +32,12 @@ public class ActiveMqConsumer {
             Object payload = messageConverter.fromMessage(message);
             if (payload instanceof AccountActivationRequest accountActivationRequest) {
                 log.info("Received account activation email request");
-                sendEmailService.sendAccountActivationEmail(accountActivationRequest);
+                try {
+                    sendEmailService.sendAccountActivationEmail(accountActivationRequest);
+                } catch (Exception e) {
+                    log.warn("Error while sending account activation email", e);
+                    throw new RuntimeException(e);
+                }
             } else {
                 log.warn("Received unsupported account activation message type: {}",
                         message.getClass().getName());

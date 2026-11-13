@@ -1,59 +1,39 @@
--- ============================================================
--- Create Users History Trigger Function
--- ============================================================
-
 CREATE
-OR REPLACE FUNCTION fn_users_history()
+    OR REPLACE FUNCTION fn_users_history()
     RETURNS TRIGGER
     LANGUAGE plpgsql
 AS
 $$
 DECLARE
-v_action_by VARCHAR(100);
+    v_action_by VARCHAR(100);
 BEGIN
 
-    -- ========================================================
-    -- 1. SKIP UNCHANGED UPDATE OPERATIONS
-    -- ========================================================
-
     IF
-TG_OP = 'UPDATE' THEN
+        TG_OP = 'UPDATE' THEN
         IF OLD IS NOT DISTINCT FROM NEW THEN
             RETURN NEW;
-END IF;
-END IF;
-
-
-    -- ========================================================
-    -- 2. DETERMINE ACTION USER
-    -- ========================================================
+        END IF;
+    END IF;
 
     IF
-TG_OP = 'DELETE' THEN
+        TG_OP = 'DELETE' THEN
 
         v_action_by := COALESCE(
                 OLD.updated_by,
                 OLD.created_by,
-                'SYSTEM'
-                       );
+                'SYSTEM');
 
-ELSE
+    ELSE
 
         v_action_by := COALESCE(
                 NEW.updated_by,
                 NEW.created_by,
-                'SYSTEM'
-                       );
+                'SYSTEM');
 
-END IF;
-
-
-    -- ========================================================
-    -- 3. INSERT HISTORY RECORD
-    -- ========================================================
+    END IF;
 
     IF
-TG_OP = 'DELETE' THEN
+        TG_OP = 'DELETE' THEN
 
         INSERT INTO users_history
         (user_id,
@@ -91,9 +71,9 @@ TG_OP = 'DELETE' THEN
                 v_action_by,
                 clock_timestamp());
 
-RETURN OLD;
+        RETURN OLD;
 
-ELSE
+    ELSE
 
         INSERT INTO users_history
         (user_id,
@@ -131,9 +111,9 @@ ELSE
                 v_action_by,
                 clock_timestamp());
 
-RETURN NEW;
+        RETURN NEW;
 
-END IF;
+    END IF;
 
 END;
 $$;

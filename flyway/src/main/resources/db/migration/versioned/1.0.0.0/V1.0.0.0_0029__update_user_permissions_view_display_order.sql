@@ -1,7 +1,3 @@
--- =========================================================
--- Recreate user permissions view with catalog display orders
--- =========================================================
-
 DROP VIEW IF EXISTS vw_user_permissions;
 
 CREATE VIEW vw_user_permissions AS

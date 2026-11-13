@@ -1,20 +1,7 @@
--- ============================================================
--- Reference Objects Grid Configuration
--- ============================================================
-
--- ============================================================
--- 1. GRID NAME
--- ============================================================
-
 INSERT INTO grid_name
     (name)
-VALUES ('REFERENCE_OBJECTS_GRID') ON CONFLICT (LOWER(TRIM(name)))
-    DO NOTHING;
-
-
--- ============================================================
--- 2. GRID COLUMNS
--- ============================================================
+VALUES ('REFERENCE_OBJECTS_GRID')
+ON CONFLICT (LOWER(TRIM(name))) DO NOTHING;
 
 INSERT INTO grid_column
 (grid_name_id,
@@ -95,11 +82,7 @@ FROM grid_name gn
           sort_index,
           align
              )
-WHERE LOWER(TRIM(gn.name)) = LOWER(TRIM('REFERENCE_OBJECTS_GRID')) ON CONFLICT
-    (
-    grid_name_id,
-    (LOWER(TRIM(field)))
-    )
-    DO NOTHING;
+WHERE LOWER(TRIM(gn.name)) = LOWER(TRIM('REFERENCE_OBJECTS_GRID'))
+ON CONFLICT ( grid_name_id, (LOWER(TRIM(field))) ) DO NOTHING;
 
 

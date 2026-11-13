@@ -1,11 +1,9 @@
 CREATE TABLE system_config
 (
     id           BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    config_name  VARCHAR(100)  NOT NULL
-        CHECK (TRIM(config_name) <> ''),
+    config_name  VARCHAR(100)  NOT NULL CHECK (TRIM(config_name) <> ''),
     config_value BIGINT        NOT NULL,
-    description  VARCHAR(1000) NOT NULL
-        CHECK (TRIM(description) <> ''),
+    description  VARCHAR(1000) NOT NULL CHECK (TRIM(description) <> ''),
     user_id      BIGINT        NOT NULL,
     created_by   BIGINT        NOT NULL,
     created_at   TIMESTAMPTZ   NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -36,14 +34,8 @@ CREATE TABLE system_config
             )
 );
 
-
 CREATE UNIQUE INDEX ux_system_config_name_user
-    ON system_config
-        (
-         LOWER(TRIM(config_name)),
-         user_id
-            );
+    ON system_config (LOWER(TRIM(config_name)), user_id);
 
--- Supports the composite FK and user-specific reference-value lookups.
 CREATE INDEX idx_system_config_config_value_user
     ON system_config (config_value, user_id);

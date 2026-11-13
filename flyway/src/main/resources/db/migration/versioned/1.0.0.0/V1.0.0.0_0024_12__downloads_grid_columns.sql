@@ -1,20 +1,7 @@
--- ============================================================
--- Downloads Grid Configuration
--- ============================================================
-
--- ============================================================
--- 1. GRID NAME
--- ============================================================
-
 INSERT INTO grid_name
     (name)
-VALUES ('DOWNLOADS_GRID') ON CONFLICT (LOWER(TRIM(name)))
-    DO NOTHING;
-
-
--- ============================================================
--- 2. GRID COLUMNS
--- ============================================================
+VALUES ('DOWNLOADS_GRID')
+ON CONFLICT (LOWER(TRIM(name))) DO NOTHING;
 
 INSERT INTO grid_column
 (grid_name_id,
@@ -71,11 +58,7 @@ FROM grid_name gn
           cell_template,
           align
              )
-WHERE LOWER(TRIM(gn.name)) = LOWER(TRIM('DOWNLOADS_GRID')) ON CONFLICT
-    (
-    grid_name_id,
-    (LOWER(TRIM(field)))
-    )
-    DO NOTHING;
+WHERE LOWER(TRIM(gn.name)) = LOWER(TRIM('DOWNLOADS_GRID'))
+ON CONFLICT ( grid_name_id, (LOWER(TRIM(field))) ) DO NOTHING;
 
 

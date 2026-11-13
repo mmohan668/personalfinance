@@ -1,21 +1,11 @@
--- ============================================================
--- Financial Transactions
--- ============================================================
-
 CREATE TABLE financial_transactions
 (
     id             BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    amount         NUMERIC(19, 4) NOT NULL
-        CHECK (amount <> 0),
-
+    amount         NUMERIC(19, 4) NOT NULL CHECK (amount <> 0),
     transaction_at TIMESTAMPTZ    NOT NULL,
-
     subcategory_id BIGINT         NOT NULL,
     location_id    BIGINT,
-
-    remarks        VARCHAR(4000)
-        CHECK (remarks IS NULL OR TRIM(remarks) <> ''),
-
+    remarks        VARCHAR(4000) CHECK (remarks IS NULL OR TRIM(remarks) <> ''),
     admin_user_id  BIGINT         NOT NULL,
     created_by     BIGINT         NOT NULL,
     created_at     TIMESTAMPTZ    NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -50,11 +40,6 @@ CREATE TABLE financial_transactions
             )
 );
 
-
--- ============================================================
--- Indexes
--- ============================================================
-
 CREATE INDEX idx_financial_transactions_admin_date
     ON financial_transactions (admin_user_id, transaction_at DESC);
 
@@ -73,7 +58,6 @@ CREATE INDEX idx_financial_transactions_admin_created_at
 CREATE INDEX idx_financial_transactions_admin_updated_at
     ON financial_transactions (admin_user_id, updated_at DESC);
 
--- Supports FK checks and lookups by referenced subcategory/location.
 CREATE INDEX idx_financial_transactions_subcategory_id
     ON financial_transactions (subcategory_id);
 
