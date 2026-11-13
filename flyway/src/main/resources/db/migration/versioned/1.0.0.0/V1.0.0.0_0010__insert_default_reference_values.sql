@@ -1,116 +1,109 @@
--- =========================================================
--- Validate system user and reference objects
--- =========================================================
-
 DO
 $$
     DECLARE
-v_system_user_count       INTEGER;
-        v_transaction_type_count
-INTEGER;
-        v_currency_code_count
-INTEGER;
-        v_date_format_count
-INTEGER;
-        v_country_code_count INTEGER;
-        v_state_code_count   INTEGER;
-        v_time_zone_count    INTEGER;
-BEGIN
-        -- Validate active System user
+        v_system_user_count      INTEGER;
+        v_transaction_type_count INTEGER;
+        v_currency_code_count    INTEGER;
+        v_date_format_count      INTEGER;
+        v_country_code_count     INTEGER;
+        v_state_code_count       INTEGER;
+        v_time_zone_count        INTEGER;
+        v_pwd_his_limit_count    INTEGER;
+    BEGIN
+        SELECT COUNT(*)
+        INTO v_system_user_count
+        FROM users
+        WHERE LOWER(TRIM(username)) = 'system'
+          AND is_deleted = FALSE;
 
-SELECT COUNT(*)
-INTO v_system_user_count
-FROM users
-WHERE LOWER(TRIM(username)) = 'system'
-  AND is_deleted = FALSE;
-
-IF
-v_system_user_count <> 1 THEN
+        IF
+            v_system_user_count <> 1 THEN
             RAISE EXCEPTION
                 'Expected exactly one active System user, but found %.',
                 v_system_user_count;
-END IF;
+        END IF;
 
-        -- Validate TRANSACTION_TYPE reference object
+        SELECT COUNT(*)
+        INTO v_transaction_type_count
+        FROM reference_object
+        WHERE LOWER(TRIM(ref_obj_name)) = 'transaction_type';
 
-SELECT COUNT(*)
-INTO v_transaction_type_count
-FROM reference_object
-WHERE LOWER(TRIM(ref_obj_name)) = 'transaction_type';
-
-IF
-v_transaction_type_count <> 1 THEN
+        IF
+            v_transaction_type_count <> 1 THEN
             RAISE EXCEPTION
                 'Expected exactly one TRANSACTION_TYPE reference object, but found %.',
                 v_transaction_type_count;
-END IF;
+        END IF;
 
-        -- Validate CURRENCY_CODE reference object
+        SELECT COUNT(*)
+        INTO v_currency_code_count
+        FROM reference_object
+        WHERE LOWER(TRIM(ref_obj_name)) = 'currency_code';
 
-SELECT COUNT(*)
-INTO v_currency_code_count
-FROM reference_object
-WHERE LOWER(TRIM(ref_obj_name)) = 'currency_code';
-
-IF
-v_currency_code_count <> 1 THEN
+        IF
+            v_currency_code_count <> 1 THEN
             RAISE EXCEPTION
                 'Expected exactly one CURRENCY_CODE reference object, but found %.',
                 v_currency_code_count;
-END IF;
+        END IF;
 
-        -- Validate DATE_FORMAT reference object
+        SELECT COUNT(*)
+        INTO v_date_format_count
+        FROM reference_object
+        WHERE LOWER(TRIM(ref_obj_name)) = 'date_format';
 
-SELECT COUNT(*)
-INTO v_date_format_count
-FROM reference_object
-WHERE LOWER(TRIM(ref_obj_name)) = 'date_format';
-
-IF
-v_date_format_count <> 1 THEN
+        IF
+            v_date_format_count <> 1 THEN
             RAISE EXCEPTION
                 'Expected exactly one DATE_FORMAT reference object, but found %.',
                 v_date_format_count;
-END IF;
+        END IF;
 
-SELECT COUNT(*)
-INTO v_country_code_count
-FROM reference_object
-WHERE LOWER(TRIM(ref_obj_name)) = 'country_code';
+        SELECT COUNT(*)
+        INTO v_country_code_count
+        FROM reference_object
+        WHERE LOWER(TRIM(ref_obj_name)) = 'country_code';
 
-IF v_country_code_count <> 1 THEN
+        IF v_country_code_count <> 1 THEN
             RAISE EXCEPTION
                 'Expected exactly one COUNTRY_CODE reference object, but found %.',
                 v_country_code_count;
-END IF;
+        END IF;
 
-SELECT COUNT(*)
-INTO v_state_code_count
-FROM reference_object
-WHERE LOWER(TRIM(ref_obj_name)) = 'state_code';
+        SELECT COUNT(*)
+        INTO v_state_code_count
+        FROM reference_object
+        WHERE LOWER(TRIM(ref_obj_name)) = 'state_code';
 
-IF v_state_code_count <> 1 THEN
+        IF v_state_code_count <> 1 THEN
             RAISE EXCEPTION
                 'Expected exactly one STATE_CODE reference object, but found %.',
                 v_state_code_count;
-END IF;
+        END IF;
 
-SELECT COUNT(*)
-INTO v_time_zone_count
-FROM reference_object
-WHERE LOWER(TRIM(ref_obj_name)) = 'time_zone';
+        SELECT COUNT(*)
+        INTO v_time_zone_count
+        FROM reference_object
+        WHERE LOWER(TRIM(ref_obj_name)) = 'time_zone';
 
-IF v_time_zone_count <> 1 THEN
+        IF v_time_zone_count <> 1 THEN
             RAISE EXCEPTION
                 'Expected exactly one TIME_ZONE reference object, but found %.',
                 v_time_zone_count;
-END IF;
-END;
-$$;
+        END IF;
 
--- =========================================================
--- Insert initial reference values
--- =========================================================
+        SELECT COUNT(*)
+        INTO v_pwd_his_limit_count
+        FROM reference_object
+        WHERE LOWER(TRIM(ref_obj_name)) = 'password_history_limit';
+
+        IF v_time_zone_count <> 1 THEN
+            RAISE EXCEPTION
+                'Expected exactly one TIME_ZONE reference object, but found %.',
+                v_time_zone_count;
+        END IF;
+    END;
+$$;
 
 WITH system_account AS
          (SELECT id
@@ -123,23 +116,20 @@ WITH system_account AS
                  LOWER(TRIM(ref_obj_name)) AS ref_obj_name
           FROM reference_object
           WHERE LOWER(TRIM(ref_obj_name)) IN
-                (
-                 'transaction_type',
+                ('transaction_type',
                  'currency_code',
                  'date_format',
                  'country_code',
                  'state_code',
-                 'time_zone'
-                    )),
+                 'time_zone',
+                'password_history_limit')),
 
      initial_reference_values
-         (
-          ref_obj_name,
+         (ref_obj_name,
           reference_code_description,
           reference_code,
           reference_code_2,
-          reference_code_3
-             ) AS
+          reference_code_3) AS
          (VALUES
               -- Transaction types
               ('transaction_type', 'Money Spent', 'EXPENSE', NULL, NULL),
@@ -165,18 +155,19 @@ WITH system_account AS
 
               -- IANA time zones
               ('time_zone', 'India Standard Time', 'Asia/Kolkata', NULL, NULL),
-              ('time_zone', 'Pacific Time (United States)', 'America/Los_Angeles', 'US-CA', NULL))
+              ('time_zone', 'Pacific Time (United States)', 'America/Los_Angeles', 'US-CA', NULL),
+
+              -- Password history limit
+              ('password_history_limit', 'Prevents reuse of the last 5 passwords', '5', NULL, NULL))
 
 INSERT
 INTO reference_values
-(
-    ref_obj_name_id,
-    reference_code_description,
-    reference_code,
-    reference_code_2,
-    reference_code_3,
-    created_by
-)
+(ref_obj_name_id,
+ reference_code_description,
+ reference_code,
+ reference_code_2,
+ reference_code_3,
+ created_by)
 SELECT reference_objects.id,
        initial_reference_values.reference_code_description,
        initial_reference_values.reference_code,
@@ -188,4 +179,4 @@ FROM initial_reference_values
                     ON reference_objects.ref_obj_name =
                        initial_reference_values.ref_obj_name
          CROSS JOIN system_account
-    ON CONFLICT DO NOTHING;
+ON CONFLICT DO NOTHING;

@@ -1,21 +1,9 @@
--- ============================================================
--- Template Configuration Tables
--- ============================================================
-
-
--- ============================================================
--- 1. TEMPLATE NAME
--- ============================================================
-
 CREATE TABLE template_name
 (
     id            BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    template_name VARCHAR(100) NOT NULL
-        CHECK (TRIM(template_name) <> ''),
-    sheet_name    VARCHAR(100) NOT NULL
-        CHECK (TRIM(sheet_name) <> ''),
-    db_table_name VARCHAR(200) NOT NULL
-        CHECK (TRIM(db_table_name) <> ''),
+    template_name VARCHAR(100) NOT NULL CHECK (TRIM(template_name) <> ''),
+    sheet_name    VARCHAR(100) NOT NULL CHECK (TRIM(sheet_name) <> ''),
+    db_table_name VARCHAR(200) NOT NULL CHECK (TRIM(db_table_name) <> ''),
     created_by    BIGINT       NOT NULL,
     created_at    TIMESTAMPTZ  NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_by    BIGINT,
@@ -38,26 +26,15 @@ CREATE TABLE template_name
 CREATE UNIQUE INDEX ux_template_name
     ON template_name (LOWER(TRIM(template_name)));
 
-
--- ============================================================
--- 2. TEMPLATE HEADER
--- ============================================================
-
 CREATE TABLE template_header
 (
     id                    BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    db_column_name        VARCHAR(100) NOT NULL
-        CHECK (TRIM(db_column_name) <> ''),
+    db_column_name        VARCHAR(100) NOT NULL CHECK (TRIM(db_column_name) <> ''),
     template_name_id      BIGINT       NOT NULL,
-    header_name           VARCHAR(100) NOT NULL
-        CHECK (TRIM(header_name) <> ''),
-    column_index          INTEGER      NOT NULL
-        CHECK (column_index >= 0),
-    data_type             VARCHAR(50)  NOT NULL
-        CHECK (
-            TRIM(data_type) <> ''
-                AND data_type IN ('TEXT', 'NUMBER', 'P_NUMBER', 'DATE', 'AMOUNT')
-            ),
+    header_name           VARCHAR(100) NOT NULL CHECK (TRIM(header_name) <> ''),
+    column_index          INTEGER      NOT NULL CHECK (column_index >= 0),
+    data_type             VARCHAR(50)  NOT NULL CHECK ( TRIM(data_type) <> '' AND
+                                                        data_type IN ('TEXT', 'NUMBER', 'P_NUMBER', 'DATE', 'AMOUNT') ),
     required              BOOLEAN      NOT NULL DEFAULT FALSE,
     min_length            INTEGER
         CHECK (min_length IS NULL OR min_length >= 0),
@@ -65,22 +42,12 @@ CREATE TABLE template_header
         CHECK (max_length IS NULL OR max_length >= 0),
     regex_pattern         VARCHAR(200),
     db_validation_type    VARCHAR(30)
-        CHECK (
-            db_validation_type IS NULL
-                OR db_validation_type IN ('DB_EXISTS', 'DB_DUPLICATE')
-            ),
+        CHECK ( db_validation_type IS NULL OR db_validation_type IN ('DB_EXISTS', 'DB_DUPLICATE') ),
     db_validation_query   TEXT
-        CHECK (
-            db_validation_query IS NULL
-                OR TRIM(db_validation_query) <> ''
-            ),
+        CHECK ( db_validation_query IS NULL OR TRIM(db_validation_query) <> '' ),
     db_validation_columns TEXT
-        CHECK (
-            db_validation_columns IS NULL
-                OR TRIM(db_validation_columns) <> ''
-            ),
-    description           TEXT         NOT NULL
-        CHECK (TRIM(description) <> ''),
+        CHECK ( db_validation_columns IS NULL OR TRIM(db_validation_columns) <> '' ),
+    description           TEXT         NOT NULL CHECK (TRIM(description) <> ''),
     created_by            BIGINT       NOT NULL,
     created_at            TIMESTAMPTZ  NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_by            BIGINT,
@@ -97,11 +64,7 @@ CREATE TABLE template_header
         FOREIGN KEY (updated_by) REFERENCES users (id),
 
     CONSTRAINT chk_template_header_length
-        CHECK (
-            min_length IS NULL
-                OR max_length IS NULL
-                OR min_length <= max_length
-            ),
+        CHECK ( min_length IS NULL OR max_length IS NULL OR min_length <= max_length ),
 
     CONSTRAINT chk_template_header_updated_status
         CHECK (
@@ -112,35 +75,20 @@ CREATE TABLE template_header
 );
 
 CREATE UNIQUE INDEX ux_template_header
-    ON template_header
-        (
-         template_name_id,
-         LOWER(TRIM(header_name))
-            );
+    ON template_header (template_name_id, LOWER(TRIM(header_name)));
 
 CREATE UNIQUE INDEX ux_template_header_column_index
     ON template_header (template_name_id, column_index);
 
 CREATE UNIQUE INDEX ux_template_header_db_column_name
-    ON template_header
-        (
-         template_name_id,
-         LOWER(TRIM(db_column_name))
-            );
-
-
--- ============================================================
--- 3. TEMPLATE ADDITIONAL SHEET
--- ============================================================
+    ON template_header (template_name_id, LOWER(TRIM(db_column_name)));
 
 CREATE TABLE template_additional_sheet
 (
     id               BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     template_name_id BIGINT       NOT NULL,
-    sheet_name       VARCHAR(100) NOT NULL
-        CHECK (TRIM(sheet_name) <> ''),
-    data_reference   VARCHAR(100) NOT NULL
-        CHECK (TRIM(data_reference) <> ''),
+    sheet_name       VARCHAR(100) NOT NULL CHECK (TRIM(sheet_name) <> ''),
+    data_reference   VARCHAR(100) NOT NULL CHECK (TRIM(data_reference) <> ''),
     created_by       BIGINT       NOT NULL,
     created_at       TIMESTAMPTZ  NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_by       BIGINT,
@@ -165,8 +113,4 @@ CREATE TABLE template_additional_sheet
 );
 
 CREATE UNIQUE INDEX ux_template_additional_sheet
-    ON template_additional_sheet
-        (
-         template_name_id,
-         LOWER(TRIM(sheet_name))
-            );
+    ON template_additional_sheet (template_name_id, LOWER(TRIM(sheet_name)));

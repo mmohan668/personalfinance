@@ -1,27 +1,12 @@
--- =========================================================
--- Create categories table
--- =========================================================
-
 CREATE TABLE categories
 (
     id                   BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-
     transaction_type     BIGINT       NOT NULL,
-
-    category_name        VARCHAR(100) NOT NULL
-        CHECK (TRIM(category_name) <> ''),
-
-    category_description TEXT
-        CHECK (
-            category_description IS NULL
-                OR TRIM(category_description) <> ''
-            ),
-
+    category_name        VARCHAR(100) NOT NULL CHECK (TRIM(category_name) <> ''),
+    category_description TEXT CHECK ( category_description IS NULL OR TRIM(category_description) <> '' ),
     is_active            BOOLEAN      NOT NULL DEFAULT TRUE,
-
     created_by           BIGINT       NOT NULL,
     created_at           TIMESTAMPTZ  NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
     updated_by           BIGINT,
     updated_at           TIMESTAMPTZ,
 
@@ -38,21 +23,12 @@ CREATE TABLE categories
             REFERENCES users (id),
 
     CONSTRAINT chk_categories_updated_status
-        CHECK
-            (
+        CHECK (
             (updated_by IS NULL AND updated_at IS NULL)
                 OR
             (updated_by IS NOT NULL AND updated_at IS NOT NULL)
             )
 );
 
--- =========================================================
--- Create unique index
--- =========================================================
-
 CREATE UNIQUE INDEX ux_categories_transaction_type_category_name
-    ON categories
-        (
-         transaction_type,
-         LOWER(TRIM(category_name))
-            );
+    ON categories (transaction_type, LOWER(TRIM(category_name)));

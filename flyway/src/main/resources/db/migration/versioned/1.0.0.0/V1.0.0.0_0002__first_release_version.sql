@@ -1,7 +1,3 @@
--- =========================================================
--- Insert initial application release
--- =========================================================
-
 INSERT INTO release_history
 (release_version,
  description)

@@ -1,45 +1,33 @@
--- =========================================================
--- Validate System user and TRANSACTION_TYPE reference object
--- =========================================================
-
 DO
 $$
     DECLARE
-v_system_user_count      INTEGER;
-        v_transaction_type_count
-INTEGER;
-BEGIN
-SELECT COUNT(*)
-INTO v_system_user_count
-FROM users
-WHERE LOWER(TRIM(username)) = 'system'
-  AND is_deleted = FALSE;
+        v_system_user_count      INTEGER;
+        v_transaction_type_count INTEGER;
+    BEGIN
+        SELECT COUNT(*)
+        INTO v_system_user_count
+        FROM users
+        WHERE LOWER(TRIM(username)) = 'system'
+          AND is_deleted = FALSE;
 
-IF
-v_system_user_count <> 1 THEN
+        IF
+            v_system_user_count <> 1 THEN
             RAISE EXCEPTION
-                'Expected exactly one active System user, but found %.',
-                v_system_user_count;
-END IF;
+                'Expected exactly one active System user, but found %.', v_system_user_count;
+        END IF;
 
-SELECT COUNT(*)
-INTO v_transaction_type_count
-FROM reference_object
-WHERE LOWER(TRIM(ref_obj_name)) = 'transaction_type';
+        SELECT COUNT(*)
+        INTO v_transaction_type_count
+        FROM reference_object
+        WHERE LOWER(TRIM(ref_obj_name)) = 'transaction_type';
 
-IF
-v_transaction_type_count <> 1 THEN
+        IF
+            v_transaction_type_count <> 1 THEN
             RAISE EXCEPTION
-                'Expected exactly one TRANSACTION_TYPE reference object, but found %.',
-                v_transaction_type_count;
-END IF;
-END;
+                'Expected exactly one TRANSACTION_TYPE reference object, but found %.', v_transaction_type_count;
+        END IF;
+    END;
 $$;
-
-
--- =========================================================
--- Insert initial system subcategories
--- =========================================================
 
 WITH system_account AS
          (SELECT id
@@ -59,12 +47,8 @@ WITH system_account AS
              ) AS
          (VALUES
 
-              -- ========================================================
               -- EXPENSE
-              -- ========================================================
-
               -- Banking & Finance
-
               ('EXPENSE',
                'Banking & Finance',
                'Fees',
@@ -83,7 +67,6 @@ WITH system_account AS
                'Financial penalties, fines and related charges'),
 
               -- Bills & Utilities
-
               ('EXPENSE',
                'Bills & Utilities',
                'DTH / Cable TV',
@@ -114,7 +97,6 @@ WITH system_account AS
                'Household water supply bills'),
 
               -- Child Expenses
-
               ('EXPENSE',
                'Child Expenses',
                'Baby Care',
@@ -141,7 +123,6 @@ WITH system_account AS
                'Toys, games and play items for children'),
 
               -- Dining & Food Delivery
-
               ('EXPENSE',
                'Dining & Food Delivery',
                'Cafe',
@@ -172,7 +153,6 @@ WITH system_account AS
                'Street food, snacks and fast food purchases'),
 
               -- Donations & Contributions
-
               ('EXPENSE',
                'Donations & Contributions',
                'Charity',
@@ -191,7 +171,6 @@ WITH system_account AS
                'Tips, appreciation payments and gratitude contributions'),
 
               -- Education
-
               ('EXPENSE',
                'Education',
                'Books & Stationery',
@@ -222,7 +201,6 @@ WITH system_account AS
                'School uniforms and education-related footwear'),
 
               -- Electronics
-
               ('EXPENSE',
                'Electronics',
                'Accessories',
@@ -245,7 +223,6 @@ WITH system_account AS
                'Electronic device repair and maintenance expenses'),
 
               -- Entertainment
-
               ('EXPENSE',
                'Entertainment',
                'Books & Magazines',
@@ -280,7 +257,6 @@ WITH system_account AS
                'Tickets and expenses for sports events'),
 
               -- Food & Groceries
-
               ('EXPENSE',
                'Food & Groceries',
                'Drinking Water',
@@ -311,7 +287,6 @@ WITH system_account AS
                'Fresh and packaged vegetable purchases'),
 
               -- Healthcare
-
               ('EXPENSE',
                'Healthcare',
                'Doctor Consultation',
@@ -338,7 +313,6 @@ WITH system_account AS
                'Other healthcare-related expenses'),
 
               -- Housing & Household
-
               ('EXPENSE',
                'Housing & Household',
                'Home Loan EMI',
@@ -357,7 +331,6 @@ WITH system_account AS
                'Other housing and household expenses'),
 
               -- Insurance
-
               ('EXPENSE',
                'Insurance',
                'Life & Term Insurance',
@@ -368,7 +341,6 @@ WITH system_account AS
                'Other insurance-related expenses'),
 
               -- Lifestyle Shopping
-
               ('EXPENSE',
                'Lifestyle Shopping',
                'Accessories & Fancy Items',
@@ -403,7 +375,6 @@ WITH system_account AS
                'Watches and related accessories'),
 
               -- Personal Care
-
               ('EXPENSE',
                'Personal Care',
                'Cosmetics & Skincare',
@@ -430,7 +401,6 @@ WITH system_account AS
                'Shaving products and personal grooming supplies'),
 
               -- Transportation
-
               ('EXPENSE',
                'Transportation',
                'EV Charging',
@@ -469,7 +439,6 @@ WITH system_account AS
                'Vehicle servicing, repairs and maintenance'),
 
               -- Travel & Vacation
-
               ('EXPENSE',
                'Travel & Vacation',
                'Accommodation & Sightseeing',
@@ -483,12 +452,8 @@ WITH system_account AS
                'Travel Documents & Insurance',
                'Passports, visas, travel documents and travel insurance'),
 
-              -- ========================================================
               -- INCOME
-              -- ========================================================
-
               -- Business Income
-
               ('INCOME',
                'Business Income',
                'Business Income',
@@ -499,7 +464,6 @@ WITH system_account AS
                'Other business-related income'),
 
               -- Freelance & Contract Work
-
               ('INCOME',
                'Freelance & Contract Work',
                'Freelance Income',
@@ -510,7 +474,6 @@ WITH system_account AS
                'Other freelance and contract-related income'),
 
               -- Gifts & Windfalls
-
               ('INCOME',
                'Gifts & Windfalls',
                'Cash Gift',
@@ -525,7 +488,6 @@ WITH system_account AS
                'Money received as prize or award winnings'),
 
               -- Government Benefits
-
               ('INCOME',
                'Government Benefits',
                'Pension',
@@ -540,7 +502,6 @@ WITH system_account AS
                'Other government benefits received'),
 
               -- Investment Income
-
               ('INCOME',
                'Investment Income',
                'Capital Gains',
@@ -559,7 +520,6 @@ WITH system_account AS
                'Interest earned from savings, RD and FD accounts'),
 
               -- Other Income
-
               ('INCOME',
                'Other Income',
                'Miscellaneous',
@@ -570,7 +530,6 @@ WITH system_account AS
                'Income not classified under another category'),
 
               -- Rental Income
-
               ('INCOME',
                'Rental Income',
                'House Rent Received',
@@ -581,7 +540,6 @@ WITH system_account AS
                'Other rental-related income'),
 
               -- Salary & Employment
-
               ('INCOME',
                'Salary & Employment',
                'Bonus',
@@ -595,10 +553,7 @@ WITH system_account AS
                'Salary',
                'Regular salary received from employment'),
 
-              -- ========================================================
               -- TRANSFER
-              -- ========================================================
-
               ('TRANSFER',
                'Transfer',
                'Family Transfer',
@@ -608,10 +563,7 @@ WITH system_account AS
                'Miscellaneous',
                'Other money transfer transactions'),
 
-              -- ========================================================
               -- INVESTMENT
-              -- ========================================================
-
               ('INVESTMENT',
                'Investments',
                'Fixed / Recurring Deposit',
@@ -666,9 +618,5 @@ FROM initial_subcategories s
          INNER JOIN categories c
                     ON c.transaction_type = rv.id
                         AND LOWER(TRIM(c.category_name)) =
-                            LOWER(TRIM(s.category_name)) ON CONFLICT
-    (
-    category_id,
-    (LOWER(TRIM(subcategory_name)))
-    )
-    DO NOTHING;
+                            LOWER(TRIM(s.category_name))
+ON CONFLICT ( category_id, (LOWER(TRIM(subcategory_name))) ) DO NOTHING;

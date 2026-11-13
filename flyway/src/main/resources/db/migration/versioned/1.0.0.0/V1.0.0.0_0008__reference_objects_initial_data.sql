@@ -1,30 +1,22 @@
--- =========================================================
--- Validate system user
--- =========================================================
-
 DO
 $$
     DECLARE
-v_system_user_count INTEGER;
-BEGIN
-SELECT COUNT(*)
-INTO v_system_user_count
-FROM users
-WHERE LOWER(TRIM(username)) = 'system'
-  AND is_deleted = FALSE;
+        v_system_user_count INTEGER;
+    BEGIN
+        SELECT COUNT(*)
+        INTO v_system_user_count
+        FROM users
+        WHERE LOWER(TRIM(username)) = 'system'
+          AND is_deleted = FALSE;
 
-IF
-v_system_user_count <> 1 THEN
+        IF
+            v_system_user_count <> 1 THEN
             RAISE EXCEPTION
                 'Expected exactly one active System user, but found %.',
                 v_system_user_count;
-END IF;
-END;
+        END IF;
+    END;
 $$;
-
--- =========================================================
--- Insert initial reference objects
--- =========================================================
 
 WITH system_account AS
          (SELECT id
@@ -45,5 +37,6 @@ FROM system_account
              ('LOCATION'),
              ('COUNTRY_CODE'),
              ('STATE_CODE'),
-             ('TIME_ZONE')) AS ref_objects (ref_obj_name)
-         ON CONFLICT DO NOTHING;
+             ('TIME_ZONE'),
+             ('PASSWORD_HISTORY_LIMIT')) AS ref_objects (ref_obj_name)
+ON CONFLICT DO NOTHING;

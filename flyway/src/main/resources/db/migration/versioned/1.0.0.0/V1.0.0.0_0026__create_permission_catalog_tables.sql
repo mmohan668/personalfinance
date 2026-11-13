@@ -1,22 +1,12 @@
--- =========================================================
--- Create application module, screen, and action catalogs
--- =========================================================
-
 CREATE TABLE app_module
 (
-    id           BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-
-    module_name  VARCHAR(150) NOT NULL
-        CHECK (TRIM(module_name) <> ''),
-
-    description  TEXT
-        CHECK (description IS NULL OR TRIM(description) <> ''),
-
-    display_order INTEGER     NOT NULL DEFAULT 0,
-    is_active     BOOLEAN     NOT NULL DEFAULT TRUE,
-
-    created_by    BIGINT      NOT NULL,
-    created_at    TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    id            BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    module_name   VARCHAR(150) NOT NULL CHECK (TRIM(module_name) <> ''),
+    description   TEXT CHECK (description IS NULL OR TRIM(description) <> ''),
+    display_order INTEGER      NOT NULL DEFAULT 0,
+    is_active     BOOLEAN      NOT NULL DEFAULT TRUE,
+    created_by    BIGINT       NOT NULL,
+    created_at    TIMESTAMPTZ  NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_by    BIGINT,
     updated_at    TIMESTAMPTZ,
 
@@ -38,23 +28,15 @@ CREATE TABLE app_module
 
 CREATE TABLE app_screen
 (
-    id           BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-
-    module_id    BIGINT       NOT NULL,
-    screen_name  VARCHAR(150) NOT NULL
-        CHECK (TRIM(screen_name) <> ''),
-
-    route_path   VARCHAR(500)
-        CHECK (route_path IS NULL OR TRIM(route_path) <> ''),
-
-    description  TEXT
-        CHECK (description IS NULL OR TRIM(description) <> ''),
-
-    display_order INTEGER     NOT NULL DEFAULT 0,
-    is_active     BOOLEAN     NOT NULL DEFAULT TRUE,
-
-    created_by    BIGINT      NOT NULL,
-    created_at    TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    id            BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    module_id     BIGINT       NOT NULL,
+    screen_name   VARCHAR(150) NOT NULL CHECK (TRIM(screen_name) <> ''),
+    route_path    VARCHAR(500) CHECK (route_path IS NULL OR TRIM(route_path) <> ''),
+    description   TEXT CHECK (description IS NULL OR TRIM(description) <> ''),
+    display_order INTEGER      NOT NULL DEFAULT 0,
+    is_active     BOOLEAN      NOT NULL DEFAULT TRUE,
+    created_by    BIGINT       NOT NULL,
+    created_at    TIMESTAMPTZ  NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_by    BIGINT,
     updated_at    TIMESTAMPTZ,
 
@@ -80,20 +62,14 @@ CREATE TABLE app_screen
 
 CREATE TABLE app_action
 (
-    id           BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-
-    screen_id    BIGINT       NOT NULL,
-    action_name  VARCHAR(150) NOT NULL
-        CHECK (TRIM(action_name) <> ''),
-
-    description  TEXT
-        CHECK (description IS NULL OR TRIM(description) <> ''),
-
-    display_order INTEGER     NOT NULL DEFAULT 0,
-    is_active     BOOLEAN     NOT NULL DEFAULT TRUE,
-
-    created_by    BIGINT      NOT NULL,
-    created_at    TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    id            BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    screen_id     BIGINT       NOT NULL,
+    action_name   VARCHAR(150) NOT NULL CHECK (TRIM(action_name) <> ''),
+    description   TEXT CHECK (description IS NULL OR TRIM(description) <> ''),
+    display_order INTEGER      NOT NULL DEFAULT 0,
+    is_active     BOOLEAN      NOT NULL DEFAULT TRUE,
+    created_by    BIGINT       NOT NULL,
+    created_at    TIMESTAMPTZ  NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_by    BIGINT,
     updated_at    TIMESTAMPTZ,
 

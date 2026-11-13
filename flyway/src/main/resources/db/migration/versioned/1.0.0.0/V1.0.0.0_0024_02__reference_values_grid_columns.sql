@@ -1,19 +1,6 @@
--- ============================================================
--- Reference Values Grid Configuration
--- ============================================================
-
--- ============================================================
--- 1. GRID NAME
--- ============================================================
-
 INSERT INTO grid_name (name)
-VALUES ('REFERENCE_VALUES_GRID') ON CONFLICT (LOWER(TRIM(name)))
-    DO NOTHING;
-
-
--- ============================================================
--- 2. GRID COLUMNS
--- ============================================================
+VALUES ('REFERENCE_VALUES_GRID')
+ON CONFLICT (LOWER(TRIM(name))) DO NOTHING;
 
 -- Reference Object Name
 INSERT INTO grid_column
@@ -36,9 +23,8 @@ VALUES ((SELECT id
         200,
         0,
         'asc',
-        0) ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
-    DO NOTHING;
-
+        0)
+ON CONFLICT (grid_name_id, LOWER(TRIM(field))) DO NOTHING;
 
 -- Reference Code
 INSERT INTO grid_column
@@ -61,9 +47,8 @@ VALUES ((SELECT id
         200,
         1,
         'asc',
-        1) ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
-    DO NOTHING;
-
+        1)
+ON CONFLICT (grid_name_id, LOWER(TRIM(field))) DO NOTHING;
 
 -- Reference Code Description
 INSERT INTO grid_column
@@ -82,9 +67,8 @@ VALUES ((SELECT id
         'text',
         'contains',
         200,
-        2) ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
-    DO NOTHING;
-
+        2)
+ON CONFLICT (grid_name_id, LOWER(TRIM(field))) DO NOTHING;
 
 -- Active Status
 INSERT INTO grid_column
@@ -107,9 +91,8 @@ VALUES ((SELECT id
         200,
         3,
         'cellValueTemplate',
-        'CENTER') ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
-    DO NOTHING;
-
+        'CENTER')
+ON CONFLICT (grid_name_id, LOWER(TRIM(field))) DO NOTHING;
 
 -- Reference Code 2 (Hidden by Default)
 INSERT INTO grid_column
@@ -130,9 +113,8 @@ VALUES ((SELECT id
         'contains',
         200,
         4,
-        FALSE) ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
-    DO NOTHING;
-
+        FALSE)
+ON CONFLICT (grid_name_id, LOWER(TRIM(field))) DO NOTHING;
 
 -- Reference Code 3 (Hidden by Default)
 INSERT INTO grid_column
@@ -153,9 +135,8 @@ VALUES ((SELECT id
         'contains',
         200,
         5,
-        FALSE) ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
-    DO NOTHING;
-
+        FALSE)
+ON CONFLICT (grid_name_id, LOWER(TRIM(field))) DO NOTHING;
 
 -- Created By
 INSERT INTO grid_column
@@ -174,9 +155,8 @@ VALUES ((SELECT id
         'text',
         'contains',
         200,
-        6) ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
-    DO NOTHING;
-
+        6)
+ON CONFLICT (grid_name_id, LOWER(TRIM(field))) DO NOTHING;
 
 -- Created Date
 INSERT INTO grid_column
@@ -197,9 +177,8 @@ VALUES ((SELECT id
         'equals',
         200,
         7,
-        'RIGHT') ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
-    DO NOTHING;
-
+        'RIGHT')
+ON CONFLICT (grid_name_id, LOWER(TRIM(field))) DO NOTHING;
 
 -- Modified By
 INSERT INTO grid_column
@@ -218,9 +197,8 @@ VALUES ((SELECT id
         'text',
         'contains',
         200,
-        8) ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
-    DO NOTHING;
-
+        8)
+ON CONFLICT (grid_name_id, LOWER(TRIM(field))) DO NOTHING;
 
 -- Modified Date
 INSERT INTO grid_column
@@ -241,5 +219,5 @@ VALUES ((SELECT id
         'equals',
         200,
         9,
-        'RIGHT') ON CONFLICT (grid_name_id, LOWER(TRIM(field)))
-    DO NOTHING;
+        'RIGHT')
+ON CONFLICT (grid_name_id, LOWER(TRIM(field))) DO NOTHING;

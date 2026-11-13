@@ -1,44 +1,35 @@
--- =========================================================
--- Validate System user and TRANSACTION_TYPE reference object
--- =========================================================
-
 DO
 $$
     DECLARE
-v_system_user_count      INTEGER;
-        v_transaction_type_count
-INTEGER;
-BEGIN
-SELECT COUNT(*)
-INTO v_system_user_count
-FROM users
-WHERE LOWER(TRIM(username)) = 'system'
-  AND is_deleted = FALSE;
+        v_system_user_count      INTEGER;
+        v_transaction_type_count INTEGER;
+    BEGIN
+        SELECT COUNT(*)
+        INTO v_system_user_count
+        FROM users
+        WHERE LOWER(TRIM(username)) = 'system'
+          AND is_deleted = FALSE;
 
-IF
-v_system_user_count <> 1 THEN
+        IF
+            v_system_user_count <> 1 THEN
             RAISE EXCEPTION
                 'Expected exactly one active System user, but found %.',
                 v_system_user_count;
-END IF;
+        END IF;
 
-SELECT COUNT(*)
-INTO v_transaction_type_count
-FROM reference_object
-WHERE LOWER(TRIM(ref_obj_name)) = 'transaction_type';
+        SELECT COUNT(*)
+        INTO v_transaction_type_count
+        FROM reference_object
+        WHERE LOWER(TRIM(ref_obj_name)) = 'transaction_type';
 
-IF
-v_transaction_type_count <> 1 THEN
+        IF
+            v_transaction_type_count <> 1 THEN
             RAISE EXCEPTION
                 'Expected exactly one TRANSACTION_TYPE reference object, but found %.',
                 v_transaction_type_count;
-END IF;
-END;
+        END IF;
+    END;
 $$;
-
--- =========================================================
--- Insert initial system categories
--- =========================================================
 
 WITH system_account AS
          (SELECT id
@@ -58,10 +49,7 @@ WITH system_account AS
              ) AS
          (VALUES
 
-              -- =========================
               -- EXPENSE
-              -- =========================
-
               ('EXPENSE',
                'Banking & Finance',
                'Banking fees, financial charges, interest and penalties',
@@ -127,10 +115,7 @@ WITH system_account AS
                'Travel accommodation, sightseeing, documents and insurance',
                TRUE),
 
-              -- =========================
               -- INCOME
-              -- =========================
-
               ('INCOME',
                'Business Income',
                'Income received from business activities',
@@ -164,19 +149,13 @@ WITH system_account AS
                'Salary, bonuses and other employment-related income',
                TRUE),
 
-              -- =========================
               -- TRANSFER
-              -- =========================
-
               ('TRANSFER',
                'Transfer',
                'Movement of money between people or accounts',
                TRUE),
 
-              -- =========================
               -- INVESTMENT
-              -- =========================
-
               ('INVESTMENT',
                'Investments',
                'Money allocated to investments and long-term financial assets',
@@ -201,8 +180,4 @@ FROM initial_categories ic
                         AND LOWER(TRIM(rv.reference_code)) =
                             LOWER(TRIM(ic.transaction_type))
          CROSS JOIN system_account su
-    ON CONFLICT
-        (
-        transaction_type,
-        (LOWER(TRIM(category_name)))
-        ) DO NOTHING;
+ON CONFLICT ( transaction_type, (LOWER(TRIM(category_name))) ) DO NOTHING;

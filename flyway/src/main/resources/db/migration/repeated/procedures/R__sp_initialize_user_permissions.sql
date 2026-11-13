@@ -1,13 +1,8 @@
--- ============================================================
--- Initialize permissions for a new user
--- ============================================================
-
-CREATE OR REPLACE PROCEDURE initialize_user_permissions
-(
+CREATE OR REPLACE PROCEDURE initialize_user_permissions(
     IN p_user_id BIGINT,
     IN p_created_by BIGINT
 )
-LANGUAGE plpgsql
+    LANGUAGE plpgsql
 AS
 $$
 BEGIN
@@ -15,20 +10,16 @@ BEGIN
         RAISE EXCEPTION 'User ID is required';
     END IF;
 
-    IF NOT EXISTS (
-        SELECT 1
-        FROM users
-        WHERE id = p_user_id
-          AND is_deleted = FALSE
-    ) THEN
+    IF NOT EXISTS (SELECT 1
+                   FROM users
+                   WHERE id = p_user_id
+                     AND is_deleted = FALSE) THEN
         RAISE EXCEPTION 'User with id % does not exist or is deleted', p_user_id;
     END IF;
 
-    IF p_created_by IS NULL OR NOT EXISTS (
-        SELECT 1
-        FROM users
-        WHERE id = p_created_by
-    ) THEN
+    IF p_created_by IS NULL OR NOT EXISTS (SELECT 1
+                                           FROM users
+                                           WHERE id = p_created_by) THEN
         RAISE EXCEPTION 'Valid created-by user ID is required';
     END IF;
 
@@ -37,7 +28,7 @@ BEGIN
     END IF;
 
     INSERT INTO user_permissions
-    (user_id, module_id, screen_id, action_id, has_permission, created_by)
+        (user_id, module_id, screen_id, action_id, has_permission, created_by)
     SELECT p_user_id,
            s.module_id,
            s.id,

@@ -1,72 +1,56 @@
--- ============================================================
--- Create Users Password History Trigger Function
--- ============================================================
-
 CREATE
-OR REPLACE FUNCTION fn_users_password_history()
+    OR REPLACE FUNCTION fn_users_password_history()
     RETURNS TRIGGER
     LANGUAGE plpgsql
 AS
 $$
 DECLARE
-v_action_type VARCHAR(10);
+    v_action_type VARCHAR(10);
     v_changed_by
-VARCHAR(100);
+                  VARCHAR(100);
 BEGIN
 
-    -- ========================================================
-    -- 1. DETERMINE PASSWORD HISTORY ACTION
-    -- ========================================================
-
     IF
-TG_OP = 'INSERT' THEN
+        TG_OP = 'INSERT' THEN
 
         v_action_type := 'INITIAL';
 
         v_changed_by
-:= COALESCE(
+            := COALESCE(
                 NEW.created_by,
-                'SYSTEM'
-                        );
+                'SYSTEM');
 
     ELSIF
-TG_OP = 'UPDATE' THEN
+        TG_OP = 'UPDATE' THEN
 
-        -- Skip when password hash has not changed
         IF OLD.password_hash IS NOT DISTINCT FROM NEW.password_hash THEN
             RETURN NEW;
-END IF;
+        END IF;
 
         v_action_type
-:= 'CHANGE';
+            := 'CHANGE';
 
         v_changed_by
-:= COALESCE(
+            := COALESCE(
                 NEW.updated_by,
                 NEW.created_by,
-                'SYSTEM'
-                        );
+                'SYSTEM');
 
-END IF;
+    END IF;
 
+    INSERT INTO users_password_history
+    (user_id,
+     password_hash,
+     action_type,
+     changed_by,
+     changed_at)
+    VALUES (NEW.id,
+            NEW.password_hash,
+            v_action_type,
+            v_changed_by,
+            clock_timestamp());
 
-    -- ========================================================
-    -- 2. INSERT PASSWORD HISTORY
-    -- ========================================================
-
-INSERT INTO users_password_history
-(user_id,
- password_hash,
- action_type,
- changed_by,
- changed_at)
-VALUES (NEW.id,
-        NEW.password_hash,
-        v_action_type,
-        v_changed_by,
-        clock_timestamp());
-
-RETURN NEW;
+    RETURN NEW;
 
 END;
 $$;

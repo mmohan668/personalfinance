@@ -1,7 +1,3 @@
--- =========================================================
--- Seed actions for the User Management screen
--- =========================================================
-
 DO
 $$
     DECLARE
@@ -21,7 +17,7 @@ $$
         SELECT s.id
         INTO v_screen_id
         FROM app_screen s
-        JOIN app_module m ON m.id = s.module_id
+                 JOIN app_module m ON m.id = s.module_id
         WHERE LOWER(TRIM(m.module_name)) = LOWER(TRIM('User Management'))
           AND LOWER(TRIM(s.screen_name)) = LOWER(TRIM('Users'));
 
@@ -30,16 +26,12 @@ $$
         END IF;
 
         INSERT INTO app_action
-        (screen_id, action_name, description, display_order, created_by)
+            (screen_id, action_name, description, display_order, created_by)
         SELECT v_screen_id, a.action_name, a.description, a.display_order, v_system_user_id
-        FROM (VALUES
-            ('Edit', 'Update the selected user.', 1)
-        ) AS a(action_name, description, display_order)
-        WHERE NOT EXISTS (
-            SELECT 1
-            FROM app_action existing
-            WHERE existing.screen_id = v_screen_id
-              AND LOWER(TRIM(existing.action_name)) = LOWER(TRIM(a.action_name))
-        );
+        FROM (VALUES ('Edit', 'Update the selected user.', 1)) AS a(action_name, description, display_order)
+        WHERE NOT EXISTS (SELECT 1
+                          FROM app_action existing
+                          WHERE existing.screen_id = v_screen_id
+                            AND LOWER(TRIM(existing.action_name)) = LOWER(TRIM(a.action_name)));
     END;
 $$;
