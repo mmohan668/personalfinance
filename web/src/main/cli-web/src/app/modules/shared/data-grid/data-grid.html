@@ -56,8 +56,8 @@
             @for (col of visibleColumns; track col.field) {
               <th
                 [pSortableColumn]="col.sortable !== false ? col.field : undefined"
-                [style.width.px]="col.width || 120"
-                [style.minWidth.px]="col.width || 120"
+                [style.width.px]="_cs.isMobile() ? undefined : col.width || 120"
+                [style.minWidth.px]="_cs.isMobile() ? undefined : col.width || 120"
                 [style.maxWidth.px]="500"
                 pReorderableColumn
               >
@@ -83,8 +83,8 @@
               @for (col of visibleColumns; track col.field) {
                 @if (col.filterable) {
                   <th
-                    [style.width.px]="col.width || 120"
-                    [style.minWidth.px]="col.width || 120"
+                    [style.width.px]="_cs.isMobile() ? undefined : col.width || 120"
+                    [style.minWidth.px]="_cs.isMobile() ? undefined : col.width || 120"
                     [style.maxWidth.px]="500"
                   >
                     <app-column-filter
@@ -140,8 +140,8 @@
               <td
                 [ngStyle]="{
                   'text-align': column.align || 'left',
-                  'width.px': column.width || 120,
-                  'min-width.px': column.width || 120,
+                  'width.px': _cs.isMobile() ? undefined : column.width || 120,
+                  'min-width.px': _cs.isMobile() ? undefined : column.width || 120,
                   'max-width.px': 500,
                   'white-space': 'normal',
                   'overflow-wrap': 'anywhere',
