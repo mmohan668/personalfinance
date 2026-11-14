@@ -63,7 +63,7 @@ export class DataGrid implements OnInit {
   @Input({ required: true })
   public toolbarConfig!: ToolbarConfig;
   @Input({ required: true })
-  public gridName!: string;
+  public gridName!: any;
   @Input()
   public gridExportFileName!: string;
   @Input({ required: true })
@@ -125,6 +125,7 @@ export class DataGrid implements OnInit {
   protected sortField = '';
   protected sortOrder: 1 | -1 = 1;
   protected totalRecords = 0;
+  protected totalAmount = 0;
   protected skip = 0;
   protected take = this.config.configValue.defaultPageSize;
   protected filters: GridFilter[] = [];
@@ -192,11 +193,13 @@ export class DataGrid implements OnInit {
       next: (result) => {
         this.dataSource.set(result.recordDetails);
         this.totalRecords = result.totalRecords;
+        this.totalAmount = result.totalAmount;
       },
       error: (error) => {
         console.error('Error loading grid data:', error);
         this.dataSource.set([]);
         this.totalRecords = 0;
+        this.totalAmount = 0;
       },
     });
   }
@@ -838,5 +841,15 @@ export class DataGrid implements OnInit {
 
   fetchDefaultBooleanOptions() {
     return this._cs.activeInactiveBooleanOptions;
+  }
+
+  showTotalAmount() {
+    return [
+      GRID_NAMES.ALL_TRANSACTIONS_GRID,
+      GRID_NAMES.EXPENSES_GRID,
+      GRID_NAMES.INCOMES_GRID,
+      GRID_NAMES.INVESTMENTS_GRID,
+      GRID_NAMES.TRANSFERS_GRID,
+    ].includes(this.gridName);
   }
 }

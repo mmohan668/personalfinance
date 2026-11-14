@@ -45,14 +45,15 @@ public class FinancialTransactionService extends BaseService {
                     searchCriteria
             );
             if (totalRecords == 0) {
-                gridResult(totalRecords, List.of());
+                return gridResult(totalRecords, List.of());
             }
         }
         List<FinancialTransactionViewDto> recordDetails = financialTransactionViewMapper.toDtoList(
                 getDataBySearchCriteria(FinancialTransactionView.class, searchCriteria)
         );
+        BigDecimal totalAmount = getSumBySearchCriteria(FinancialTransactionView.class, searchCriteria, "amount");
         log.info("Fetched financial transaction grid data: totalRecords={}", totalRecords);
-        return gridResult(totalRecords, recordDetails);
+        return gridResult(totalRecords, recordDetails, totalAmount);
     }
 
     @Transactional
