@@ -18,7 +18,8 @@ public class AppEnums {
         DATE_FORMAT("Date Format"),
         COUNTRY("Country"),
         STATE("State"),
-        TIME_ZONE("Time Zone");
+        TIME_ZONE("Time Zone"),
+        PASSWORD_HISTORY_LIMIT("Password History Limit");
 
         private final String value;
 
