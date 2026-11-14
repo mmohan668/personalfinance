@@ -165,6 +165,7 @@ export enum REF_OBJ_NAMES {
   COUNTRY_CODE = 'COUNTRY_CODE',
   STATE_CODE = 'STATE_CODE',
   TIME_ZONE = 'TIME_ZONE',
+  PASSWORD_HISTORY_LIMIT = 'PASSWORD_HISTORY_LIMIT',
 }
 
 export enum SYSTEM_CONFIG_NAME {
@@ -173,6 +174,7 @@ export enum SYSTEM_CONFIG_NAME {
   COUNTRY = 'Country',
   STATE = 'State',
   TIME_ZONE = 'Time Zone',
+  PASSWORD_HISTORY_LIMIT = 'Password History Limit',
 }
 
 export enum STATUS {

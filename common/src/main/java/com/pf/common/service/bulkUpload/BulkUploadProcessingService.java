@@ -315,7 +315,6 @@ public class BulkUploadProcessingService {
         return errorFilePath.toString();
     }
 
-    @Transactional
     public void saveReferenceValuesBulk(String json, User user) {
         entityManager.createNativeQuery("""
                         CALL insert_reference_values_bulk(
@@ -330,7 +329,6 @@ public class BulkUploadProcessingService {
         log.info("save reference values bulk finished successfully.");
     }
 
-    @Transactional
     public void saveCategoriesBulk(String json, User user) {
         entityManager.createNativeQuery("""
                         CALL insert_user_categories_bulk(
@@ -345,7 +343,6 @@ public class BulkUploadProcessingService {
         log.info("save user categories bulk finished successfully.");
     }
 
-    @Transactional
     public void saveSubcategoriesBulk(String json, User user) {
         entityManager.createNativeQuery("""
                         CALL insert_user_subcategories_bulk(
@@ -359,8 +356,7 @@ public class BulkUploadProcessingService {
                 .setParameter("rows", json).executeUpdate();
         log.info("save user subcategories bulk finished successfully.");
     }
-
-    @Transactional
+    
     public void saveFinancialTransactionsBulk(String json, User user) {
         entityManager.createNativeQuery("""
                         CALL insert_financial_transactions_bulk(

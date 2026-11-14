@@ -7,22 +7,20 @@ import com.pf.common.enums.SortOrder;
 import com.pf.common.enums.SuggestionField;
 import com.pf.common.service.generic.BaseService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.pf.common.constants.CommonConstants.ASTERISK_CHAR;
-import static com.pf.common.constants.CommonConstants.LIKE_STR;
-import static com.pf.common.constants.CommonConstants.LIKE_CHAR;
+import static com.pf.common.constants.CommonConstants.*;
 import static com.pf.common.enums.FilterOperator.*;
 
 @Service
-@Slf4j
 @RequiredArgsConstructor
 public class SuggestionService extends BaseService {
 
+    @Transactional
     public List<?> fetchSuggestions(SuggestionRequest suggestionRequest) {
         SuggestionField suggestionField = SuggestionField.resolve(suggestionRequest.getEntity());
         SearchCriteria searchCriteria = createSearchCriteria(suggestionRequest);

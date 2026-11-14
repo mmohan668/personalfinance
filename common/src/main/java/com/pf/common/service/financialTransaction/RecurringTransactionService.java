@@ -38,6 +38,8 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static com.pf.common.constants.CommonConstants.*;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -280,10 +282,10 @@ public class RecurringTransactionService extends BaseService {
 
         String screenName = switch (rule.getSubcategory().getUserCategory()
                 .getUserReferenceValue().getReferenceCode().trim().toUpperCase(java.util.Locale.ROOT)) {
-            case "EXPENSE" -> "Expense";
-            case "INCOME" -> "Income";
-            case "INVESTMENT" -> "Investment";
-            case "TRANSFER" -> "Transfer";
+            case EXPENSE -> "Expense";
+            case INCOME -> "Income";
+            case INVESTMENT -> "Investment";
+            case TRANSFER -> "Transfer";
             default -> null;
         };
         if (screenName == null) {
@@ -305,13 +307,13 @@ public class RecurringTransactionService extends BaseService {
                 || dto.getIntervalValue() < 1 || !StringUtils.hasText(dto.getFrequency())) return false;
         if (dto.getEndDate() != null && dto.getEndDate().isBefore(dto.getStartDate())) return false;
         return switch (dto.getFrequency()) {
-            case "DAILY", "HOURLY", "MINUTELY" -> true;
-            case "WEEKLY" -> dto.getDayOfWeek() != null && dto.getDayOfWeek() >= 1 && dto.getDayOfWeek() <= 7;
-            case "MONTHLY" -> "LAST_DAY".equals(dto.getMonthlyPattern())
-                    || "LAST_WORKING_DAY".equals(dto.getMonthlyPattern())
-                    || ("DAY_OF_MONTH".equals(dto.getMonthlyPattern())
+            case DAILY, HOURLY, MINUTELY -> true;
+            case WEEKLY -> dto.getDayOfWeek() != null && dto.getDayOfWeek() >= 1 && dto.getDayOfWeek() <= 7;
+            case MONTHLY -> LAST_DAY.equals(dto.getMonthlyPattern())
+                    || LAST_WORKING_DAY.equals(dto.getMonthlyPattern())
+                    || (DAY_OF_MONTH.equals(dto.getMonthlyPattern())
                     && dto.getDayOfMonth() != null && dto.getDayOfMonth() >= 1 && dto.getDayOfMonth() <= 31);
-            case "YEARLY" -> dto.getMonthOfYear() != null && dto.getMonthOfYear() >= 1 && dto.getMonthOfYear() <= 12
+            case YEARLY -> dto.getMonthOfYear() != null && dto.getMonthOfYear() >= 1 && dto.getMonthOfYear() <= 12
                     && dto.getDayOfMonth() != null && dto.getDayOfMonth() >= 1 && dto.getDayOfMonth() <= 31;
             default -> false;
         };
@@ -338,9 +340,9 @@ public class RecurringTransactionService extends BaseService {
         LocalDate date = occurrenceAt.toLocalDate();
         if (date.isBefore(rule.getStartDate())
                 || (rule.getEndDate() != null && date.isAfter(rule.getEndDate()))) return false;
-        if ("HOURLY".equals(rule.getFrequency()) || "MINUTELY".equals(rule.getFrequency())) {
+        if (HOURLY.equals(rule.getFrequency()) || MINUTELY.equals(rule.getFrequency())) {
             LocalDateTime startAt = LocalDateTime.of(rule.getStartDate(), rule.getExecutionTime());
-            boolean hourly = "HOURLY".equals(rule.getFrequency());
+            boolean hourly = HOURLY.equals(rule.getFrequency());
             long intervalMinutes = hourly ? rule.getIntervalValue() * 60L : rule.getIntervalValue();
             long elapsedMinutes = ChronoUnit.MINUTES.between(startAt, occurrenceAt);
             return !occurrenceAt.isBefore(startAt)
@@ -355,25 +357,25 @@ public class RecurringTransactionService extends BaseService {
     private boolean isCalendarOccurrence(RecurringTransactionRule rule, LocalDate date) {
         int interval = rule.getIntervalValue();
         return switch (rule.getFrequency()) {
-            case "DAILY" -> ChronoUnit.DAYS.between(rule.getStartDate(), date) % interval == 0;
-            case "WEEKLY" -> date.getDayOfWeek().getValue() == rule.getDayOfWeek()
+            case DAILY -> ChronoUnit.DAYS.between(rule.getStartDate(), date) % interval == 0;
+            case WEEKLY -> date.getDayOfWeek().getValue() == rule.getDayOfWeek()
                     && ChronoUnit.WEEKS.between(
                     rule.getStartDate().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)),
                     date.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
             ) % interval == 0;
-            case "MONTHLY" -> {
+            case MONTHLY -> {
                 long monthOffset = ChronoUnit.MONTHS.between(
                         YearMonth.from(rule.getStartDate()), YearMonth.from(date)
                 );
                 if (monthOffset < 0 || monthOffset % interval != 0) yield false;
                 yield switch (rule.getMonthlyPattern()) {
-                    case "DAY_OF_MONTH" -> date.getDayOfMonth() == rule.getDayOfMonth();
-                    case "LAST_DAY" -> date.equals(YearMonth.from(date).atEndOfMonth());
-                    case "LAST_WORKING_DAY" -> true;
+                    case DAY_OF_MONTH -> date.getDayOfMonth() == rule.getDayOfMonth();
+                    case LAST_DAY -> date.equals(YearMonth.from(date).atEndOfMonth());
+                    case LAST_WORKING_DAY -> true;
                     default -> false;
                 };
             }
-            case "YEARLY" -> {
+            case YEARLY -> {
                 int yearOffset = date.getYear() - rule.getStartDate().getYear();
                 yield yearOffset >= 0
                         && yearOffset % interval == 0

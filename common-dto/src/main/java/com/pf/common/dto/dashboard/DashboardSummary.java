@@ -9,6 +9,8 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.pf.common.constants.CommonConstants.*;
+
 @Getter
 @Setter
 @ToString
@@ -25,10 +27,10 @@ public class DashboardSummary {
                     ? transaction.getTotal()
                     : BigDecimal.ZERO;
             switch (transaction.getTransactionType().toUpperCase()) {
-                case "EXPENSE" -> this.transactions.setExpense(amount);
-                case "INCOME" -> this.transactions.setIncome(amount);
-                case "INVESTMENT" -> this.transactions.setInvestment(amount);
-                case "TRANSFER" -> this.transactions.setTransfer(amount);
+                case EXPENSE -> this.transactions.setExpense(amount);
+                case INCOME -> this.transactions.setIncome(amount);
+                case INVESTMENT -> this.transactions.setInvestment(amount);
+                case TRANSFER -> this.transactions.setTransfer(amount);
             }
         }
         for (ExpenseByCategoryProjection expenseByCategoryProjection : expenses) {

@@ -7,7 +7,7 @@ import org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration;
 import org.springframework.boot.jdbc.autoconfigure.DataSourceTransactionManagerAutoConfiguration;
 
 
-@SpringBootApplication(scanBasePackages = {"com.pf.common.config.vault", "com.pf.common.config.mail", "com.pf.mailer"},
+@SpringBootApplication(scanBasePackages = {"com.pf.common.config.vault", "com.pf.mailer"},
         exclude = {
                 DataSourceAutoConfiguration.class,
                 HibernateJpaAutoConfiguration.class,

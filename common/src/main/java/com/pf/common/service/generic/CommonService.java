@@ -3,6 +3,7 @@ package com.pf.common.service.generic;
 import com.pf.common.dto.generic.SystemConfigValue;
 import com.pf.common.dto.generic.SchedulerUserConfig;
 import com.pf.common.entity.settings.SystemConfig;
+import com.pf.common.enums.AppEnums;
 import com.pf.common.repository.setting.SystemConfigRepository;
 import com.pf.common.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,10 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 public class CommonService {
+    public static final String COUNTRY = "country";
+    public static final String STATE = "state";
+    public static final String TIME_ZONE = "time zone";
+
     private final SystemConfigRepository systemConfigRepository;
     private final UserRepository userRepository;
 
@@ -42,15 +47,15 @@ public class CommonService {
                         String value = setting.getConfigValue().getReferenceCode();
                         String description = setting.getConfigValue().getReferenceCodeDescription();
                         switch (setting.getConfigName().trim().toLowerCase(java.util.Locale.ROOT)) {
-                            case "country" -> {
+                            case COUNTRY -> {
                                 countryCode = value;
                                 countryName = description;
                             }
-                            case "state" -> {
+                            case STATE -> {
                                 stateCode = value;
                                 stateName = description;
                             }
-                            case "time zone" -> timeZone = value;
+                            case TIME_ZONE -> timeZone = value;
                             default -> throw new IllegalStateException(
                                     "Unexpected scheduler setting: " + setting.getConfigName()
                             );
@@ -85,13 +90,13 @@ public class CommonService {
             if (systemConfig.getConfigName().equalsIgnoreCase(DATE_FORMAT.getValue())) {
                 systemConfigValue.setDateFormat(systemConfig.getConfigValue().getReferenceCode());
             }
-            if (systemConfig.getConfigName().equalsIgnoreCase(COUNTRY.getValue())) {
+            if (systemConfig.getConfigName().equalsIgnoreCase(AppEnums.SystemConfigName.COUNTRY.getValue())) {
                 systemConfigValue.setCountryCode(systemConfig.getConfigValue().getReferenceCode());
             }
-            if (systemConfig.getConfigName().equalsIgnoreCase(STATE.getValue())) {
+            if (systemConfig.getConfigName().equalsIgnoreCase(AppEnums.SystemConfigName.STATE.getValue())) {
                 systemConfigValue.setStateCode(systemConfig.getConfigValue().getReferenceCode());
             }
-            if (systemConfig.getConfigName().equalsIgnoreCase(TIME_ZONE.getValue())) {
+            if (systemConfig.getConfigName().equalsIgnoreCase(AppEnums.SystemConfigName.TIME_ZONE.getValue())) {
                 systemConfigValue.setTimeZone(systemConfig.getConfigValue().getReferenceCode());
             }
         });

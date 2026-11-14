@@ -5,15 +5,20 @@ import org.slf4j.MDC;
 import java.util.Map;
 
 public final class UserLogContext implements AutoCloseable {
+    public static final String UNKNOWN = "unknown";
+    public static final String USERNAME = "username";
+    public static final String USER_ID = "userId";
+    public static final String USER_LOG_FILE = "userLogFile";
+
     private final Map<String, String> previousContext;
 
     private UserLogContext(Long userId, String username) {
         previousContext = MDC.getCopyOfContextMap();
         String safeUsername = sanitize(username);
-        String id = userId == null ? "unknown" : userId.toString();
-        MDC.put("username", safeUsername);
-        MDC.put("userId", id);
-        MDC.put("userLogFile", safeUsername);
+        String id = userId == null ? UNKNOWN : userId.toString();
+        MDC.put(USERNAME, safeUsername);
+        MDC.put(USER_ID, id);
+        MDC.put(USER_LOG_FILE, safeUsername);
     }
 
     public static UserLogContext open(Long userId, String username) {
@@ -22,12 +27,12 @@ public final class UserLogContext implements AutoCloseable {
 
     private static String sanitize(String value) {
         if (value == null || value.isBlank()) {
-            return "unknown";
+            return UNKNOWN;
         }
         String sanitized = value.replaceAll("[^A-Za-z0-9._-]", "_")
                 .replaceAll("^\\.+", "");
         if (sanitized.isBlank()) {
-            return "unknown";
+            return UNKNOWN;
         }
         return sanitized.substring(0, Math.min(sanitized.length(), 64));
     }
