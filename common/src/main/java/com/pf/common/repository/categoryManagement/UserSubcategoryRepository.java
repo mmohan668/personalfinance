@@ -14,16 +14,7 @@ import java.util.List;
 
 @Repository
 public interface UserSubcategoryRepository extends JpaRepository<UserSubcategory, Long> {
-
-    @Transactional(readOnly = true)
-    @Query("""
-            SELECT COUNT(usc) > 0
-            FROM UserSubcategory usc
-            WHERE usc.userCategory.id IN (:ids)
-            """)
-    boolean existsByCategoryId(@Param("ids") List<Long> ids);
-
-
+    
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("""
             UPDATE UserSubcategory usc
@@ -56,6 +47,7 @@ public interface UserSubcategoryRepository extends JpaRepository<UserSubcategory
             FROM UserSubcategory usc
             WHERE usc.userCategory.id = :categoryId
             AND LOWER(TRIM(usc.subcategoryName)) = LOWER(TRIM(:subcategoryName))
+            AND usc.isDeleted = false
             """)
     boolean existsByCategoryIdAndSubcategoryName(
             @Param("categoryId") Long categoryId,
@@ -69,6 +61,7 @@ public interface UserSubcategoryRepository extends JpaRepository<UserSubcategory
             WHERE usc.userCategory.id = :categoryId
             AND LOWER(TRIM(usc.subcategoryName)) = LOWER(TRIM(:subcategoryName))
             AND usc.id <> :subcategoryId
+            AND usc.isDeleted = false
             """)
     boolean existsByCategoryIdAndSubcategoryNameAndIdNot(
             @Param("categoryId") Long categoryId,
@@ -111,7 +104,38 @@ public interface UserSubcategoryRepository extends JpaRepository<UserSubcategory
             FROM UserSubcategory usc
             WHERE usc.userCategory.id = :categoryId
             AND usc.active = true
+            AND usc.isDeleted = false
             ORDER BY LOWER(usc.subcategoryName)
             """)
     List<SelectItem> fetchSubcategoriesByCategory(Long categoryId);
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("""
+            UPDATE UserSubcategory usc
+            SET usc.isDeleted = true, usc.deletedBy.id = :deletedBy, usc.deletedAt = :deletedAt
+            WHERE usc.id IN (:ids)
+            """)
+    void softDeleteSubcategories(
+            @Param("ids") List<Long> ids,
+            @Param("deletedBy") Long deletedBy,
+            @Param("deletedAt") LocalDateTime deletedAt);
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("""
+            UPDATE UserSubcategory usc
+            SET usc.isDeleted = true, usc.deletedBy.id = :deletedBy, usc.deletedAt = :deletedAt
+            WHERE usc.userCategory.id IN (:ids)
+            """)
+    void softDeleteSubcategoriesByCategoryIds(
+            @Param("ids") List<Long> ids,
+            @Param("deletedBy") Long deletedBy,
+            @Param("deletedAt") LocalDateTime deletedAt
+    );
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("""
+            DELETE FROM UserSubcategory usc
+            WHERE usc.userCategory.id IN (:ids)
+            """)
+    void deleteByCategoryId(@Param("ids") List<Long> ids);
 }

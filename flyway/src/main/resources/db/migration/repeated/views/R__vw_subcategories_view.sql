@@ -18,7 +18,7 @@ SELECT usc.id,
        usc.updated_at
 
 FROM user_categories uc
-         LEFT JOIN user_subcategories usc ON usc.user_category_id = uc.id
+         INNER JOIN user_subcategories usc ON usc.user_category_id = uc.id AND usc.is_deleted = FALSE
          LEFT JOIN users u ON u.id = uc.user_id
          LEFT JOIN user_reference_value urv ON urv.id = uc.transaction_type AND urv.user_id = uc.user_id
          LEFT JOIN users cu ON cu.id = usc.created_by

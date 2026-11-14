@@ -64,6 +64,16 @@ public class UserReferenceValue {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @Column(name = "is_deleted", nullable = false)
+    private Boolean isDeleted;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "deleted_by", nullable = false)
+    private User deletedBy;
+
+    @Column(name = "deleted_at", nullable = false)
+    private LocalDateTime deletedAt;
+
     @PrePersist
     protected void onCreate() {
         active = true;

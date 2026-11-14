@@ -19,7 +19,7 @@ public class BatchUtils {
         }
     }
 
-    public static <T, R> List<R> processInBatches(List<T> items, Function<List<T>, List<R>> batchProcessor) {
+    public static <T, R> List<R> processInBatchesAndFetch(List<T> items, Function<List<T>, List<R>> batchProcessor) {
         List<R> result = Lists.newArrayList();
         if (items == null || items.isEmpty()) return result;
         for (List<T> chunk : Lists.partition(items, CHUNK_SIZE)) {

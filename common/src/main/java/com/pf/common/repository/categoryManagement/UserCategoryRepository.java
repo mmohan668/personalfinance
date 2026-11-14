@@ -22,6 +22,7 @@ public interface UserCategoryRepository extends JpaRepository<UserCategory, Long
             WHERE uc.userReferenceValue.id = :transactionType
             AND LOWER(TRIM(uc.categoryName)) =LOWER(TRIM(:categoryName))
             AND uc.user.adminUser.id = :userId
+            AND uc.isDeleted = false
             """)
     boolean existsByTransactionTypeAndNameAndUserId(
             @Param("transactionType") Long transactionType,
@@ -37,6 +38,7 @@ public interface UserCategoryRepository extends JpaRepository<UserCategory, Long
             AND LOWER(TRIM(uc.categoryName)) =LOWER(TRIM(:categoryName))
             AND uc.user.adminUser.id = :userId
             AND uc.id <> :id
+            AND uc.isDeleted = false
             """)
     boolean existsByTransactionTypeAndNameAndUserIdAndIdNot(
             @Param("transactionType") Long transactionType,
@@ -81,6 +83,7 @@ public interface UserCategoryRepository extends JpaRepository<UserCategory, Long
             WHERE uc.user.adminUser.id = :adminUserId
             AND uc.userReferenceValue.id = :referenceValueId
             AND uc.active = true
+            AND uc.isDeleted = false
             ORDER BY LOWER(uc.categoryName)
             """)
     List<SelectItem> fetchCategoriesByUserId(
@@ -98,6 +101,7 @@ public interface UserCategoryRepository extends JpaRepository<UserCategory, Long
             WHERE uc.user.adminUser.id = :adminUserId
             AND uc.userReferenceValue.referenceCode = :referenceCode
             AND uc.active = true
+            AND uc.isDeleted = false
             ORDER BY LOWER(uc.categoryName)
             """)
     List<SelectItem> fetchCategoriesByReferenceCode(
@@ -114,6 +118,7 @@ public interface UserCategoryRepository extends JpaRepository<UserCategory, Long
             FROM UserCategory uc
             WHERE uc.user.adminUser.id = :adminUserId
             AND uc.active = true
+            AND uc.isDeleted = false
             ORDER BY LOWER(uc.categoryName)
             """)
     List<SelectItem> findCategoriesByUserId(@Param("adminUserId") Long adminUserId);
@@ -124,15 +129,29 @@ public interface UserCategoryRepository extends JpaRepository<UserCategory, Long
             FROM UserCategory uc
             WHERE uc.user.adminUser.id = :adminUserId
             AND uc.active = true
+            AND uc.isDeleted = false
             ORDER BY LOWER(uc.categoryName)
             """)
     List<UserCategory> findAllCategoriesByUserId(@Param("adminUserId") Long adminUserId);
 
     @Transactional(readOnly = true)
     @Query("""
-            SELECT COUNT(uc) > 0
+            SELECT uc.userReferenceValue.id
             FROM UserCategory uc
             WHERE uc.userReferenceValue.id IN (:ids)
+            AND uc.isDeleted = false
             """)
-    boolean existsByReferenceValueIdIn(@Param("ids") List<Long> referenceValueIds);
+    List<Long> findIdByReferenceValueIdIn(@Param("ids") List<Long> referenceValueIds);
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("""
+            UPDATE UserCategory uc
+            SET uc.isDeleted = true, uc.deletedBy.id = :deletedBy, uc.deletedAt = :deletedAt
+            WHERE uc.id IN (:ids)
+            """)
+    void softDeleteCategories(
+            @Param("ids") List<Long> ids,
+            @Param("deletedBy") Long deletedBy,
+            @Param("deletedAt") LocalDateTime deletedAt
+    );
 }

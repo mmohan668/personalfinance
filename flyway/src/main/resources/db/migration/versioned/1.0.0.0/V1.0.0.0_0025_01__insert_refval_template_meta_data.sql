@@ -88,7 +88,7 @@ $$
                 3,
                 100,
                 'DB_DUPLICATE',
-                'SELECT EXISTS(SELECT 1 FROM reference_values rv JOIN reference_object ro ON ro.id = rv.ref_obj_name_id WHERE LOWER(TRIM(ro.ref_obj_name)) = ? AND LOWER(TRIM(rv.reference_code)) = ?)',
+                'SELECT EXISTS(SELECT 1 FROM user_reference_value urv JOIN reference_object ro ON ro.id = urv.ref_obj_name_id WHERE LOWER(TRIM(ro.ref_obj_name)) = ? AND LOWER(TRIM(urv.reference_code)) = ? AND urv.is_deleted = FALSE AND urv.user_id = ?)',
                 'Reference Object, Reference Code',
                 'Reference code associated with the selected reference object.',
                 v_system_user_id)

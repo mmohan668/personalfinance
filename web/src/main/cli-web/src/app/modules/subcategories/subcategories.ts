@@ -3,19 +3,12 @@ import { DataGrid } from '../shared/data-grid/data-grid';
 import {
   DATA_FIELDS,
   ENTITIES,
-  FILTER_OPERATORS,
   GRID_EXPORT_FILE_NAMES,
   GRID_NAMES,
   MODES,
   STATUS,
 } from '../shared/enums';
-import {
-  ApiResponse,
-  GridColumn,
-  GridFilter,
-  SuggestionRequest,
-  ToolbarConfig,
-} from '../shared/types/types';
+import { ApiResponse, GridColumn, SuggestionRequest, ToolbarConfig } from '../shared/types/types';
 import { CommonService } from '../shared/service/common-service';
 import { MatDialog } from '@angular/material/dialog';
 import { AddEditSubCategoryDialog } from './add-edit-sub-category-dialog/add-edit-sub-category-dialog';

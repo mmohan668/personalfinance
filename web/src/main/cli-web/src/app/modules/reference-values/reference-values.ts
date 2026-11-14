@@ -1,5 +1,12 @@
 import { Component, inject, signal, ViewChild } from '@angular/core';
-import { DATA_FIELDS, ENTITIES, GRID_EXPORT_FILE_NAMES, GRID_NAMES, MODES } from '../shared/enums';
+import {
+  DATA_FIELDS,
+  ENTITIES,
+  GRID_EXPORT_FILE_NAMES,
+  GRID_NAMES,
+  MODES,
+  REF_OBJ_NAMES,
+} from '../shared/enums';
 import { GridColumn, SuggestionRequest, ToolbarConfig } from '../shared/types/types';
 import { CommonService } from '../shared/service/common-service';
 import { DataGrid } from '../shared/data-grid/data-grid';
@@ -117,8 +124,19 @@ export class ReferenceValues {
       this._ns.error(this._ms.get('common.delete.noSelection'));
       return;
     }
+    if (
+      this.dataGrid.selectedRows.every((row) => row.refObjName === REF_OBJ_NAMES.TRANSACTION_TYPE)
+    ) {
+      this._ns.error(this._ms.get('referenceValue.delete.transactionTypeDelete'));
+      return;
+    }
     const title = this._ms.get('common.delete.title');
-    const message = this._ms.get('referenceValue.delete.confirmation');
+    let message = this._ms.get('referenceValue.delete.confirmation');
+    if (
+      this.dataGrid.selectedRows.some((row) => row.refObjName === REF_OBJ_NAMES.TRANSACTION_TYPE)
+    ) {
+      message = this._ms.get('referenceValue.delete.mixedSelectionDelete');
+    }
     this.dialog
       .open(ConfirmationDialog, {
         width: 'auto',
@@ -131,7 +149,9 @@ export class ReferenceValues {
       .afterClosed()
       .subscribe((value: boolean) => {
         if (value) {
-          const ids = this.dataGrid.selectedRows.map((row) => row.id);
+          const ids = this.dataGrid.selectedRows
+            .filter((row) => row.refObjName !== REF_OBJ_NAMES.TRANSACTION_TYPE)
+            .map((row) => row.id);
           firstValueFrom(this._ss.deleteReferenceValue(ids)).then((response) => {
             if (response.success) {
               this._ns.success(response.message);
@@ -151,6 +171,10 @@ export class ReferenceValues {
     }
     if (this.dataGrid.selectedRows.length > 1) {
       this._ns.error(this._ms.get('common.edit.singleSelection'));
+      return;
+    }
+    if (this.dataGrid.selectedRows[0].refObjName === REF_OBJ_NAMES.TRANSACTION_TYPE) {
+      this._ns.error(this._ms.get('referenceValue.edit.transactionTypeEdit'));
       return;
     }
     this.dialog
@@ -246,11 +270,33 @@ export class ReferenceValues {
       this._ns.error(this._ms.get('referenceValue.inactivate.alreadyInactive'));
       return;
     }
+    if (
+      this.dataGrid.selectedRows.every((row) => row.refObjName === REF_OBJ_NAMES.TRANSACTION_TYPE)
+    ) {
+      this._ns.error(this._ms.get('referenceValue.inactivate.transactionTypeInactivate'));
+      return;
+    }
+    if (
+      this.dataGrid.selectedRows.every(
+        (row) => row.active === false || row.refObjName === REF_OBJ_NAMES.TRANSACTION_TYPE,
+      )
+    ) {
+      this._ns.error(this._ms.get('referenceValue.inactivate.txnAllSelection'));
+      return;
+    }
     const someInactive = this.dataGrid.selectedRows.some((row) => row.active === false);
+    const someTransactionType = this.dataGrid.selectedRows.some(
+      (row) => row.refObjName === REF_OBJ_NAMES.TRANSACTION_TYPE,
+    );
     const title = this._ms.get('common.inactivate.title');
-    const message = someInactive
-      ? this._ms.get('referenceValue.inactivate.mixedSelection')
-      : this._ms.get('referenceValue.inactivate.confirmation');
+    let message = this._ms.get('referenceValue.inactivate.confirmation');
+    if (someInactive && someTransactionType) {
+      message = this._ms.get('referenceValue.inactivate.txnSelection');
+    } else if (someInactive) {
+      message = this._ms.get('referenceValue.inactivate.mixedSelection');
+    } else if (someTransactionType) {
+      message = this._ms.get('referenceValue.inactivate.mixedSelectionInactivate');
+    }
     this.dialog
       .open(ConfirmationDialog, {
         width: 'auto',
@@ -263,7 +309,11 @@ export class ReferenceValues {
       .afterClosed()
       .subscribe((value: boolean) => {
         if (value) {
-          const ids = this.dataGrid.selectedRows.map((row) => row.id);
+          const ids = this.dataGrid.selectedRows
+            .filter(
+              (row) => row.active === true && row.refObjName !== REF_OBJ_NAMES.TRANSACTION_TYPE,
+            )
+            .map((row) => row.id);
           firstValueFrom(this._ss.inactivateReferenceValue(ids)).then((response) => {
             if (response.success) {
               this._ns.success(response.message);

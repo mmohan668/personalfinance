@@ -132,7 +132,9 @@ BEGIN
                       AND LOWER(TRIM(uc.category_name)) =
                           LOWER(TRIM(x.category_name))
                       AND uc.is_active = TRUE
-    ON CONFLICT ( user_category_id, (LOWER(TRIM(subcategory_name))) ) DO NOTHING;
+                      AND uc.is_deleted = FALSE
+    ON CONFLICT ( user_category_id, (LOWER(TRIM(subcategory_name))) )
+    WHERE is_deleted = FALSE DO NOTHING;
 
 END;
 $$;

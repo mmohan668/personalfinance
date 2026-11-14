@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,17 +35,27 @@ public interface RecurringTransactionRuleRepository extends JpaRepository<Recurr
     @Query("""
             SELECT COUNT(r) > 0
             FROM RecurringTransactionRule r
-            WHERE r.subcategory.id IN :subcategoryIds
+            WHERE r.subcategory.userCategory.id IN :categoryIds
+            AND r.active = true
+            AND (r.endDate IS NULL OR r.endDate >= :currentDate)
             """)
-    boolean existsBySubcategoryIds(@Param("subcategoryIds") List<Long> subcategoryIds);
+    boolean existsByCategoryIds(
+            @Param("categoryIds") List<Long> categoryIds,
+            @Param("currentDate") LocalDate currentDate
+    );
 
     @Transactional(readOnly = true)
     @Query("""
             SELECT COUNT(r) > 0
             FROM RecurringTransactionRule r
-            WHERE r.subcategory.userCategory.id IN :categoryIds
+            WHERE r.subcategory.id IN :categoryIds
+            AND r.active = true
+            AND (r.endDate IS NULL OR r.endDate >= :currentDate)
             """)
-    boolean existsByCategoryIds(@Param("categoryIds") List<Long> categoryIds);
+    boolean existsBySubCategoryIds(
+            @Param("categoryIds") List<Long> categoryIds,
+            @Param("currentDate") LocalDate currentDate
+    );
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Transactional

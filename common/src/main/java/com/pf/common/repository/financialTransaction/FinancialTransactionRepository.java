@@ -5,6 +5,7 @@ import com.pf.common.projection.ExpenseByCategoryProjection;
 import com.pf.common.projection.MonthlyTransactionTotalProjection;
 import com.pf.common.projection.TransactionTotalProjection;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -18,11 +19,11 @@ public interface FinancialTransactionRepository extends JpaRepository<FinancialT
 
     @Transactional(readOnly = true)
     @Query("""
-            SELECT COUNT(ft) > 0
+            SELECT ft.subcategory.id
               FROM FinancialTransaction ft
              WHERE ft.subcategory.id IN (:ids)
             """)
-    boolean existsBySubcategoryIds(@Param("ids") List<Long> subcategoryIds);
+    List<Long> findBySubcategoryIds(@Param("ids") List<Long> subcategoryIds);
 
 
     @Transactional(readOnly = true)
@@ -101,5 +102,22 @@ public interface FinancialTransactionRepository extends JpaRepository<FinancialT
             @Param("to") LocalDate to,
             @Param("adminUserId") Long adminUserId
     );
+
+    @Transactional(readOnly = true)
+    @Query("""
+            SELECT ft.location.id
+            FROM FinancialTransaction ft
+            WHERE ft.location.id IN (:locationIds)
+            """)
+    List<Long> findLocationIdByReferenceValueIdIn(@Param("locationIds") List<Long> locationIds);
+
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("""
+            SELECT ft.subcategory.userCategory.id
+            FROM FinancialTransaction ft
+            WHERE ft.subcategory.userCategory.id IN (:ids)
+            """)
+    List<Long> findByCategoryId(@Param("ids") List<Long> ids);
 
 }

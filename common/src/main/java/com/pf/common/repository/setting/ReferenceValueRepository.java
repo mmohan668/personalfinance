@@ -21,6 +21,7 @@ public interface ReferenceValueRepository extends JpaRepository<UserReferenceVal
             FROM UserReferenceValue urv
             WHERE urv.referenceObject.id = :refObjId
             AND LOWER(TRIM(urv.referenceCode)) = LOWER(TRIM(:refCode))
+            AND urv.isDeleted = false
             """)
     boolean existsByReferenceObjectIdAndReferenceCode(
             @Param("refObjId") Long refObjId,
@@ -35,6 +36,7 @@ public interface ReferenceValueRepository extends JpaRepository<UserReferenceVal
             AND LOWER(TRIM(urv.referenceCode)) = LOWER(TRIM(:referenceCode))
             AND urv.id <> :id
             AND urv.user.id = :userId
+            AND urv.isDeleted = false
             """)
     boolean existsByReferenceObjectIdAndReferenceCodeAndIdNot(
             @Param("refObjId") Long refObjId,
@@ -53,6 +55,7 @@ public interface ReferenceValueRepository extends JpaRepository<UserReferenceVal
             WHERE urv.referenceObject.refObjName = :refObjName
             AND urv.user.id = :userId
             AND urv.active = true
+            AND urv.isDeleted = false
             ORDER BY LOWER(urv.referenceCode)
             """)
     List<SelectItem> fetchReferenceValuesByRefObjName(
@@ -68,6 +71,7 @@ public interface ReferenceValueRepository extends JpaRepository<UserReferenceVal
             AND urv.referenceObject.refObjName = :refObjName
             AND urv.user.id = :userId
             AND urv.active = true
+            AND urv.isDeleted = false
             """)
     Long fetchIdByReferenceCodeAndRefObjName(
             @Param("referenceCode") String referenceCode,
@@ -80,6 +84,7 @@ public interface ReferenceValueRepository extends JpaRepository<UserReferenceVal
             SELECT urv.referenceCode
             FROM UserReferenceValue urv
             WHERE urv.referenceObject.refObjName = :refObjName
+            AND urv.isDeleted = false
             ORDER BY LOWER(urv.referenceCode)
             """)
     List<String> findReferenceCodeByRefObjName(@Param("refObjName") String refObjName);
@@ -112,5 +117,19 @@ public interface ReferenceValueRepository extends JpaRepository<UserReferenceVal
             @Param("ids") List<Long> ids,
             @Param("updatedBy") Long updatedBy,
             @Param("updatedAt") LocalDateTime updatedAt
+    );
+
+    @Modifying(flushAutomatically = true, clearAutomatically = true)
+    @Query("""
+            UPDATE UserReferenceValue urv
+            SET urv.isDeleted = true,
+                urv.deletedBy.id = :deletedBy,
+                urv.deletedAt = :deletedAt
+            WHERE urv.id IN (:ids)
+            """)
+    void softDeleteReferenceValues(
+            @Param("ids") List<Long> ids,
+            @Param("deletedBy") Long deletedBy,
+            @Param("deletedAt") LocalDateTime deletedAt
     );
 }
