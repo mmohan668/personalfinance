@@ -132,4 +132,20 @@ public class BaseService extends GenericCriteriaService {
         );
     }
 
+    public void addIsDeletedGridFilter(SearchCriteria searchCriteria, String fieldName) {
+        if (fieldName == null || fieldName.trim().isEmpty()) {
+            return;
+        }
+        if (searchCriteria.getFilterList() == null) {
+            searchCriteria.setFilterList(new ArrayList<>());
+        }
+        searchCriteria.getFilterList().add(
+                GridFilter.builder()
+                        .field(fieldName)
+                        .operator(EQUALS.getValue())
+                        .value(String.valueOf(false))
+                        .build()
+        );
+    }
+
 }

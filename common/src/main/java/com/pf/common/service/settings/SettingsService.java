@@ -16,6 +16,7 @@ import com.pf.common.mapper.settings.ReferenceValueMapper;
 import com.pf.common.mapper.settings.SystemConfigMapper;
 import com.pf.common.record.generic.SelectItem;
 import com.pf.common.repository.categoryManagement.UserCategoryRepository;
+import com.pf.common.repository.financialTransaction.FinancialTransactionRepository;
 import com.pf.common.repository.setting.ReferenceObjectRepository;
 import com.pf.common.repository.setting.ReferenceValueRepository;
 import com.pf.common.repository.setting.SystemConfigRepository;
@@ -30,8 +31,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.pf.common.constants.EntityConstants.*;
-import static com.pf.common.constants.FieldConstants.ID;
-import static com.pf.common.constants.FieldConstants.USER_ID;
+import static com.pf.common.constants.FieldConstants.*;
 import static com.pf.common.enums.SortOrder.ASC;
 
 
@@ -46,6 +46,7 @@ public class SettingsService extends BaseService {
     private final ReferenceValueRepository referenceValueRepository;
     private final SystemConfigRepository systemConfigRepository;
     private final UserCategoryRepository userCategoryRepository;
+    private final FinancialTransactionRepository financialTransactionRepository;
 
     public GridResult fetchReferenceObjectGridData(SearchCriteria searchCriteria) {
         log.info("Fetching reference object grid data: searchCriteria={}", searchCriteria);
@@ -72,6 +73,7 @@ public class SettingsService extends BaseService {
     public GridResult fetchReferenceValueGridData(SearchCriteria searchCriteria) {
         log.info("Fetching reference value grid data: searchCriteria={}", searchCriteria);
         addAdminUserGridFilter(searchCriteria, USER_ID);
+        addIsDeletedGridFilter(searchCriteria, IS_DELETED);
         searchCriteria.getSortList().add(new GridSort(ID, ASC.getValue()));
         searchCriteria.setFetchPaths(List.of(REFERENCE_OBJECT, USER, CREATED_BY_USER, UPDATED_BY_USER));
         searchCriteria.setFIELD_MAPPINGS(ReferenceValueDto.FIELD_MAPPINGS);
@@ -144,6 +146,7 @@ public class SettingsService extends BaseService {
             }
             userReferenceValue.setUser(user.getAdminUser());
             userReferenceValue.setCreatedBy(user);
+            userReferenceValue.setIsDeleted(Boolean.FALSE);
         } else {
             //Update
             userReferenceValue = referenceValueRepository.findById(referenceValueDto.getId()).orElse(null);
@@ -187,10 +190,27 @@ public class SettingsService extends BaseService {
         }
         if (BatchUtils.hasFailingBatch(
                 ids,
-                chunk -> !systemConfigRepository.existsByConfigValueIdIn(chunk)
-                        && !userCategoryRepository.existsByReferenceValueIdIn(chunk))
+                chunk -> !systemConfigRepository.existsByConfigValueIdIn(chunk))
         ) {
-            return failure("Reference values cannot be deleted because one or more are currently in use.");
+            return failure("Reference values cannot be deleted because one or more are currently in use in system config.");
+        }
+        Long deletedBy = fetchLoginUserId();
+        LocalDateTime deletedAt = LocalDateTime.now();
+        List<Long> ucReferenceValueIds = BatchUtils.processInBatchesAndFetch(ids, userCategoryRepository::findIdByReferenceValueIdIn);
+        if (!ucReferenceValueIds.isEmpty()) {
+            BatchUtils.processInBatches(
+                    ucReferenceValueIds,
+                    chunk -> referenceValueRepository.softDeleteReferenceValues(chunk, deletedBy, deletedAt)
+            );
+            ids.removeAll(ucReferenceValueIds);
+        }
+        List<Long> ftReferenceValueIds = BatchUtils.processInBatchesAndFetch(ids, financialTransactionRepository::findLocationIdByReferenceValueIdIn);
+        if (!ftReferenceValueIds.isEmpty()) {
+            BatchUtils.processInBatches(
+                    ftReferenceValueIds,
+                    chunk -> referenceValueRepository.softDeleteReferenceValues(chunk, deletedBy, deletedAt)
+            );
+            ids.removeAll(ftReferenceValueIds);
         }
         BatchUtils.processInBatches(
                 ids,
@@ -253,6 +273,12 @@ public class SettingsService extends BaseService {
         log.info("Inactivating reference values: requestedCount={}", ids == null ? 0 : ids.size());
         if (ids == null || ids.isEmpty()) {
             return failure("No reference value(s) selected for inactivation.");
+        }
+        if (BatchUtils.hasFailingBatch(
+                ids,
+                chunk -> !systemConfigRepository.existsByConfigValueIdIn(chunk))
+        ) {
+            return failure("Reference values cannot be inactivated because one or more are currently in use in system config.");
         }
         Long updatedBy = fetchLoginUserId();
         LocalDateTime updatedAt = LocalDateTime.now();

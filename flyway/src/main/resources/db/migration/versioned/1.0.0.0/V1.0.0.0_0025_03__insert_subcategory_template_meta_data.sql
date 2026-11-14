@@ -59,16 +59,7 @@ $$
                 'TEXT',
                 TRUE,
                 'DB_EXISTS',
-                'SELECT EXISTS (
-                    SELECT 1
-                    FROM user_reference_value urv
-                    JOIN reference_object ro
-                        ON ro.id = urv.ref_obj_name_id
-                    WHERE LOWER(TRIM(urv.reference_code)) = ?
-                      AND LOWER(TRIM(ro.ref_obj_name)) = ''transaction_type''
-                      AND urv.user_id = ?
-                      AND urv.is_active = TRUE
-                )',
+                'SELECT EXISTS (SELECT 1 FROM user_reference_value urv JOIN reference_object ro ON ro.id = urv.ref_obj_name_id WHERE LOWER(TRIM(urv.reference_code)) = ? AND LOWER(TRIM(ro.ref_obj_name)) = ''transaction_type'' AND urv.user_id = ? AND urv.is_active = TRUE AND urv.is_deleted = FALSE);',
                 'Transaction Type',
                 'Transaction type. Enter a valid transaction type from the ''Txn Types'' sheet.',
                 v_system_user_id)
@@ -93,19 +84,7 @@ $$
                 'TEXT',
                 TRUE,
                 'DB_EXISTS',
-                'SELECT EXISTS (
-                    SELECT 1
-                    FROM user_categories uc
-                    JOIN user_reference_value urv
-                        ON urv.id = uc.transaction_type
-                    JOIN reference_object ro
-                        ON ro.id = urv.ref_obj_name_id
-                    WHERE LOWER(TRIM(ro.ref_obj_name)) = ''transaction_type''
-                      AND LOWER(TRIM(urv.reference_code)) = ?
-                      AND LOWER(TRIM(uc.category_name)) = ?
-                      AND uc.user_id = ?
-                      AND uc.is_active = TRUE
-                )',
+                'SELECT EXISTS (SELECT 1 FROM user_categories uc JOIN user_reference_value urv ON urv.id = uc.transaction_type JOIN reference_object ro ON ro.id = urv.ref_obj_name_id WHERE LOWER(TRIM(ro.ref_obj_name)) = ''transaction_type'' AND LOWER(TRIM(urv.reference_code)) = ? AND LOWER(TRIM(uc.category_name)) = ? AND uc.user_id = ? AND uc.is_active = TRUE AND uc.is_deleted = FALSE);',
                 'Transaction Type, Category Name',
                 'Category associated with the subcategory. Enter a valid category from the ''Categories'' sheet.',
                 v_system_user_id)
@@ -134,21 +113,7 @@ $$
                 3,
                 100,
                 'DB_DUPLICATE',
-                'SELECT EXISTS (
-                    SELECT 1
-                    FROM user_subcategories usc
-                    JOIN user_categories uc
-                        ON uc.id = usc.user_category_id
-                    JOIN user_reference_value urv
-                        ON urv.id = uc.transaction_type
-                    JOIN reference_object ro
-                        ON ro.id = urv.ref_obj_name_id
-                    WHERE LOWER(TRIM(ro.ref_obj_name)) = ''transaction_type''
-                      AND LOWER(TRIM(urv.reference_code)) = ?
-                      AND LOWER(TRIM(uc.category_name)) = ?
-                      AND LOWER(TRIM(usc.subcategory_name)) = ?
-                      AND uc.user_id = ?
-                )',
+                'SELECT EXISTS (SELECT 1 FROM user_subcategories usc JOIN user_categories uc ON uc.id = usc.user_category_id JOIN user_reference_value urv ON urv.id = uc.transaction_type JOIN reference_object ro ON ro.id = urv.ref_obj_name_id WHERE LOWER(TRIM(ro.ref_obj_name)) = ''transaction_type'' AND LOWER(TRIM(urv.reference_code)) = ? AND LOWER(TRIM(uc.category_name)) = ? AND LOWER(TRIM(usc.subcategory_name)) = ? AND uc.user_id = ? AND usc.is_deleted = FALSE);',
                 'Transaction Type, Category Name, Subcategory Name',
                 'Name of the subcategory.',
                 v_system_user_id)

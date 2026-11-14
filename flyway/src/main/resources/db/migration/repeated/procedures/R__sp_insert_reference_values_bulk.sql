@@ -110,10 +110,11 @@ BEGIN
                   ON LOWER(TRIM(ro.ref_obj_name)) =
                      LOWER(TRIM(x.reference_object))
     ON CONFLICT
-        (        ref_obj_name_id,
+        ( ref_obj_name_id,
         (LOWER(TRIM(reference_code))),
         user_id
         )
+    WHERE is_deleted = FALSE
         DO NOTHING;
 
 END;

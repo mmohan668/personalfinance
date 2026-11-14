@@ -2,6 +2,7 @@ package com.pf.common.service.generic;
 
 import com.pf.common.entity.generic.TemplateHeader;
 import com.pf.common.entity.generic.TemplateName;
+import com.pf.common.entity.userManagement.User;
 import com.pf.common.enums.AppEnums;
 import com.pf.common.record.generic.ExcelValidationResult;
 import com.pf.common.repository.generic.TemplateNameRepository;
@@ -27,7 +28,7 @@ public class ExcelValidationService {
     private final TemplateNameRepository templateNamesRepository;
     private final DataFormatter dataFormatter = new DataFormatter();
 
-    public ExcelValidationResult validateExcel(String uploadType, Workbook workbook) {
+    public ExcelValidationResult validateExcel(String uploadType, Workbook workbook, User user) {
         TemplateName templateNames = templateNamesRepository.findByTemplateName(uploadType);
         if (templateNames == null
                 || templateNames.getTemplateHeaders() == null
@@ -58,7 +59,7 @@ public class ExcelValidationService {
                 break;
             }
             nonEmptyRowsCount++;
-            validateRow(row, templateNames.getTemplateHeaders(), errors);
+            validateRow(row, templateNames.getTemplateHeaders(), errors, user);
         }
         return new ExcelValidationResult(errors, nonEmptyRowsCount);
     }
@@ -76,7 +77,8 @@ public class ExcelValidationService {
     private void validateRow(
             Row row,
             Set<TemplateHeader> templateHeaders,
-            Map<Integer, List<String>> errors
+            Map<Integer, List<String>> errors,
+            User user
     ) {
         for (TemplateHeader templateHeader : templateHeaders.stream()
                 .sorted(Comparator.comparing(TemplateHeader::getColumnIndex))
@@ -106,7 +108,7 @@ public class ExcelValidationService {
                 continue;
             }
             //DB Validation
-            validateDatabase(row, templateHeaders, errors, templateHeader, cellValue);
+            validateDatabase(row, templateHeaders, errors, templateHeader, cellValue, user);
         }
     }
 
@@ -115,7 +117,8 @@ public class ExcelValidationService {
             Set<TemplateHeader> templateHeaders,
             Map<Integer, List<String>> errors,
             TemplateHeader templateHeader,
-            String cellValue
+            String cellValue,
+            User user
     ) {
         if (templateHeader.getDbValidationType() == null) {
             return;
@@ -130,7 +133,7 @@ public class ExcelValidationService {
                     "Invalid db validation: " + templateHeader.getDbValidationType()
             );
         }
-        boolean dbValidationResult = executeDBValidation(templateHeader.getDbValidationQuery(), params);
+        boolean dbValidationResult = executeDBValidation(templateHeader.getDbValidationQuery(), user, params);
         if (dbValidationType == AppEnums.DbValidationType.DB_EXISTS && !dbValidationResult) {
             addError(
                     row,
@@ -237,7 +240,7 @@ public class ExcelValidationService {
         return true;
     }
 
-    private boolean executeDBValidation(String query, String... queryParams) {
+    private boolean executeDBValidation(String query, User user, String... queryParams) {
         if (query == null || query.isBlank()) {
             log.error("Empty query parameter");
             throw new IllegalArgumentException("DB validation query is missing");
@@ -245,6 +248,9 @@ public class ExcelValidationService {
         Query queryObject = entityManager.createNativeQuery(query);
         for (int i = 0; i < queryParams.length; i++) {
             queryObject.setParameter(i + 1, queryParams[i].toLowerCase(Locale.ROOT));
+        }
+        if(query.toLowerCase(Locale.ROOT).contains("user_id")){
+            queryObject.setParameter(queryParams.length + 1, user.getAdminUser().getId());
         }
         Object result = queryObject.getSingleResult();
         return Boolean.TRUE.equals(result);

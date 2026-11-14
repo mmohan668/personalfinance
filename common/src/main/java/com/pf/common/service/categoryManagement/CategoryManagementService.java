@@ -25,12 +25,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.pf.common.constants.EntityConstants.*;
-import static com.pf.common.constants.FieldConstants.ADMIN_USER_ID;
-import static com.pf.common.constants.FieldConstants.USER_ID;
+import static com.pf.common.constants.FieldConstants.*;
 
 @Slf4j
 @Service
@@ -48,6 +48,7 @@ public class CategoryManagementService extends BaseService {
     public GridResult fetchCategoriesGridData(SearchCriteria searchCriteria) {
         log.info("Fetching category grid data: searchCriteria={}", searchCriteria);
         addAdminUserGridFilter(searchCriteria, USER_ID);
+        addIsDeletedGridFilter(searchCriteria, IS_DELETED);
         searchCriteria.setFetchPaths(List.of(REFERENCE_VALUE, CREATED_BY_USER, UPDATED_BY_USER));
         searchCriteria.setFIELD_MAPPINGS(UserCategoryDto.FIELD_MAPPINGS);
         long totalRecords = 0;
@@ -160,18 +161,29 @@ public class CategoryManagementService extends BaseService {
             log.warn("deleteCategories: ids is empty");
             return failure("Ids is empty");
         }
-        if (userSubcategoryRepository.existsByCategoryId(ids)) {
-            log.warn("Delete category failed, Subcategories associated with selected categories");
-            return failure("Delete category failed. Subcategories associated with selected categories");
-        }
+        LocalDate currentDate = LocalDate.now();
         if (BatchUtils.hasFailingBatch(
                 ids,
-                chunk -> !recurringTransactionRuleRepository.existsByCategoryIds(chunk)
+                chunk -> !recurringTransactionRuleRepository.existsByCategoryIds(chunk, currentDate)
         )) {
-            return failure("Categories cannot be deleted while recurring transaction rules use their subcategories");
+            return failure("Categories cannot be deleted while recurring transaction rules use their one or more subcategories");
         }
-        userCategoryRepository.deleteAllByIdInBatch(ids);
-        return success("Categories deleted successfully");
+        Long deletedBy = fetchLoginUserId();
+        LocalDateTime deletedAt = LocalDateTime.now();
+        List<Long> usedInFinancialTransactions = BatchUtils.processInBatchesAndFetch(ids, financialTransactionRepository::findByCategoryId).stream().distinct().toList();
+        if (!usedInFinancialTransactions.isEmpty()) {
+            BatchUtils.processInBatches(
+                    usedInFinancialTransactions,
+                    chunk -> {
+                        userSubcategoryRepository.softDeleteSubcategoriesByCategoryIds(chunk, deletedBy, deletedAt);
+                        userCategoryRepository.softDeleteCategories(chunk, deletedBy, deletedAt);
+                    }
+            );
+            ids.removeAll(usedInFinancialTransactions);
+        }
+        BatchUtils.processInBatches(ids, userSubcategoryRepository::deleteByCategoryId);
+        BatchUtils.processInBatches(ids, userCategoryRepository::deleteAllByIdInBatch);
+        return success("Categories and their subcategories deleted successfully");
     }
 
     @Transactional
@@ -286,17 +298,19 @@ public class CategoryManagementService extends BaseService {
             log.warn("deleteSubcategories: ids is empty");
             return failure("Ids is empty");
         }
+        LocalDate currentDate = LocalDate.now();
         if (BatchUtils.hasFailingBatch(
                 ids,
-                chunk -> !financialTransactionRepository.existsBySubcategoryIds(chunk))
-        ) {
-            return failure("Subcategories cannot be deleted because one or more are currently in use");
-        }
-        if (BatchUtils.hasFailingBatch(
-                ids,
-                chunk -> !recurringTransactionRuleRepository.existsBySubcategoryIds(chunk)
+                chunk -> !recurringTransactionRuleRepository.existsBySubCategoryIds(chunk, currentDate)
         )) {
             return failure("Subcategories cannot be deleted while recurring transaction rules use them");
+        }
+        Long deletedBy = fetchLoginUserId();
+        LocalDateTime deletedAt = LocalDateTime.now();
+        List<Long> usedSubcategoryIds = BatchUtils.processInBatchesAndFetch(ids, financialTransactionRepository::findBySubcategoryIds);
+        if (!usedSubcategoryIds.isEmpty()) {
+            userSubcategoryRepository.softDeleteSubcategories(usedSubcategoryIds, deletedBy, deletedAt);
+            ids.removeAll(usedSubcategoryIds);
         }
         BatchUtils.processInBatches(
                 ids,

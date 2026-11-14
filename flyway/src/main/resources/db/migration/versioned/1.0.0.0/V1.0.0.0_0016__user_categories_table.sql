@@ -11,7 +11,7 @@ CREATE TABLE user_categories
     updated_by           BIGINT,
     updated_at           TIMESTAMPTZ,
     is_deleted           BOOLEAN      NOT NULL DEFAULT FALSE,
-    deleted_by           VARCHAR(100),
+    deleted_by           BIGINT,
     deleted_at           TIMESTAMPTZ,
 
     CONSTRAINT chk_user_categories_deleted_status
@@ -37,6 +37,10 @@ CREATE TABLE user_categories
         FOREIGN KEY (updated_by)
             REFERENCES users (id),
 
+    CONSTRAINT fk_user_categories_deleted_by
+        FOREIGN KEY (deleted_by)
+            REFERENCES users (id),
+
     CONSTRAINT chk_user_categories_updated_status
         CHECK (
             (updated_by IS NULL AND updated_at IS NULL)
@@ -46,4 +50,5 @@ CREATE TABLE user_categories
 );
 
 CREATE UNIQUE INDEX ux_user_categories_user_transaction_type_category_name
-    ON user_categories (user_id, transaction_type, LOWER(TRIM(category_name)));
+    ON user_categories (user_id, transaction_type, LOWER(TRIM(category_name)))
+    WHERE is_deleted = FALSE;

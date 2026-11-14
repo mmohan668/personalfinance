@@ -59,16 +59,7 @@ $$
                 'TEXT',
                 TRUE,
                 'DB_EXISTS',
-                'SELECT EXISTS (
-                    SELECT 1
-                    FROM user_reference_value urv
-                    JOIN reference_object ro
-                        ON ro.id = urv.ref_obj_name_id
-                    WHERE LOWER(TRIM(urv.reference_code)) = ?
-                      AND LOWER(TRIM(ro.ref_obj_name)) = ''transaction_type''
-                      AND urv.user_id = ?
-                      AND urv.is_active = TRUE
-                )',
+                'SELECT EXISTS (SELECT 1 FROM user_reference_value urv JOIN reference_object ro ON ro.id = urv.ref_obj_name_id WHERE LOWER(TRIM(urv.reference_code)) = ? AND LOWER(TRIM(ro.ref_obj_name)) = ''transaction_type'' AND urv.is_active = TRUE AND urv.is_deleted = FALSE AND urv.user_id = ?)',
                 'Transaction Type',
                 'Reference value. Enter a valid transaction type from the ''Txn Types'' sheet.',
                 v_system_user_id)
@@ -97,18 +88,7 @@ $$
                 3,
                 100,
                 'DB_DUPLICATE',
-                'SELECT EXISTS (
-                    SELECT 1
-                    FROM user_categories uc
-                    JOIN user_reference_value urv
-                        ON uc.transaction_type = urv.id
-                    JOIN reference_object ro
-                        ON ro.id = urv.ref_obj_name_id
-                    WHERE LOWER(TRIM(ro.ref_obj_name)) = ''transaction_type''
-                      AND LOWER(TRIM(urv.reference_code)) = ?
-                      AND LOWER(TRIM(uc.category_name)) = ?
-                      AND uc.user_id = ?
-                )',
+                'SELECT EXISTS (SELECT 1 FROM user_categories uc JOIN user_reference_value urv ON uc.transaction_type = urv.id JOIN reference_object ro ON ro.id = urv.ref_obj_name_id WHERE LOWER(TRIM(ro.ref_obj_name)) = ''transaction_type'' AND LOWER(TRIM(urv.reference_code)) = ? AND LOWER(TRIM(uc.category_name)) = ? AND uc.is_deleted = FALSE AND uc.user_id = ?)',
                 'Transaction Type, Category Name',
                 'Category name associated with the selected transaction type.',
                 v_system_user_id)

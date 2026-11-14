@@ -8,4 +8,5 @@ public interface FieldConstants {
     String ADMIN_USER__ID = "adminUser.Id";
     String USER_ADMIN_ID = "user.adminUser.id";
     String CATEGORY_USER_ADMIN_ID = "userCategory.user.adminUser.id";
+    String IS_DELETED = "isDeleted";
 }

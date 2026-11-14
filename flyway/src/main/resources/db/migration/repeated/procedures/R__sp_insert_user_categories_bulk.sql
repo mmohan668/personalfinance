@@ -123,7 +123,8 @@ BEGIN
                       AND LOWER(TRIM(urv.reference_code)) =
                           LOWER(TRIM(x.transaction_type))
                       AND urv.is_active = TRUE
-    ON CONFLICT ( user_id, transaction_type, (LOWER(TRIM(category_name))) ) DO NOTHING;
+    ON CONFLICT ( user_id, transaction_type, (LOWER(TRIM(category_name))) )
+    WHERE is_deleted = FALSE DO NOTHING;
 
 END;
 $$;

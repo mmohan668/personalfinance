@@ -13,7 +13,7 @@ CREATE TABLE user_reference_value
     updated_by                 BIGINT,
     updated_at                 TIMESTAMPTZ,
     is_deleted                 BOOLEAN      NOT NULL DEFAULT FALSE,
-    deleted_by                 VARCHAR(100),
+    deleted_by                 BIGINT,
     deleted_at                 TIMESTAMPTZ,
 
     CONSTRAINT fk_user_reference_value_user
@@ -30,6 +30,10 @@ CREATE TABLE user_reference_value
 
     CONSTRAINT fk_user_reference_value_updated_by
         FOREIGN KEY (updated_by)
+            REFERENCES users (id),
+
+    CONSTRAINT fk_user_reference_value_deleted_by
+        FOREIGN KEY (deleted_by)
             REFERENCES users (id),
 
     CONSTRAINT chk_user_reference_value_updated_status
@@ -51,4 +55,4 @@ CREATE TABLE user_reference_value
 );
 
 CREATE UNIQUE INDEX ux_user_reference_value_object_code_user
-    ON user_reference_value (ref_obj_name_id, LOWER(TRIM(reference_code)), user_id);
+    ON user_reference_value (ref_obj_name_id, LOWER(TRIM(reference_code)), user_id) WHERE is_deleted = FALSE;

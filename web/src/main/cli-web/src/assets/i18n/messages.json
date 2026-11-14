@@ -43,7 +43,12 @@
   },
   "referenceValue": {
     "delete": {
-      "confirmation": "Are you sure you want to delete the selected reference values?"
+      "confirmation": "Are you sure you want to delete the selected reference values?",
+      "transactionTypeDelete": "The TRANSACTION_TYPE reference values cannot be deleted.",
+      "mixedSelectionDelete": "One or more selected reference values belong to TRANSACTION_TYPE and cannot be deleted. These values will be ignored, and the remaining selected reference values will be deleted. Do you want to continue?"
+    },
+    "edit": {
+      "transactionTypeEdit": "The TRANSACTION_TYPE reference values cannot be edited."
     },
     "activate": {
       "title": "Activate Confirmation",
@@ -55,12 +60,16 @@
       "title": "Inactivate Confirmation",
       "alreadyInactive": "Please select only active reference values to inactivate.",
       "mixedSelection": "Some of the selected reference values are already inactive. Only the active reference values will be inactivated. Do you want to continue?",
-      "confirmation": "Are you sure you want to inactivate the selected reference values?"
+      "confirmation": "Are you sure you want to inactivate the selected reference values?",
+      "transactionTypeInactivate": "The TRANSACTION_TYPE reference values cannot be inactivated.",
+      "mixedSelectionInactivate": "One or more selected reference values belong to TRANSACTION_TYPE and cannot be inactivated. These values will be ignored, and the remaining selected reference values will be inactivated. Do you want to continue?",
+      "txnSelection": "One or more selected reference values belong to TRANSACTION_TYPE and cannot be inactivated, and some selected reference values are already inactive. These values will be ignored, and only the remaining eligible active reference values will be inactivated. Do you want to continue?",
+      "txnAllSelection": "All selected reference values are either already inactive or belong to TRANSACTION_TYPE and cannot be inactivated."
     }
   },
   "category": {
     "delete": {
-      "confirmation": "Are you sure you want to delete the selected categories?"
+      "confirmation": "Are you sure you want to delete the selected categories and their associated subcategories?"
     },
     "activate": {
       "title": "Activate Confirmation",

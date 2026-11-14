@@ -70,7 +70,8 @@ public class BulkUploadProcessingService {
              XSSFWorkbook workbook = (XSSFWorkbook) WorkbookFactory.create(fis)) {
             ExcelValidationResult validationResult = excelValidationService.validateExcel(
                     bulkUploadsStatus.getTemplateName().getTemplateName(),
-                    workbook
+                    workbook,
+                    user
             );
             if (validationResult.nonEmptyRowsCount() == 0) {
                 log.warn("Excel file contains no data rows for id = {}", id);
