@@ -37,6 +37,7 @@ export interface GridSort {
 export interface GridResult {
   recordDetails: any[];
   totalRecords: number;
+  totalAmount: number;
 }
 
 export interface FilterOperator {

@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 
 @Data
@@ -11,4 +12,5 @@ import java.util.List;
 public class GridResult implements Serializable {
     private List<?> recordDetails;
     private long totalRecords;
+    private BigDecimal totalAmount;
 }

@@ -76,6 +76,50 @@ public class GenericCriteriaService {
     }
 
     /**
+     * Count records matching the supplied search criteria.
+     * <p>
+     * IMPORTANT:
+     * Fetch joins must never be applied to a count query.
+     */
+    public <T> BigDecimal getSumBySearchCriteria(
+            Class<T> entity,
+            SearchCriteria searchCriteria,
+            String columnName
+    ) {
+        CriteriaBuilder criteriaBuilder =
+                entityManager.getCriteriaBuilder();
+
+        CriteriaQuery<BigDecimal> criteriaQuery =
+                criteriaBuilder.createQuery(BigDecimal.class);
+
+        Root<T> root = criteriaQuery.from(entity);
+
+        /*
+         * Count queries may require normal joins for filtering,
+         * but must not contain fetch joins.
+         */
+        JoinRegistry joinRegistry =
+                new JoinRegistry();
+
+        applyFilters(
+                criteriaBuilder,
+                criteriaQuery,
+                root,
+                searchCriteria,
+                joinRegistry
+        );
+
+        criteriaQuery.select(
+                criteriaBuilder.sum(root.get(columnName))
+        );
+
+        BigDecimal sum = entityManager
+                .createQuery(criteriaQuery)
+                .getSingleResult();
+        return sum != null ? sum : BigDecimal.ZERO;
+    }
+
+    /**
      * Fetch paginated/grid data.
      */
     public <T> List<T> getDataBySearchCriteria(
@@ -169,7 +213,7 @@ public class GenericCriteriaService {
             return stream.toList();
         }
     }
-    
+
     public List<Object> getSuggestionBySearchCriteria(
             Class<?> entity,
             SearchCriteria searchCriteria,

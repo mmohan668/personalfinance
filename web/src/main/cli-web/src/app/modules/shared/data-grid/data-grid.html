@@ -221,6 +221,14 @@
   @if (showPager) {
     <div class="grid-footer">
       <span>Total Records: {{ totalRecords }}</span>
+      @if (showTotalAmount()) {
+        <span
+          >Total Amount:
+          {{
+            totalAmount | currency: getCurrencyCode() : 'symbol' : '1.2-2' : getLocale() ?? 'in-US'
+          }}</span
+        >
+      }
 
       <p-paginator
         #paginator
