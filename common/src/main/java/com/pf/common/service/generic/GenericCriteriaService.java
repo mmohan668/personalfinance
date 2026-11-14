@@ -10,17 +10,7 @@ import com.pf.common.exception.UnsupportedFilterOperatorException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Expression;
-import jakarta.persistence.criteria.From;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.JoinType;
-import jakarta.persistence.criteria.Order;
-import jakarta.persistence.criteria.Path;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
-import lombok.extern.slf4j.Slf4j;
+import jakarta.persistence.criteria.*;
 import org.hibernate.jpa.HibernateHints;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,23 +20,13 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import static com.pf.common.constants.CommonConstants.DOT_SPLIT_STR;
-import static com.pf.common.constants.CommonConstants.LIKE_STR;
-import static com.pf.common.constants.CommonConstants.TRUE_STR;
-import static com.pf.common.constants.CommonConstants.FALSE_STR;
+import static com.pf.common.constants.CommonConstants.*;
 import static com.pf.common.enums.SortOrder.DESC;
 
-@Slf4j
 @Repository
 public class GenericCriteriaService {
 
@@ -76,7 +56,7 @@ public class GenericCriteriaService {
          * but must not contain fetch joins.
          */
         JoinRegistry joinRegistry =
-                new JoinRegistry(root);
+                new JoinRegistry();
 
         applyFilters(
                 criteriaBuilder,
@@ -98,7 +78,6 @@ public class GenericCriteriaService {
     /**
      * Fetch paginated/grid data.
      */
-    @Transactional
     public <T> List<T> getDataBySearchCriteria(
             Class<T> entity,
             SearchCriteria searchCriteria
@@ -119,7 +98,7 @@ public class GenericCriteriaService {
          * multiple identical normal joins.
          */
         JoinRegistry joinRegistry =
-                new JoinRegistry(root);
+                new JoinRegistry();
 
         /*
          * IMPORTANT:
@@ -190,8 +169,7 @@ public class GenericCriteriaService {
             return stream.toList();
         }
     }
-
-    @Transactional
+    
     public List<Object> getSuggestionBySearchCriteria(
             Class<?> entity,
             SearchCriteria searchCriteria,
@@ -203,7 +181,7 @@ public class GenericCriteriaService {
 
         Root<?> root = cq.from(entity);
 
-        JoinRegistry joinRegistry = new JoinRegistry(root);
+        JoinRegistry joinRegistry = new JoinRegistry();
 
         // Select only the requested field
         cq.select(root.get(returnField)).distinct(true);
@@ -246,7 +224,7 @@ public class GenericCriteriaService {
                 criteriaQuery.from(entity);
 
         JoinRegistry joinRegistry =
-                new JoinRegistry(root);
+                new JoinRegistry();
 
         /*
          * Always fetch requested associations.
@@ -1304,15 +1282,11 @@ public class GenericCriteriaService {
      */
     private static class JoinRegistry {
 
-        private final Root<?> root;
-
         private final Map<String, From<?, ?>> joins =
                 new HashMap<>();
 
         private JoinRegistry(
-                Root<?> root
         ) {
-            this.root = root;
         }
 
         @SuppressWarnings("unchecked")

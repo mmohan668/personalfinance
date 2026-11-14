@@ -5,13 +5,11 @@ import com.pf.common.entity.userManagement.UserPasswordHistory;
 import com.pf.common.repository.user.UserPasswordHistoryRepository;
 import com.pf.common.service.generic.BaseService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserPasswordHistoryService extends BaseService {

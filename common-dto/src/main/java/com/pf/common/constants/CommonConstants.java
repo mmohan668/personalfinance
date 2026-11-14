@@ -22,6 +22,19 @@ public interface CommonConstants {
     String CELL_VALUE_TEMPLATE = "cellValueTemplate";
     String ASTERISK_STR = "*";
     char ASTERISK_CHAR = '*';
+    String EXPENSE = "EXPENSE";
+    String INCOME = "INCOME";
+    String INVESTMENT = "INVESTMENT";
+    String TRANSFER = "TRANSFER";
+    String HOURLY = "HOURLY";
+    String MINUTELY = "MINUTELY";
+    public static final String DAILY = "DAILY";
+    public static final String WEEKLY = "WEEKLY";
+    public static final String MONTHLY = "MONTHLY";
+    public static final String DAY_OF_MONTH = "DAY_OF_MONTH";
+    public static final String LAST_DAY = "LAST_DAY";
+    public static final String LAST_WORKING_DAY = "LAST_WORKING_DAY";
+    public static final String YEARLY = "YEARLY";
 }
 
 

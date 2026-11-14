@@ -19,7 +19,7 @@ import java.util.UUID;
 public class CaptchaService {
 
     private static final String CAPTCHA_CHARACTERS =
-            "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+            "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjklmnpqrstuvwxyz23456789";
 
     private static final int CAPTCHA_LENGTH = 5;
 

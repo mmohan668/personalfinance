@@ -45,6 +45,8 @@ public class TemplateGenerationService extends BaseService {
     public static final String DATA_FORMAT = "Data Format";
     public static final String DATA_PATTERN = "Data Pattern";
     public static final String DESCRIPTION = "Description";
+    public static final String TRANSACTION_TYPE = "Transaction Type";
+    public static final String LOCATION = "Location";
 
     private static final List<String> DATA_DICTIONARY_HEADERS =
             List.of(EXCEL_HEADER, REQUIRED, MIN_LENGTH, MAX_LENGTH, DATA_FORMAT, DATA_PATTERN, DESCRIPTION);
@@ -229,7 +231,7 @@ public class TemplateGenerationService extends BaseService {
                         .sorted(String.CASE_INSENSITIVE_ORDER)
                         .toList();
         Map<String, List<String>> transactionTypeMap = new HashMap<>();
-        transactionTypeMap.put("Transaction Type", transactionTypes);
+        transactionTypeMap.put(TRANSACTION_TYPE, transactionTypes);
         return transactionTypeMap;
     }
 
@@ -245,7 +247,7 @@ public class TemplateGenerationService extends BaseService {
                         .sorted(String.CASE_INSENSITIVE_ORDER)
                         .toList();
         Map<String, List<String>> transactionTypeMap = new HashMap<>();
-        transactionTypeMap.put("Location", transactionTypes);
+        transactionTypeMap.put(LOCATION, transactionTypes);
         return transactionTypeMap;
     }
 

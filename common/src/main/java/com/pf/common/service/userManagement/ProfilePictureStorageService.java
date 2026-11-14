@@ -17,6 +17,13 @@ import java.util.stream.Stream;
 @Service
 public class ProfilePictureStorageService {
 
+    public static final String IMAGE_JPEG = "image/jpeg";
+    public static final String IMAGE_PNG = "image/png";
+    public static final String IMAGE_WEBP = "image/webp";
+    public static final String JPG = ".jpg";
+    public static final String PNG = ".png";
+    public static final String WEBP = ".webp";
+
     private Path uploadDirectory;
 
     @Value("${files.images.max-file-size: 10MB}")
@@ -100,9 +107,9 @@ public class ProfilePictureStorageService {
         String contentType = file.getContentType();
 
         return switch (contentType == null ? "" : contentType) {
-            case "image/jpeg" -> ".jpg";
-            case "image/png" -> ".png";
-            case "image/webp" -> ".webp";
+            case IMAGE_JPEG -> JPG;
+            case IMAGE_PNG -> PNG;
+            case IMAGE_WEBP -> WEBP;
             default -> throw new IllegalArgumentException(
                     "Only JPEG, PNG, and WebP images are allowed.");
         };

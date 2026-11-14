@@ -108,7 +108,7 @@ public interface UserCategoryRepository extends JpaRepository<UserCategory, Long
     @Transactional(readOnly = true)
     @Query("""
             SELECT new com.pf.common.record.generic.SelectItem(
-                        userReferenceValue.referenceCode,
+                        uc.userReferenceValue.referenceCode,
                         uc.categoryName
             )
             FROM UserCategory uc
