@@ -28,7 +28,7 @@
 /* Main card */
 .signup-card {
   width: 100%;
-  max-width: 800px;
+  max-width: 600px;
   padding: 30px 38px 24px;
 
   background: #fff;
@@ -507,4 +507,125 @@ a:focus-visible {
 
 .brand-expense {
   color: #ef4444;
+}
+
+.password-suggestion {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 100;
+
+  width: 100%;
+  padding: 13px;
+
+  background: #fff;
+  border: 1px solid #dce8de;
+  border-radius: 11px;
+  box-shadow: 0 8px 25px rgba(32, 90, 48, 0.14);
+
+  animation: suggestionFade 0.18s ease;
+}
+
+.suggestion-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.suggestion-title {
+  color: #344b3a;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.refresh-password {
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 6px;
+  background: #edf7ef;
+  color: #388e3c;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.suggestion-password {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+
+  padding: 10px;
+  background: #f5faf5;
+  border: 1px dashed #a5cda9;
+  border-radius: 7px;
+
+  span {
+    color: #216e39;
+    font-family: monospace;
+    font-size: 13px;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+  }
+
+  button {
+    display: flex;
+    flex-shrink: 0;
+    padding: 5px;
+    color: #388e3c;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+  }
+}
+
+.use-password-button {
+  width: 100%;
+  margin-top: 10px;
+  padding: 9px;
+
+  color: white;
+  background: #388e3c;
+  border: none;
+  border-radius: 7px;
+
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+
+  &:hover {
+    background: #2e7d32;
+  }
+}
+
+.suggestion-hint {
+  margin: 9px 0 0;
+  color: #89968b;
+  font-size: 10px;
+  text-align: center;
+}
+
+@keyframes suggestionFade {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.copy-success-message {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+
+  margin: 7px 0 0;
+
+  color: #2e7d32;
+  font-size: 11px;
+  font-weight: 600;
 }
