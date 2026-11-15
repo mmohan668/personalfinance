@@ -90,7 +90,7 @@ public class UserController {
                 .orElse(null);
 
         if (picture == null) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.ok().build();
         }
 
         Path userDirectory = Paths.get(uploadPath)
@@ -101,7 +101,7 @@ public class UserController {
 
         if (!userDirectory.startsWith(
                 Paths.get(uploadPath).toAbsolutePath().normalize())) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.ok().build();
         }
 
         Path imagePath = userDirectory
@@ -110,7 +110,7 @@ public class UserController {
 
         if (!imagePath.startsWith(userDirectory)
                 || !Files.isRegularFile(imagePath)) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.ok().build();
         }
 
         Resource resource = new UrlResource(imagePath.toUri());

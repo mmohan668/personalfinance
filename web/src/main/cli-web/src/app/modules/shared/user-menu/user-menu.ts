@@ -124,11 +124,15 @@ export class UserMenu implements OnInit {
   loadProfilePicture() {
     this._us.loadProfilePicture(this._cs.loginUsername).subscribe({
       next: (blob: Blob) => {
-        if (this.profilePictureUrl()) {
-          URL.revokeObjectURL(this.profilePictureUrl());
-        }
+        if (this._cs.isNotNull(blob.type)) {
+          if (this.profilePictureUrl()) {
+            URL.revokeObjectURL(this.profilePictureUrl());
+          }
 
-        this.profilePictureUrl.set(URL.createObjectURL(blob));
+          this.profilePictureUrl.set(URL.createObjectURL(blob));
+        } else {
+          this.profilePictureUrl.set('');
+        }
       },
       error: (error) => {
         this.profilePictureUrl.set('');
