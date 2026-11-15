@@ -6,6 +6,7 @@ import com.pf.common.dto.generic.ApiResponse;
 import com.pf.common.dto.userManagement.UserDto;
 import com.pf.common.entity.userManagement.User;
 import com.pf.common.mapper.userManagement.UserMapper;
+import com.pf.common.repository.user.UserAuthProviderRepository;
 import com.pf.common.repository.user.UserRepository;
 import com.pf.common.service.activeMQ.ActiveMqProducer;
 import com.pf.common.service.generic.BaseService;
@@ -17,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.pf.common.entity.userManagement.UserAuthProvider;
 
 import java.util.Locale;
 
@@ -35,6 +37,7 @@ public class AccountRegistrationService extends BaseService {
     private final UserMapper userMapper;
     private final EntityManager entityManager;
     private final ActiveMqProducer activeMqProducer;
+    private final UserAuthProviderRepository userAuthProviderRepository;
 
     @Transactional
     public ApiResponse signUp(UserDto dto) {
@@ -69,6 +72,89 @@ public class AccountRegistrationService extends BaseService {
                         "If you don't see the email, please check your Spam or Junk folder.",
                 savedUser.getId()
         );
+    }
+
+    @Transactional
+    public User registerOrGetGoogleUser(String email, String googleSubject, String googleDisplayName) {
+
+        String normalizedEmail = email.trim().toLowerCase(Locale.ROOT);
+
+        // Check whether this Google identity is already linked.
+        var existingProvider = userAuthProviderRepository
+                .findByProviderAndProviderUserId("GOOGLE", googleSubject);
+
+        if (existingProvider.isPresent()) {
+            User existingUser = existingProvider.get().getUser();
+
+            if (Boolean.TRUE.equals(existingUser.getActive())
+                    && !Boolean.TRUE.equals(existingUser.getIsDeleted())) {
+                return existingUser;
+            }
+
+            throw new IllegalArgumentException(
+                    "This Google account is not linked to an active application account."
+            );
+        }
+
+        // Do not automatically link Google to an existing email account.
+        if (userRepository.existsByEmail(normalizedEmail)) {
+            throw new IllegalArgumentException(
+                    "An account with this email already exists. " +
+                            "Please sign in using your existing login method."
+            );
+        }
+
+        String localPart = normalizedEmail.substring(
+                0, normalizedEmail.indexOf('@')
+        );
+
+        String username = localPart;
+
+        if (userRepository.existsByUsername(username)) {
+            username = normalizedEmail;
+
+            if (userRepository.existsByUsername(username)) {
+                throw new IllegalArgumentException(
+                        "Unable to create an account because the username and email are already in use."
+                );
+            }
+        }
+
+        User user = User.builder()
+                .username(username)
+                .displayName(googleDisplayName)
+                .email(normalizedEmail)
+                .passwordHash(PasswordUtils.generateEncodedRandomPassword())
+                .mustChangePassword(false)
+                .active(false)
+                .createdBy(SYSTEM)
+                .build();
+
+        User savedUser = userRepository.saveAndFlush(user);
+
+        UserAuthProvider provider = UserAuthProvider.builder()
+                .user(savedUser)
+                .provider("GOOGLE")
+                .providerUserId(googleSubject)
+                .providerEmail(normalizedEmail)
+                .createdBy(SYSTEM)
+                .build();
+
+        userAuthProviderRepository.saveAndFlush(provider);
+
+        // Activate the account and initialize default data.
+        entityManager
+                .createStoredProcedureQuery("initialize_new_user")
+                .registerStoredProcedureParameter(
+                        1, Long.class, ParameterMode.IN
+                )
+                .setParameter(1, savedUser.getId())
+                .execute();
+
+        // Refresh fields updated by the stored procedure.
+        entityManager.refresh(savedUser);
+
+        return savedUser;
     }
 
     private void generateActivationTokenAndSend(User user) {

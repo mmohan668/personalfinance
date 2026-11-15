@@ -39,6 +39,8 @@ public class SecurityBeansConfig {
                                 "/api/auth/signUp",
                                 "/api/auth/activateAccount",
                                 "/api/auth/login",
+                                "/api/auth/google",
+                                "/api/auth/google/client-id",
                                 "/api/auth/captcha",
                                 "/api/auth/forgot-password",
                                 "/api/recurringTransactions/scheduler/**"

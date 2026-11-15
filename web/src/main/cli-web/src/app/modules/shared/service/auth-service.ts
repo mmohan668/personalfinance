@@ -79,6 +79,18 @@ export class AuthService {
     return this.http.post<LoginResponse>(`${this.config.configValue.apiUrl}/auth/login`, request);
   }
 
+  authenticateWithGoogle(credential: string): Observable<LoginResponse> {
+    return this.http.post<LoginResponse>(`${this.config.configValue.apiUrl}/auth/google`, {
+      credential,
+    });
+  }
+
+  getGoogleClientId(): Observable<{ clientId: string }> {
+    return this.http.get<{ clientId: string }>(
+      `${this.config.configValue.apiUrl}/auth/google/client-id`,
+    );
+  }
+
   signUp(user: any): Observable<ApiResponse> {
     return this.http.post<ApiResponse>(`${this.config.configValue.apiUrl}/auth/signUp`, user);
   }
