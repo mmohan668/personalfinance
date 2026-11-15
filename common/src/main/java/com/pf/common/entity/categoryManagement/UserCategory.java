@@ -77,6 +77,7 @@ public class UserCategory {
     protected void onCreate() {
         createdAt = LocalDateTime.now();
         active = true;
+        isDeleted = false;
     }
 
     @PreUpdate
