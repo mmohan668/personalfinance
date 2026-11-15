@@ -18,6 +18,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
             SELECT COUNT(U) > 0
             FROM User U
             WHERE LOWER(TRIM(U.username)) = :username
+            AND U.isDeleted = false
             """)
     boolean existsByUsername(@Param("username") String username);
 
@@ -60,6 +61,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
             SELECT COUNT(U) > 0
             FROM User U
             WHERE LOWER(TRIM(U.email)) = :email
+            AND U.isDeleted = false
             """)
     boolean existsByEmail(@Param("email") String email);
 

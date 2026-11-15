@@ -31,6 +31,7 @@ dependencies {
 	implementation files("$rootDir/libs/password-util.jar")
 	implementation project(':common')
 	implementation project(':common-dto')
+	implementation 'commons-codec:commons-codec:1.23.0'
 	implementation 'org.springframework.cloud:spring-cloud-starter-config'
 	implementation 'org.springframework.cloud:spring-cloud-starter-vault-config'
 	implementation 'org.springframework.boot:spring-boot-starter-webmvc'
@@ -50,6 +51,8 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+	implementation 'com.google.guava:guava:33.8.0-jre'
+	implementation 'com.google.api-client:google-api-client:2.9.2'
 }
 
 tasks.named('test') {

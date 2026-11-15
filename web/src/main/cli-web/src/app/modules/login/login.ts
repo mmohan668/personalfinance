@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { AfterViewInit, Component, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../shared/service/auth-service';
 import { MatDialog } from '@angular/material/dialog';
@@ -14,7 +14,7 @@ import { CommonService } from '../shared/service/common-service';
   styleUrl: './login.scss',
   templateUrl: './login.html',
 })
-export class Login {
+export class Login implements AfterViewInit {
   private authService = inject(AuthService);
   private router = inject(Router);
   private dialog = inject(MatDialog);
@@ -25,6 +25,32 @@ export class Login {
   errorMessage = '';
   isLoading = signal<boolean>(false);
   showPassword = false;
+
+  private googleClientId: string | null = null;
+  private googleScriptLoaded = false;
+
+  ngAfterViewInit(): void {
+    const googleScript = document.getElementById('google-identity-script');
+
+    googleScript?.addEventListener('load', () => {
+      this.googleScriptLoaded = true;
+      this.initializeGoogleSignIn();
+    });
+    this.authService.getGoogleClientId().subscribe({
+      next: (response) => {
+        this.googleClientId = response.clientId;
+
+        if (window.google) {
+          this.googleScriptLoaded = true;
+        }
+
+        this.initializeGoogleSignIn();
+      },
+      error: (error) => {
+        console.error('Unable to load Google Client ID:', error);
+      },
+    });
+  }
 
   togglePasswordVisibility(): void {
     this.showPassword = !this.showPassword;
@@ -109,5 +135,63 @@ export class Login {
           this.errorMessage = error?.error?.message ?? 'Login failed. Please try again.';
         },
       });
+  }
+
+  private initializeGoogleSignIn(): void {
+    if (!this.googleClientId || !this.googleScriptLoaded || !window.google) {
+      return;
+    }
+
+    window.google.accounts.id.initialize({
+      client_id: this.googleClientId,
+      callback: (response: GoogleCredentialResponse) => {
+        this.onGoogleLogin(response.credential);
+      },
+    });
+
+    const buttonContainer = document.getElementById('google-signin-button');
+
+    if (buttonContainer) {
+      buttonContainer.innerHTML = '';
+
+      window.google.accounts.id.renderButton(buttonContainer, {
+        theme: 'outline',
+        size: 'large',
+        text: 'continue_with',
+        shape: 'rectangular',
+        width: 300,
+      });
+    }
+  }
+
+  private onGoogleLogin(credential: string): void {
+    if (this.isLoading()) {
+      return;
+    }
+
+    this.errorMessage = '';
+    this.isLoading.set(true);
+
+    this.authService.authenticateWithGoogle(credential).subscribe({
+      next: (response) => {
+        if (!response.accessToken) {
+          this.errorMessage = 'No access token was returned by the server.';
+          this.isLoading.set(false);
+          return;
+        }
+
+        this.authService.storeToken(response.accessToken);
+        this.authService.storeUserInfo(response.userProfile);
+        this.authService.storePermissions(response.permissions);
+
+        this.isLoading.set(false);
+        this._cs.identifyDevice();
+        void this.router.navigate(['/']);
+      },
+      error: (error) => {
+        this.isLoading.set(false);
+        this.errorMessage = error?.error?.message ?? 'Google sign-in failed. Please try again.';
+      },
+    });
   }
 }
