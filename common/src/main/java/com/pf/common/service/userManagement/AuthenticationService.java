@@ -52,7 +52,8 @@ public class AuthenticationService extends BaseService {
 
     private boolean isPasswordExpired(Long userId) {
         Instant lastChangedAt = userPasswordHistoryRepository.findLastChangedAtByUserId(userId).orElseThrow(() -> new IllegalStateException("Password history not found for user"));
-        return !lastChangedAt.isAfter(Instant.now().minus(90, ChronoUnit.DAYS));
+        SystemConfig passExpiryConfig = systemConfigRepository.findByConfigNameAndUserId(AppEnums.SystemConfigName.PASSWORD_EXPIRY_DAYS.getValue(), userId);
+        return !lastChangedAt.isAfter(Instant.now().minus(Integer.parseInt(passExpiryConfig.getConfigValue().getReferenceCode()), ChronoUnit.DAYS));
     }
 
     @Transactional

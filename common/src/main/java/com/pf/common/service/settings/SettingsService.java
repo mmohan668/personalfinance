@@ -97,6 +97,7 @@ public class SettingsService extends BaseService {
     public GridResult fetchSystemConfigGridData(SearchCriteria searchCriteria) {
         log.info("Fetching system configuration grid data: searchCriteria={}", searchCriteria);
         addAdminUserGridFilter(searchCriteria, USER_ID);
+        searchCriteria.getSortList().add(new GridSort(CONFIG_NAME, ASC.getValue()));
         searchCriteria.getSortList().add(new GridSort(ID, ASC.getValue()));
         searchCriteria.setFetchPaths(List.of(CONFIG_VALUE, CREATED_BY_USER, UPDATED_BY_USER));
         searchCriteria.setFIELD_MAPPINGS(SystemConfigDto.FIELD_MAPPINGS);

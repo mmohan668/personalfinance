@@ -33,21 +33,7 @@ export class AdEditReferenceValueDialog implements OnInit {
     this.createForm();
   }
 
-  ngOnInit(): void {
-    this.form.get('referenceObjectName')?.valueChanges.subscribe((value) => {
-      const referenceCode3 = this.form.get('referenceCode3');
-      if (!referenceCode3) {
-        return;
-      }
-      const lebal = this.referenceObjects().find((e) => e.value === value)?.label;
-      if (lebal === REF_OBJ_NAMES.CURRENCY_CODE) {
-        referenceCode3.setValidators([CustomValidators.dateFormat()]);
-      } else {
-        referenceCode3.clearValidators();
-      }
-      referenceCode3.updateValueAndValidity();
-    });
-  }
+  ngOnInit(): void {}
 
   fetchTransactionTypes() {
     firstValueFrom(this._ss.fetchRefObjNames()).then((res: SelectItem[]) => {
@@ -77,7 +63,7 @@ export class AdEditReferenceValueDialog implements OnInit {
         this.getEditVlue(DATA_FIELDS.REFERENCE_CODE),
         {
           nonNullable: true,
-          validators: [Validators.required, Validators.minLength(3), Validators.maxLength(100)],
+          validators: [Validators.required, Validators.minLength(1), Validators.maxLength(100)],
         },
       ),
       referenceCodeDescription: new FormControl<number | string>(

@@ -2,6 +2,7 @@ package com.pf.common.constants;
 
 public interface FieldConstants {
     String ID = "id";
+    String CONFIG_NAME = "configName";
     String USER_ID = "userId";
     String USER__ID = "user.Id";
     String ADMIN_USER_ID = "adminUserId";

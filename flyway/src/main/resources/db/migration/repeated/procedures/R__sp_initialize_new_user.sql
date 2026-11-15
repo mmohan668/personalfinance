@@ -13,6 +13,7 @@ DECLARE
     v_state_ref_object_id       BIGINT;
     v_time_zone_ref_object_id   BIGINT;
     v_password_history_ref_id   BIGINT;
+    v_password_expiry_days_id   BIGINT;
 
     -- User reference value IDs
     v_currency_code_id          BIGINT;
@@ -21,6 +22,7 @@ DECLARE
     v_state_code_id             BIGINT;
     v_time_zone_id              BIGINT;
     v_psd_his_limit_id          BIGINT;
+    v_psd_exp_days_id           BIGINT;
 
 BEGIN
 
@@ -120,6 +122,16 @@ BEGIN
     IF v_password_history_ref_id IS NULL THEN
         RAISE EXCEPTION
             'Reference object PASSWORD_HISTORY_LIMIT does not exist';
+    END IF;
+
+    SELECT id
+    INTO v_password_expiry_days_id
+    FROM reference_object
+    WHERE LOWER(TRIM(ref_obj_name)) = 'password_expiry_days';
+
+    IF v_password_expiry_days_id IS NULL THEN
+        RAISE EXCEPTION
+            'Reference object PASSWORD_EXPIRY_DAYS does not exist';
     END IF;
 
 
@@ -269,6 +281,23 @@ BEGIN
             p_user_id;
     END IF;
 
+    -- Default password expiry days: 30
+
+    SELECT id
+    INTO v_psd_exp_days_id
+    FROM user_reference_value
+    WHERE user_id = p_user_id
+      AND ref_obj_name_id = v_password_expiry_days_id
+      AND LOWER(TRIM(reference_code)) = '30'
+      AND is_active = TRUE
+      AND is_deleted = FALSE;
+
+    IF v_psd_exp_days_id IS NULL THEN
+        RAISE EXCEPTION
+            'Password expiry days 30 is unavailable for user %',
+            p_user_id;
+    END IF;
+
 
     ----------------------------------------------------------------
     -- 5. Associate user with themselves as admin and activate account
@@ -361,6 +390,11 @@ BEGIN
            ('Password History Limit',
             v_psd_his_limit_id,
             'Prevents reuse of the last specified number of passwords.',
+            p_user_id,
+            p_user_id),
+           ('Password Expiry Days',
+            v_psd_exp_days_id,
+            'Specifies the number of days after which a password expires',
             p_user_id,
             p_user_id)
     ON CONFLICT

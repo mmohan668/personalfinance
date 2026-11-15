@@ -9,6 +9,7 @@ $$
         v_state_code_count       INTEGER;
         v_time_zone_count        INTEGER;
         v_pwd_his_limit_count    INTEGER;
+        v_pwd_exp_days_count     INTEGER;
     BEGIN
         SELECT COUNT(*)
         INTO v_system_user_count
@@ -99,7 +100,18 @@ $$
 
         IF v_time_zone_count <> 1 THEN
             RAISE EXCEPTION
-                'Expected exactly one TIME_ZONE reference object, but found %.',
+                'Expected exactly one PASSWORD_HISTORY_LIMIT reference object, but found %.',
+                v_time_zone_count;
+        END IF;
+
+        SELECT COUNT(*)
+        INTO v_pwd_exp_days_count
+        FROM reference_object
+        WHERE LOWER(TRIM(ref_obj_name)) = 'password_expiry_days';
+
+        IF v_time_zone_count <> 1 THEN
+            RAISE EXCEPTION
+                'Expected exactly one PASSWORD_EXPIRY_DAYS reference object, but found %.',
                 v_time_zone_count;
         END IF;
     END;
@@ -122,7 +134,8 @@ WITH system_account AS
                  'country_code',
                  'state_code',
                  'time_zone',
-                'password_history_limit')),
+                 'password_history_limit',
+                 'password_expiry_days')),
 
      initial_reference_values
          (ref_obj_name,
@@ -158,7 +171,10 @@ WITH system_account AS
               ('time_zone', 'Pacific Time (United States)', 'America/Los_Angeles', 'US-CA', NULL),
 
               -- Password history limit
-              ('password_history_limit', 'Prevents reuse of the last 5 passwords', '5', NULL, NULL))
+              ('password_history_limit', 'Prevents reuse of the last 5 passwords', '5', NULL, NULL),
+
+              -- Password Expiry Days
+              ('password_expiry_days', 'Specifies the number of days after which a password expires', '30', NULL, NULL))
 
 INSERT
 INTO reference_values
