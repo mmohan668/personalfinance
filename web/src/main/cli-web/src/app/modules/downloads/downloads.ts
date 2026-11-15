@@ -4,9 +4,10 @@ import { DATA_FIELDS, GRID_NAMES } from '../shared/enums';
 import { GridColumn, ToolbarConfig } from '../shared/types/types';
 import { CommonService } from '../shared/service/common-service';
 import { GridService } from '../shared/service/grid-service';
+import { CommonImportsModule } from '../shared/common-imports/common-imports-module';
 
 @Component({
-  imports: [DataGrid],
+  imports: [DataGrid, CommonImportsModule],
   selector: 'app-downloads',
   styleUrl: './downloads.scss',
   templateUrl: './downloads.html',

@@ -46,6 +46,7 @@ export class Menu {
     {
       label: 'Financial Transaction',
       icon: 'receipt_long',
+      route: '/allTransactions',
       children: [
         {
           label: 'All Transactions',
@@ -77,6 +78,7 @@ export class Menu {
     {
       label: 'Category Management',
       icon: 'category',
+      route: '/categories',
       children: [
         {
           label: 'Category',
@@ -93,6 +95,7 @@ export class Menu {
     {
       label: 'Settings',
       icon: 'settings',
+      route: '/system-config',
       children: [
         {
           label: 'System Config',
@@ -178,24 +181,15 @@ export class Menu {
     // On mobile, all menus remain expanded
     if (this.isMobile()) {
       this.expandAllMenus();
+      if (item.route) {
+        this.router.navigate([item.route]);
+      }
       return;
     }
 
-    if (this.collapsed()) {
-      this.collapsed.set(false);
+    if (item.route) {
+      this.router.navigate([item.route]);
     }
-
-    this.expandedItems.update((expanded) => {
-      const next = new Set(expanded);
-
-      if (next.has(item.label)) {
-        next.delete(item.label);
-      } else {
-        next.add(item.label);
-      }
-
-      return next;
-    });
   }
 
   isExpanded(item: MenuItem): boolean {

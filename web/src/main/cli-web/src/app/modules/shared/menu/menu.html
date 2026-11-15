@@ -66,7 +66,7 @@
         </button>
 
         <!-- Submenu -->
-        @if (isMobile() || (!collapsed() && isExpanded(item))) {
+        @if (isMobile() || collapsed() || isExpanded(item)) {
           <div class="submenu">
             @for (child of item.children; track child.label) {
               <a
@@ -74,13 +74,13 @@
                 [routerLink]="child.route"
                 routerLinkActive="submenu__item--active"
                 [routerLinkActiveOptions]="{ exact: true }"
-                [attr.title]="isMobile() ? child.label : null"
+                [attr.title]="collapsed() || isMobile() ? child.label : null"
               >
                 <span class="material-symbols-outlined submenu__icon" aria-hidden="true">
                   {{ child.icon }}
                 </span>
 
-                @if (!isMobile()) {
+                @if (!isMobile() && !collapsed()) {
                   <span class="submenu__label">
                     {{ child.label }}
                   </span>

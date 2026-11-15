@@ -3,23 +3,18 @@ import { DataGrid } from '../shared/data-grid/data-grid';
 import { CommonService } from '../shared/service/common-service';
 import { MatDialog } from '@angular/material/dialog';
 import { NotificationService } from '../shared/service/notification-service';
-import {
-  DATA_FIELDS,
-  FILTER_OPERATORS,
-  GRID_EXPORT_FILE_NAMES,
-  GRID_NAMES,
-  MODES,
-} from '../shared/enums';
-import { ApiResponse, GridColumn, GridFilter, ToolbarConfig } from '../shared/types/types';
+import { DATA_FIELDS, GRID_EXPORT_FILE_NAMES, GRID_NAMES, MODES } from '../shared/enums';
+import { ApiResponse, GridColumn, ToolbarConfig } from '../shared/types/types';
 import { MessageService } from '../shared/service/message-service';
 import { AddEditUserDialog } from './add-edit-user-dialog/add-edit-user-dialog';
 import { ConfirmationDialog } from '../shared/confirmation-dialog/confirmation-dialog';
 import { firstValueFrom } from 'rxjs';
 import { UserService } from '../shared/service/user-service';
 import { UserPermissionsDialog } from './user-permissions-dialog/user-permissions-dialog';
+import { CommonImportsModule } from '../shared/common-imports/common-imports-module';
 
 @Component({
-  imports: [DataGrid],
+  imports: [DataGrid, CommonImportsModule],
   selector: 'app-users',
   styleUrl: './users.scss',
   templateUrl: './users.html',
