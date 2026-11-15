@@ -14,11 +14,17 @@
       <p class="subtitle">Start managing your money smarter today.</p>
     </header>
 
-    <form (submit)="onSignup($event)">
+    <form
+      id="expenseTrackSignup"
+      name="expenseTrackSignup"
+      (submit)="onSignup($event)"
+      autocomplete="off"
+    >
       <!-- Username and Display Name -->
       <div class="form-row">
         <div class="form-group">
           <label for="username"> Username <span class="required-star">*</span> </label>
+
           <input
             id="username"
             name="username"
@@ -36,6 +42,7 @@
 
         <div class="form-group">
           <label for="displayName"> Display name <span class="required-star">*</span> </label>
+
           <input
             id="displayName"
             name="displayName"
@@ -52,6 +59,7 @@
       <!-- Email -->
       <div class="form-group">
         <label for="email"> Email address <span class="required-star">*</span> </label>
+
         <input
           id="email"
           name="email"
@@ -65,31 +73,36 @@
 
       <!-- Password and Confirm Password -->
       <div class="form-row">
+        <!-- Password -->
         <div class="form-group">
           <label for="password"> Password <span class="required-star">*</span> </label>
 
-          <div class="password-wrapper">
+          <div #passwordWrapper class="password-wrapper">
             <input
               id="password"
-              name="password"
+              name="expenseTrackNewCredential"
               [type]="showPassword ? 'text' : 'password'"
               placeholder="Create a password"
-              autocomplete="new-password"
+              autocomplete="off"
               required
               minlength="8"
               maxlength="16"
               pattern="(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{8,16}"
               [(ngModel)]="password"
+              (focus)="openPasswordSuggestion()"
             />
 
+            <!-- Show / Hide Password -->
             <button
               type="button"
               class="password-toggle"
+              (pointerdown)="$event.preventDefault()"
               (click)="togglePasswordVisibility()"
               [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'"
               [attr.aria-pressed]="showPassword"
             >
               @if (showPassword) {
+                <!-- Eye off -->
                 <svg
                   width="18"
                   height="18"
@@ -107,6 +120,7 @@
                   <path d="M6.2 6.2C3.9 7.6 2.6 9.8 2 12c1 2.8 4.5 7 10 7 1 0 1.9-.2 2.8-.5" />
                 </svg>
               } @else {
+                <!-- Eye -->
                 <svg
                   width="18"
                   height="18"
@@ -123,11 +137,114 @@
                 </svg>
               }
             </button>
+
+            <!-- Suggested Password Popup -->
+            @if (showPasswordSuggestion) {
+              <div class="password-suggestion">
+                <div class="suggestion-header">
+                  <span class="suggestion-title"> ✨ Suggested strong password </span>
+
+                  <button
+                    type="button"
+                    class="refresh-password"
+                    (pointerdown)="$event.preventDefault()"
+                    (click)="generateSuggestedPassword()"
+                    title="Generate another password"
+                    aria-label="Generate another password"
+                  >
+                    ↻
+                  </button>
+                </div>
+
+                <!-- Generated Password -->
+                <div class="suggestion-password">
+                  <span>{{ suggestedPassword }}</span>
+
+                  <!-- Copy Button -->
+                  <button
+                    type="button"
+                    class="copy-password-button"
+                    (pointerdown)="$event.preventDefault()"
+                    (click)="copySuggestedPassword()"
+                    [attr.title]="copySuccess ? 'Copied!' : 'Copy password'"
+                    aria-label="Copy suggested password"
+                  >
+                    @if (copySuccess) {
+                      <svg
+                        width="17"
+                        height="17"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="#2e7d32"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        aria-hidden="true"
+                      >
+                        <path d="M5 12l4 4L19 6" />
+                      </svg>
+                    } @else {
+                      <svg
+                        width="17"
+                        height="17"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        aria-hidden="true"
+                      >
+                        <rect x="8" y="8" width="13" height="13" rx="2" />
+                        <path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3" />
+                      </svg>
+                    }
+                  </button>
+                </div>
+
+                <!-- Copy Success -->
+                @if (copySuccess) {
+                  <p class="copy-success-message" role="status">
+                    <svg
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      aria-hidden="true"
+                    >
+                      <circle cx="12" cy="12" r="10" />
+                      <path d="m8 12 3 3 5-6" />
+                    </svg>
+
+                    Password copied to clipboard!
+                  </p>
+                }
+
+                <!-- Use Password -->
+                <button
+                  type="button"
+                  class="use-password-button"
+                  (pointerdown)="$event.preventDefault()"
+                  (click)="useSuggestedPassword()"
+                >
+                  Use this password
+                </button>
+
+                <p class="suggestion-hint">
+                  16 characters · Uppercase · Lowercase · Number · Symbol
+                </p>
+              </div>
+            }
           </div>
 
           <p class="field-hint">8–16 characters with uppercase, lowercase, number and symbol.</p>
         </div>
 
+        <!-- Confirm Password -->
         <div class="form-group">
           <label for="confirmPassword">
             Confirm password <span class="required-star">*</span>
@@ -146,6 +263,7 @@
               [(ngModel)]="confirmPassword"
             />
 
+            <!-- Show / Hide Confirm Password -->
             <button
               type="button"
               class="password-toggle"
