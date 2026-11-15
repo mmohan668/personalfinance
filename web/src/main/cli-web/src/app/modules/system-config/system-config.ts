@@ -7,9 +7,10 @@ import { MatDialog } from '@angular/material/dialog';
 import { UpdateSystemConfigDialog } from './update-system-config-dialog/update-system-config-dialog';
 import { NotificationService } from '../shared/service/notification-service';
 import { SystemConfigService } from '../shared/service/system-config-service';
+import { CommonImportsModule } from '../shared/common-imports/common-imports-module';
 
 @Component({
-  imports: [DataGrid],
+  imports: [DataGrid, CommonImportsModule],
   selector: 'app-system-config',
   styleUrl: './system-config.scss',
   templateUrl: './system-config.html',
