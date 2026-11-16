@@ -1,5 +1,6 @@
 package com.pf.common.entity.userManagement;
 
+import com.pf.common.constants.CommonConstants;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Formula;
@@ -81,6 +82,9 @@ public class User {
     public void prePersist() {
         if (this.active == null) {
             this.active = false;
+        }
+        if(this.authProvider == null){
+            this.authProvider = CommonConstants.DEFAULT;
         }
         this.createdAt = LocalDateTime.now();
         this.isDeleted = false;
