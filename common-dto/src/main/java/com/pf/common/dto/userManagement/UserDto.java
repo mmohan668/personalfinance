@@ -24,6 +24,7 @@ public class UserDto extends BaseDto implements Serializable {
     private String password;
     private String email;
     private Boolean active;
+    private String authProvider;
     private Boolean isAdminUser;
     private String createdBy;
     private LocalDateTime createdAt;

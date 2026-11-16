@@ -65,6 +65,15 @@ public interface UserRepository extends JpaRepository<User, Long> {
             """)
     boolean existsByEmail(@Param("email") String email);
 
+    @Transactional(readOnly = true)
+    @Query("""
+            SELECT u
+            FROM User u
+            WHERE LOWER(TRIM(u.email) ) = :email
+            AND u.isDeleted = false
+            """)
+    Optional<User> findByEmail(@Param("email") String email);
+
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("""
             UPDATE User u

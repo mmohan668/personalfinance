@@ -8,6 +8,7 @@ CREATE TABLE users
     password_hash        VARCHAR(255) NOT NULL CHECK (TRIM(password_hash) <> ''),
     must_change_password BOOLEAN      NOT NULL DEFAULT FALSE,
     is_active            BOOLEAN      NOT NULL DEFAULT FALSE,
+    auth_provider        VARCHAR(50)  NOT NULL,
     created_by           VARCHAR(100) NOT NULL CHECK (TRIM(created_by) <> ''),
     created_at           TIMESTAMPTZ  NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_by           VARCHAR(100),

@@ -50,6 +50,9 @@ public class User {
     @Column(name = "is_active", nullable = false)
     private Boolean active;
 
+    @Column(name = "auth_provider", nullable = false)
+    private String authProvider;
+
     @Column(name = "created_by", nullable = false)
     private String createdBy;
 

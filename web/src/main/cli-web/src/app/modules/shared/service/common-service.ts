@@ -124,8 +124,16 @@ export class CommonService {
     return this.userProfile().username;
   }
 
+  get loginDisplayname() {
+    return this.userProfile().displayName;
+  }
+
   get loginUserEmail() {
     return this.userProfile().email;
+  }
+
+  get authProivder() {
+    return this.userProfile().authProvider;
   }
 
   isNotNull(value: any) {

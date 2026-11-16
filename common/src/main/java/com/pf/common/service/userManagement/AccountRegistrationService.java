@@ -22,7 +22,7 @@ import com.pf.common.entity.userManagement.UserAuthProvider;
 
 import java.util.Locale;
 
-import static com.pf.common.constants.CommonConstants.SYSTEM;
+import static com.pf.common.constants.CommonConstants.*;
 
 @Slf4j
 @Service
@@ -59,6 +59,7 @@ public class AccountRegistrationService extends BaseService {
         user.setUsername(username);
         user.setPasswordHash(PasswordUtils.encode(dto.getPassword()));
         user.setIsAdminUser(Boolean.TRUE);
+        user.setAuthProvider(DEFAULT);
         user.setCreatedBy(SYSTEM);
         user.setMustChangePassword(false);
         User savedUser = userRepository.save(user);
@@ -81,7 +82,7 @@ public class AccountRegistrationService extends BaseService {
 
         // Check whether this Google identity is already linked.
         var existingProvider = userAuthProviderRepository
-                .findByProviderAndProviderUserId("GOOGLE", googleSubject);
+                .findByProviderAndProviderUserId(GOOGLE, googleSubject);
 
         if (existingProvider.isPresent()) {
             User existingUser = existingProvider.get().getUser();
@@ -96,19 +97,30 @@ public class AccountRegistrationService extends BaseService {
             );
         }
 
-        // Do not automatically link Google to an existing email account.
-        if (userRepository.existsByEmail(normalizedEmail)) {
-            throw new IllegalArgumentException(
-                    "An account with this email already exists. " +
-                            "Please sign in using your existing login method."
-            );
+        User user = userRepository.findByEmail(normalizedEmail).orElse(null);
+        if (user != null) {
+            if (!Boolean.TRUE.equals(user.getActive())) {
+                throw new IllegalArgumentException(
+                        "This Google account is not linked to an active application account."
+                );
+            }
+
+            UserAuthProvider provider = UserAuthProvider.builder()
+                    .user(user)
+                    .provider(GOOGLE)
+                    .providerUserId(googleSubject)
+                    .providerEmail(normalizedEmail)
+                    .createdBy(SYSTEM)
+                    .build();
+
+            userAuthProviderRepository.saveAndFlush(provider);
+            entityManager.refresh(provider);
+            return user;
         }
 
-        String localPart = normalizedEmail.substring(
+        String username = normalizedEmail.substring(
                 0, normalizedEmail.indexOf('@')
         );
-
-        String username = localPart;
 
         if (userRepository.existsByUsername(username)) {
             username = normalizedEmail;
@@ -120,13 +132,14 @@ public class AccountRegistrationService extends BaseService {
             }
         }
 
-        User user = User.builder()
+        user = User.builder()
                 .username(username)
                 .displayName(googleDisplayName)
                 .email(normalizedEmail)
                 .passwordHash(PasswordUtils.generateEncodedRandomPassword())
                 .mustChangePassword(false)
                 .active(false)
+                .authProvider(GOOGLE)
                 .createdBy(SYSTEM)
                 .build();
 
@@ -134,7 +147,7 @@ public class AccountRegistrationService extends BaseService {
 
         UserAuthProvider provider = UserAuthProvider.builder()
                 .user(savedUser)
-                .provider("GOOGLE")
+                .provider(GOOGLE)
                 .providerUserId(googleSubject)
                 .providerEmail(normalizedEmail)
                 .createdBy(SYSTEM)
