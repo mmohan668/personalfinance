@@ -42,12 +42,12 @@
         <img
           class="user-avatar"
           [src]="profilePictureUrl() || 'assets/image.png'"
-          [alt]="_cs?.loginUsername || 'User profile'"
+          [alt]="_cs?.loginDisplayname || 'User profile'"
         />
 
         <span class="user-details">
           <span class="user-name">
-            {{ _cs?.loginUsername || 'User' }}
+            {{ _cs?.loginDisplayname || 'User' }}
           </span>
 
           <span class="user-email">
@@ -70,12 +70,12 @@
             <img
               class="dropdown-avatar"
               [src]="profilePictureUrl() || 'assets/image.png'"
-              [alt]="_cs?.loginUsername || 'User profile'"
+              [alt]="_cs?.loginDisplayname || 'User profile'"
             />
 
             <div class="dropdown-user-details">
               <strong>
-                {{ _cs?.loginUsername || 'User' }}
+                {{ _cs?.loginDisplayname || 'User' }}
               </strong>
 
               <small>
@@ -95,12 +95,13 @@
           </div>
 
           <div class="dropdown-divider"></div>
-
-          <!-- Existing menu items -->
-          <button type="button" class="dropdown-item" (click)="changePassword()">
-            <i class="bi bi-shield-lock"></i>
-            <span>Change Password</span>
-          </button>
+          @if (_cs.authProivder === 'default') {
+            <!-- Existing menu items -->
+            <button type="button" class="dropdown-item" (click)="changePassword()">
+              <i class="bi bi-shield-lock"></i>
+              <span>Change Password</span>
+            </button>
+          }
 
           <button type="button" class="dropdown-item" (click)="openAbout()">
             <i class="bi bi-info-circle"></i>

@@ -7,12 +7,15 @@ WITH system_account AS
                       email,
                       password_hash,
                       is_active,
+                      auth_provider,
                       created_by)
                      VALUES ('System',
                              'System',
                              'personalfinanceapp.support@gmail.com',
                              'PASSWORD_HASH_TEMP',
-                             TRUE, 'FLYWAY')
+                             TRUE,
+                             'default',
+                             'FLYWAY')
                      RETURNING id)
 
 UPDATE users

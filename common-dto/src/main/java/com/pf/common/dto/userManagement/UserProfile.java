@@ -12,6 +12,8 @@ public class UserProfile {
     private String username;
     private String email;
     private String displayName;
+    private String authProvider;
+    private Boolean isAdminUser;
     private Long id;
     private Long adminUserId;
     private String profilePictureUrl;

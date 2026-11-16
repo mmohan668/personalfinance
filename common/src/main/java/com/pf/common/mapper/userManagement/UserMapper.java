@@ -16,8 +16,7 @@ public interface UserMapper {
     @Mapping(target = "adminUser", ignore = true)
     @Mapping(target = "passwordHash", ignore = true)
     User toEntity(UserDto dto);
-
-    @Mapping(target = "displayName", source = "username")
+    
     @Mapping(target = "adminUserId", source = "adminUser.id")
     @Mapping(target = "profilePictureUrl", ignore = true)
     UserProfile toUserProfile(User user);

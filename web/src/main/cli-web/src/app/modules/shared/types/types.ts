@@ -171,6 +171,8 @@ export interface UserProfile {
   id: number | null;
   adminUserId: number | null;
   profilePictureUrl: string | null;
+  isAdminUser: boolean;
+  authProvider: string;
 }
 
 export interface CaptchaResponse {

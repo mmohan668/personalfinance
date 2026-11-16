@@ -14,7 +14,7 @@ CREATE TABLE user_auth_providers_history
     action_at        TIMESTAMPTZ  NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT chk_user_auth_providers_history_provider
-        CHECK (provider IN ('GOOGLE'))
+        CHECK (provider IN ('google'))
 );
 
 CREATE INDEX idx_user_auth_providers_history_provider_id_action_at

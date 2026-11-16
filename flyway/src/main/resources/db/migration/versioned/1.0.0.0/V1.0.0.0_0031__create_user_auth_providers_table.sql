@@ -13,7 +13,7 @@ CREATE TABLE user_auth_providers
             REFERENCES users (id),
 
     CONSTRAINT chk_user_auth_providers_provider
-        CHECK (provider IN ('GOOGLE')),
+        CHECK (provider IN ('google')),
 
     CONSTRAINT uq_user_auth_providers_identity
         UNIQUE (provider, provider_user_id),

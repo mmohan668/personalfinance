@@ -7,6 +7,8 @@ public interface CommonConstants {
     String FALSE_STR = "false";
     String DOT_SPLIT_STR = "\\.";
     String SYSTEM = "System";
+    String DEFAULT = "default";
+    String GOOGLE = "google";
     Long TEST_USER_ID = 2L;
     int CHUNK_SIZE = 900;
     String COMMA = ",";
