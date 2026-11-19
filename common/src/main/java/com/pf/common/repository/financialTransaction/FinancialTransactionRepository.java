@@ -14,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Collection;
+import java.util.UUID;
 
 @Repository
 public interface FinancialTransactionRepository extends JpaRepository<FinancialTransaction, Long> {
@@ -116,6 +118,10 @@ public interface FinancialTransactionRepository extends JpaRepository<FinancialT
             @Param("to") LocalDate to,
             @Param("adminUserId") Long adminUserId
     );
+
+    @Modifying
+    @Query("DELETE FROM FinancialTransaction ft WHERE ft.invoiceUploadBatchId IN :batchIds")
+    int deleteInvoiceUploadTransactionsByBatchIds(@Param("batchIds") Collection<UUID> batchIds);
 
     @Transactional(readOnly = true)
     @Query("""

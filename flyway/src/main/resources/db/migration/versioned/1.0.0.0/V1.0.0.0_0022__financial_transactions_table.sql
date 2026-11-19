@@ -6,6 +6,7 @@ CREATE TABLE financial_transactions
     subcategory_id BIGINT         NOT NULL,
     location_id    BIGINT,
     remarks        VARCHAR(4000) CHECK (remarks IS NULL OR TRIM(remarks) <> ''),
+    invoice_upload_batch_id UUID,
     admin_user_id  BIGINT         NOT NULL,
     created_by     BIGINT         NOT NULL,
     created_at     TIMESTAMPTZ    NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -63,3 +64,7 @@ CREATE INDEX idx_financial_transactions_subcategory_id
 
 CREATE INDEX idx_financial_transactions_location_owner
     ON financial_transactions (location_id, admin_user_id) WHERE location_id IS NOT NULL;
+
+CREATE INDEX idx_financial_transactions_invoice_upload_batch_id
+    ON financial_transactions (invoice_upload_batch_id)
+    WHERE invoice_upload_batch_id IS NOT NULL;

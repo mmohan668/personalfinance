@@ -26,6 +26,12 @@ export class BulkUploadService {
     );
   }
 
+  deleteInvoiceUploadStatuses(ids: number[]): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(
+      `${this.config.configValue.apiUrl}/bulkupload/deleteInvoiceUploadStatuses`, ids,
+    );
+  }
+
   downloadFile(filePath: string): Observable<Blob> {
     return this.http.get(`${this.config.configValue.apiUrl}/bulkupload/downloadFile`, {
       params: {

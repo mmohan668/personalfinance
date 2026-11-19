@@ -9,6 +9,7 @@ import lombok.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "financial_transactions")
@@ -39,6 +40,9 @@ public class FinancialTransaction {
 
     @Column(name = "remarks")
     private String remarks;
+
+    @Column(name = "invoice_upload_batch_id", columnDefinition = "uuid")
+    private UUID invoiceUploadBatchId;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "admin_user_id", nullable = false)

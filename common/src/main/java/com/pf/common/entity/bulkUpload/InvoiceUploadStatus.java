@@ -8,6 +8,7 @@ import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "invoice_upload_status")
@@ -36,6 +37,9 @@ public class InvoiceUploadStatus {
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "category_subcategory_suggestion", columnDefinition = "jsonb")
     private String categorySubcategorySuggestion;
+
+    @Column(name = "upload_batch_id", columnDefinition = "uuid")
+    private UUID uploadBatchId;
 
     @Column(name = "uploaded_date", nullable = false)
     private LocalDate uploadedDate;

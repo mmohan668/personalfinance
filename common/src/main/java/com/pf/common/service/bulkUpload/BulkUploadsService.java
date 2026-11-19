@@ -14,6 +14,8 @@ import com.pf.common.mapper.bulkUpload.BulkUploadsStatusMapper;
 import com.pf.common.properties.BulkUploadProperties;
 import com.pf.common.record.bulkUpload.BulkUploadCreatedEvent;
 import com.pf.common.repository.bulkUpload.BulkUploadsStatusRepository;
+import com.pf.common.repository.bulkUpload.InvoiceUploadStatusRepository;
+import com.pf.common.repository.financialTransaction.FinancialTransactionRepository;
 import com.pf.common.repository.generic.TemplateNameRepository;
 import com.pf.common.service.generic.BaseService;
 import com.pf.common.util.FileUtils;
@@ -35,6 +37,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.UUID;
+import java.util.Objects;
 
 import static com.pf.common.constants.FieldConstants.USER_ID;
 import static com.pf.common.enums.BulkUploadStatus.RECEIVED;
@@ -47,6 +51,8 @@ public class BulkUploadsService extends BaseService {
     private final InvoiceUploadStatusMapper invoiceUploadStatusMapper;
     private final BulkUploadProperties bulkUploadProperties;
     private final BulkUploadsStatusRepository bulkUploadsStatusRepository;
+    private final InvoiceUploadStatusRepository invoiceUploadStatusRepository;
+    private final FinancialTransactionRepository financialTransactionRepository;
     private final ApplicationEventPublisher applicationEventPublisher;
     private final TemplateNameRepository templateNameRepository;
 
@@ -83,6 +89,39 @@ public class BulkUploadsService extends BaseService {
                 getDataBySearchCriteria(InvoiceUploadStatus.class, searchCriteria));
         log.info("Fetched invoice upload status grid data: totalRecords={}", totalRecords);
         return gridResult(totalRecords, recordDetails);
+    }
+
+    @Transactional
+    public ApiResponse deleteInvoiceUploadStatuses(List<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return failure("Select at least one invoice upload record to delete.");
+        }
+        List<Long> uniqueIds = ids.stream().filter(Objects::nonNull).distinct().toList();
+        if (uniqueIds.isEmpty()) {
+            return failure("Select at least one invoice upload record to delete.");
+        }
+        List<InvoiceUploadStatus> selected = invoiceUploadStatusRepository
+                .findAllByIdAndAdminUserId(uniqueIds, fetchAdminUserId());
+        if (selected.size() != uniqueIds.size()) {
+            return failure("One or more invoice upload records were not found.");
+        }
+        if (selected.stream().anyMatch(record -> record.getUploadBatchId() == null
+                && "Success".equalsIgnoreCase(record.getStatus()))) {
+            return failure("This invoice was imported before transaction tracking was added. Its transactions cannot be safely deleted from this screen.");
+        }
+        List<UUID> batchIds = selected.stream().map(InvoiceUploadStatus::getUploadBatchId)
+                .filter(Objects::nonNull).distinct().toList();
+        if (!batchIds.isEmpty()) {
+            financialTransactionRepository.deleteInvoiceUploadTransactionsByBatchIds(batchIds);
+            invoiceUploadStatusRepository.deleteAllByUploadBatchIdIn(batchIds);
+        }
+        List<Long> legacyFailedStatusIds = selected.stream()
+                .filter(record -> record.getUploadBatchId() == null)
+                .map(InvoiceUploadStatus::getId).toList();
+        if (!legacyFailedStatusIds.isEmpty()) {
+            invoiceUploadStatusRepository.deleteAllByIdInBatch(legacyFailedStatusIds);
+        }
+        return success("Invoice upload record(s) and their imported transactions were deleted. You can upload the invoice again.");
     }
 
     @Transactional
