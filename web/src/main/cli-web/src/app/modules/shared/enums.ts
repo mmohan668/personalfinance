@@ -169,6 +169,8 @@ export enum REF_OBJ_NAMES {
   TIME_ZONE = 'TIME_ZONE',
   PASSWORD_HISTORY_LIMIT = 'PASSWORD_HISTORY_LIMIT',
   PASSWORD_EXPIRY_DAYS = 'PASSWORD_EXPIRY_DAYS',
+  ENABLE_REPORTS = 'ENABLE_REPORTS',
+  REPORT_FREQUENCY = 'REPORT_FREQUENCY',
 }
 
 export enum SYSTEM_CONFIG_NAME {
@@ -178,7 +180,9 @@ export enum SYSTEM_CONFIG_NAME {
   STATE = 'State',
   TIME_ZONE = 'Time Zone',
   PASSWORD_HISTORY_LIMIT = 'Password History Limit',
-  PASSWORD_EXPIRY_DAYS = 'Password Expiry Days'
+  PASSWORD_EXPIRY_DAYS = 'Password Expiry Days',
+  ENABLE_REPORTS = 'Enable Reports',
+  REPORT_FREQUENCY = 'Report Frequency',
 }
 
 export enum STATUS {

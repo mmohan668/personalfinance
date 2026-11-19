@@ -35,6 +35,11 @@ public class BulkUploadsController {
         return bulkUploadsService.fetchInvoiceUploadStatusGridData(searchCriteria);
     }
 
+    @PostMapping("/deleteInvoiceUploadStatuses")
+    public ApiResponse deleteInvoiceUploadStatuses(@RequestBody java.util.List<Long> ids) {
+        return bulkUploadsService.deleteInvoiceUploadStatuses(ids);
+    }
+
     @GetMapping("/downloadTemplate")
     public ResponseEntity<InputStreamResource> downloadBulkUploadTemplate(@RequestParam String templateName) {
         ByteArrayInputStream inputStream = templateGenerationService.generateTemplate(templateName);

@@ -2,6 +2,8 @@ package com.pf.mailer.service;
 
 import com.pf.common.dto.generic.AccountActivationRequest;
 import com.pf.common.dto.generic.ForgotPasswordEmailRequest;
+import com.pf.common.dto.generic.FinancialReportMailRequest;
+import org.springframework.core.io.ByteArrayResource;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -131,6 +133,32 @@ public class SendEmailService {
         } finally {
             log.info("Forgot-password email delivery {}",
                     completedSuccessfully ? "completed successfully" : "failed");
+        }
+    }
+
+    public void sendFinancialReportEmail(FinancialReportMailRequest request) {
+        if (request == null || request.emailId() == null || request.csvContent() == null) {
+            throw new IllegalArgumentException("Financial report email details are required");
+        }
+        try {
+            Context context = new Context();
+            context.setVariable("displayName", request.displayName());
+            context.setVariable("periodLabel", request.periodLabel());
+            String htmlContent = templateEngine.process("financial-transactions-report", context);
+
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+            helper.setFrom(fromEmail);
+            helper.setTo(request.emailId());
+            helper.setSubject("Your financial transactions report - " + request.periodLabel());
+            helper.setText(htmlContent, true);
+            helper.addAttachment(request.csvFileName(), new ByteArrayResource(
+                    request.csvContent().getBytes(java.nio.charset.StandardCharsets.UTF_8)));
+            mailSender.send(message);
+            log.info("Financial transactions report email sent: period={}", request.periodLabel());
+        } catch (MessagingException | MailException exception) {
+            log.error("Failed to send financial transactions report email", exception);
+            throw new IllegalStateException("Unable to send financial transactions report email", exception);
         }
     }
 

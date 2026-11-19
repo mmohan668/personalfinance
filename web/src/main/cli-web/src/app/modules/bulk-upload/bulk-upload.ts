@@ -8,6 +8,8 @@ import { BulkUploadService } from '../shared/service/bulk-upload-service';
 import { firstValueFrom } from 'rxjs';
 import { NotificationService } from '../shared/service/notification-service';
 import { MessageService } from '../shared/service/message-service';
+import { MatDialog } from '@angular/material/dialog';
+import { ConfirmationDialog } from '../shared/confirmation-dialog/confirmation-dialog';
 
 @Component({
   imports: [CommonImportsModule, DataGrid],
@@ -23,6 +25,7 @@ export class BulkUpload {
   protected readonly _bus = inject(BulkUploadService);
   private readonly _ns = inject(NotificationService);
   private readonly _ms = inject(MessageService);
+  private readonly _dialog = inject(MatDialog);
 
   protected readonly gridName = GRID_NAMES.BULK_UPLOADS_STATUS;
   protected readonly gridExportFileName = GRID_EXPORT_FILE_NAMES.BULK_UPLOADS_STATUS;
@@ -30,6 +33,7 @@ export class BulkUpload {
   protected readonly invoiceGridExportFileName = GRID_EXPORT_FILE_NAMES.INVOICE_UPLOAD_STATUS;
   protected readonly dataKey = DATA_FIELDS.ID;
   protected readonly toolbaConfig!: ToolbarConfig;
+  protected readonly invoiceToolbarConfig!: ToolbarConfig;
   protected readonly uploadTypes = [
     { value: 'REFERENCE_VALUES', label: 'Reference Values' },
     { value: 'CATEGORIES', label: 'Categories' },
@@ -44,6 +48,15 @@ export class BulkUpload {
   constructor() {
     this.toolbaConfig = this._cs.toolbarConfig();
     this.toolbaConfig.refresh = true;
+    this.invoiceToolbarConfig = {
+      ...this.toolbaConfig,
+      deleteRow: CommonService.hasPermissionForUser(
+        this._cs.loginUserId,
+        'Bulk Upload',
+        'Bulk Upload',
+        'Upload Invoice',
+      ),
+    };
   }
 
   onFileSelected(event: Event): void {
@@ -194,4 +207,31 @@ export class BulkUpload {
   getFileName(filePath: string): string {
     return filePath.split('\\').pop() || 'download';
   }
+
+  deleteInvoiceRows = (): void => {
+    const selectedRows = this.invoiceDataGrid?.selectedRows ?? [];
+    if (selectedRows.length === 0) {
+      this._ns.error(this._ms.get('common.delete.noSelection'));
+      return;
+    }
+    this._dialog.open(ConfirmationDialog, {
+      width: 'auto',
+      data: {
+        title: this._ms.get('common.delete.title'),
+        message: 'Deleting the selected invoice upload will also delete all invoice entries from the same file and their imported financial transactions. Continue?',
+      },
+    }).afterClosed().subscribe((confirmed: boolean) => {
+      if (!confirmed) return;
+      const ids = selectedRows.map((row) => row.id);
+      firstValueFrom(this._bus.deleteInvoiceUploadStatuses(ids)).then((response) => {
+        if (response.success) {
+          this._ns.success(response.message);
+          this.invoiceDataGrid?.refreshGrid();
+          this.dataGrid?.refreshGrid();
+        } else {
+          this._ns.error(response.message);
+        }
+      });
+    });
+  };
 }

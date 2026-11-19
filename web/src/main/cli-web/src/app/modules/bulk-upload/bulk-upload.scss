@@ -4,6 +4,16 @@
   min-width: 0;
 }
 
+:host ::ng-deep .bulk-upload-grids .mat-mdc-tab {
+  border: 1px solid #cbd5e1;
+  border-radius: 6px 6px 0 0;
+  box-sizing: border-box;
+}
+
+:host ::ng-deep .bulk-upload-grids .mat-mdc-tab:not(:last-child) {
+  margin-right: 6px;
+}
+
 .bulk-upload-description {
   margin-right: 8px;
   color: #718174;

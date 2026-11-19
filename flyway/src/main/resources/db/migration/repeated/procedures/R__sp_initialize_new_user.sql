@@ -14,6 +14,8 @@ DECLARE
     v_time_zone_ref_object_id   BIGINT;
     v_password_history_ref_id   BIGINT;
     v_password_expiry_days_id   BIGINT;
+    v_enable_reports_ref_id     BIGINT;
+    v_report_frequency_ref_id   BIGINT;
 
     -- User reference value IDs
     v_currency_code_id          BIGINT;
@@ -23,6 +25,8 @@ DECLARE
     v_time_zone_id              BIGINT;
     v_psd_his_limit_id          BIGINT;
     v_psd_exp_days_id           BIGINT;
+    v_reports_disabled_id       BIGINT;
+    v_report_frequency_monthly_id BIGINT;
 
 BEGIN
 
@@ -132,6 +136,17 @@ BEGIN
     IF v_password_expiry_days_id IS NULL THEN
         RAISE EXCEPTION
             'Reference object PASSWORD_EXPIRY_DAYS does not exist';
+    END IF;
+
+    SELECT id INTO v_enable_reports_ref_id
+    FROM reference_object WHERE LOWER(TRIM(ref_obj_name)) = 'enable_reports';
+    IF v_enable_reports_ref_id IS NULL THEN
+        RAISE EXCEPTION 'Reference object ENABLE_REPORTS does not exist';
+    END IF;
+    SELECT id INTO v_report_frequency_ref_id
+    FROM reference_object WHERE LOWER(TRIM(ref_obj_name)) = 'report_frequency';
+    IF v_report_frequency_ref_id IS NULL THEN
+        RAISE EXCEPTION 'Reference object REPORT_FREQUENCY does not exist';
     END IF;
 
 
@@ -298,6 +313,24 @@ BEGIN
             p_user_id;
     END IF;
 
+    SELECT id INTO v_reports_disabled_id
+    FROM user_reference_value
+    WHERE user_id = p_user_id AND ref_obj_name_id = v_enable_reports_ref_id
+      AND LOWER(TRIM(reference_code)) = 'yes'
+      AND is_active = TRUE AND is_deleted = FALSE;
+    IF v_reports_disabled_id IS NULL THEN
+        RAISE EXCEPTION 'Disabled reports value is unavailable for user %', p_user_id;
+    END IF;
+
+    SELECT id INTO v_report_frequency_monthly_id
+    FROM user_reference_value
+    WHERE user_id = p_user_id AND ref_obj_name_id = v_report_frequency_ref_id
+      AND LOWER(TRIM(reference_code)) = 'monthly'
+      AND is_active = TRUE AND is_deleted = FALSE;
+    IF v_report_frequency_monthly_id IS NULL THEN
+        RAISE EXCEPTION 'Monthly report frequency is unavailable for user %', p_user_id;
+    END IF;
+
 
     ----------------------------------------------------------------
     -- 5. Associate user with themselves as admin and activate account
@@ -395,6 +428,16 @@ BEGIN
            ('Password Expiry Days',
             v_psd_exp_days_id,
             'Specifies the number of days after which a password expires',
+            p_user_id,
+            p_user_id),
+           ('Enable Reports',
+            v_reports_disabled_id,
+            'Allow monthly financial transaction reports to be emailed to you.',
+            p_user_id,
+            p_user_id),
+           ('Report Frequency',
+            v_report_frequency_monthly_id,
+            'How often financial transaction reports are emailed.',
             p_user_id,
             p_user_id)
     ON CONFLICT

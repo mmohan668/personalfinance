@@ -39,5 +39,7 @@ FROM system_account
              ('STATE_CODE'),
              ('TIME_ZONE'),
              ('PASSWORD_HISTORY_LIMIT'),
-             ('PASSWORD_EXPIRY_DAYS')) AS ref_objects (ref_obj_name)
+             ('PASSWORD_EXPIRY_DAYS'),
+             ('ENABLE_REPORTS'),
+             ('REPORT_FREQUENCY')) AS ref_objects (ref_obj_name)
 ON CONFLICT DO NOTHING;

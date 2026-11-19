@@ -6,6 +6,7 @@ CREATE TABLE invoice_upload_status
     file_name      VARCHAR NOT NULL,
     status         VARCHAR NOT NULL,
     category_subcategory_suggestion JSONB,
+    upload_batch_id UUID,
     uploaded_date  DATE         NOT NULL DEFAULT CURRENT_DATE,
     uploaded_by    BIGINT       NOT NULL,
     uploaded_at    TIMESTAMPTZ  NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -17,3 +18,7 @@ CREATE TABLE invoice_upload_status
 CREATE UNIQUE INDEX uq_invoice_upload_status_success_invoice_number
     ON invoice_upload_status (LOWER(TRIM(invoice_number)))
     WHERE status = 'Success';
+
+CREATE INDEX idx_invoice_upload_status_upload_batch_id
+    ON invoice_upload_status (upload_batch_id)
+    WHERE upload_batch_id IS NOT NULL;

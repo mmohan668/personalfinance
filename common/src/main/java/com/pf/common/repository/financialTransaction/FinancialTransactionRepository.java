@@ -1,6 +1,7 @@
 package com.pf.common.repository.financialTransaction;
 
 import com.pf.common.entity.financialTransaction.FinancialTransaction;
+import com.pf.common.entity.financialTransaction.FinancialTransactionView;
 import com.pf.common.projection.ExpenseByCategoryProjection;
 import com.pf.common.projection.MonthlyTransactionTotalProjection;
 import com.pf.common.projection.TransactionTotalProjection;
@@ -13,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Collection;
+import java.util.UUID;
 
 @Repository
 public interface FinancialTransactionRepository extends JpaRepository<FinancialTransaction, Long> {
@@ -102,6 +105,23 @@ public interface FinancialTransactionRepository extends JpaRepository<FinancialT
             @Param("to") LocalDate to,
             @Param("adminUserId") Long adminUserId
     );
+
+    @Transactional(readOnly = true)
+    @Query("""
+            SELECT ftv FROM FinancialTransactionView ftv
+            WHERE ftv.transactionAt >= :from AND ftv.transactionAt < :to
+              AND ftv.adminUserId = :adminUserId
+            ORDER BY ftv.transactionAt, ftv.id
+            """)
+    List<FinancialTransactionView> fetchFinancialReportTransactions(
+            @Param("from") LocalDate from,
+            @Param("to") LocalDate to,
+            @Param("adminUserId") Long adminUserId
+    );
+
+    @Modifying
+    @Query("DELETE FROM FinancialTransaction ft WHERE ft.invoiceUploadBatchId IN :batchIds")
+    int deleteInvoiceUploadTransactionsByBatchIds(@Param("batchIds") Collection<UUID> batchIds);
 
     @Transactional(readOnly = true)
     @Query("""

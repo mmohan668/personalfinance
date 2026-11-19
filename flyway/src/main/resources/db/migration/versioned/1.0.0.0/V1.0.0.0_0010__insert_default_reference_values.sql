@@ -10,6 +10,8 @@ $$
         v_time_zone_count        INTEGER;
         v_pwd_his_limit_count    INTEGER;
         v_pwd_exp_days_count     INTEGER;
+        v_enable_reports_count   INTEGER;
+        v_report_frequency_count INTEGER;
     BEGIN
         SELECT COUNT(*)
         INTO v_system_user_count
@@ -114,6 +116,17 @@ $$
                 'Expected exactly one PASSWORD_EXPIRY_DAYS reference object, but found %.',
                 v_time_zone_count;
         END IF;
+
+        SELECT COUNT(*) INTO v_enable_reports_count FROM reference_object
+        WHERE LOWER(TRIM(ref_obj_name)) = 'enable_reports';
+        IF v_enable_reports_count <> 1 THEN
+            RAISE EXCEPTION 'Expected exactly one ENABLE_REPORTS reference object, but found %.', v_enable_reports_count;
+        END IF;
+        SELECT COUNT(*) INTO v_report_frequency_count FROM reference_object
+        WHERE LOWER(TRIM(ref_obj_name)) = 'report_frequency';
+        IF v_report_frequency_count <> 1 THEN
+            RAISE EXCEPTION 'Expected exactly one REPORT_FREQUENCY reference object, but found %.', v_report_frequency_count;
+        END IF;
     END;
 $$;
 
@@ -135,7 +148,9 @@ WITH system_account AS
                  'state_code',
                  'time_zone',
                  'password_history_limit',
-                 'password_expiry_days')),
+                 'password_expiry_days',
+                 'enable_reports',
+                 'report_frequency')),
 
      initial_reference_values
          (ref_obj_name,
@@ -174,7 +189,17 @@ WITH system_account AS
               ('password_history_limit', 'Prevents reuse of the last 5 passwords', '5', NULL, NULL),
 
               -- Password Expiry Days
-              ('password_expiry_days', 'Specifies the number of days after which a password expires', '30', NULL, NULL))
+              ('password_expiry_days', 'Specifies the number of days after which a password expires', '30', NULL, NULL),
+
+              -- Report preferences
+              ('enable_reports', 'Do not send financial transaction reports to the user''s email.', 'No', NULL, NULL),
+              ('enable_reports', 'Send financial transaction reports to the user''s email at the configured frequency.', 'Yes', NULL, NULL),
+              ('report_frequency', 'Send a financial transaction report once each day for the previous day.', 'Daily', NULL, NULL),
+              ('report_frequency', 'Send a financial transaction report each Monday for the previous Sunday through Saturday.', 'Weekly', NULL, NULL),
+              ('report_frequency', 'Send a financial transaction report on the first day of each quarter for the previous quarter.', 'Quarterly', NULL, NULL),
+              ('report_frequency', 'Send a financial transaction report on January 1 and July 1 for the previous six months.', 'HalfYearly', NULL, NULL),
+              ('report_frequency', 'Send a financial transaction report once each month.', 'Monthly', NULL, NULL),
+              ('report_frequency', 'Send a financial transaction report on January 1 for the previous year.', 'Yearly', NULL, NULL))
 
 INSERT
 INTO reference_values
