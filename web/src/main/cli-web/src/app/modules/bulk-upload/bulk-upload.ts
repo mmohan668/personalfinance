@@ -17,6 +17,7 @@ import { MessageService } from '../shared/service/message-service';
 })
 export class BulkUpload {
   @ViewChild('dataGrid') dataGrid!: DataGrid;
+  @ViewChild('invoiceDataGrid') invoiceDataGrid!: DataGrid;
 
   protected readonly _cs = inject(CommonService);
   protected readonly _bus = inject(BulkUploadService);
@@ -25,6 +26,8 @@ export class BulkUpload {
 
   protected readonly gridName = GRID_NAMES.BULK_UPLOADS_STATUS;
   protected readonly gridExportFileName = GRID_EXPORT_FILE_NAMES.BULK_UPLOADS_STATUS;
+  protected readonly invoiceGridName = GRID_NAMES.INVOICE_UPLOAD_STATUS;
+  protected readonly invoiceGridExportFileName = GRID_EXPORT_FILE_NAMES.INVOICE_UPLOAD_STATUS;
   protected readonly dataKey = DATA_FIELDS.ID;
   protected readonly toolbaConfig!: ToolbarConfig;
   protected readonly uploadTypes = [
@@ -32,6 +35,7 @@ export class BulkUpload {
     { value: 'CATEGORIES', label: 'Categories' },
     { value: 'SUBCATEGORIES', label: 'Subcategories' },
     { value: 'FINANCIAL_TRANSACTIONS', label: 'Financial Transactions' },
+    { value: 'INVOICE_UPLOAD', label: 'Invoice Upload' },
   ];
   protected selectedUploadType = '';
   protected selectedFile: File | null = null;
@@ -51,9 +55,10 @@ export class BulkUpload {
       return;
     }
 
-    if (!file.name.toLowerCase().endsWith('.xlsx')) {
+    const allowedExtensions = this.allowedFileExtensions;
+    if (!allowedExtensions.some((extension) => file.name.toLowerCase().endsWith(extension))) {
       this.selectedFile = null;
-      this.fileError = 'Only .xlsx files are allowed.';
+      this.fileError = `Allowed file types: ${allowedExtensions.join(', ')}.`;
       input.value = '';
       return;
     }
@@ -99,6 +104,11 @@ export class BulkUpload {
       this._ns.error('You do not have permission to perform this upload.');
       return;
     }
+    const allowedExtensions = this.allowedFileExtensions;
+    if (!allowedExtensions.some((extension) => this.selectedFile!.name.toLowerCase().endsWith(extension))) {
+      this._ns.error(`Allowed file types: ${allowedExtensions.join(', ')}.`);
+      return;
+    }
     const formData = new FormData();
     const uploadTypeLabel = this.uploadTypes.find((u) => u.value === this.selectedUploadType)
       ?.label as string;
@@ -110,6 +120,7 @@ export class BulkUpload {
         this.reset();
         this._ns.success(resp.message);
         this.dataGrid.refreshGrid();
+        this.invoiceDataGrid.refreshGrid();
       } else {
         this._ns.error(resp.message);
       }
@@ -120,12 +131,25 @@ export class BulkUpload {
     return this.hasUploadPermission && !!this.selectedFile;
   }
 
+  get acceptsFileType(): string {
+    return this.allowedFileExtensions.join(',');
+  }
+
+  private get allowedFileExtensions(): string[] {
+    return this.selectedUploadType === 'INVOICE_UPLOAD' ? ['.pdf', '.png', '.jpg', '.jpeg'] : ['.xlsx'];
+  }
+
+  get supportsTemplateDownload(): boolean {
+    return !!this.selectedUploadType && this.selectedUploadType !== 'INVOICE_UPLOAD';
+  }
+
   get hasUploadPermission(): boolean {
     const uploadActions: Record<string, string> = {
       REFERENCE_VALUES: 'Upload Reference Values',
       CATEGORIES: 'Upload Categories',
       SUBCATEGORIES: 'Upload Subcategories',
       FINANCIAL_TRANSACTIONS: 'Upload Financial Transactions',
+      INVOICE_UPLOAD: 'Upload Invoice',
     };
     const actionName = uploadActions[this.selectedUploadType];
     return (

@@ -620,3 +620,23 @@ FROM initial_subcategories s
                         AND LOWER(TRIM(c.category_name)) =
                             LOWER(TRIM(s.category_name))
 ON CONFLICT ( category_id, (LOWER(TRIM(subcategory_name))) ) DO NOTHING;
+
+WITH system_account AS (
+    SELECT id
+    FROM users
+    WHERE LOWER(TRIM(username)) = LOWER(TRIM('System'))
+      AND is_deleted = FALSE
+)
+INSERT INTO subcategories
+    (category_id, subcategory_name, subcategory_description, is_active, created_by)
+SELECT c.id,
+       'Miscellaneous',
+       'Other transactions in this category',
+       TRUE,
+       system_account.id
+FROM categories c
+CROSS JOIN system_account
+ON CONFLICT (category_id, (LOWER(TRIM(subcategory_name))))
+DO UPDATE SET is_active = TRUE,
+              updated_by = (SELECT id FROM users WHERE LOWER(TRIM(username)) = LOWER(TRIM('System')) AND is_deleted = FALSE),
+              updated_at = CURRENT_TIMESTAMP;

@@ -2,6 +2,7 @@ package com.pf.common.service.bulkUpload;
 
 import com.pf.common.dto.generic.TemplateRowData;
 import com.pf.common.entity.bulkUpload.BulkUploadsStatus;
+import com.pf.common.entity.bulkUpload.InvoiceUploadStatus;
 import com.pf.common.entity.generic.TemplateHeader;
 import com.pf.common.entity.generic.TemplateName;
 import com.pf.common.entity.userManagement.User;
@@ -10,6 +11,10 @@ import com.pf.common.enums.BulkUploadStatus;
 import com.pf.common.properties.BulkUploadProperties;
 import com.pf.common.record.generic.ExcelValidationResult;
 import com.pf.common.repository.bulkUpload.BulkUploadsStatusRepository;
+import com.pf.common.repository.bulkUpload.InvoiceUploadStatusRepository;
+import com.pf.common.repository.financialTransaction.FinancialTransactionRepository;
+import com.pf.common.entity.financialTransaction.FinancialTransaction;
+import com.pf.common.entity.categoryManagement.UserSubcategory;
 import com.pf.common.repository.user.UserRepository;
 import com.pf.common.service.generic.ExcelValidationService;
 import com.pf.common.util.DateUtils;
@@ -43,6 +48,10 @@ import java.util.stream.Collectors;
 public class BulkUploadProcessingService {
     private final UserRepository userRepository;
     private final BulkUploadsStatusRepository bulkUploadsStatusRepository;
+    private final InvoiceUploadStatusRepository invoiceUploadStatusRepository;
+    private final FinancialTransactionRepository financialTransactionRepository;
+    private final InvoiceDocumentExtractor invoiceDocumentExtractor;
+    private final GroqInvoiceCategoryClassifier groqInvoiceCategoryClassifier;
     private final ExcelValidationService excelValidationService;
     private final BulkUploadProperties bulkUploadProperties;
     private final EntityManager entityManager;
@@ -66,6 +75,10 @@ public class BulkUploadProcessingService {
         bulkUploadsStatus.setRemarks(BulkUploadStatus.IN_PROCESS.getDescription());
         bulkUploadsStatusRepository.saveAndFlush(bulkUploadsStatus);
         String filePath = bulkUploadsStatus.getUploadedFile();
+        if ("Invoice Upload".equalsIgnoreCase(bulkUploadsStatus.getUploadType())) {
+            processInvoice(filePath, bulkUploadsStatus, user);
+            return;
+        }
         try (FileInputStream fis = new FileInputStream(filePath);
              XSSFWorkbook workbook = (XSSFWorkbook) WorkbookFactory.create(fis)) {
             ExcelValidationResult validationResult = excelValidationService.validateExcel(
@@ -114,6 +127,118 @@ public class BulkUploadProcessingService {
             bulkUploadsStatusRepository.saveAndFlush(bulkUploadsStatus);
             log.info("Bulk Upload marked as FAILED for id = {}", id);
         }
+    }
+
+    private void processInvoice(String filePath, BulkUploadsStatus status, User user) {
+        InvoiceDocumentExtractor.ExtractedInvoice document = null;
+        String suggestionsJson = "[]";
+        try {
+            document = invoiceDocumentExtractor.extract(Path.of(filePath));
+            List<String> normalizedInvoiceNumbers = document.invoiceNumbers().stream()
+                    .map(invoiceNumber -> invoiceNumber.trim().toLowerCase(Locale.ROOT))
+                    .toList();
+            List<InvoiceUploadStatus> successfulInvoices = invoiceUploadStatusRepository
+                    .findByNormalizedInvoiceNumbersAndStatus(
+                            normalizedInvoiceNumbers, BulkUploadStatus.SUCCESS.getValue());
+            if (!successfulInvoices.isEmpty()) {
+                status.setStatus(BulkUploadStatus.FAILED.getValue());
+                status.setRemarks("Invoice already loaded with invoice # " + successfulInvoices.getFirst().getInvoiceNumber());
+                saveInvoiceUploadRecords(document, filePath, user, BulkUploadStatus.FAILED.getValue(), suggestionsJson);
+                bulkUploadsStatusRepository.saveAndFlush(status);
+                return;
+            }
+            GroqInvoiceCategoryClassifier.InvoiceAnalysis invoice = groqInvoiceCategoryClassifier.analyze(
+                    document.itemsText(), user.getAdminUser().getId());
+            suggestionsJson = invoice.categorySubcategorySuggestion();
+            List<String> unidentifiedItems = invoice.transactions().stream()
+                    .filter(GroqInvoiceCategoryClassifier.ClassifiedInvoiceItem::unidentified)
+                    .map(GroqInvoiceCategoryClassifier.ClassifiedInvoiceItem::remarks)
+                    .toList();
+            if (!unidentifiedItems.isEmpty()) {
+                status.setStatus(BulkUploadStatus.FAILED.getValue());
+                status.setRemarks("Invoice import rejected: Groq returned Unidentified category/subcategory for "
+                        + unidentifiedItems.size() + " item(s): " + unidentifiedItems.stream().limit(10)
+                        .collect(Collectors.joining("; ")) + ". No transactions were imported.");
+                saveInvoiceUploadRecords(document, filePath, user, BulkUploadStatus.FAILED.getValue(), suggestionsJson);
+                bulkUploadsStatusRepository.saveAndFlush(status);
+                return;
+            }
+            BigDecimal classifiedItemsTotal = invoice.transactions().stream()
+                    .map(GroqInvoiceCategoryClassifier.ClassifiedInvoiceItem::amount)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+            if (classifiedItemsTotal.compareTo(invoice.itemsTotal()) != 0) {
+                throw new IllegalStateException("Groq response total " + invoice.itemsTotal().toPlainString()
+                        + " does not match its transaction amounts " + classifiedItemsTotal.toPlainString());
+            }
+            if (document.invoiceTotal().compareTo(invoice.itemsTotal()) != 0) {
+                status.setStatus(BulkUploadStatus.FAILED.getValue());
+                status.setRemarks("Invoice total mismatch for invoice " + String.join(", ", document.invoiceNumbers())
+                        + ": extracted invoice total is " + document.invoiceTotal().toPlainString()
+                        + ", while Groq item total is " + invoice.itemsTotal().toPlainString()
+                        + ". No transactions were imported.");
+                saveInvoiceUploadRecords(document, filePath, user, BulkUploadStatus.FAILED.getValue(), suggestionsJson);
+                bulkUploadsStatusRepository.saveAndFlush(status);
+                return;
+            }
+            if (invoice.transactions().isEmpty()) {
+                status.setStatus(BulkUploadStatus.NO_DATA.getValue());
+                status.setRemarks("No non-zero invoice items were returned for invoice "
+                        + String.join(", ", document.invoiceNumbers()) + ".");
+                saveInvoiceUploadRecords(document, filePath, user, BulkUploadStatus.FAILED.getValue(), suggestionsJson);
+                bulkUploadsStatusRepository.saveAndFlush(status);
+                return;
+            }
+            LocalDate invoiceDate = document.invoiceDate();
+            List<FinancialTransaction> transactions = invoice.transactions().stream()
+                    .map(item -> FinancialTransaction.builder()
+                            .amount(item.amount())
+                            .transactionAt(invoiceDate)
+                            .subcategory(entityManager.getReference(UserSubcategory.class, item.subcategoryId()))
+                            .remarks(item.remarks().length() > 4000 ? item.remarks().substring(0, 4000) : item.remarks())
+                            .adminUser(user.getAdminUser())
+                            .createdBy(user)
+                            .build())
+                    .toList();
+            financialTransactionRepository.saveAll(transactions);
+            saveInvoiceUploadRecords(document, filePath, user, BulkUploadStatus.SUCCESS.getValue(), suggestionsJson);
+            status.setStatus(BulkUploadStatus.SUCCESS.getValue());
+            status.setRemarks("Invoice " + String.join(", ", document.invoiceNumbers())
+                    + " dated " + document.invoiceDate() + ": invoice total " + document.invoiceTotal().toPlainString()
+                    + " matches Groq item total " + invoice.itemsTotal().toPlainString()
+                    + ". " + transactions.size() + " invoice transactions were imported.");
+        } catch (Exception e) {
+            log.error("Unable to analyze invoice upload {}", filePath, e);
+            status.setStatus(BulkUploadStatus.FAILED.getValue());
+            status.setRemarks("Invoice file could not be processed: " + e.getMessage());
+            if (document != null) {
+                try {
+                    saveInvoiceUploadRecords(document, filePath, user, BulkUploadStatus.FAILED.getValue(), suggestionsJson);
+                } catch (Exception recordError) {
+                    log.error("Unable to record failed invoice upload {}", filePath, recordError);
+                }
+            }
+        }
+        bulkUploadsStatusRepository.saveAndFlush(status);
+    }
+
+    private void saveInvoiceUploadRecords(
+            InvoiceDocumentExtractor.ExtractedInvoice document,
+            String filePath,
+            User user,
+            String recordStatus,
+            String suggestionsJson
+    ) {
+        String fileName = Path.of(filePath).getFileName().toString();
+        invoiceUploadStatusRepository.saveAll(document.invoiceNumbers().stream()
+                .map(invoiceNumber -> InvoiceUploadStatus.builder()
+                        .invoiceNumber(invoiceNumber)
+                        .invoiceDate(document.invoiceDate())
+                        .fileName(fileName)
+                        .status(recordStatus)
+                        .categorySubcategorySuggestion(suggestionsJson)
+                        .uploadedBy(user)
+                        .build())
+                .toList());
     }
 
     public void processValidRows(

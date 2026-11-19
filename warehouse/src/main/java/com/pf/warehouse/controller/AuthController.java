@@ -94,7 +94,7 @@ public class AuthController {
                     new LoginResponse(
                             generatedJwt.token(),
                             "Bearer",
-                            900,
+                            JwtService.ACCESS_TOKEN_LIFETIME_SECONDS,
                             userProfile,
                             user.getMustChangePassword(),
                             permissions
@@ -155,7 +155,7 @@ public class AuthController {
                     new LoginResponse(
                             generatedJwt.token(),
                             "Bearer",
-                            900,
+                            JwtService.ACCESS_TOKEN_LIFETIME_SECONDS,
                             userProfile,
                             user.getMustChangePassword(),
                             permissions

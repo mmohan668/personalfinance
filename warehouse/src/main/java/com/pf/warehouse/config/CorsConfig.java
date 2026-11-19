@@ -18,7 +18,6 @@ public class CorsConfig implements WebMvcConfigurer {
         corsRegistry.addMapping("/**")
                 .allowedOrigins(allowedOrigins.toArray(String[]::new))
                 .allowedHeaders("*")
-                .exposedHeaders("X-New-Access-Token")
                 .allowedMethods("*")
                 .allowCredentials(true);
     }

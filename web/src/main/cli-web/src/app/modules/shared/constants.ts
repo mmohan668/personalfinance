@@ -12,6 +12,7 @@ export const GRID_URL_MAP = new Map<string, string>([
   [GRID_NAMES.ALL_TRANSACTIONS_GRID, '/financialTransaction/fetchFinancialTransactionGridData'],
   [GRID_NAMES.SYSTEM_CONFIG, '/settings/fetchSystemConfigGridData'],
   [GRID_NAMES.BULK_UPLOADS_STATUS, '/bulkupload/fetchBulkUploadStatusGridData'],
+  [GRID_NAMES.INVOICE_UPLOAD_STATUS, '/bulkupload/fetchInvoiceUploadStatusGridData'],
   [GRID_NAMES.DOWNLOADS_GRID, '/export/fetchExports'],
   [GRID_NAMES.USERS_GRID, '/users/fetchUsersGridData'],
   [GRID_NAMES.RECURRING_TRANSACTIONS_GRID, '/recurringTransactions/fetchRecurringTransactionsGridData'],

@@ -2,10 +2,13 @@ package com.pf.common.service.bulkUpload;
 
 
 import com.pf.common.dto.bulkUpload.BulkUploadsStatusDto;
+import com.pf.common.dto.bulkUpload.InvoiceUploadStatusDto;
 import com.pf.common.dto.generic.ApiResponse;
 import com.pf.common.dto.gp.GridResult;
 import com.pf.common.dto.gp.SearchCriteria;
 import com.pf.common.entity.bulkUpload.BulkUploadsStatus;
+import com.pf.common.entity.bulkUpload.InvoiceUploadStatus;
+import com.pf.common.mapper.bulkUpload.InvoiceUploadStatusMapper;
 import com.pf.common.entity.generic.TemplateName;
 import com.pf.common.mapper.bulkUpload.BulkUploadsStatusMapper;
 import com.pf.common.properties.BulkUploadProperties;
@@ -41,6 +44,7 @@ import static com.pf.common.enums.BulkUploadStatus.RECEIVED;
 @RequiredArgsConstructor
 public class BulkUploadsService extends BaseService {
     private final BulkUploadsStatusMapper bulkUploadsStatusMapper;
+    private final InvoiceUploadStatusMapper invoiceUploadStatusMapper;
     private final BulkUploadProperties bulkUploadProperties;
     private final BulkUploadsStatusRepository bulkUploadsStatusRepository;
     private final ApplicationEventPublisher applicationEventPublisher;
@@ -64,9 +68,32 @@ public class BulkUploadsService extends BaseService {
         return gridResult(totalRecords, recordDetails);
     }
 
+    @Transactional(readOnly = true)
+    public GridResult fetchInvoiceUploadStatusGridData(SearchCriteria searchCriteria) {
+        log.info("Fetching invoice upload status grid data: searchCriteria={}", searchCriteria);
+        addAdminUserGridFilter(searchCriteria, USER_ID);
+        searchCriteria.setFIELD_MAPPINGS(InvoiceUploadStatusDto.FIELD_MAPPINGS);
+        searchCriteria.setFetchPaths(List.of("uploadedBy"));
+        long totalRecords = 0;
+        if (!searchCriteria.isLoadAllData()) {
+            totalRecords = getCountBySearchCriteria(InvoiceUploadStatus.class, searchCriteria);
+            if (totalRecords == 0) return gridResult(totalRecords, List.of());
+        }
+        List<InvoiceUploadStatusDto> recordDetails = invoiceUploadStatusMapper.toDtoList(
+                getDataBySearchCriteria(InvoiceUploadStatus.class, searchCriteria));
+        log.info("Fetched invoice upload status grid data: totalRecords={}", totalRecords);
+        return gridResult(totalRecords, recordDetails);
+    }
+
     @Transactional
     public ApiResponse uploadBulkUploadTemplate(String uploadType, String uploadTypeLabel, MultipartFile file) {
         log.info("Uploading Bulk Upload Template, Upload Type: {}", uploadType);
+        if ("INVOICE_UPLOAD".equals(uploadType)
+                && (file.isEmpty() || file.getOriginalFilename() == null
+                || !isSupportedInvoiceExtension(file.getOriginalFilename()))) {
+            throw new IllegalArgumentException("Invoice Upload requires a non-empty PDF, PNG, JPG or JPEG file");
+        }
+        String resolvedLabel = "INVOICE_UPLOAD".equals(uploadType) ? "Invoice Upload" : uploadTypeLabel;
         String originalFilename = file.getOriginalFilename();
         if (originalFilename == null || originalFilename.isBlank()) {
             throw new IllegalArgumentException("Uploaded file does not have a valid filename");
@@ -78,7 +105,7 @@ public class BulkUploadsService extends BaseService {
             file.transferTo(targetFile);
             BulkUploadsStatus bulkUploadsStatus =
                     bulkUploadsStatusRepository.save(
-                            createBulkUploadsStatus(uploadTypeLabel, uploadType, targetFile)
+                            createBulkUploadsStatus(resolvedLabel, uploadType, targetFile)
                     );
             log.info("Sending Bulk Upload Status to Bulk Upload Processing Service");
             applicationEventPublisher.publishEvent(new BulkUploadCreatedEvent(
@@ -89,7 +116,13 @@ public class BulkUploadsService extends BaseService {
             log.error("Error while uploading file", e);
             throw new RuntimeException("Failed to save uploaded file", e);
         }
-        return success(uploadTypeLabel + " Uploaded successfully");
+        return success(resolvedLabel + " Uploaded successfully");
+    }
+
+    private boolean isSupportedInvoiceExtension(String filename) {
+        String lower = filename.toLowerCase(java.util.Locale.ROOT);
+        return lower.endsWith(".pdf") || lower.endsWith(".png")
+                || lower.endsWith(".jpg") || lower.endsWith(".jpeg");
     }
 
     public ResponseEntity<Resource> downloadFile(String filePath) throws IOException {
@@ -113,7 +146,8 @@ public class BulkUploadsService extends BaseService {
             String uploadType,
             Path targetFile
     ) {
-        TemplateName templateName = templateNameRepository.findByTemplateName(uploadType);
+        String templateKey = "INVOICE_UPLOAD".equals(uploadType) ? "FINANCIAL_TRANSACTIONS" : uploadType;
+        TemplateName templateName = templateNameRepository.findByTemplateName(templateKey);
         BulkUploadsStatus bulkUploadsStatus = new BulkUploadsStatus();
         bulkUploadsStatus.setUploadType(uploadTypeLabel);
         bulkUploadsStatus.setUploadedFile(targetFile.toString());
