@@ -1,5 +1,4 @@
-import { HttpInterceptorFn, HttpResponse } from '@angular/common/http';
-import { tap } from 'rxjs';
+import { HttpInterceptorFn } from '@angular/common/http';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const token = sessionStorage.getItem('authToken');
@@ -17,14 +16,5 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
         })
       : req;
 
-  return next(authenticatedRequest).pipe(
-    tap((event) => {
-      if (event instanceof HttpResponse) {
-        const renewedToken = event.headers.get('X-New-Access-Token');
-        if (renewedToken) {
-          sessionStorage.setItem('authToken', renewedToken);
-        }
-      }
-    }),
-  );
+  return next(authenticatedRequest);
 };

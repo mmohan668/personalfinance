@@ -1,6 +1,6 @@
 package com.pf.warehouse.config;
 
-import com.pf.warehouse.filter.JwtRenewalFilter;
+import com.pf.warehouse.filter.JwtSessionValidationFilter;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,10 +15,10 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityBeansConfig {
 
     @Bean
-    public FilterRegistrationBean<JwtRenewalFilter> jwtRenewalFilterRegistration(
-            JwtRenewalFilter jwtRenewalFilter) {
-        FilterRegistrationBean<JwtRenewalFilter> registration =
-                new FilterRegistrationBean<>(jwtRenewalFilter);
+    public FilterRegistrationBean<JwtSessionValidationFilter> jwtSessionValidationFilterRegistration(
+            JwtSessionValidationFilter jwtSessionValidationFilter) {
+        FilterRegistrationBean<JwtSessionValidationFilter> registration =
+                new FilterRegistrationBean<>(jwtSessionValidationFilter);
         registration.setEnabled(false);
         return registration;
     }
@@ -26,7 +26,7 @@ public class SecurityBeansConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(
             HttpSecurity http,
-            JwtRenewalFilter jwtRenewalFilter
+            JwtSessionValidationFilter jwtSessionValidationFilter
     ) {
 
         http
@@ -49,7 +49,7 @@ public class SecurityBeansConfig {
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
                 .addFilterAfter(
-                        jwtRenewalFilter,
+                        jwtSessionValidationFilter,
                         BearerTokenAuthenticationFilter.class
                 );
 

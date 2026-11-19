@@ -30,6 +30,11 @@ public class BulkUploadsController {
         return bulkUploadsService.fetchBulkUploadStatusGridData(searchCriteria);
     }
 
+    @PostMapping("/fetchInvoiceUploadStatusGridData")
+    public GridResult fetchInvoiceUploadStatusGridData(@RequestBody SearchCriteria searchCriteria) {
+        return bulkUploadsService.fetchInvoiceUploadStatusGridData(searchCriteria);
+    }
+
     @GetMapping("/downloadTemplate")
     public ResponseEntity<InputStreamResource> downloadBulkUploadTemplate(@RequestParam String templateName) {
         ByteArrayInputStream inputStream = templateGenerationService.generateTemplate(templateName);
@@ -56,7 +61,18 @@ public class BulkUploadsController {
             @RequestParam("uploadTypeLabel") String uploadTypeLabel,
             @RequestParam("file") MultipartFile file
     ) {
+        if ("INVOICE_UPLOAD".equals(uploadType)
+                && (file.isEmpty() || file.getOriginalFilename() == null
+                || !isSupportedInvoiceExtension(file.getOriginalFilename()))) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invoice files must be PDF, PNG, JPG or JPEG");
+        }
         return bulkUploadsService.uploadBulkUploadTemplate(uploadType, uploadTypeLabel, file);
+    }
+
+    private boolean isSupportedInvoiceExtension(String filename) {
+        String lower = filename.toLowerCase(java.util.Locale.ROOT);
+        return lower.endsWith(".pdf") || lower.endsWith(".png")
+                || lower.endsWith(".jpg") || lower.endsWith(".jpeg");
     }
 
     @GetMapping("/downloadFile")

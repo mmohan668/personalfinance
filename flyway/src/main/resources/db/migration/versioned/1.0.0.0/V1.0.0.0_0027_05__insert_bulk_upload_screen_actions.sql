@@ -32,7 +32,9 @@ $$
                      ('Upload Categories', 'Upload categories from a spreadsheet.', 2),
                      ('Upload Subcategories', 'Upload subcategories from a spreadsheet.', 3),
                      ('Upload Financial Transactions', 'Upload financial transactions from a spreadsheet.',
-                      4)) AS a(action_name, description, display_order)
+                      4),
+                     ('Upload Invoice', 'Upload invoice PDFs or images to import categorized transactions.', 5))
+                 AS a(action_name, description, display_order)
         WHERE NOT EXISTS (SELECT 1
                           FROM app_action existing
                           WHERE existing.screen_id = v_screen_id

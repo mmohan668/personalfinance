@@ -839,16 +839,16 @@ function createBulkUploadGuide(): GridGuide {
   return {
     title: 'Bulk Upload',
     icon: 'upload_file',
-    description: 'Upload multiple records using Excel templates and track upload status.',
+    description: 'Upload Excel templates or PDF invoices and track upload status.',
     overview:
-      'Use Bulk Upload to import financial transactions, categories, subcategories, and reference values from an Excel (.xlsx) file. Download the appropriate template, fill it with your data, and submit it for processing. Track upload status and access uploaded files or error files from the grid.',
+      'Use Bulk Upload to import financial transactions, categories, subcategories, and reference values from Excel (.xlsx) files, or extract a purchase transaction from a PDF invoice. Track upload status and access uploaded files or error files from the grid.',
     features: [
       {
         title: 'Select Upload Type',
         icon: 'category',
         description: 'Choose the type of data you want to upload.',
         details:
-          'Select Financial Transactions, Categories, Subcategories, or Reference Values from the Upload Type list before downloading a template or submitting a file.',
+          'Select Financial Transactions, Categories, Subcategories, Reference Values, or Invoice Upload from the Upload Type list. Invoice Upload accepts PDF files and does not use an Excel template.',
       },
       {
         title: 'Download Template',
@@ -860,16 +860,16 @@ function createBulkUploadGuide(): GridGuide {
       {
         title: 'Choose File',
         icon: 'attach_file',
-        description: 'Select a prepared Excel file for upload.',
+        description: 'Select an Excel file or PDF invoice for upload.',
         details:
-          'Click Choose File and select the completed Excel file. Only .xlsx files are accepted. The selected file name appears on the upload form.',
+          'Choose a .xlsx file for spreadsheet upload types or a .pdf file for Invoice Upload. The selected file name appears on the upload form.',
       },
       {
         title: 'Submit Upload',
         icon: 'cloud_upload',
         description: 'Submit the selected file for processing.',
         details:
-          'Select an upload type and an Excel file, then click Submit. On successful submission, the form resets, a confirmation message appears, and the upload status grid refreshes.',
+          'Select an upload type and matching file, then click Submit. On successful submission, the form resets, a confirmation message appears, and the upload status grid refreshes.',
       },
       {
         title: 'Reset Upload Form',

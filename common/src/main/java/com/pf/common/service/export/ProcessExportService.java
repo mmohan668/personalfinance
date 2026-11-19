@@ -136,6 +136,8 @@ public class ProcessExportService {
                 case RECURRING_TRANSACTIONS_GRID -> recurringTransactionService.fetchGridData(searchCriteria).getRecordDetails();
                 case BULK_UPLOADS_STATUS ->
                         bulkUploadsService.fetchBulkUploadStatusGridData(searchCriteria).getRecordDetails();
+                case INVOICE_UPLOAD_STATUS ->
+                        bulkUploadsService.fetchInvoiceUploadStatusGridData(searchCriteria).getRecordDetails();
                 case USERS_GRID -> userService.fetchUsersGridData(searchCriteria).getRecordDetails();
             };
         } catch (RuntimeException e) {
