@@ -191,7 +191,7 @@ public class BulkUploadProcessingService {
             LocalDate invoiceDate = document.invoiceDate();
             List<FinancialTransaction> transactions = invoice.transactions().stream()
                     .map(item -> FinancialTransaction.builder()
-                            .amount(item.amount())
+                            .amount(item.amount().abs().negate())
                             .transactionAt(invoiceDate)
                             .subcategory(entityManager.getReference(UserSubcategory.class, item.subcategoryId()))
                             .remarks(item.remarks().length() > 4000 ? item.remarks().substring(0, 4000) : item.remarks())
