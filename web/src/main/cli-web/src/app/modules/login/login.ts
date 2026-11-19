@@ -1,11 +1,12 @@
 import { AfterViewInit, Component, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { AuthService } from '../shared/service/auth-service';
+import { AuthService, LoginResponse } from '../shared/service/auth-service';
 import { MatDialog } from '@angular/material/dialog';
 import { ForgotPasswordDialog } from '../users/forgot-password-dialog/forgot-password-dialog';
 import { CommonImportsModule } from '../shared/common-imports/common-imports-module';
 import { ChangePasswordDialog } from '../users/change-password-dialog/change-password-dialog';
 import { CommonService } from '../shared/service/common-service';
+import { AppConfigService } from '../shared/service/app-config-service';
 
 @Component({
   selector: 'app-login',
@@ -19,6 +20,7 @@ export class Login implements AfterViewInit {
   private router = inject(Router);
   private dialog = inject(MatDialog);
   private _cs = inject(CommonService);
+  private _acs = inject(AppConfigService);
 
   username = '';
   password = '';
@@ -91,44 +93,7 @@ export class Login implements AfterViewInit {
             return;
           }
 
-          this.authService.storeToken(response.accessToken);
-          this.authService.storeUserInfo(response.userProfile);
-          this.authService.storePermissions(response.permissions);
-          this.isLoading.set(false);
-
-          if (response.mustChangePassword) {
-            const dialogRef = this.dialog.open(ChangePasswordDialog, {
-              width: '520px',
-              maxWidth: 'calc(100vw - 32px)',
-              maxHeight: 'calc(100dvh - 32px)',
-              autoFocus: false,
-              panelClass: 'change-password-panel',
-            });
-            dialogRef.componentInstance.forcePasswordChange = true;
-          } else {
-            if (response.mustChangePassword) {
-              const dialogRef = this.dialog.open(ChangePasswordDialog, {
-                width: '520px',
-                maxWidth: 'calc(100vw - 32px)',
-                maxHeight: 'calc(100dvh - 32px)',
-                autoFocus: false,
-                panelClass: 'change-password-panel',
-              });
-
-              dialogRef.afterClosed().subscribe((result) => {
-                if (result) {
-                  void this.router.navigate(['/']);
-                } else {
-                  // The password has not been changed.
-                  // Keep the user on the login page.
-                  this.authService.logout();
-                }
-              });
-            } else {
-              this._cs.identifyDevice();
-              void this.router.navigate(['/']);
-            }
-          }
+          this.completeLogin(response);
         },
         error: (error) => {
           this.isLoading.set(false);
@@ -180,18 +145,45 @@ export class Login implements AfterViewInit {
           return;
         }
 
-        this.authService.storeToken(response.accessToken);
-        this.authService.storeUserInfo(response.userProfile);
-        this.authService.storePermissions(response.permissions);
-
-        this.isLoading.set(false);
-        this._cs.identifyDevice();
-        void this.router.navigate(['/']);
+        this.completeLogin(response);
       },
       error: (error) => {
         this.isLoading.set(false);
         this.errorMessage = error?.error?.message ?? 'Google sign-in failed. Please try again.';
       },
     });
+  }
+
+  private completeLogin(response: LoginResponse): void {
+    this._acs.loadFromWebService().subscribe({
+      next: () => {
+        this.authService.storeToken(response.accessToken);
+        this.authService.storeUserInfo(response.userProfile);
+        this.authService.storePermissions(response.permissions);
+        this.finishLogin(response);
+      },
+      error: (error) => {
+        console.error('Unable to load web application configuration:', error);
+        this.isLoading.set(false);
+        this.errorMessage = 'Unable to load application settings. Please try signing in again.';
+      },
+    });
+  }
+
+  private finishLogin(response: LoginResponse): void {
+    this.isLoading.set(false);
+    if (response.mustChangePassword) {
+      const dialogRef = this.dialog.open(ChangePasswordDialog, {
+        width: '520px',
+        maxWidth: 'calc(100vw - 32px)',
+        maxHeight: 'calc(100dvh - 32px)',
+        autoFocus: false,
+        panelClass: 'change-password-panel',
+      });
+      dialogRef.componentInstance.forcePasswordChange = true;
+      return;
+    }
+    this._cs.identifyDevice();
+    void this.router.navigate(['/']);
   }
 }
