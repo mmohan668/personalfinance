@@ -20,7 +20,9 @@ public class AppEnums {
         STATE("State"),
         TIME_ZONE("Time Zone"),
         PASSWORD_HISTORY_LIMIT("Password History Limit"),
-        PASSWORD_EXPIRY_DAYS("Password Expiry Days");
+        PASSWORD_EXPIRY_DAYS("Password Expiry Days"),
+        ENABLE_REPORTS("Enable Reports"),
+        REPORT_FREQUENCY("Report Frequency");
 
         private final String value;
 

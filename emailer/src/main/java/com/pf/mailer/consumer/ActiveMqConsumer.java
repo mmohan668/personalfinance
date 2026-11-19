@@ -2,6 +2,7 @@ package com.pf.mailer.consumer;
 
 import com.pf.common.dto.generic.AccountActivationRequest;
 import com.pf.common.dto.generic.ForgotPasswordEmailRequest;
+import com.pf.common.dto.generic.FinancialReportMailRequest;
 import com.pf.mailer.service.SendEmailService;
 import jakarta.jms.JMSException;
 import jakarta.jms.Message;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 import static com.pf.common.constants.CommonConstants.ACCOUNT_ACTIVATION_MAIL;
 import static com.pf.common.constants.CommonConstants.FORGOT_PASSWORD_MAIL;
+import static com.pf.common.constants.CommonConstants.FINANCIAL_REPORT_MAIL;
 
 @Slf4j
 @Component
@@ -70,6 +72,16 @@ public class ActiveMqConsumer {
         } finally {
             log.info("Forgot-password email message processing {}",
                     completedSuccessfully ? "completed successfully" : "failed");
+        }
+    }
+
+    @JmsListener(destination = FINANCIAL_REPORT_MAIL, containerFactory = "jmsListenerContainerFactory")
+    public void receiveFinancialReportMessage(Message message) throws JMSException {
+        Object payload = messageConverter.fromMessage(message);
+        if (payload instanceof FinancialReportMailRequest request) {
+            sendEmailService.sendFinancialReportEmail(request);
+        } else {
+            throw new IllegalArgumentException("Unexpected financial report message type: " + payload.getClass().getName());
         }
     }
 }

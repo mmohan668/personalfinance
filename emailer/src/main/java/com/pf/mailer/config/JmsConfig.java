@@ -2,6 +2,7 @@ package com.pf.mailer.config;
 
 import com.pf.common.dto.generic.AccountActivationRequest;
 import com.pf.common.dto.generic.ForgotPasswordEmailRequest;
+import com.pf.common.dto.generic.FinancialReportMailRequest;
 import jakarta.jms.ConnectionFactory;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.RedeliveryPolicy;
@@ -19,7 +20,7 @@ public class JmsConfig {
 
         converter.setTargetType(MessageType.TEXT);
         converter.setTypeIdPropertyName("_type");
-        converter.setTypeIdMappings(java.util.Map.of("AccountActivationRequest", AccountActivationRequest.class, "ForgotPasswordEmailRequest", ForgotPasswordEmailRequest.class));
+        converter.setTypeIdMappings(java.util.Map.of("AccountActivationRequest", AccountActivationRequest.class, "ForgotPasswordEmailRequest", ForgotPasswordEmailRequest.class, "FinancialReportMailRequest", FinancialReportMailRequest.class));
 
         return converter;
     }

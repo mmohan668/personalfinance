@@ -34,6 +34,8 @@ export class UpdateSystemConfigDialog {
     [SYSTEM_CONFIG_NAME.TIME_ZONE]: REF_OBJ_NAMES.TIME_ZONE,
     [SYSTEM_CONFIG_NAME.PASSWORD_HISTORY_LIMIT]: REF_OBJ_NAMES.PASSWORD_HISTORY_LIMIT,
     [SYSTEM_CONFIG_NAME.PASSWORD_EXPIRY_DAYS]: REF_OBJ_NAMES.PASSWORD_EXPIRY_DAYS,
+    [SYSTEM_CONFIG_NAME.ENABLE_REPORTS]: REF_OBJ_NAMES.ENABLE_REPORTS,
+    [SYSTEM_CONFIG_NAME.REPORT_FREQUENCY]: REF_OBJ_NAMES.REPORT_FREQUENCY,
   };
 
   constructor() {
@@ -49,7 +51,6 @@ export class UpdateSystemConfigDialog {
   fetchReferenceCodes(): void {
     const refObjName = this.refObjNameByConfig[this.data.configName as SYSTEM_CONFIG_NAME];
     if (!refObjName) return;
-
     firstValueFrom(this._ss.fetchReferenceValuesByRefObjName(refObjName)).then(
       (resp: SelectItem[]) => {
         this.referenceCodes.set(resp);

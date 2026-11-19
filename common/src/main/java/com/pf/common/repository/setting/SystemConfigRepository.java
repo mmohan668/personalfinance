@@ -31,4 +31,12 @@ public interface SystemConfigRepository extends JpaRepository<SystemConfig, Long
             AND LOWER(TRIM(sc.configName)) IN ('country', 'state', 'time zone')
             """)
     List<SystemConfig> findSchedulerSettingsByUserIdIn(@Param("userIds") List<Long> userIds);
+
+    @Transactional(readOnly = true)
+    @Query("""
+            SELECT sc FROM SystemConfig sc JOIN FETCH sc.configValue
+            WHERE sc.userId IN :userIds
+              AND LOWER(TRIM(sc.configName)) IN ('enable reports', 'report frequency')
+            """)
+    List<SystemConfig> findFinancialReportSettingsByUserIdIn(@Param("userIds") List<Long> userIds);
 }

@@ -20,7 +20,8 @@ public class JmsConfig {
         converter.setTypeIdPropertyName("_type");
         converter.setTypeIdMappings(
                 java.util.Map.of(
-                        "ExportRequest", com.pf.common.dto.export.ExportRequest.class
+                        "ExportRequest", com.pf.common.dto.export.ExportRequest.class,
+                        "FinancialReportMailRequest", com.pf.common.dto.generic.FinancialReportMailRequest.class
                 )
         );
 

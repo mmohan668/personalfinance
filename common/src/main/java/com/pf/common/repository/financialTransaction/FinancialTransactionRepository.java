@@ -1,6 +1,7 @@
 package com.pf.common.repository.financialTransaction;
 
 import com.pf.common.entity.financialTransaction.FinancialTransaction;
+import com.pf.common.entity.financialTransaction.FinancialTransactionView;
 import com.pf.common.projection.ExpenseByCategoryProjection;
 import com.pf.common.projection.MonthlyTransactionTotalProjection;
 import com.pf.common.projection.TransactionTotalProjection;
@@ -98,6 +99,19 @@ public interface FinancialTransactionRepository extends JpaRepository<FinancialT
                 GROUP BY ftv.categoryName
             """)
     List<ExpenseByCategoryProjection> fetchExpenseByCategory(
+            @Param("from") LocalDate from,
+            @Param("to") LocalDate to,
+            @Param("adminUserId") Long adminUserId
+    );
+
+    @Transactional(readOnly = true)
+    @Query("""
+            SELECT ftv FROM FinancialTransactionView ftv
+            WHERE ftv.transactionAt >= :from AND ftv.transactionAt < :to
+              AND ftv.adminUserId = :adminUserId
+            ORDER BY ftv.transactionAt, ftv.id
+            """)
+    List<FinancialTransactionView> fetchFinancialReportTransactions(
             @Param("from") LocalDate from,
             @Param("to") LocalDate to,
             @Param("adminUserId") Long adminUserId

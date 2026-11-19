@@ -242,11 +242,27 @@ public class SettingsService extends BaseService {
         if (systemConfig == null) {
             return failure("System config not found.");
         }
+        Long adminUserId = fetchAdminUserId();
+        if (!adminUserId.equals(systemConfig.getUserId())) {
+            return failure("System config not found.");
+        }
         UserReferenceValue userReferenceValue =
                 referenceValueRepository.findById(systemConfigDto.getReferenceId())
                         .orElse(null);
-        if (userReferenceValue == null) {
+        if (userReferenceValue == null || userReferenceValue.getUser() == null
+                || !adminUserId.equals(userReferenceValue.getUser().getId())
+                || !userReferenceValue.isActive()
+                || Boolean.TRUE.equals(userReferenceValue.getIsDeleted())) {
             return failure("Reference value not found.");
+        }
+        String expectedReferenceObject = switch (systemConfig.getConfigName().trim().toLowerCase(java.util.Locale.ROOT)) {
+            case "enable reports" -> "ENABLE_REPORTS";
+            case "report frequency" -> "REPORT_FREQUENCY";
+            default -> null;
+        };
+        if (expectedReferenceObject != null && (userReferenceValue.getReferenceObject() == null
+                || !expectedReferenceObject.equalsIgnoreCase(userReferenceValue.getReferenceObject().getRefObjName()))) {
+            return failure("Selected value is not valid for this system config.");
         }
         systemConfig.setConfigValue(userReferenceValue);
         systemConfig.setUpdatedBy(fetchLoginUser());
